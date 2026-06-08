@@ -1,0 +1,25 @@
+Work Notes: Git Repository Collaboration
+- Collaborator: Accept the invitation via email or GitHub notifications.
+
+2. Clone the Repository
+git clone https://github.com/ClementPhoshoko/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights.git
+cd AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights
+
+3. Configure Git Identity
+git config --global user.name "Your Real Name"
+git config --global user.email "your_account_email@example.com"
+
+4. Branching Strategy
+- Main Branch: Reserved for stable, working code only.
+- Feature Branches: Create a new branch for every specific task.
+git checkout -b feature/your-task-name
+
+5. Commit and Push
+git add .
+git commit -m "Description of your changes"
+git push origin feature/your-task-name
+
+6. Pull Requests (PRs)
+- Push the branch to GitHub.
+- Open a Pull Request on the repository page.
+- Review code and resolve discussions before merging into the main branch.
