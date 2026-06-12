@@ -45,11 +45,11 @@ class PingService {
   }
 
   static async getPingHistory(userId, limit = 100, offset = 0) {
-    return TestResult.findByCurrentUser(limit, offset);
+    return TestResult.findByCurrentUser(userId, limit, offset);
   }
 
   static async getPingSummary(userId) {
-    const history = await TestResult.findByCurrentUser(1000, 0); // Get last 1000 tests max
+    const history = await TestResult.findByCurrentUser(userId, 1000, 0); // Get last 1000 tests max
     if (history.length === 0) {
       return {
         averagePing: 0,
