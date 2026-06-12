@@ -14,6 +14,8 @@ erDiagram
     profiles {
         uuid id PK
         varchar username
+        varchar first_name
+        varchar last_name
         timestamptz created_at
         timestamptz updated_at
     }

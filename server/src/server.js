@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const { supabase } = require('./config/db');
+const profilesRouter = require('./routes/profiles');
+const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config({ path: './src/.env' });
 
 const app = express();
@@ -32,6 +34,17 @@ const swaggerOptions = {
                 url: `http://localhost:${PORT}`,
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'Enter your Supabase JWT token here'
+                }
+            }
+        },
+        security: [{ bearerAuth: [] }]
     },
     apis: ['./src/routes/*.js'], // Path to the API docs
 };
@@ -69,6 +82,12 @@ app.get('/api/health/db', async (req, res) => {
     }
 });
 
+// Mount Routes
+app.use('/api/profile', profilesRouter);
+
+// Error Handler Middleware (must be last middleware)
+app.use(errorHandler);
+
 // Start Server
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
@@ -80,8 +99,9 @@ app.listen(PORT, () => {
  * Server.js Notes:
  * - Entry point for the Express.js backend API
  * - Sets up middleware: security (helmet), CORS, compression, logging (morgan)
- * - Configures Swagger for interactive API documentation at /api-docs
+ * - Configures Swagger for interactive API documentation at /api-docs (with JWT auth support)
  * - Includes health check endpoints to verify server and DB status
- * - Will load route handlers from ./src/routes/ once they are added
+ * - Mounts route handlers from ./src/routes/
  * - Uses Supabase SDK for database interactions with RLS policies
+ * - Uses centralized errorHandler middleware for consistent error responses
  */
