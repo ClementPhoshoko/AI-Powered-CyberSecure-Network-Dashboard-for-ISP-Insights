@@ -1,20 +1,9 @@
-const { supabase, supabaseAdmin } = require('../config/db');
+const { supabaseAdmin } = require('../config/db');
 
 class Profile {
-  // Create a new profile (should be triggered after Supabase Auth signup)
-  static async create(profileData) {
-    const { data, error } = await supabaseAdmin
-      .from('profiles')
-      .insert([profileData])
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
-  }
-
   // Find profile by user ID
   static async findById(id) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('profiles')
       .select('*')
       .eq('id', id)
@@ -25,7 +14,7 @@ class Profile {
 
   // Update profile
   static async update(id, updates) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('profiles')
       .update(updates)
       .eq('id', id)
@@ -37,7 +26,7 @@ class Profile {
 
   // Delete profile
   static async delete(id) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('profiles')
       .delete()
       .eq('id', id)

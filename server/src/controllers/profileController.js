@@ -1,29 +1,5 @@
 const Profile = require('../models/Profile');
 
-// @desc    Create user profile (should run after Supabase Auth signup)
-// @route   POST /api/profile
-// @access  Private
-const createProfile = async (req, res, next) => {
-  try {
-    const { username, first_name, last_name } = req.body;
-    const userId = req.user.id; // From validateSupabaseJWT middleware
-
-    const profile = await Profile.create({
-      id: userId,
-      username,
-      first_name,
-      last_name
-    });
-
-    res.status(201).json({
-      status: 'success',
-      data: profile
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 // @desc    Get current user's profile
 // @route   GET /api/profile
 // @access  Private
@@ -64,7 +40,6 @@ const updateProfile = async (req, res, next) => {
 };
 
 module.exports = {
-  createProfile,
   getProfile,
   updateProfile
 };

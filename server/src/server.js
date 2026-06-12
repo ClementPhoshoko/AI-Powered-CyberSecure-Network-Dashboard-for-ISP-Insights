@@ -7,11 +7,13 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const { supabase } = require('./config/db');
 const profilesRouter = require('./routes/profiles');
+const devAuthRouter = require('./routes/devAuth');
 const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config({ path: './src/.env' });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -83,6 +85,10 @@ app.get('/api/health/db', async (req, res) => {
 });
 
 // Mount Routes
+if (NODE_ENV === 'development') {
+    console.warn('⚠️ Development mode: Dev Auth endpoints enabled!');
+    app.use('/dev/auth', devAuthRouter);
+}
 app.use('/api/profile', profilesRouter);
 
 // Error Handler Middleware (must be last middleware)
@@ -90,9 +96,9 @@ app.use(errorHandler);
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-    console.log(`📚 Swagger documentation available at http://localhost:${PORT}/api-docs`);
-    console.log('🔗 Database configuration loaded');
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
+    console.log('Database configuration loaded');
 });
 
 /*

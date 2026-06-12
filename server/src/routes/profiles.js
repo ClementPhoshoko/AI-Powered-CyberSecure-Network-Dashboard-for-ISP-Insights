@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createProfile, getProfile, updateProfile } = require('../controllers/profileController');
+const { getProfile, updateProfile } = require('../controllers/profileController');
 const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
 
 /**
@@ -9,49 +9,6 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *   name: Profile
  *   description: User profile management
  */
-
-/**
- * @swagger
- * /api/profile:
- *   post:
- *     summary: Create a new user profile
- *     tags: [Profile]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *                 description: The user's username
- *               first_name:
- *                 type: string
- *                 description: The user's first name
- *               last_name:
- *                 type: string
- *                 description: The user's last name
- *     responses:
- *       201:
- *         description: Profile created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                 data:
- *                   type: object
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Server error
- */
-router.post('/', validateSupabaseJWT, createProfile);
 
 /**
  * @swagger
