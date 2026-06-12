@@ -1,9 +1,9 @@
-const { supabase, supabaseAdmin } = require('../config/db');
+const { supabaseAdmin } = require('../config/db');
 
 class PingMeasurement {
   // Create a single ping measurement
   static async create(pingData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('ping_measurements')
       .insert([pingData])
       .select()
@@ -14,7 +14,7 @@ class PingMeasurement {
 
   // Bulk create ping measurements
   static async bulkCreate(pingMeasurementsArray) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('ping_measurements')
       .insert(pingMeasurementsArray)
       .select();
@@ -24,7 +24,7 @@ class PingMeasurement {
 
   // Find all ping measurements for a test result
   static async findByTestResultId(testResultId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('ping_measurements')
       .select('*')
       .eq('test_result_id', testResultId)

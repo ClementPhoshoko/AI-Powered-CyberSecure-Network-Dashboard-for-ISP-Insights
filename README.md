@@ -2,12 +2,38 @@
 
 A smart network dashboard that leverages artificial intelligence and cybersecurity analytics to track patterns, detect anomalies, and provide actionable suggestions for Internet Service Providers.
 
+## Architecture Overview
+```
+User Browser (client)
+    |
+    |-- Ping test
+    |-- Download test
+    |-- Upload test
+    |
+    V
+Backend API (server)
+    |
+    |-- Calculate metrics
+    |-- Store results
+    |-- Analytics
+```
+
 ## Project Structure
 
 This repository is organized into a client-server architecture:
 
 - `/server`: The backend API built with Node.js and Express.
 - `/client`: (Coming Soon) The frontend dashboard.
+
+---
+
+## Ping Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/ping/tests | Run a new ping test |
+| GET | /api/ping/tests/:id | Get a specific ping test |
+| GET | /api/ping/history | Get ping test history |
+| GET | /api/ping/summary | Get ping summary stats |
 
 ---
 

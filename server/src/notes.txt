@@ -1,89 +1,15 @@
-Backend Structure Overview: AI-Powered CyberSecure Network Dashboard
+ToDo: Phase 2 or research expansion, implement:
 
-This backend is built with Node.js and Express using a modular architecture. This setup ensures high scalability, security, and clean separation of concerns, which is essential for handling AI analytics and cybersecurity data for ISPs.
+Server Discovery Service
+      ↓
+Latency Check
+      ↓
+Automatic Best Server Selection
 
-1. Controllers
-The logic layer of the application. It handles incoming requests, processes data (where AI/ML logic will reside), and returns the final response. It keeps the routes clean by separating "what to do" from "how to do it."
+That would be a strong research contribution because you could compare:
 
---- Pseudocode Example ---
-function detectAnomaly(request, response) {
-    data = request.body;
-    result = AI_Engine.analyze(data);
-    if (result.isThreat) {
-        return response.status(403).json("Threat Detected");
-    }
-    return response.status(200).json("Traffic Normal");
-}
+Nearest server
+Lowest-latency server
+Best-performing server
 
-2. Models
-The data layer. It defines the structure and schema of your database objects (e.g., User profiles, Network Logs, Security Alerts). It ensures that all data entering the system follows strict validation rules.
-
---- Pseudocode Example ---
-Schema NetworkLog {
-    timestamp: Date,
-    sourceIP: String,
-    trafficVolume: Number,
-    threatLevel: String (Low/Medium/High)
-}
-
-3. Routes
-The entry points for the API. It maps specific URL paths (endpoints) to their corresponding controller functions. This makes the API structure easy to navigate and manage as the project grows.
-
---- Pseudocode Example ---
-router.post("/analyze-traffic", controller.detectAnomaly);
-router.get("/get-logs", controller.fetchNetworkLogs);
-
-4. Middleware
-The security and processing layer. It runs code before a request reaches the controller. Used for authentication (JWT), data validation, and security headers to protect the ISP dashboard from unauthorized access.
-
---- Pseudocode Example ---
-function verifyToken(request, response, next) {
-    token = request.header("Auth-Token");
-    if (!token) return response.error("Access Denied");
-    // If valid, move to the next function
-    next();
-}
-
-5. Docs (Swagger)
-The documentation layer. It uses Swagger UI to generate interactive API documentation. This allows developers to test endpoints directly in the browser and see exactly what data is required.
-
---- Pseudocode Example ---
-/**
- * @swagger
- * /analyze-traffic:
- *   post:
- *     summary: Send network data to AI for analysis
- *     responses:
- *       200:
- *         description: Analysis complete
- */
-
-6. Config
-The environment settings layer. It manages global configurations like database connections and third-party API integrations, keeping the application flexible across different environments (development vs production).
-
---- Pseudocode Example ---
-Database_Config = {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD
-}
-
---- Additional Components ---
-
-Server (src/server.js)
-The main entry point of the application. It initializes the Express app, connects the middleware, sets up the Swagger documentation, and starts the network listener on a specific port.
-
---- Pseudocode Example ---
-app = express();
-app.use(cors);
-app.use(routes);
-app.listen(5000, () => "Server Running");
-
-.env (Environment Variables)
-A secure file for storing sensitive information like API keys, database passwords, and port numbers. It prevents hardcoding secrets into the source code, which is a critical security best practice.
-Wont push this to github since it will contain security stuff. We'll share it to each other everytime we change it.
-
---- Pseudocode Example ---
-PORT=5000
-AI_API_KEY=super_secret_key_123
-DATABASE_URL=mongodb://localhost:27017/isp_db
+and analyze how server selection affects measured network quality.

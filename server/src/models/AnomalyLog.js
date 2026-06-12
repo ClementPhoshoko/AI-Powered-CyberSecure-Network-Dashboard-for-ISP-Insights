@@ -1,9 +1,9 @@
-const { supabase, supabaseAdmin } = require('../config/db');
+const { supabaseAdmin } = require('../config/db');
 
 class AnomalyLog {
   // Create an anomaly log
   static async create(anomalyData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('anomaly_logs')
       .insert([anomalyData])
       .select()
@@ -14,7 +14,7 @@ class AnomalyLog {
 
   // Bulk create anomaly logs
   static async bulkCreate(anomaliesArray) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('anomaly_logs')
       .insert(anomaliesArray)
       .select();
@@ -24,7 +24,7 @@ class AnomalyLog {
 
   // Find all anomalies for a test result
   static async findByTestResultId(testResultId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('anomaly_logs')
       .select('*')
       .eq('test_result_id', testResultId)

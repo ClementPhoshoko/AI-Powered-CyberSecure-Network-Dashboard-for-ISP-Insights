@@ -8,6 +8,7 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const { supabase } = require('./config/db');
 const profilesRouter = require('./routes/profiles');
 const devAuthRouter = require('./routes/devAuth');
+const pingRouter = require('./routes/ping');
 const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config({ path: './src/.env' });
 
@@ -90,6 +91,7 @@ if (NODE_ENV === 'development') {
     app.use('/dev/auth', devAuthRouter);
 }
 app.use('/api/profile', profilesRouter);
+app.use('/api/ping', pingRouter);
 
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);
