@@ -60,7 +60,7 @@ class SpeedService {
 
     return {
       testResult: updatedTestResult,
-      measurements: insertedMeasurements
+      downloadMeasurements: insertedMeasurements
     };
   }
 
@@ -98,7 +98,7 @@ class SpeedService {
 
     return {
       testResult: updatedTestResult,
-      measurements: insertedMeasurements
+      uploadMeasurements: insertedMeasurements
     };
   }
 }

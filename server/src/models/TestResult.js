@@ -19,7 +19,9 @@ class TestResult {
       .select(`
         *,
         ping_measurements (*),
-        anomaly_logs (*)
+        anomaly_logs (*),
+        download_measurements (*),
+        upload_measurements (*)
       `)
       .eq('id', id)
       .single();
@@ -93,7 +95,7 @@ module.exports = TestResult;
  * - Each user can have many test results (1:many with auth.users)
  * - Aggregates raw ping data into summary metrics (avg ping, jitter, etc.)
  * - Includes quality scores for gaming, streaming, video calls, browsing
- * - 'findById' eagerly loads related ping_measurements and anomaly_logs
+ * - 'findById' eagerly loads related ping_measurements, anomaly_logs, download_measurements, upload_measurements
  * - 'getNetworkSummary' uses the network_summary view for quick analytics
  * - RLS policies ensure users can only read/write their own test results
  */
