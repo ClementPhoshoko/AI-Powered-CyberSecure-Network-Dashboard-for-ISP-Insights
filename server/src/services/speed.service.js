@@ -28,30 +28,8 @@ class SpeedService {
     };
   }
 
-  // Update test result with download speed data
-  static async updateDownloadResult(userId, testResultId, downloadData) {
-    // First verify user owns the test result
-    const testResult = await TestResult.findById(testResultId);
-    if (!testResult) {
-      throw new Error('Test result not found');
-    }
-    if (testResult.user_id !== userId) {
-      throw new Error('Unauthorized: You do not own this test result');
-    }
-
-    // Update the test result
-    const { data, error } = await TestResult.update(testResultId, {
-      download_speed_mbps: downloadData.download_speed_mbps,
-      download_test_size_mb: downloadData.file_size_mb,
-      download_test_duration_seconds: downloadData.test_duration_seconds
-    });
-
-    if (error) throw error;
-    return data;
-  }
-
-  // Submit multiple download results and update test result
-  static async submitMultipleDownloadResults(userId, testResultId, finalResult, allMeasurements) {
+  // Submit download results (final + all individual measurements)
+  static async submitDownloadResults(userId, testResultId, finalResult, allMeasurements) {
     // First verify user owns the test result
     const testResult = await TestResult.findById(testResultId);
     if (!testResult) {

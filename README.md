@@ -37,6 +37,14 @@ This repository is organized into a client-server architecture:
 
 ---
 
+## Speed Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/speed/download | Stream test data for download speed testing (requires `sizeMb` query param, allowed: 1,5,10,20) |
+| POST | /api/speed/tests/download | Submit client-measured download test results (final + all individual measurements) |
+
+---
+
 ## Backend Setup (Server)
 
 The backend follows a modular structure (Controllers, Models, Routes, etc.) to ensure scalability and clean code.
@@ -77,8 +85,11 @@ server/
    - Fill in your Supabase project URL, anon key, and service role key
 4. Set up your database schema:
    - Log in to your Supabase project → **SQL Editor**
-   - Open `server/src/docs/phase_one_schema.sql`
+   - Open `server/src/docs/phase_one_schema.sql` (base schema)
    - Copy and paste the contents into the SQL Editor and run it
+   - (Optional) If you want download speed test support:
+     - Open `server/src/docs/speed_module_schema_update.sql` and run it
+     - Open `server/src/docs/download_measurements_schema.sql` and run it
 5. (Optional) Check out `server/SETUP.md` for more detailed setup
 
 ### Running the Server

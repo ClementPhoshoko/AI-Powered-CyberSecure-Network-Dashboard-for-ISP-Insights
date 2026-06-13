@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {
   streamDownloadTest,
-  submitDownloadResult,
-  submitMultipleDownloadResults
+  submitDownloadResults
 } = require('../controllers/speedController');
 const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
 
@@ -45,53 +44,7 @@ router.get('/download', streamDownloadTest);
  * @swagger
  * /api/speed/tests/download:
  *   post:
- *     summary: Submit client-measured download test results
- *     tags: [Speed]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - test_result_id
- *               - download_speed_mbps
- *               - file_size_mb
- *               - test_duration_seconds
- *             properties:
- *               test_result_id:
- *                 type: string
- *                 format: uuid
- *               download_speed_mbps:
- *                 type: number
- *                 minimum: 0
- *                 exclusiveMinimum: true
- *               file_size_mb:
- *                 type: integer
- *                 enum: [1, 5, 10, 20]
- *               test_duration_seconds:
- *                 type: number
- *                 minimum: 0
- *                 exclusiveMinimum: true
- *     responses:
- *       200:
- *         description: Test result updated successfully
- *       400:
- *         description: Invalid request data
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Test result not found
- */
-router.post('/tests/download', validateSupabaseJWT, submitDownloadResult);
-
-/**
- * @swagger
- * /api/speed/tests/download/bulk:
- *   post:
- *     summary: Submit multiple client-measured download test results (full sequence)
+ *     summary: Submit client-measured download test results (final + all individual measurements)
  *     tags: [Speed]
  *     security:
  *       - bearerAuth: []
@@ -157,6 +110,6 @@ router.post('/tests/download', validateSupabaseJWT, submitDownloadResult);
  *       404:
  *         description: Test result not found
  */
-router.post('/tests/download/bulk', validateSupabaseJWT, submitMultipleDownloadResults);
+router.post('/tests/download', validateSupabaseJWT, submitDownloadResults);
 
 module.exports = router;

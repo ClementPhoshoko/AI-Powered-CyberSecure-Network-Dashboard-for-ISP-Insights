@@ -66,34 +66,15 @@ const streamDownloadTest = async (req, res, next) => {
   }
 };
 
-// @desc    Submit download test results
+// @desc    Submit multiple download test results
 // @route   POST /api/speed/tests/download
 // @access  Private (requires JWT)
-const submitDownloadResult = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
-    const validatedData = downloadResultSchema.parse(req.body);
-
-    const updatedResult = await SpeedService.updateDownloadResult(userId, validatedData.test_result_id, validatedData);
-
-    res.status(200).json({
-      status: 'success',
-      data: updatedResult
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// @desc    Submit multiple download test results
-// @route   POST /api/speed/tests/download/bulk
-// @access  Private (requires JWT)
-const submitMultipleDownloadResults = async (req, res, next) => {
+const submitDownloadResults = async (req, res, next) => {
   try {
     const userId = req.user.id;
     const validatedData = multipleDownloadResultsSchema.parse(req.body);
 
-    const result = await SpeedService.submitMultipleDownloadResults(
+    const result = await SpeedService.submitDownloadResults(
       userId,
       validatedData.test_result_id,
       validatedData.final_result,
@@ -111,6 +92,5 @@ const submitMultipleDownloadResults = async (req, res, next) => {
 
 module.exports = {
   streamDownloadTest,
-  submitDownloadResult,
-  submitMultipleDownloadResults
+  submitDownloadResults
 };
