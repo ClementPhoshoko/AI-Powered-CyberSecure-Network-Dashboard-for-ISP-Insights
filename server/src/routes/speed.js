@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const {
   streamDownloadTest,
-  submitDownloadResults
+  submitDownloadResults,
+  streamUploadTest,
+  submitUploadResults
 } = require('../controllers/speedController');
 const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
 
@@ -111,5 +113,92 @@ router.get('/download', streamDownloadTest);
  *         description: Test result not found
  */
 router.post('/tests/download', validateSupabaseJWT, submitDownloadResults);
+
+/**
+ * @swagger
+ * /api/speed/upload:
+ *   post:
+ *     summary: Receive upload data for speed testing
+ *     tags: [Speed]
+ *     parameters:
+ *       - in: query
+ *         name: sizeMb
+ *         schema:
+ *           type: number
+ *           enum: [0.5, 1, 5, 10, 20]
+ *         required: true
+ *         description: Size of test file in MB
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Upload data received successfully
+ *       400:
+ *         description: Invalid size parameter
+ */
+router.post('/upload', streamUploadTest);
+
+/**
+ * @swagger
+ * /api/speed/tests/upload:
+ *   post:
+ *     summary: Submit client-measured upload test results (final + all individual measurements)
+ *     tags: [Speed]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - test_result_id
+ *               - measurements
+ *               - final_upload_speed_mbps
+ *             properties:
+ *               test_result_id:
+ *                 type: string
+ *                 format: uuid
+ *               measurements:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - size_mb
+ *                     - duration_seconds
+ *                     - upload_speed_mbps
+ *                   properties:
+ *                     size_mb:
+ *                       type: number
+ *                       enum: [0.5, 1, 5, 10, 20]
+ *                     duration_seconds:
+ *                       type: number
+ *                       minimum: 0
+ *                       exclusiveMinimum: true
+ *                     upload_speed_mbps:
+ *                       type: number
+ *                       minimum: 0
+ *                       exclusiveMinimum: true
+ *               final_upload_speed_mbps:
+ *                 type: number
+ *                 minimum: 0
+ *                 exclusiveMinimum: true
+ *     responses:
+ *       200:
+ *         description: Test result and measurements saved successfully
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Test result not found
+ */
+router.post('/tests/upload', validateSupabaseJWT, submitUploadResults);
 
 module.exports = router;

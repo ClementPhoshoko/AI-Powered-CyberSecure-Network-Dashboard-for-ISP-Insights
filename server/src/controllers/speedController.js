@@ -2,14 +2,15 @@ const SpeedService = require('../services/speed.service');
 const { z } = require('zod');
 
 // Allowed test sizes in MB
-const ALLOWED_SIZES = [1, 5, 10, 20];
+const ALLOWED_DOWNLOAD_SIZES = [1, 5, 10, 20];
+const ALLOWED_UPLOAD_SIZES = [0.5, 1, 5, 10, 20];
 
 // Zod validation for download test size query param
 const downloadTestQuerySchema = z.object({
   sizeMb: z.preprocess(
     (val) => Number(val),
-    z.number().int().refine((val) => ALLOWED_SIZES.includes(val), {
-      message: `sizeMb must be one of: ${ALLOWED_SIZES.join(', ')}`
+    z.number().refine((val) => ALLOWED_DOWNLOAD_SIZES.includes(val), {
+      message: `sizeMb must be one of: ${ALLOWED_DOWNLOAD_SIZES.join(', ')}`
     })
   )
 });
@@ -18,8 +19,8 @@ const downloadTestQuerySchema = z.object({
 const downloadResultSchema = z.object({
   test_result_id: z.string().uuid(),
   download_speed_mbps: z.number().positive(),
-  file_size_mb: z.number().int().refine((val) => ALLOWED_SIZES.includes(val), {
-    message: `file_size_mb must be one of: ${ALLOWED_SIZES.join(', ')}`
+  file_size_mb: z.number().refine((val) => ALLOWED_DOWNLOAD_SIZES.includes(val), {
+    message: `file_size_mb must be one of: ${ALLOWED_DOWNLOAD_SIZES.join(', ')}`
   }),
   test_duration_seconds: z.number().positive()
 });
@@ -30,13 +31,38 @@ const multipleDownloadResultsSchema = z.object({
   final_result: downloadResultSchema.omit({ test_result_id: true }),
   all_measurements: z.array(
     z.object({
-      file_size_mb: z.number().int().refine((val) => ALLOWED_SIZES.includes(val), {
-        message: `file_size_mb must be one of: ${ALLOWED_SIZES.join(', ')}`
+      file_size_mb: z.number().refine((val) => ALLOWED_DOWNLOAD_SIZES.includes(val), {
+        message: `file_size_mb must be one of: ${ALLOWED_DOWNLOAD_SIZES.join(', ')}`
       }),
       download_speed_mbps: z.number().positive(),
       test_duration_seconds: z.number().positive()
     })
   ).min(1)
+});
+
+// Zod validation for upload test size query param
+const uploadTestQuerySchema = z.object({
+  sizeMb: z.preprocess(
+    (val) => Number(val),
+    z.number().refine((val) => ALLOWED_UPLOAD_SIZES.includes(val), {
+      message: `sizeMb must be one of: ${ALLOWED_UPLOAD_SIZES.join(', ')}`
+    })
+  )
+});
+
+// Zod validation for multiple upload results submission
+const multipleUploadResultsSchema = z.object({
+  test_result_id: z.string().uuid(),
+  measurements: z.array(
+    z.object({
+      size_mb: z.number().refine((val) => ALLOWED_UPLOAD_SIZES.includes(val), {
+        message: `size_mb must be one of: ${ALLOWED_UPLOAD_SIZES.join(', ')}`
+      }),
+      duration_seconds: z.number().positive(),
+      upload_speed_mbps: z.number().positive()
+    })
+  ).min(1),
+  final_upload_speed_mbps: z.number().positive()
 });
 
 // @desc    Stream binary data for download test
@@ -90,7 +116,63 @@ const submitDownloadResults = async (req, res, next) => {
   }
 };
 
+// @desc    Receive upload data for speed testing
+// @route   POST /api/speed/upload
+// @access  Public (for testing purposes)
+const streamUploadTest = async (req, res, next) => {
+  try {
+    // Validate sizeMb query parameter
+    const { sizeMb } = uploadTestQuerySchema.parse(req.query);
+
+    // Just consume the stream without storing anything
+    let bytesReceived = 0;
+    req.on('data', (chunk) => {
+      bytesReceived += chunk.length;
+    });
+
+    req.on('end', () => {
+      res.status(200).json({
+        status: 'success',
+        message: 'Upload data received successfully',
+        bytesReceived: bytesReceived
+      });
+    });
+
+    req.on('error', (err) => {
+      next(err);
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Submit multiple upload test results
+// @route   POST /api/speed/tests/upload
+// @access  Private (requires JWT)
+const submitUploadResults = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const validatedData = multipleUploadResultsSchema.parse(req.body);
+
+    const result = await SpeedService.submitUploadResults(
+      userId,
+      validatedData.test_result_id,
+      validatedData.final_upload_speed_mbps,
+      validatedData.measurements
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   streamDownloadTest,
-  submitDownloadResults
+  submitDownloadResults,
+  streamUploadTest,
+  submitUploadResults
 };

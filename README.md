@@ -42,6 +42,8 @@ This repository is organized into a client-server architecture:
 |--------|----------|-------------|
 | GET | /api/speed/download | Stream test data for download speed testing (requires `sizeMb` query param, allowed: 1,5,10,20) |
 | POST | /api/speed/tests/download | Submit client-measured download test results (final + all individual measurements) |
+| POST | /api/speed/upload | Receive upload data for speed testing (requires `sizeMb` query param, allowed: 0.5,1,5,10,20) |
+| POST | /api/speed/tests/upload | Submit client-measured upload test results (final + all individual measurements) |
 
 ---
 
@@ -87,9 +89,8 @@ server/
    - Log in to your Supabase project → **SQL Editor**
    - Open `server/src/docs/phase_one_schema.sql` (base schema)
    - Copy and paste the contents into the SQL Editor and run it
-   - (Optional) If you want download speed test support:
-     - Open `server/src/docs/speed_module_schema_update.sql` and run it
-     - Open `server/src/docs/download_measurements_schema.sql` and run it
+   - (Important) If you already have the schema set up and need to fix the size columns:
+     - Open `server/src/docs/speed_module_schema_fix.sql` and run it
 5. (Optional) Check out `server/SETUP.md` for more detailed setup
 
 ### Running the Server
