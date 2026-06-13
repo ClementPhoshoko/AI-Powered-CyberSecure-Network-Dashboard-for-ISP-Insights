@@ -6,6 +6,7 @@ erDiagram
     auth_users ||--o{ test_results : "runs"
     test_results ||--o{ ping_measurements : "includes"
     test_results ||--o{ anomaly_logs : "has"
+    test_results ||--o{ download_measurements : "includes"
 
     auth_users {
         uuid id PK
@@ -25,6 +26,10 @@ erDiagram
         uuid user_id FK
         numeric download_speed_mbps
         numeric upload_speed_mbps
+        integer download_test_size_mb
+        numeric download_test_duration_seconds
+        integer upload_test_size_mb
+        numeric upload_test_duration_seconds
         numeric ping_avg_ms
         numeric ping_min_ms
         numeric ping_max_ms
@@ -63,6 +68,15 @@ erDiagram
         varchar anomaly_type
         varchar severity
         text description
+        timestamptz created_at
+    }
+
+    download_measurements {
+        uuid id PK
+        uuid test_result_id FK
+        integer file_size_mb
+        numeric download_speed_mbps
+        numeric test_duration_seconds
         timestamptz created_at
     }
 ```

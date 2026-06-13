@@ -239,3 +239,94 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION public.handle_new_user();
+
+-- =====================================================
+-- Speed Module Database Schema Update
+-- =====================================================
+
+-- Add download speed test columns
+ALTER TABLE test_results
+ADD COLUMN IF NOT EXISTS download_test_size_mb INTEGER,
+ADD COLUMN IF NOT EXISTS download_test_duration_seconds NUMERIC(10,3);
+
+-- Add upload speed test columns (for future use)
+ALTER TABLE test_results
+ADD COLUMN IF NOT EXISTS upload_test_size_mb INTEGER,
+ADD COLUMN IF NOT EXISTS upload_test_duration_seconds NUMERIC(10,3);
+
+-- Add RLS policy for updating test results (PostgreSQL doesn't support IF NOT EXISTS for policies)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+    AND tablename = 'test_results' 
+    AND policyname = 'Users can update own test results'
+  ) THEN
+    CREATE POLICY "Users can update own test results"
+    ON test_results FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
+
+-- =====================================================
+-- Download Measurements Table
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS download_measurements (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    test_result_id UUID NOT NULL REFERENCES test_results(id) ON DELETE CASCADE,
+    file_size_mb INTEGER NOT NULL,
+    download_speed_mbps NUMERIC(10,3) NOT NULL,
+    test_duration_seconds NUMERIC(10,3) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for performance
+CREATE INDEX IF NOT EXISTS idx_download_measurements_test_result_id ON download_measurements(test_result_id);
+
+-- RLS Policies
+ALTER TABLE download_measurements ENABLE ROW LEVEL SECURITY;
+
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+        AND tablename = 'download_measurements' 
+        AND policyname = 'Users can view own download measurements'
+    ) THEN
+        CREATE POLICY "Users can view own download measurements"
+        ON download_measurements FOR SELECT
+        USING (
+            EXISTS (
+                SELECT 1
+                FROM test_results tr
+                WHERE tr.id = download_measurements.test_result_id
+                AND tr.user_id = auth.uid()
+            )
+        );
+    END IF;
+END $$;
+
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+        AND tablename = 'download_measurements' 
+        AND policyname = 'Users can insert own download measurements'
+    ) THEN
+        CREATE POLICY "Users can insert own download measurements"
+        ON download_measurements FOR INSERT
+        WITH CHECK (
+            EXISTS (
+                SELECT 1
+                FROM test_results tr
+                WHERE tr.id = download_measurements.test_result_id
+                AND tr.user_id = auth.uid()
+            )
+        );
+    END IF;
+END $$;

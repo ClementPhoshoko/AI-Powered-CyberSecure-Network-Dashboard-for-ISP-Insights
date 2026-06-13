@@ -9,6 +9,7 @@ const { supabase } = require('./config/db');
 const profilesRouter = require('./routes/profiles');
 const devAuthRouter = require('./routes/devAuth');
 const pingRouter = require('./routes/ping');
+const speedRouter = require('./routes/speed');
 const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config({ path: './src/.env' });
 
@@ -92,6 +93,7 @@ if (NODE_ENV === 'development') {
 }
 app.use('/api/profile', profilesRouter);
 app.use('/api/ping', pingRouter);
+app.use('/api/speed', speedRouter);
 
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);

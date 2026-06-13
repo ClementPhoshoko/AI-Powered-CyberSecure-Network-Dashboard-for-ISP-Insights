@@ -61,6 +61,18 @@ class TestResult {
     return data;
   }
 
+  // Update test result
+  static async update(id, updates) {
+    const { data, error } = await supabaseAdmin
+      .from('test_results')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
   // Admin: Get all test results
   static async findAll(limit = 100, offset = 0) {
     const { data, error } = await supabaseAdmin
