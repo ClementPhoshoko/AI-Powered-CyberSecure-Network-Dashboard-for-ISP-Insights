@@ -47,6 +47,13 @@ This repository is organized into a client-server architecture:
 
 ---
 
+## Network Scoring Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/network/score | Calculate and save network health, gaming, streaming, video call, and browsing scores for a test result |
+
+---
+
 ## Backend Setup (Server)
 
 The backend follows a modular structure (Controllers, Models, Routes, etc.) to ensure scalability and clean code.
