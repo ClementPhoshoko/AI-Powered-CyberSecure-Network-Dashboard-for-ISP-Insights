@@ -55,6 +55,16 @@ This repository is organized into a client-server architecture:
 
 ---
 
+## Analytics Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/analytics/overview | Get high-level summary of user network performance |
+| GET | /api/analytics/history | Get time-series data for graphs (supports ?range=7d|30d|90d) |
+| GET | /api/analytics/test/:test_result_id | Get full detailed breakdown of a single test |
+| GET | /api/analytics/anomalies | Detect and return network issues automatically |
+
+---
+
 ## AI Summary Fallback System
 The AI summary endpoint includes a robust fallback system to ensure 100% uptime:
 

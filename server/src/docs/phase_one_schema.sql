@@ -391,3 +391,63 @@ BEGIN
         );
     END IF;
 END $$;
+
+-- =====================================================
+-- Speed Module Schema Fix: Change size columns to NUMERIC
+-- =====================================================
+
+-- Update test_results table
+ALTER TABLE test_results
+ALTER COLUMN download_test_size_mb TYPE NUMERIC(10,1);
+
+ALTER TABLE test_results
+ALTER COLUMN upload_test_size_mb TYPE NUMERIC(10,1);
+
+-- Update download_measurements table
+ALTER TABLE download_measurements
+ALTER COLUMN file_size_mb TYPE NUMERIC(10,1);
+
+-- Update upload_measurements table
+ALTER TABLE upload_measurements
+ALTER COLUMN file_size_mb TYPE NUMERIC(10,1);
+
+-- =====================================================
+-- OPTIONAL: Analytics Optimization Queries
+-- These are NOT required for the analytics layer to work!
+-- Use these only if you have millions of test results
+-- =====================================================
+
+-- 1. Materialized View for Fast Overview
+-- Refresh occasionally for better performance
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_user_network_overview AS
+SELECT
+    user_id,
+    COUNT(*) AS total_tests,
+    AVG(download_speed_mbps) AS avg_download_mbps,
+    AVG(upload_speed_mbps) AS avg_upload_mbps,
+    AVG(ping_avg_ms) AS avg_ping_ms,
+    AVG(jitter_ms) AS avg_jitter_ms,
+    AVG(packet_loss_percent) AS avg_packet_loss_percent,
+    MAX(network_health_score) AS best_network_health_score,
+    MIN(network_health_score) AS worst_network_health_score
+FROM test_results
+GROUP BY user_id;
+
+CREATE INDEX IF NOT EXISTS idx_mv_overview_user_id ON mv_user_network_overview(user_id);
+
+-- How to refresh the materialized view:
+-- REFRESH MATERIALIZED VIEW mv_user_network_overview;
+
+-- 2. Materialized View for Fast History
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_user_daily_history AS
+SELECT
+    user_id,
+    DATE(created_at) AS date,
+    AVG(download_speed_mbps) AS avg_download,
+    AVG(upload_speed_mbps) AS avg_upload,
+    AVG(ping_avg_ms) AS avg_ping,
+    AVG(network_health_score) AS avg_health_score
+FROM test_results
+GROUP BY user_id, DATE(created_at);
+
+CREATE INDEX IF NOT EXISTS idx_mv_history_user_date ON mv_user_daily_history(user_id, date);

@@ -7,6 +7,7 @@ erDiagram
     test_results ||--o{ ping_measurements : "includes"
     test_results ||--o{ anomaly_logs : "has"
     test_results ||--o{ download_measurements : "includes"
+    test_results ||--o{ upload_measurements : "includes"
 
     auth_users {
         uuid id PK
@@ -26,9 +27,9 @@ erDiagram
         uuid user_id FK
         numeric download_speed_mbps
         numeric upload_speed_mbps
-        integer download_test_size_mb
+        numeric download_test_size_mb
         numeric download_test_duration_seconds
-        integer upload_test_size_mb
+        numeric upload_test_size_mb
         numeric upload_test_duration_seconds
         numeric ping_avg_ms
         numeric ping_min_ms
@@ -74,8 +75,17 @@ erDiagram
     download_measurements {
         uuid id PK
         uuid test_result_id FK
-        integer file_size_mb
+        numeric file_size_mb
         numeric download_speed_mbps
+        numeric test_duration_seconds
+        timestamptz created_at
+    }
+
+    upload_measurements {
+        uuid id PK
+        uuid test_result_id FK
+        numeric file_size_mb
+        numeric upload_speed_mbps
         numeric test_duration_seconds
         timestamptz created_at
     }
@@ -86,6 +96,8 @@ erDiagram
 2. **auth.users ↔ test_results**: One-to-Many (one user runs many tests)
 3. **test_results ↔ ping_measurements**: One-to-Many (one test has many ping samples)
 4. **test_results ↔ anomaly_logs**: One-to-Many (one test has many anomalies)
+5. **test_results ↔ download_measurements**: One-to-Many (one test has many download samples)
+6. **test_results ↔ upload_measurements**: One-to-Many (one test has many upload samples)
 
 ## Additional Notes:
 - All tables use UUIDs for primary keys
