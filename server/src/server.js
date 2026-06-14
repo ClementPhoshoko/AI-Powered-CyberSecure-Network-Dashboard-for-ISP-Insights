@@ -10,6 +10,7 @@ const profilesRouter = require('./routes/profiles');
 const devAuthRouter = require('./routes/devAuth');
 const pingRouter = require('./routes/ping');
 const speedRouter = require('./routes/speed');
+const networkRouter = require('./routes/network');
 const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config({ path: './src/.env' });
 
@@ -94,6 +95,7 @@ if (NODE_ENV === 'development') {
 app.use('/api/profile', profilesRouter);
 app.use('/api/ping', pingRouter);
 app.use('/api/speed', speedRouter);
+app.use('/api/network', networkRouter);
 
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);
