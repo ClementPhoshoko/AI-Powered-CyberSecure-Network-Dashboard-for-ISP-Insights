@@ -51,6 +51,17 @@ This repository is organized into a client-server architecture:
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | /api/network/score | Calculate and save network health, gaming, streaming, video call, and browsing scores for a test result |
+| POST | /api/network/summary | Generate and save AI-powered summary of network performance (with rule-based fallback) |
+
+---
+
+## AI Summary Fallback System
+The AI summary endpoint includes a robust fallback system to ensure 100% uptime:
+
+1. **Primary Provider**: Google Gemini API (requires `GEMINI_API_KEY` in `.env`)
+2. **Fallback**: Rule-based summary generator (always available, no external dependencies)
+
+The rule-based system uses network_health_score to categorize connection quality (excellent/good/fair/poor) and evaluates suitability for gaming, streaming, and video calls based on their respective scores.
 
 ---
 

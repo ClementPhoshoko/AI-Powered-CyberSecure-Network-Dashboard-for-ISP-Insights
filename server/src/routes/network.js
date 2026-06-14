@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { calculateNetworkScores } = require('../controllers/networkScoringController');
+const { generateSummary } = require('../controllers/aiSummary.controller');
 const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
 
 /**
  * @swagger
  * tags:
- *   name: Network Scoring
- *   description: Network scoring and health assessment endpoints
+ *   - name: Network Scoring
+ *     description: Network scoring and health assessment endpoints
+ *   - name: Network AI Summary
+ *     description: AI-generated network performance summaries
  */
 
 /**
@@ -76,5 +79,52 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *         description: Test result not found
  */
 router.post('/score', validateSupabaseJWT, calculateNetworkScores);
+
+/**
+ * @swagger
+ * /api/network/summary:
+ *   post:
+ *     summary: Generate and save AI summary for a test result
+ *     tags: [Network AI Summary]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - test_result_id
+ *             properties:
+ *               test_result_id:
+ *                 type: string
+ *                 format: uuid
+ *                 description: UUID of the test result to generate a summary for
+ *     responses:
+ *       200:
+ *         description: Summary generated and saved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     ai_summary:
+ *                       type: string
+ *                       description: Human-readable AI-generated summary of network performance
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Test result not found
+ */
+router.post('/summary', validateSupabaseJWT, generateSummary);
 
 module.exports = router;
