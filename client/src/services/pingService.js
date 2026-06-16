@@ -1,0 +1,23 @@
+import api from './api';
+
+export const runPingTest = async (pingData) => {
+  const response = await api.post('/api/ping/tests', pingData);
+  return response.data;
+};
+
+export const getPingTestById = async (testId) => {
+  const response = await api.get(`/api/ping/tests/${testId}`);
+  return response.data;
+};
+
+export const getPingHistory = async (limit = 100, offset = 0) => {
+  const response = await api.get('/api/ping/history', {
+    params: { limit, offset }
+  });
+  return response.data;
+};
+
+export const getPingSummary = async () => {
+  const response = await api.get('/api/ping/summary');
+  return response.data;
+};
