@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import './AuthLayout.css';
+import loginLogo from '../../assets/avatars/login_plain_ai_speedtest.png';
 
 function AuthLayout({ activeTab = 'login', children }) {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function AuthLayout({ activeTab = 'login', children }) {
           <div className="auth-info-column">
             <div className="auth-info-content">
               <div className="auth-logo">
-                <div className="auth-logo-icon"></div>
+                <img src={loginLogo} alt="CyberSecure Logo" className="auth-logo-icon" />
                 <span className="auth-logo-text">CyberSecure</span>
               </div>
               <p className="auth-tagline">Real-time AI-Powered Speedtest Analytics & Network Security Insights for ISPs</p>

@@ -94,18 +94,18 @@
 
 .auth-logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
+  /* gap: var(--space-4); */
+  margin-bottom: var(--space-6);
 }
 
 .auth-logo-icon {
-  width: 48px;
-  height: 48px;
-  background: var(--primary-gradient);
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px var(--primary-glow);
 }
 
 .auth-logo-text {
