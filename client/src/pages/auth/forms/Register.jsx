@@ -13,6 +13,7 @@ function Register() {
   const [success, setSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
   const [passwordError, setPasswordError] = useState('');
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const navigate = useNavigate();
 
   // Update progress bar
@@ -144,26 +145,30 @@ function Register() {
               placeholder="Enter your password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setShowPasswordRequirements(true)}
+              onBlur={() => setTimeout(() => setShowPasswordRequirements(false), 200)}
               required
             />
           </div>
-          <div className="password-requirements">
-            <div className={`requirement ${password.length >= 8 ? 'valid' : ''}`}>
-              {password.length >= 8 ? '✓' : '○'} At least 8 characters
+          {showPasswordRequirements && (
+            <div className="password-requirements">
+              <div className={`requirement ${password.length >= 8 ? 'valid' : ''}`}>
+                {password.length >= 8 ? '✓' : '○'} At least 8 characters
+              </div>
+              <div className={`requirement ${/[A-Z]/.test(password) ? 'valid' : ''}`}>
+                {/[A-Z]/.test(password) ? '✓' : '○'} One uppercase letter
+              </div>
+              <div className={`requirement ${/[a-z]/.test(password) ? 'valid' : ''}`}>
+                {/[a-z]/.test(password) ? '✓' : '○'} One lowercase letter
+              </div>
+              <div className={`requirement ${/[0-9]/.test(password) ? 'valid' : ''}`}>
+                {/[0-9]/.test(password) ? '✓' : '○'} One number
+              </div>
+              <div className={`requirement ${/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'valid' : ''}`}>
+                {/[!@#$%^&*(),.?":{}|<>]/.test(password) ? '✓' : '○'} One special character
+              </div>
             </div>
-            <div className={`requirement ${/[A-Z]/.test(password) ? 'valid' : ''}`}>
-              {/[A-Z]/.test(password) ? '✓' : '○'} One uppercase letter
-            </div>
-            <div className={`requirement ${/[a-z]/.test(password) ? 'valid' : ''}`}>
-              {/[a-z]/.test(password) ? '✓' : '○'} One lowercase letter
-            </div>
-            <div className={`requirement ${/[0-9]/.test(password) ? 'valid' : ''}`}>
-              {/[0-9]/.test(password) ? '✓' : '○'} One number
-            </div>
-            <div className={`requirement ${/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'valid' : ''}`}>
-              {/[!@#$%^&*(),.?":{}|<>]/.test(password) ? '✓' : '○'} One special character
-            </div>
-          </div>
+          )}
         </div>
         
         <div className="auth-form-field">

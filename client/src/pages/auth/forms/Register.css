@@ -82,3 +82,52 @@
   width: 16px;
   height: 16px;
 }
+
+/* Password Requirements Indicator */
+.password-requirements {
+  position: absolute;
+  top: calc(100% + 0px);
+  right: 0;
+  max-width: 60%;
+  z-index: 10;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.requirement {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: color 0.2s ease-out;
+}
+
+.requirement.valid {
+  color: var(--success);
+}
+
+/* Make the password input wrapper position relative for absolute positioning of the indicator */
+.auth-form-field:has(.password-requirements) {
+  position: relative;
+}
