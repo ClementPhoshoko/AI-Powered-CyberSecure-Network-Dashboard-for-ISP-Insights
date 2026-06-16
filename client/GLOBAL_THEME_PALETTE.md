@@ -31,6 +31,35 @@ font-family: "Poppins", sans-serif;
 | Buttons | 16px | 600 |
 | Navigation Items | 15px | 500 |
 
+## Glass Morphism Guide (All Themes)
+
+### Glass Effects Variables (Apply to any theme)
+
+```css
+/* Glass card effect */
+--glass-card-bg: rgba(255, 255, 255, 0.1);
+--glass-card-border: rgba(255, 255, 255, 0.2);
+--glass-card-blur: 10px;
+
+/* Glass backdrop */
+--glass-backdrop: rgba(0, 0, 0, 0.3);
+
+/* Glass shadows */
+--glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+```
+
+### Usage Example
+
+```css
+.glass-card {
+  background: var(--glass-card-bg);
+  backdrop-filter: blur(var(--glass-card-blur));
+  border: 1px solid var(--glass-card-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+}
+```
+
 # Theme 1: Forest Green & Mint
 
 ```css
@@ -99,7 +128,7 @@ font-family: "Poppins", sans-serif;
 --border-color: #8D99AE;
 ```
 
-# Theme 5: Purple & Lavender
+# Theme 5: Purple &amp; Lavender
 
 ```css
 --background-primary: #3C096C;
@@ -114,4 +143,38 @@ font-family: "Poppins", sans-serif;
 --text-accent: #E0AAFF;
 
 --border-color: #9D4EDD;
+```
+
+# Theme 6: Darcula (JetBrains)
+
+```css
+--background-primary: #2B2B2B;
+--background-secondary: #3C3F41;
+--background-card: #2B2B2B;
+--accent-primary: #CC7832;
+--accent-secondary: #A9B7C6;
+
+--text-primary: #A9B7C6;
+--text-secondary: #808080;
+--text-disabled: #606060;
+--text-accent: #CC7832;
+
+--border-color: #4E4E4E;
+```
+
+# Theme 7: Light Mode (Clean)
+
+```css
+--background-primary: #FFFFFF;
+--background-secondary: #F8F9FA;
+--background-card: #FFFFFF;
+--accent-primary: #4361EE;
+--accent-secondary: #7209B7;
+
+--text-primary: #1D3557;
+--text-secondary: #457B9D;
+--text-disabled: #A8DADC;
+--text-accent: #4361EE;
+
+--border-color: #E9ECEF;
 ```
