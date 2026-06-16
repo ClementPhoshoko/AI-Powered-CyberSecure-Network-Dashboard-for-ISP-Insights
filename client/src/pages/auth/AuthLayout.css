@@ -1,0 +1,116 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 1000px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  overflow: hidden;
+}
+
+.auth-header {
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.auth-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.auth-tab {
+  background: none;
+  border: none;
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast) var(--ease-out), 
+              background var(--motion-fast) var(--ease-out);
+}
+
+.auth-tab:hover {
+  color: var(--text-secondary);
+}
+
+.auth-tab--active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.auth-tab-divider {
+  color: var(--text-muted);
+  font-size: var(--text-lg);
+}
+
+.auth-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: var(--space-6);
+  gap: var(--space-6);
+}
+
+.auth-form-column {
+  padding: var(--space-4);
+}
+
+.auth-info-column {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-info-content {
+  text-align: center;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.auth-logo-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--primary-gradient);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.auth-logo-text {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.auth-info-text {
+  color: var(--text-muted);
+  font-size: var(--text-md);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .auth-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .auth-info-column {
+    order: -1;
+  }
+}

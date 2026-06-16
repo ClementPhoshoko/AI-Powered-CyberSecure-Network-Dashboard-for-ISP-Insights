@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './global_styles/App.css'
+import AuthLayout from './pages/auth/AuthLayout'
+import Login from './pages/auth/forms/Login'
+import Register from './pages/auth/forms/Register'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div className="app-shell">
       {/* Background Layers */}
@@ -29,7 +30,21 @@ function App() {
 
       {/* Main Content */}
       <div className="app-content">
-        {/* Your content will go here */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={
+              <AuthLayout activeTab="login">
+                <Login />
+              </AuthLayout>
+            } />
+            <Route path="/signup" element={
+              <AuthLayout activeTab="signup">
+                <Register />
+              </AuthLayout>
+            } />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </BrowserRouter>
       </div>
     </div>
   )
