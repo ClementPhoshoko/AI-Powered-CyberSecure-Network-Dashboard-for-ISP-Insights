@@ -1,10 +1,88 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { register } from '../../../services/authService';
 import './Register.css';
 
 function Register() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+
+  const validatePassword = (pwd) => {
+    if (pwd.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!/[A-Z]/.test(pwd)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/[a-z]/.test(pwd)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/[0-9]/.test(pwd)) {
+      return 'Password must contain at least one number';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
+      return 'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>)';
+    }
+    return null;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
+    setLoading(true);
+
+    register(email, password)
+      .then(() => {
+        setSuccess(true);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  if (success) {
+    return (
+      <div className="auth-form">
+        <h1 className="auth-form-title">Check your email</h1>
+        <p style={{ color: '#a0a0a0', textAlign: 'center', marginBottom: '2rem' }}>
+          We've sent you a confirmation email. Please click the link to verify your account.
+        </p>
+        <button 
+          className="auth-form-button" 
+          onClick={() => navigate('/login')}
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <form className="auth-form">
+    <form className="auth-form" onSubmit={handleSubmit}>
       <h1 className="auth-form-title">Create account</h1>
       
+      {error && <div className="auth-form-error">{error}</div>}
+
       <div className="auth-form-field">
         <label className="auth-form-label">Email</label>
         <div className="auth-form-input-wrapper">
@@ -16,6 +94,9 @@ function Register() {
             type="email" 
             className="auth-form-input" 
             placeholder="Enter your email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
       </div>
@@ -31,7 +112,27 @@ function Register() {
             type="password" 
             className="auth-form-input" 
             placeholder="Enter your password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
+        </div>
+        <div className="password-requirements">
+          <div className={`requirement ${password.length >= 8 ? 'valid' : ''}`}>
+            {password.length >= 8 ? '✓' : '○'} At least 8 characters
+          </div>
+          <div className={`requirement ${/[A-Z]/.test(password) ? 'valid' : ''}`}>
+            {/[A-Z]/.test(password) ? '✓' : '○'} One uppercase letter
+          </div>
+          <div className={`requirement ${/[a-z]/.test(password) ? 'valid' : ''}`}>
+            {/[a-z]/.test(password) ? '✓' : '○'} One lowercase letter
+          </div>
+          <div className={`requirement ${/[0-9]/.test(password) ? 'valid' : ''}`}>
+            {/[0-9]/.test(password) ? '✓' : '○'} One number
+          </div>
+          <div className={`requirement ${/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'valid' : ''}`}>
+            {/[!@#$%^&*(),.?":{}|<>]/.test(password) ? '✓' : '○'} One special character
+          </div>
         </div>
       </div>
       
@@ -46,15 +147,18 @@ function Register() {
             type="password" 
             className="auth-form-input" 
             placeholder="Confirm your password" 
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
           />
         </div>
       </div>
       
-      <button type="submit" className="auth-form-button">
+      <button type="submit" className="auth-form-button" disabled={loading}>
         <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 5v14M5 12h14" />
         </svg>
-        Sign up
+        {loading ? 'Signing up...' : 'Sign up'}
       </button>
     </form>
   );

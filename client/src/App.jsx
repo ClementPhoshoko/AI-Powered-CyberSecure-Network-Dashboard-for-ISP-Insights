@@ -1,10 +1,32 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './global_styles/App.css'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
 import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
+import Dashboard from './pages/dashboard/Dashboard'
 
-function App() {
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
+  }
+
+  return user ? children : <Navigate to="/login" replace />;
+}
+
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
+  }
+
+  return user ? <Navigate to="/dashboard" replace /> : children;
+}
+
+function AppContent() {
   return (
     <div className="app-shell">
       {/* Background Layers */}
@@ -33,21 +55,38 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={
-              <AuthLayout activeTab="login">
-                <Login />
-              </AuthLayout>
+              <PublicRoute>
+                <AuthLayout activeTab="login">
+                  <Login />
+                </AuthLayout>
+              </PublicRoute>
             } />
             <Route path="/signup" element={
-              <AuthLayout activeTab="signup">
-                <Register />
-              </AuthLayout>
+              <PublicRoute>
+                <AuthLayout activeTab="signup">
+                  <Register />
+                </AuthLayout>
+              </PublicRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
             } />
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
       </div>
     </div>
-  )
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
 
 export default App
