@@ -31,17 +31,17 @@
     /* Horizontal lines */
     linear-gradient(
       to right,
-      rgba(59, 130, 246, 0.05) 1px,
+      var(--bg-grid-line) 1px,
       transparent 1px
     ),
     /* Vertical lines */
     linear-gradient(
       to bottom,
-      rgba(59, 130, 246, 0.05) 1px,
+      var(--bg-grid-line) 1px,
       transparent 1px
     );
-  background-size: 50px 50px;
-  animation: gridMove 60s linear infinite;
+  background-size: var(--bg-grid-size) var(--bg-grid-size);
+  animation: gridMove var(--bg-grid-speed) linear infinite;
 }
 
 @keyframes gridMove {
@@ -49,7 +49,7 @@
     background-position: 0 0;
   }
   100% {
-    background-position: 50px 50px;
+    background-position: var(--bg-grid-size) var(--bg-grid-size);
   }
 }
 
@@ -69,14 +69,14 @@
   height: var(--size);
   top: var(--top);
   left: var(--left);
-  background: linear-gradient(135deg, #ffffff, #93c5fd);
+  background: var(--bg-star-color);
   border-radius: 50%;
   opacity: 0;
   animation: floatStar var(--duration) ease-in-out var(--delay) infinite;
   will-change: transform, opacity;
   box-shadow:
-    0 0 calc(var(--size) * 2) rgba(147, 197, 253, 0.6),
-    0 0 calc(var(--size) * 4) rgba(59, 130, 246, 0.3);
+    0 0 calc(var(--size) * 2) var(--bg-star-glow-soft),
+    0 0 calc(var(--size) * 4) var(--bg-star-glow-strong);
 }
 
 @keyframes floatStar {

@@ -206,4 +206,17 @@
   --border-medium: rgba(255, 255, 255, 0.6);
   --border-dark: rgba(15, 23, 42, 0.08);
 
+  /* =========================================================
+     16. BACKGROUND & ANIMATION SYSTEM
+     ========================================================= */
+
+  --bg-grid-line: rgba(59, 130, 246, 0.05);
+  --bg-grid-size: 50px;
+  --bg-grid-speed: 60s;
+
+  --bg-star-color: linear-gradient(135deg, #ffffff, #93c5fd);
+  --bg-star-glow-soft: rgba(147, 197, 253, 0.6);
+  --bg-star-glow-strong: rgba(59, 130, 246, 0.3);
+  --bg-star-count: 40;
+
 }
