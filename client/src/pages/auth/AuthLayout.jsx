@@ -36,12 +36,16 @@ function AuthLayout({ activeTab = 'login', children }) {
                 <div className="auth-logo-icon"></div>
                 <span className="auth-logo-text">CyberSecure</span>
               </div>
+              <p className="auth-tagline">Real-time AI-Powered Speedtest Analytics & Network Security Insights for ISPs</p>
               <p className="auth-info-text">
-                Terms & Conditions and Privacy Policy will appear here.
+                View <a href="#" className="auth-link">Terms & Conditions</a> and <a href="#" className="auth-link">Privacy Policy</a>
               </p>
             </div>
           </div>
         </div>
+      </div>
+      <div className="auth-footer">
+        <p className="auth-footer-text">System Version 1.0.0 © 2026 AkovoLabs. All rights reserved.</p>
       </div>
     </div>
   );
