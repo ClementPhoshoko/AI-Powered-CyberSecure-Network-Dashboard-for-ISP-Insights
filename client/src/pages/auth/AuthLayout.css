@@ -56,9 +56,64 @@
 
 .auth-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
   padding: var(--space-6);
   gap: var(--space-6);
+  align-items: stretch;
+}
+
+.auth-divider {
+  width: 1px;
+  background: var(--primary);
+  opacity: 50%;
+  height: 100%;
+  align-self: center;
+  position: relative;
+  overflow: visible;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1px;
+  height: 60%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--primary),
+    transparent
+  );
+  opacity: 0.3;
+  filter: blur(1px);
+}
+
+@media (max-width: 768px) {
+  .auth-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .auth-divider {
+    width: 100%;
+    height: 1px;
+  }
+  
+  .auth-divider::before {
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--primary),
+      transparent
+    );
+  }
+  
+  .auth-info-column {
+    order: -1;
+  }
 }
 
 .auth-form-column {

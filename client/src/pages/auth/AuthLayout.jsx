@@ -31,6 +31,8 @@ function AuthLayout({ activeTab = 'login', children }) {
             {children}
           </div>
           
+          <div className="auth-divider"></div>
+          
           <div className="auth-info-column">
             <div className="auth-info-content">
               <div className="auth-logo">
