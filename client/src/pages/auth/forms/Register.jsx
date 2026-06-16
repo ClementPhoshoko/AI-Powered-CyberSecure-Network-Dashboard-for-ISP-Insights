@@ -85,9 +85,9 @@ function Register() {
 
   if (success) {
     return (
-      <div className="auth-form">
+      <div className="auth-form auth-form-success">
         <h1 className="auth-form-title">Check your email</h1>
-        <p style={{ color: '#a0a0a0', textAlign: 'center', marginBottom: '2rem' }}>
+        <p className="auth-form-success-message">
           We've sent you a confirmation email. Please click the link to verify your account.
         </p>
         <button 
@@ -127,6 +127,7 @@ function Register() {
               placeholder="Enter your email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
           </div>
@@ -147,6 +148,7 @@ function Register() {
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setShowPasswordRequirements(true)}
               onBlur={() => setTimeout(() => setShowPasswordRequirements(false), 200)}
+              autoComplete="new-password"
               required
             />
           </div>
@@ -184,6 +186,7 @@ function Register() {
               placeholder="Confirm your password" 
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>

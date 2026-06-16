@@ -83,10 +83,20 @@
   height: 16px;
 }
 
+.auth-form-error {
+  background: var(--error-soft);
+  color: var(--error);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
 /* Password Requirements Indicator */
 .password-requirements {
   position: absolute;
-  top: calc(100% + 0px);
+  top: calc(100% + 8px);
   right: 0;
   max-width: 60%;
   z-index: 10;
@@ -130,4 +140,18 @@
 /* Make the password input wrapper position relative for absolute positioning of the indicator */
 .auth-form-field:has(.password-requirements) {
   position: relative;
+}
+
+/* Success message styling */
+.auth-form-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.auth-form-success-message {
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: var(--space-4);
 }
