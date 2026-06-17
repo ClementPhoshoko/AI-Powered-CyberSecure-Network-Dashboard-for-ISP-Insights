@@ -312,6 +312,24 @@
   white-space: nowrap;
 }
 
+.nav-theme-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  width: 100%;
+}
+
+.nav-theme-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  width: 100%;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 
 /* =========================================================

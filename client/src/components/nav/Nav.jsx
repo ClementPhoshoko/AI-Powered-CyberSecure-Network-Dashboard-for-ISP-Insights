@@ -139,9 +139,9 @@ function Nav() {
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                       </svg>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                    <div className="nav-theme-wrapper">
                       <span className="nav-chain-label">Change Theme</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Lighture - Bright Blue</span>
+                      <span className="nav-theme-label">Lighture - Bright Blue</span>
                     </div>
                   </button>
                 
