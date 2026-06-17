@@ -1,67 +1,175 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest.png';
 import './Nav.css';
 
 function Nav() {
   const { user } = useAuth();
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+
+  const toggleDropdown = (name) => {
+    setActiveDropdown(activeDropdown === name ? null : name);
+    setAccountDropdownOpen(false);
+  };
+
+  const closeDropdown = () => {
+    setActiveDropdown(null);
+    setAccountDropdownOpen(false);
+  };
+
+  const navItems = [
+    {
+      name: 'about',
+      label: 'About',
+      items: [
+        { label: 'Company', href: '#' },
+        { label: 'Team', href: '#' },
+        { label: 'Careers', href: '#' }
+      ]
+    },
+    {
+      name: 'services',
+      label: 'Services',
+      items: [
+        { label: 'Speed Testing', href: '#' },
+        { label: 'Network Analytics', href: '#' },
+        { label: 'Security', href: '#' },
+        { label: 'AI Insights', href: '#' }
+      ]
+    },
+    {
+      name: 'news',
+      label: 'News',
+      items: [
+        { label: 'Blog', href: '#' },
+        { label: 'Updates', href: '#' },
+        { label: 'Press', href: '#' }
+      ]
+    }
+  ];
 
   return (
-    <nav className="nav-container">
+    <nav className="nav-container" onMouseLeave={closeDropdown}>
       <div className="nav-content">
         {/* Left Side: Logo & System Name */}
         <div className="nav-left">
-          <div className="nav-logo">
+          <Link to="/" className="nav-logo">
             <img src={loginLogo} alt="CyberSecure Logo" className="nav-logo-icon" />
             <span className="nav-logo-text">CyberSecure</span>
-          </div>
+          </Link>
         </div>
 
         {/* Right Side: Navigation Items & Account */}
         <div className="nav-right">
           <div className="nav-items">
-            <button className="nav-item">
-              <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-              <span className="nav-item-text">About</span>
-            </button>
-
-            <button className="nav-item">
-              <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <polyline points="10 9 9 9 8 9" />
-              </svg>
-              <span className="nav-item-text">Services</span>
-            </button>
-
-            <button className="nav-item">
-              <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-              </svg>
-              <span className="nav-item-text">News</span>
-            </button>
+            {navItems.map((item) => (
+              <div
+                key={item.name}
+                className={`nav-item ${activeDropdown === item.name ? 'nav-item-active' : ''}`}
+                onMouseEnter={() => toggleDropdown(item.name)}
+              >
+                <button className="nav-item-button">
+                  {item.label}
+                  <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                
+                {activeDropdown === item.name && (
+                  <div className="nav-dropdown">
+                    {item.items.map((dropdownItem, idx) => (
+                      <Link key={idx} to={dropdownItem.href} className="nav-dropdown-item">
+                        {dropdownItem.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
 
-          <div className="nav-account">
-            {user ? (
-              <div className="nav-avatar">
+          <div 
+            className="nav-account"
+            onMouseEnter={() => {
+              setAccountDropdownOpen(true);
+              setActiveDropdown(null);
+            }}
+            onMouseLeave={() => setAccountDropdownOpen(false)}
+          >
+            <div className="nav-avatar">
+              {user ? (
                 <div className="nav-avatar-initial">
                   {user.email?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <div className="nav-avatar-status"></div>
-              </div>
-            ) : (
-              <div className="nav-avatar">
+              ) : (
                 <svg className="nav-avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
+              )}
+            </div>
+            
+            {accountDropdownOpen && (
+              <div className="nav-account-chain">
+                {user && (
+                  <Link to="/" className="nav-chain-item">
+                    <div className="nav-chain-circle">
+                      <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    </div>
+                    <span className="nav-chain-label">Manage Account</span>
+                  </Link>
+                )}
+                
+                <button className="nav-chain-item" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                    <div className="nav-chain-circle">
+                      <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                      </svg>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                      <span className="nav-chain-label">Change Theme</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Lighture - Bright Blue</span>
+                    </div>
+                  </button>
+                
+                {!user && (
+                  <Link to="/login" className="nav-chain-item">
+                    <div className="nav-chain-circle">
+                      <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                        <polyline points="10 17 15 12 10 7" />
+                        <line x1="15" y1="12" x2="3" y2="12" />
+                      </svg>
+                    </div>
+                    <span className="nav-chain-label">Login</span>
+                  </Link>
+                )}
+                
+                {user && (
+                  <Link to="/login" className="nav-chain-item">
+                    <div className="nav-chain-circle">
+                      <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                    </div>
+                    <span className="nav-chain-label">Logout</span>
+                  </Link>
+                )}
               </div>
             )}
           </div>

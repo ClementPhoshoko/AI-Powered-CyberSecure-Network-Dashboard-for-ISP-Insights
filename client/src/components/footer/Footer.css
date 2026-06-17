@@ -4,6 +4,8 @@
    ========================================================= */
 
 .footer-container {
+  position: relative;
+  z-index: 10;
   background: var(--glass-bg);
   backdrop-filter: var(--blur-md);
   -webkit-backdrop-filter: var(--blur-md);

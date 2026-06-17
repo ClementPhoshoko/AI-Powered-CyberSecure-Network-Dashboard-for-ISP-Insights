@@ -5,6 +5,7 @@ import AuthLayout from './pages/auth/AuthLayout'
 import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
 import Dashboard from './pages/dashboard/Dashboard'
+import Home from './pages/home/Home'
 import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
 
@@ -20,9 +21,15 @@ function ProtectedRoute({ children }) {
 
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return <div style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
+  }
+
+  // Allow homepage to be accessible even when logged in
+  if (location.pathname === '/') {
+    return children;
   }
 
   return user ? <Navigate to="/dashboard" replace /> : children;
@@ -59,8 +66,13 @@ function AppContent() {
       {!isAuthRoute && <Nav />}
 
       {/* Main Content */}
-      <div className="app-content" style={{ paddingTop: isAuthRoute ? 0 : '80px', minHeight: '100vh' }}>
+      <div className="app-content">
         <Routes>
+          <Route path="/" element={
+            <PublicRoute>
+              <Home />
+            </PublicRoute>
+          } />
           <Route path="/login" element={
             <PublicRoute>
               <AuthLayout activeTab="login">
@@ -80,7 +92,6 @@ function AppContent() {
               <Dashboard />
             </ProtectedRoute>
           } />
-          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
 
