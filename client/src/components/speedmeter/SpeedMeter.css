@@ -1,0 +1,146 @@
+.speed-meter-container {
+  --speed-meter-tone: var(--download);
+  --speed-meter-tone-dark: var(--primary-dark);
+  box-sizing: border-box;
+  isolation: isolate;
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.speed-meter-container.speed-meter-upload {
+  --speed-meter-tone: var(--upload);
+  --speed-meter-tone-dark: var(--upload);
+}
+
+.speed-meter-container.speed-meter-download {
+  --speed-meter-tone: var(--download);
+  --speed-meter-tone-dark: var(--primary-dark);
+}
+
+.speed-meter-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  display: block;
+}
+
+.speed-meter-label {
+  font-family: var(--font-mono);
+  font-size: calc(var(--text-xs) * 1.1);
+  fill: var(--text-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.speed-meter-center {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 70%;
+  transform: translate(-50%, 20%);
+  width: 100%;
+  padding-inline: var(--space-5);
+  box-sizing: border-box;
+  pointer-events: none;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.speed-meter-value {
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--shadow-sm);
+}
+
+.speed-meter-unit {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+
+.connecting-text {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.unit-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.speed-icon {
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.speed-meter-needle {
+  transform-origin: center;
+}
+
+.speed-meter-needle-cap {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .speed-meter-container {
+    max-width: 360px;
+  }
+
+  .speed-meter-center {
+    inset-block-start: 68%;
+  }
+
+  .speed-meter-value {
+    font-size: 2.5rem;
+  }
+
+  .speed-meter-unit {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .speed-meter-container {
+    max-width: 320px;
+    padding: var(--space-3);
+  }
+
+  .speed-meter-value {
+    font-size: 2rem;
+  }
+
+  .speed-meter-unit {
+    font-size: 1rem;
+  }
+}

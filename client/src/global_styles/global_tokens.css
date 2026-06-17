@@ -88,10 +88,10 @@
      6. SPEED TEST DATA COLORS
      ========================================================= */
 
-  --download: #3B82F6;
-  --upload: #8B5CF6;
-  --ping: #22C55E;
-  --jitter: #F59E0B;
+  --download: #3b83f6ad;
+  --upload: #8a5cf6b6;
+  --ping: #22c55Ead;
+  --jitter: #F59E0Bad;
 
   --download-glow: rgba(59, 130, 246, 0.25);
   --upload-glow: rgba(139, 92, 246, 0.25);
