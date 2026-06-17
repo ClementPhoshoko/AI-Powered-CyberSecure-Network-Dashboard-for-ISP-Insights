@@ -2,9 +2,23 @@ import React, { useState } from 'react';
 import './Home.css';
 import SpeedMeter from '../../components/speedmeter/SpeedMeter';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
+import aiIcon from '../../assets/avatars/ai.png';
+import StatsCards from '../../components/stats_cards/StatsCards';
 
 function Home() {
   const [testStarted, setTestStarted] = useState(false);
+  const [testResult, setTestResult] = useState({
+    download_speed_mbps: 850,
+    upload_speed_mbps: 420,
+    ping_avg_ms: 15,
+    jitter_ms: 2,
+    packet_loss_percent: 0.1,
+    network_health_score: 92,
+    gaming_score: 18,
+    streaming_score: 95,
+    video_call_score: 90,
+    browsing_score: 98
+  });
 
   return (
     <div className="home-page">
@@ -30,17 +44,12 @@ function Home() {
           </button>
         </div>
         <div className="home-col">
-          <div className="how-to-section">
-            <h2 className="how-to-title">How To Use</h2>
-            <ul className="how-to-list">
-              <li className="how-to-item">Click the "Begin Test" button</li>
-              <li className="how-to-item">Wait for the test to complete</li>
-              <li className="how-to-item">View your real-time speed results</li>
-              <li className="how-to-item">Analyze network performance with AI insights</li>
-            </ul>
-          </div>
+          <StatsCards testResult={testResult} />
           <div className="ai-summary-section">
-            <h3 className="ai-summary-title">AI-Powered Summary</h3>
+            <h3 className="ai-summary-title">
+              <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
+              AI-Powered Summary
+            </h3>
             <p className="ai-summary-text">
               Your connection is excellent overall. It performs well for gaming, streaming, and video calls, providing a smooth experience for all your online activities.
             </p>

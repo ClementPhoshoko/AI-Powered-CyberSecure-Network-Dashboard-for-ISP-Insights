@@ -125,43 +125,6 @@
   filter: drop-shadow(0 0 8px var(--primary-glow));
 }
 
-.how-to-section {
-  width: 100%;
-  max-width: 400px;
-}
-
-.how-to-title {
-  font-size: var(--text-xl);
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: var(--space-4);
-}
-
-.how-to-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.how-to-item {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-2);
-}
-
-.how-to-item::before {
-  content: "•";
-  color: var(--primary);
-  font-weight: 700;
-  flex-shrink: 0;
-  line-height: 1.5;
-}
-
 .ai-summary-section {
   width: 100%;
   max-width: 400px;
@@ -180,6 +143,16 @@
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ai-summary-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .ai-summary-text {
