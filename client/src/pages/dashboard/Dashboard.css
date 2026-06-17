@@ -34,4 +34,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 400px;
+}
+
+.placeholder-content {
+  text-align: center;
+  padding: var(--space-8);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.placeholder-content h2 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-4);
+}
+
+.placeholder-content p {
+  color: var(--text-muted);
+  font-size: var(--text-base);
 }
