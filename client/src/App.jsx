@@ -1,10 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import './global_styles/App.css'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
 import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
 import Dashboard from './pages/dashboard/Dashboard'
+import Nav from './components/nav/Nav'
+import Footer from './components/footer/Footer'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -27,6 +29,9 @@ function PublicRoute({ children }) {
 }
 
 function AppContent() {
+  const location = useLocation();
+  const isAuthRoute = ['/login', '/signup'].includes(location.pathname);
+
   return (
     <div className="app-shell">
       {/* Background Layers */}
@@ -50,33 +55,37 @@ function AppContent() {
         </div>
       </div>
 
+      {/* Navbar - Only on non-auth routes */}
+      {!isAuthRoute && <Nav />}
+
       {/* Main Content */}
-      <div className="app-content">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={
-              <PublicRoute>
-                <AuthLayout activeTab="login">
-                  <Login />
-                </AuthLayout>
-              </PublicRoute>
-            } />
-            <Route path="/signup" element={
-              <PublicRoute>
-                <AuthLayout activeTab="signup">
-                  <Register />
-                </AuthLayout>
-              </PublicRoute>
-            } />
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </BrowserRouter>
+      <div className="app-content" style={{ paddingTop: isAuthRoute ? 0 : '80px', minHeight: '100vh' }}>
+        <Routes>
+          <Route path="/login" element={
+            <PublicRoute>
+              <AuthLayout activeTab="login">
+                <Login />
+              </AuthLayout>
+            </PublicRoute>
+          } />
+          <Route path="/signup" element={
+            <PublicRoute>
+              <AuthLayout activeTab="signup">
+                <Register />
+              </AuthLayout>
+            </PublicRoute>
+          } />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+        </Routes>
       </div>
+
+      {/* Footer - Only on non-auth routes */}
+      {!isAuthRoute && <Footer />}
     </div>
   );
 }
@@ -84,7 +93,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </AuthProvider>
   );
 }

@@ -1,0 +1,219 @@
+/* =========================================================
+   NAVIGATION COMPONENT
+   Glassmorphism Design with AI/Networking Theme
+   ========================================================= */
+
+.nav-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: var(--space-4) var(--space-6);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px var(--glass-shadow);
+}
+
+.nav-content {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* =========================================================
+   LEFT SIDE: LOGO & SYSTEM NAME
+   ========================================================= */
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out);
+}
+
+.nav-logo:hover {
+  transform: scale(1.02);
+}
+
+.nav-logo-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.nav-logo-text {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* =========================================================
+   RIGHT SIDE: NAVIGATION ITEMS & ACCOUNT
+   ========================================================= */
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.nav-items {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+}
+
+.nav-item:hover {
+  background: var(--glass-bg-soft);
+  border-color: var(--glass-border);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.nav-item-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nav-item-text {
+  white-space: nowrap;
+}
+
+/* =========================================================
+   ACCOUNT AVATAR
+   ========================================================= */
+
+.nav-account {
+  display: flex;
+  align-items: center;
+}
+
+.nav-avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border: 2px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-out);
+  overflow: hidden;
+}
+
+.nav-avatar:hover {
+  border-color: var(--primary);
+  transform: scale(1.05);
+  box-shadow: 0 0 16px var(--primary-glow);
+}
+
+.nav-avatar-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
+.nav-avatar-initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-gradient);
+  color: var(--text-inverse);
+  font-size: var(--text-md);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.nav-avatar-status {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--success);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 8px var(--success-soft);
+  animation: pulse-status 2s infinite;
+}
+
+@keyframes pulse-status {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .nav-container {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .nav-item-text {
+    display: none;
+  }
+
+  .nav-items {
+    gap: var(--space-1);
+  }
+
+  .nav-item {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .nav-right {
+    gap: var(--space-4);
+  }
+
+  .nav-logo-text {
+    font-size: var(--text-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-logo-text {
+    display: none;
+  }
+}

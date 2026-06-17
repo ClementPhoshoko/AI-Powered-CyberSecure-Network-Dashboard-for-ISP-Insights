@@ -1,0 +1,136 @@
+/* =========================================================
+   FOOTER COMPONENT
+   Glassmorphism Design with AI/Networking Theme
+   ========================================================= */
+
+.footer-container {
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border-top: 1px solid var(--glass-border);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   LEFT SIDE: LOGO & TAGLINE
+   ========================================================= */
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.footer-logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.footer-logo-text {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.footer-tagline {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* =========================================================
+   RIGHT SIDE: LINKS
+   ========================================================= */
+
+.footer-links {
+  display: flex;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.footer-link-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.footer-link-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.footer-link {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+.footer-link:hover {
+  color: var(--primary);
+}
+
+/* =========================================================
+   BOTTOM: COPYRIGHT
+   ========================================================= */
+
+.footer-bottom {
+  max-width: var(--container-xl);
+  margin: var(--space-6) auto 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+  text-align: center;
+}
+
+.footer-copyright {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .footer-container {
+    padding: var(--space-5) var(--space-4) var(--space-3);
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .footer-links {
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-links {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+}
