@@ -4,6 +4,7 @@ import SpeedMeter from '../../components/speedmeter/SpeedMeter';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import aiIcon from '../../assets/avatars/ai.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
+import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
 
 function Home() {
   const [testStarted, setTestStarted] = useState(false);
@@ -17,7 +18,25 @@ function Home() {
     gaming_score: 18,
     streaming_score: 95,
     video_call_score: 90,
-    browsing_score: 98
+    browsing_score: 98,
+    download_measurements: [
+      { file_size_mb: 50, download_speed_mbps: 820 },
+      { file_size_mb: 100, download_speed_mbps: 850 },
+      { file_size_mb: 150, download_speed_mbps: 835 },
+      { file_size_mb: 200, download_speed_mbps: 860 }
+    ],
+    upload_measurements: [
+      { file_size_mb: 25, upload_speed_mbps: 400 },
+      { file_size_mb: 50, upload_speed_mbps: 420 },
+      { file_size_mb: 75, upload_speed_mbps: 415 }
+    ],
+    ping_measurements: [
+      { sequence_number: 1, latency_ms: 14 },
+      { sequence_number: 2, latency_ms: 15 },
+      { sequence_number: 3, latency_ms: 16 },
+      { sequence_number: 4, latency_ms: 15 },
+      { sequence_number: 5, latency_ms: 14 }
+    ]
   });
 
   return (
@@ -42,6 +61,12 @@ function Home() {
             </svg>
             Begin Test
           </button>
+          <div className="graph-advisory">
+            <h3 className="graph-advisory-title">Understand Your Speedtest</h3>
+            <p>• <strong>Download Speed Over Time:</strong> Shows consistency of connection</p>
+            <p>• <strong>Upload Speed Over Time:</strong> Measures upload performance</p>
+            <p>• <strong>Ping Latency:</strong> Tracks response time consistency</p>
+          </div>
         </div>
         <div className="home-col">
           <StatsCards testResult={testResult} />
@@ -55,6 +80,9 @@ function Home() {
             </p>
           </div>
         </div>
+      </div>
+      <div className="graphs-section">
+        <TimeSeriesGraphs testResult={testResult} />
       </div>
     </div>
   );
