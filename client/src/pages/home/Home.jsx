@@ -1,115 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Home.css';
+import SpeedMeter from '../../components/speedmeter/SpeedMeter';
+import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 
 function Home() {
+  const [testStarted, setTestStarted] = useState(false);
+
   return (
     <div className="home-page">
-      {/* Hero Section */}
-      <section className="home-section home-hero">
-        <div className="home-container">
-          <div className="home-hero-content">
-            <h1 className="home-hero-title">
-              AI-Powered <span className="text-gradient">Network Analytics</span>
-            </h1>
-            <p className="home-hero-subtitle">
-              Real-time speed testing, intelligent insights, and secure network monitoring for ISPs
+      <div className="home-container">
+        <h1 className="home-title">AI-Powered Network Speed Testing</h1>
+        <div className="home-col">
+          <div className="speedmeter-wrapper">
+            <div className={`speedmeter-container ${testStarted ? 'speedmeter-container--visible' : ''}`}>
+              <SpeedMeter value={850} type="download" />
+            </div>
+            <div className={`logo-overlay ${testStarted ? 'logo-overlay--open' : ''}`}>
+              <img src={loginLogo} alt="CyberSecure Logo" className="logo-overlay-icon" />
+            </div>
+          </div>
+          <button 
+            className="begin-test-btn"
+            onClick={() => setTestStarted(true)}
+          >
+            <svg className="begin-test-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5v14l11-7z" fill="currentColor"/>
+            </svg>
+            Begin Test
+          </button>
+        </div>
+        <div className="home-col">
+          <div className="how-to-section">
+            <h2 className="how-to-title">How To Use</h2>
+            <ul className="how-to-list">
+              <li className="how-to-item">Click the "Begin Test" button</li>
+              <li className="how-to-item">Wait for the test to complete</li>
+              <li className="how-to-item">View your real-time speed results</li>
+              <li className="how-to-item">Analyze network performance with AI insights</li>
+            </ul>
+          </div>
+          <div className="ai-summary-section">
+            <h3 className="ai-summary-title">AI-Powered Summary</h3>
+            <p className="ai-summary-text">
+              Your connection is excellent overall. It performs well for gaming, streaming, and video calls, providing a smooth experience for all your online activities.
             </p>
-            <div className="home-hero-cta">
-              <button className="btn-primary">Get Started</button>
-              <button className="btn-secondary">Learn More</button>
-            </div>
           </div>
         </div>
-      </section>
-
-      {/* Speed Test Section (2 Column) */}
-      <section className="home-section home-speed-test">
-        <div className="home-container">
-          <h2 className="home-section-title">Test Your Network Speed</h2>
-          <div className="home-two-col">
-            <div className="home-col glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">⚡</div>
-                <h3>Speed Meter</h3>
-                <p>Real-time speed test visualization</p>
-              </div>
-            </div>
-            <div className="home-col glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">📊</div>
-                <h3>Results Dashboard</h3>
-                <p>Detailed performance metrics</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="home-section home-features">
-        <div className="home-container">
-          <h2 className="home-section-title">Powerful Features</h2>
-          <div className="home-features-grid">
-            <div className="home-feature glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">🔒</div>
-                <h3>Secure Monitoring</h3>
-                <p>Enterprise-grade security analytics</p>
-              </div>
-            </div>
-            <div className="home-feature glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">🤖</div>
-                <h3>AI Insights</h3>
-                <p>Intelligent network optimization</p>
-              </div>
-            </div>
-            <div className="home-feature glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">📈</div>
-                <h3>Real-time Analytics</h3>
-                <p>Live performance monitoring</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="home-section home-testimonials">
-        <div className="home-container">
-          <h2 className="home-section-title">What Our Users Say</h2>
-          <div className="home-testimonials-grid">
-            <div className="home-testimonial glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">👤</div>
-                <h3>User Testimonial</h3>
-                <p>Amazing network analytics platform</p>
-              </div>
-            </div>
-            <div className="home-testimonial glass-card">
-              <div className="placeholder-content">
-                <div className="placeholder-icon">👤</div>
-                <h3>User Testimonial</h3>
-                <p>Best ISP tool we've used</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="home-section home-cta-section">
-        <div className="home-container">
-          <div className="home-cta glass-card">
-            <h2 className="home-section-title">Ready to Get Started?</h2>
-            <p className="home-cta-subtitle">
-              Join thousands of ISPs already using CyberSecure
-            </p>
-            <button className="btn-primary btn-large">Sign Up Free</button>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
