@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import './AuthLayout.css';
-import loginLogo from '../../assets/avatars/login_plain_ai_speedtest.png';
+import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 
 function AuthLayout({ activeTab = 'login', children }) {
   const navigate = useNavigate();

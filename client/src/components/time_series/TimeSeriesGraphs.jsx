@@ -3,7 +3,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { motion } from 'framer-motion';
 import './TimeSeriesGraphs.css';
 
-const TimeSeriesGraphs = ({ testResult }) => {
+const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
+  const defaultColors = {
+    download: { stroke: 'var(--download)', fill: '#3B82F6' },
+    upload: { stroke: 'var(--upload)', fill: '#8B5CF6' },
+    ping: { stroke: 'var(--ping)', fill: '#22C55E' }
+  };
+  const colors = { ...defaultColors, ...chartColors };
   const downloadData = (testResult?.download_measurements || []).map((m, i) => ({
     name: `Test ${i + 1} (${m.file_size_mb}MB)`,
     speed: m.download_speed_mbps
@@ -19,7 +25,7 @@ const TimeSeriesGraphs = ({ testResult }) => {
     latency: m.latency_ms
   }));
 
-  const renderChart = (data, title, color, yLabel, ChartComponent = AreaChart) => {
+  const renderChart = (data, title, { stroke, fill }, yLabel, ChartComponent = AreaChart) => {
     if (!data || data.length === 0) return null;
 
     return (
@@ -32,12 +38,6 @@ const TimeSeriesGraphs = ({ testResult }) => {
         <h3 className="graph-title">{title}</h3>
         <ResponsiveContainer width="100%" height={200}>
           <ChartComponent data={data}>
-            <defs>
-              <linearGradient id={`color${title}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color} stopOpacity={0.3} />
-                <stop offset="95%" stopColor={color} stopOpacity={0} />
-              </linearGradient>
-            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
             <XAxis
               dataKey="name"
@@ -60,17 +60,17 @@ const TimeSeriesGraphs = ({ testResult }) => {
               <Area
                 type="monotone"
                 dataKey="speed"
-                stroke={color}
-                fillOpacity={1}
-                fill={`url(#color${title})`}
+                stroke={stroke}
+                fillOpacity={0.3}
+                fill={fill}
               />
             ) : (
               <Line
                 type="monotone"
                 dataKey="latency"
-                stroke={color}
+                stroke={stroke}
                 strokeWidth={2}
-                dot={{ fill: color, r: 4 }}
+                dot={{ fill: stroke, r: 4 }}
                 activeDot={{ r: 6 }}
               />
             )}
@@ -82,9 +82,9 @@ const TimeSeriesGraphs = ({ testResult }) => {
 
   return (
     <div className="graphs-container">
-      {renderChart(downloadData, 'Download Speed Over Time', 'var(--download)', 'Mbps')}
-      {renderChart(uploadData, 'Upload Speed Over Time', 'var(--upload)', 'Mbps')}
-      {renderChart(pingData, 'Ping Latency', 'var(--ping)', 'ms', LineChart)}
+      {renderChart(downloadData, 'Download Speed Over Time', colors.download, 'Mbps')}
+      {renderChart(uploadData, 'Upload Speed Over Time', colors.upload, 'Mbps')}
+      {renderChart(pingData, 'Ping Latency', colors.ping, 'ms', LineChart)}
     </div>
   );
 };

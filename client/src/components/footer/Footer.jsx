@@ -1,5 +1,5 @@
 import React from 'react';
-import loginLogo from '../../assets/avatars/login_plain_ai_speedtest.png';
+import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import './Footer.css';
 
 function Footer() {
