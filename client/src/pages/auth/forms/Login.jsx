@@ -53,7 +53,7 @@ function Login() {
         isLoading={isLoading} 
         progress={progress}
         message="Signing you in"
-        status="CyberSecure Auth System v1.0"
+        status="AkovoLabs Auth System v1.0"
       />
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1 className="auth-form-title">Welcome back</h1>

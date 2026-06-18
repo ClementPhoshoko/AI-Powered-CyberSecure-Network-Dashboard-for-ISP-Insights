@@ -56,8 +56,8 @@ function Nav() {
         {/* Left Side: Logo & System Name */}
         <div className="nav-left">
           <Link to="/" className="nav-logo">
-            <img src={loginLogo} alt="CyberSecure Logo" className="nav-logo-icon" />
-            <span className="nav-logo-text">CyberSecure</span>
+            <img src={loginLogo} alt="AkovoLabs Logo" className="nav-logo-icon" />
+            <span className="nav-logo-text">AkovoLabs</span>
           </Link>
         </div>
 

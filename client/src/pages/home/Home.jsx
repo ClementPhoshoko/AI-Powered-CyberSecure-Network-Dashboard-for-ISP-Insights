@@ -50,7 +50,7 @@ function Home() {
               />
             </div>
             <div className={`logo-overlay ${isRunning || isComplete ? 'logo-overlay--open' : ''}`}>
-              <img src={loginLogo} alt="CyberSecure Logo" className="logo-overlay-icon" />
+              <img src={loginLogo} alt="AkovoLabs Logo" className="logo-overlay-icon" />
             </div>
           </div>
           {loading && (

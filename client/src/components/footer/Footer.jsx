@@ -9,8 +9,8 @@ function Footer() {
         {/* Left Section */}
         <div className="footer-left">
           <div className="footer-logo">
-            <img src={loginLogo} alt="CyberSecure Logo" className="footer-logo-icon" />
-            <span className="footer-logo-text">CyberSecure</span>
+            <img src={loginLogo} alt="AkovoLabs Logo" className="footer-logo-icon" />
+            <span className="footer-logo-text">AkovoLabs</span>
           </div>
           <p className="footer-tagline">AI-Powered Network Analytics Dashboard</p>
           <p className="footer-description">

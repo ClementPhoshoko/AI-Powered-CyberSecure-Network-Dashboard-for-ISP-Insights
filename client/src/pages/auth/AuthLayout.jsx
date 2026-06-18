@@ -36,8 +36,8 @@ function AuthLayout({ activeTab = 'login', children }) {
           <div className="auth-info-column">
             <div className="auth-info-content">
               <div className="auth-logo">
-                <img src={loginLogo} alt="CyberSecure Logo" className="auth-logo-icon" />
-                <span className="auth-logo-text">CyberSecure</span>
+                <img src={loginLogo} alt="AkovoLabs Logo" className="auth-logo-icon" />
+                <span className="auth-logo-text">AkovoLabs</span>
               </div>
               <p className="auth-tagline">Real-time AI-Powered Speedtest Analytics & Network Security Insights for ISPs</p>
               <p className="auth-info-text">
