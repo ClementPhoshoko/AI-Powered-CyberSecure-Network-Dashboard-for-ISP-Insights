@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { onAuthStateChange, getSession } from '../services/authService';
+import { onAuthStateChange, getSession, logout } from '../services/authService';
 
 const AuthContext = createContext();
 
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     user,
     session,
     loading,
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

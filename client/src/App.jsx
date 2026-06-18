@@ -1,39 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import './global_styles/App.css'
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
 import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
-import Dashboard from './pages/dashboard/Dashboard'
 import Home from './pages/home/Home'
 import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
-
-function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
-  }
-
-  return user ? children : <Navigate to="/login" replace />;
-}
-
-function PublicRoute({ children }) {
-  const { user, loading } = useAuth();
-  const location = useLocation();
-
-  if (loading) {
-    return <div style={{ color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
-  }
-
-  // Allow homepage to be accessible even when logged in
-  if (location.pathname === '/') {
-    return children;
-  }
-
-  return user ? <Navigate to="/dashboard" replace /> : children;
-}
 
 function AppContent() {
   const location = useLocation();
@@ -68,30 +41,9 @@ function AppContent() {
       {/* Main Content */}
       <div className="app-content">
         <Routes>
-          <Route path="/" element={
-            <PublicRoute>
-              <Home />
-            </PublicRoute>
-          } />
-          <Route path="/login" element={
-            <PublicRoute>
-              <AuthLayout activeTab="login">
-                <Login />
-              </AuthLayout>
-            </PublicRoute>
-          } />
-          <Route path="/signup" element={
-            <PublicRoute>
-              <AuthLayout activeTab="signup">
-                <Register />
-              </AuthLayout>
-            </PublicRoute>
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<AuthLayout activeTab="login"><Login /></AuthLayout>} />
+          <Route path="/signup" element={<AuthLayout activeTab="signup"><Register /></AuthLayout>} />
         </Routes>
       </div>
 

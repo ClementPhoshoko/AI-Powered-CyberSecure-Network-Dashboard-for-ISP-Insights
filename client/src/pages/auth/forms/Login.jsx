@@ -37,7 +37,7 @@ function Login() {
     login(email, password)
       .then(() => {
         setProgress(100);
-        navigate('/dashboard');
+        navigate('/');
       })
       .catch((err) => {
         setError(err.message);

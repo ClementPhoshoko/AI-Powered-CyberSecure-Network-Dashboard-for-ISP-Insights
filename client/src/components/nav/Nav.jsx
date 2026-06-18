@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Modal from '../modal/Modal';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import './Nav.css';
 
 function Nav() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const toggleDropdown = (name) => {
     setActiveDropdown(activeDropdown === name ? null : name);
@@ -114,7 +117,7 @@ function Nav() {
             {accountDropdownOpen && (
               <div className="nav-account-chain">
                 {user && (
-                  <Link to="/" className="nav-chain-item">
+                  <Link to="/account" className="nav-chain-item">
                     <div className="nav-chain-circle">
                       <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -159,7 +162,14 @@ function Nav() {
                 )}
                 
                 {user && (
-                  <Link to="/login" className="nav-chain-item">
+                  <button 
+                    className="nav-chain-item" 
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, width: '100%', textAlign: 'left' }}
+                    onClick={() => {
+                      setShowLogoutModal(true);
+                      setAccountDropdownOpen(false);
+                    }}
+                  >
                     <div className="nav-chain-circle">
                       <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -168,13 +178,39 @@ function Nav() {
                       </svg>
                     </div>
                     <span className="nav-chain-label">Logout</span>
-                  </Link>
+                  </button>
                 )}
               </div>
             )}
           </div>
         </div>
       </div>
+      <Modal
+        isOpen={showLogoutModal}
+        message="Are you sure you want to logout from your account?"
+        leftOption={{
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ),
+          label: "Cancel",
+          onClick: () => setShowLogoutModal(false)
+        }}
+        rightOption={{
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ),
+          label: "Proceed",
+          onClick: async () => {
+            setShowLogoutModal(false);
+            await logout();
+            navigate("/");
+          }
+        }}
+      />
     </nav>
   );
 }
