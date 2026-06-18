@@ -6,8 +6,10 @@ import speakerAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
 import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
 import { useSpeedTest } from '../../hooks/useSpeedTest';
+import { useAuth } from '../../context/AuthContext';
 
 function Home() {
+  const { user, loading: authLoading } = useAuth();
   const {
     startTest,
     stopTest,
@@ -104,13 +106,22 @@ function Home() {
                 className="speaker-avatar"
               />
               <div className="speaker-card">
-                <span className="speaker-tag">How To Read This Test</span>     
-                <h3 className="speaker-title">Visitors can test the network they are using right now</h3>
+                <span className="speaker-tag">How To Use This Test</span>     
+                <h3 className="speaker-title">Test your current network speed</h3>
                 <p className="speaker-text">
-                  Anyone opening your website can run a speed test from their current device and connection. If they are on home Wi-Fi, the results reflect that real-world experience to your service.
+                  You can run a speed test from your current device and connection. If you're on home Wi-Fi, the results reflect your real-world experience right now.
                 </p>
                 <p className="speaker-text">
-                  It measures device-to-server performance, not a deep inspection of the router, signal strength, or every internal Wi-Fi detail.
+                  It measures device-to-server performance, not a deep inspection of your router, signal strength, or every internal Wi-Fi detail.
+                </p>
+                <p className="speaker-text">
+                  {user ? (
+                    "Now that you are signed in, don't forget to check your test graphs and history below!"
+                  ) : (
+                    <>
+                      <strong>Sign in</strong> or <strong>Sign up</strong> to get more detailed insights about your network performance!
+                    </>
+                  )}
                 </p>
               </div>
             </section>
