@@ -51,8 +51,10 @@ export function useSpeedTest() {
   const [progress, setProgress] = useState(0);
   const [testResult, setTestResult] = useState(null);
   const abortControllerRef = useRef(null);
+  const isStoppedRef = useRef(false);
 
   const stopTest = useCallback(() => {
+    isStoppedRef.current = true;
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -61,20 +63,24 @@ export function useSpeedTest() {
     setError(null);
     setCurrentSpeed(0);
     setProgress(0);
+    setTestResult(null);
   }, []);
 
   const resetTest = useCallback(() => {
+    isStoppedRef.current = false;
     setPhase(TEST_PHASES.IDLE);
     setLoading(false);
     setError(null);
     setCurrentSpeed(0);
     setProgress(0);
+    setTestResult(null);
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
   }, []);
 
   const runPingTests = useCallback(async () => {
+    if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.PING);
     setProgress(20);
 
@@ -90,6 +96,7 @@ export function useSpeedTest() {
     }
 
     for (let i = 0; i < PING_COUNT; i++) {
+      if (isStoppedRef.current) return null;
       const start = performance.now();
       try {
         abortControllerRef.current = new AbortController();
@@ -113,6 +120,7 @@ export function useSpeedTest() {
       setProgress(20 + ((i + 1) / PING_COUNT) * 10);
     }
 
+    if (isStoppedRef.current) return null;
     const totalDuration = (performance.now() - startTotal) / 1000;
     const packetLossPercent = ((PING_COUNT - pings.filter((ping) => ping.success).length) / PING_COUNT) * 100;
 
@@ -128,13 +136,16 @@ export function useSpeedTest() {
   }, []);
 
   const runDownloadTest = useCallback(async (testResultId) => {
+    if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.DOWNLOAD);
+    setCurrentSpeed(0);
     setProgress(30);
 
     const measurements = [];
     let finalResult = null;
 
     for (let i = 0; i < DOWNLOAD_SIZES.length; i++) {
+      if (isStoppedRef.current) return null;
       const sizeMb = DOWNLOAD_SIZES[i];
       const start = performance.now();
       
@@ -162,6 +173,7 @@ export function useSpeedTest() {
       setProgress(30 + ((i + 1) / DOWNLOAD_SIZES.length) * 30);
     }
 
+    if (isStoppedRef.current) return null;
     if (measurements.length > 0) {
       await submitDownloadResults({
         test_result_id: testResultId,
@@ -174,13 +186,16 @@ export function useSpeedTest() {
   }, []);
 
   const runUploadTest = useCallback(async (testResultId) => {
+    if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.UPLOAD);
+    setCurrentSpeed(0);
     setProgress(60);
 
     const measurements = [];
     let finalUploadSpeed = 0;
 
     for (let i = 0; i < UPLOAD_SIZES.length; i++) {
+      if (isStoppedRef.current) return null;
       const sizeMb = UPLOAD_SIZES[i];
       const sizeBytes = sizeMb * 1024 * 1024;
       const data = new Blob([new ArrayBuffer(sizeBytes)]);
@@ -210,6 +225,7 @@ export function useSpeedTest() {
       setProgress(60 + ((i + 1) / UPLOAD_SIZES.length) * 25);
     }
 
+    if (isStoppedRef.current) return null;
     if (measurements.length > 0) {
       await submitUploadResults({
         test_result_id: testResultId,
@@ -222,6 +238,7 @@ export function useSpeedTest() {
   }, []);
 
   const calculateNetworkScores = useCallback(async (testResultId) => {
+    if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.CALCULATING);
     setProgress(90);
 
@@ -229,11 +246,13 @@ export function useSpeedTest() {
       test_result_id: testResultId
     });
 
+    if (isStoppedRef.current) return null;
     setProgress(100);
     return response.data.data;
   }, []);
 
   const createAISummary = useCallback(async (testResultId) => {
+    if (isStoppedRef.current) return null;
     const response = await generateAISummary(testResultId);
     return response.data;
   }, []);
@@ -244,18 +263,24 @@ export function useSpeedTest() {
       setLoading(true);
       setPhase(TEST_PHASES.INITIALIZING);
 
+      if (isStoppedRef.current) return null;
+
       // 1. Run ping test (this creates the test result in the database)
       const pingData = await runPingTests();
+      if (isStoppedRef.current || !pingData) return null;
       const testResultId = pingData.id;
 
       // 2. Run download test
       const downloadData = await runDownloadTest(testResultId);
+      if (isStoppedRef.current || !downloadData) return null;
 
       // 3. Run upload test
       const uploadData = await runUploadTest(testResultId);
+      if (isStoppedRef.current || !uploadData) return null;
 
       // 4. Calculate network scores
       const scores = await calculateNetworkScores(testResultId);
+      if (isStoppedRef.current || !scores) return null;
 
       // 5. Generate AI summary for the completed test result
       let aiSummaryResult = null;
@@ -264,6 +289,8 @@ export function useSpeedTest() {
       } catch (summaryError) {
         console.error('AI summary generation failed:', summaryError);
       }
+
+      if (isStoppedRef.current) return null;
 
       // 6. Combine all data into the format expected by components
       const completeResult = {

@@ -95,12 +95,22 @@ const SpeedMeter = ({
   const [animatedValue, setAnimatedValue] = useState(clampedValue);
   const animatedValueRef = useRef(clampedValue);
   const [isConnecting, setIsConnecting] = useState(true);
+  const previousTypeRef = useRef(type);
 
   const scaleStops = useMemo(() => buildScaleStops(min, max), [min, max]);
   const arcPath = useMemo(
     () => buildArcPath(CENTER_X, CENTER_Y, OUTER_RADIUS, MIN_ANGLE, MAX_ANGLE),
     []
   );
+
+  useEffect(() => {
+    if (previousTypeRef.current !== type) {
+      // Reset to 0 when type changes (download ↔ upload)
+      previousTypeRef.current = type;
+      animatedValueRef.current = 0;
+      setAnimatedValue(0);
+    }
+  }, [type]);
 
   useEffect(() => {
     if (!animated) {
