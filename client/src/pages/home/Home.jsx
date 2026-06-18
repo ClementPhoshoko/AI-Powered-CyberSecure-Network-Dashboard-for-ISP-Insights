@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import SpeedMeter from '../../components/speedmeter/SpeedMeter';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
@@ -5,10 +7,13 @@ import aiIcon from '../../assets/avatars/ai.png';
 import speakerAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
 import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
+import Modal from '../../components/modal/Modal';
 import { useSpeedTest } from '../../hooks/useSpeedTest';
 import { useAuth } from '../../context/AuthContext';
 
 function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const {
     startTest,
@@ -66,7 +71,11 @@ function Home() {
               } else if (isComplete) {
                 resetTest();
               } else {
-                startTest();
+                if (!user) {
+                  setIsModalOpen(true);
+                } else {
+                  startTest();
+                }
               }
             }}
           >
@@ -148,6 +157,31 @@ function Home() {
           <TimeSeriesGraphs testResult={testResult} />
         </div>
       )}
+      <Modal
+        isOpen={isModalOpen}
+        message="Sign in to get detailed insights from your speed test results. Would you like to proceed to the sign-in page?"
+        leftOption={{
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ),
+          label: "Cancel",
+          onClick: () => setIsModalOpen(false)
+        }}
+        rightOption={{
+          icon: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          ),
+          label: "Proceed",
+          onClick: () => {
+            setIsModalOpen(false);
+            navigate('/login');
+          }
+        }}
+      />
     </div>
   );
 }
