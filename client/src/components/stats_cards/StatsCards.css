@@ -4,6 +4,9 @@
   gap: var(--space-4);
   /* margin-bottom: var(--space-8); */
   padding-top: var(--space-7);
+  width: 100%;
+  height: auto;
+  align-self: flex-start;
 }
 
 .stats-note {
@@ -176,4 +179,87 @@
   height: 8px;
   border-radius: 50%;
   transition: background-color 0.8s ease-out;
+}
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton.speed-card-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.skeleton.value-number {
+  width: 80px;
+  height: 28px;
+}
+
+.skeleton.speed-card-label {
+  width: 60px;
+  height: 12px;
+}
+
+.skeleton.latency-card-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.skeleton.latency-card-label {
+  width: 80px;
+  height: 10px;
+}
+
+.skeleton.latency-card-value {
+  width: 60px;
+  height: 14px;
+}
+
+.skeleton.quality-card-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.skeleton.quality-card-label {
+  width: 90px;
+  height: 10px;
+}
+
+.skeleton.quality-card-circle {
+  width: 8px;
+  height: 8px;
+}
+
+.skeleton.stats-note-label {
+  width: 120px;
+  height: 10px;
+  display: inline-block;
+}
+
+.skeleton.stats-note-text {
+  width: 100%;
+  height: 36px;
+  display: block;
+}
+
+.skeleton.stats-note-subtle {
+  width: 80%;
+  height: 18px;
+  display: block;
 }

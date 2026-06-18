@@ -52,6 +52,17 @@ export function useSpeedTest() {
   const [testResult, setTestResult] = useState(null);
   const abortControllerRef = useRef(null);
 
+  const stopTest = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setPhase(TEST_PHASES.IDLE);
+    setLoading(false);
+    setError(null);
+    setCurrentSpeed(0);
+    setProgress(0);
+  }, []);
+
   const resetTest = useCallback(() => {
     setPhase(TEST_PHASES.IDLE);
     setLoading(false);
@@ -81,7 +92,8 @@ export function useSpeedTest() {
     for (let i = 0; i < PING_COUNT; i++) {
       const start = performance.now();
       try {
-        await api.get('/api/ping/health'); // Simple health check for ping
+        abortControllerRef.current = new AbortController();
+        await api.get('/api/ping/health', { signal: abortControllerRef.current.signal }); // Simple health check for ping
         const end = performance.now();
         pings.push({
           sequence_number: i,
@@ -90,6 +102,7 @@ export function useSpeedTest() {
           failure_reason: null
         });
       } catch (err) {
+        if (err.name === 'AbortError') throw err;
         pings.push({
           sequence_number: i,
           latency_ms: null,
@@ -291,6 +304,11 @@ export function useSpeedTest() {
 
       return completeResult;
     } catch (err) {
+      if (err.name === 'AbortError') {
+        // Test was intentionally stopped - don't show an error
+        console.log('Speed test was stopped');
+        return null;
+      }
       console.error('Speed test failed:', err);
       setError(err.message || 'Speed test failed');
       setPhase(TEST_PHASES.ERROR);
@@ -302,6 +320,7 @@ export function useSpeedTest() {
 
   return {
     startTest,
+    stopTest,
     resetTest,
     phase,
     loading,

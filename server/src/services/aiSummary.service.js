@@ -42,7 +42,7 @@ class AiSummaryService {
     const prompt = `You are a network performance summarizer. You will be given network metrics and scores, and you must generate a friendly, human-readable summary (2-4 sentences).
 
 RULES:
-- STRICT LIMIT: The final text MUST NOT exceed 300 characters total. 
+- STRICT LIMIT: The final text MUST NOT exceed 350 characters total. 
 - ONLY use the provided metrics and scores. DO NOT calculate anything new.
 - Describe overall network quality (excellent, good, fair, poor) based on network_health_score.
 - Mention suitability for gaming, streaming, and video calls based on their respective scores.

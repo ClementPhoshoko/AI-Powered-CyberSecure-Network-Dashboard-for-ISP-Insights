@@ -2,14 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import './StatsCards.css';
 
-const StatsCards = ({ testResult }) => {
+const StatsCards = ({ testResult, isLoading = false }) => {
   const measurementContext = testResult?.measurement_context || {};
-  const scoreContext = testResult?.score_context || {};
   const latencyLabel = 'App Latency';
   const jitterLabel = 'Latency Variation';
   const packetLossLabel = 'Failed Requests';
-  const scoreLabel = 'Estimated Suitability Score';
-  const scoreConfidenceValue = scoreContext.score_confidence_value ?? testResult?.score_confidence_value ?? 60;
 
   const speedCards = [
     {
@@ -141,6 +138,67 @@ const StatsCards = ({ testResult }) => {
     }
   ];
 
+  const SkeletonSpeedCard = () => (
+    <div className="speed-card">
+      <div className="skeleton speed-card-icon"></div>
+      <div className="skeleton value-number"></div>
+      <div className="skeleton speed-card-label"></div>
+    </div>
+  );
+
+  const SkeletonLatencyCard = () => (
+    <div className="latency-card">
+      <div className="skeleton latency-card-icon"></div>
+      <div className="latency-card-content">
+        <div className="skeleton latency-card-label"></div>
+        <div className="skeleton latency-card-value"></div>
+      </div>
+    </div>
+  );
+
+  const SkeletonQualityCard = () => (
+    <div className="quality-card">
+      <div className="skeleton quality-card-icon"></div>
+      <div className="quality-card-content">
+        <div className="skeleton quality-card-label"></div>
+        <div className="quality-card-circles">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="skeleton quality-card-circle"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="stats-container" style={{ paddingTop: 'var(--space-7)' }}>
+        <div className="stats-note">
+          <span className="skeleton stats-note-label"></span>
+          <span className="skeleton stats-note-text"></span>
+          <span className="skeleton stats-note-subtle"></span>
+        </div>
+
+        {/* Speed Cards Skeletons */}
+        <div className="speed-cards">
+          {[0, 1].map((i) => (
+            <SkeletonSpeedCard key={i} />
+          ))}
+        </div>
+
+        {/* Latency & Quality Cards Skeletons */}
+        <div className="latency-cards">
+          {[0, 1, 2].map((i) => (
+            <SkeletonLatencyCard key={`latency-${i}`} />
+          ))}
+          {[0, 1, 2, 3, 4].map((i) => (
+            <SkeletonQualityCard key={`quality-${i}`} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="stats-container">
       <div className="stats-note">
@@ -228,16 +286,7 @@ const StatsCards = ({ testResult }) => {
         ))}
       </div>
 
-      <div className="stats-note stats-note--score">
-        <span className="stats-note-label">{scoreLabel}</span>
-        <span className="stats-note-text">
-          Estimated from speed and app response timing.
-          {' '}Confidence: {scoreContext.score_confidence_label || 'medium'} ({scoreConfidenceValue}%).
-        </span>
-        <span className="stats-note-subtle">
-          {scoreContext.score_explanation || testResult?.score_explanation || 'Use these scores as guidance rather than exact transport-level measurements.'}
-        </span>
-      </div>
+
     </div>
   );
 };

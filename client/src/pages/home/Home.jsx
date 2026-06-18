@@ -10,6 +10,7 @@ import { useSpeedTest } from '../../hooks/useSpeedTest';
 function Home() {
   const {
     startTest,
+    stopTest,
     resetTest,
     phase,
     loading,
@@ -50,16 +51,25 @@ function Home() {
               <img src={loginLogo} alt="CyberSecure Logo" className="logo-overlay-icon" />
             </div>
           </div>
+          {loading && (
+            <div className="phase-logger">
+              {getPhaseLabel()}
+            </div>
+          )}
           <button 
             className="begin-test-btn"
-            onClick={isComplete ? resetTest : startTest}
-            disabled={loading}
+            onClick={() => {
+              if (isRunning) {
+                stopTest();
+              } else if (isComplete) {
+                resetTest();
+              } else {
+                startTest();
+              }
+            }}
           >
-            {loading ? (
-              <>
-                <span className="loading-spinner"></span>
-                {getPhaseLabel()}
-              </>
+            {isRunning ? (
+              'Stop Test'
             ) : isComplete ? (
               'Run Again'
             ) : (
@@ -84,38 +94,40 @@ function Home() {
             <p>• <strong>Upload Speed Over Time:</strong> Measures upload performance</p>
             <p>• <strong>App Latency:</strong> Tracks how quickly your device reaches this service during the test</p>
           </div>
-
-          <section className="speaker-section" aria-label="How to read this test">
-            <img
-              src={speakerAvatar}
-              alt="Instructor avatar"
-              className="speaker-avatar"
-            />
-            <div className="speaker-card">
-              <span className="speaker-tag">How To Read This Test</span>
-              <h3 className="speaker-title">Visitors can test the network they are using right now</h3>
-              <p className="speaker-text">
-                Anyone opening your website can run a speed test from their current device and connection. If they are on home Wi-Fi, the results reflect that real-world experience to your service.
-              </p>
-              <p className="speaker-text">
-                It measures device-to-server performance, not a deep inspection of the router, signal strength, or every internal Wi-Fi detail.
-              </p>
-            </div>
-          </section>
         </div>
-        <div className="home-col">
-          {testResult && (
-            <>
-              <StatsCards testResult={testResult} />
-              <div className="ai-summary-section">
-                <h3 className="ai-summary-title">
-                  <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
-                  AI-Powered Summary
-                </h3>
-                <p className="ai-summary-text">
-                  {aiSummaryText}
+        <div className={`home-col ${!isRunning && !isComplete ? 'home-col--center' : ''}`}>
+          {!isRunning && !isComplete ? (
+            <section className="speaker-section" aria-label="How to read this test">
+              <img
+                src={speakerAvatar}
+                alt="Instructor avatar"
+                className="speaker-avatar"
+              />
+              <div className="speaker-card">
+                <span className="speaker-tag">How To Read This Test</span>     
+                <h3 className="speaker-title">Visitors can test the network they are using right now</h3>
+                <p className="speaker-text">
+                  Anyone opening your website can run a speed test from their current device and connection. If they are on home Wi-Fi, the results reflect that real-world experience to your service.
+                </p>
+                <p className="speaker-text">
+                  It measures device-to-server performance, not a deep inspection of the router, signal strength, or every internal Wi-Fi detail.
                 </p>
               </div>
+            </section>
+          ) : (
+            <>
+              <StatsCards testResult={testResult} isLoading={isRunning} />     
+              {testResult && (
+                <div className="ai-summary-section">
+                  <h3 className="ai-summary-title">
+                    <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
+                    AI-Powered Summary
+                  </h3>
+                  <p className="ai-summary-text">
+                    {aiSummaryText}
+                  </p>
+                </div>
+              )}
             </>
           )}
         </div>
