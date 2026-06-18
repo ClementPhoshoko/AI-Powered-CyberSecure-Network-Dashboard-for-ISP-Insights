@@ -15,6 +15,11 @@ class PingService {
     const pingMaxMs = calculatePingMax(rawPings);
     const jitterMs = calculateJitter(rawPings);
     const packetLossPercent = optionalData.packet_loss_percent || 0;
+    const normalizedTestDurationSeconds = optionalData.test_duration_seconds == null
+      ? undefined
+      : optionalData.test_duration_seconds > 0
+        ? Math.ceil(optionalData.test_duration_seconds)
+        : 0;
 
     // 2. Create test result in DB
     const testResult = await TestResult.create({
@@ -24,7 +29,8 @@ class PingService {
       ping_max_ms: Number(pingMaxMs.toFixed(2)),
       jitter_ms: Number(jitterMs.toFixed(2)),
       packet_loss_percent: Number(packetLossPercent.toFixed(2)),
-      ...optionalData
+      ...optionalData,
+      test_duration_seconds: normalizedTestDurationSeconds
     });
 
     // 3. Save raw ping measurements

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { 
+  pingHealthCheck,
   runPingTest, 
   getPingTestById, 
   getPingHistory, 
@@ -14,6 +15,18 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *   name: Ping
  *   description: Ping test management
  */
+
+/**
+ * @swagger
+ * /api/ping/health:
+ *   get:
+ *     summary: Simple health check for ping testing
+ *     tags: [Ping]
+ *     responses:
+ *       200:
+ *         description: Health check successful
+ */
+router.get('/health', pingHealthCheck);
 
 /**
  * @swagger

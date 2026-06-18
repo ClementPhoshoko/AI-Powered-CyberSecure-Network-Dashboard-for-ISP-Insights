@@ -3,14 +3,19 @@
  * Should be added as the last middleware in server.js
  */
 function errorHandler(err, req, res, next) {
-  console.error('Error:', err);
+  console.error('Full Error Details:', err);
 
   // Default error status and message
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
 
+  // Handle Zod validation errors
+  if (err.name === 'ZodError') {
+    statusCode = 400;
+    message = 'Validation error: ' + err.issues.map(issue => `${issue.path.join('.')} - ${issue.message}`).join(', ');
+  }
   // Handle Supabase errors
-  if (err.code && err.message) {
+  else if (err.code && err.message) {
     statusCode = 400;
     message = err.message;
   }

@@ -1,9 +1,10 @@
 import api from './api';
 
-export const streamDownloadTest = async (sizeMb) => {
+export const streamDownloadTest = async (sizeMb, signal) => {
   const response = await api.get('/api/speed/download', {
     params: { sizeMb },
-    responseType: 'blob'
+    responseType: 'blob',
+    signal
   });
   return response.data;
 };
@@ -13,12 +14,13 @@ export const submitDownloadResults = async (data) => {
   return response.data;
 };
 
-export const streamUploadTest = async (sizeMb, data) => {
+export const streamUploadTest = async (sizeMb, data, signal) => {
   const response = await api.post('/api/speed/upload', data, {
     params: { sizeMb },
     headers: {
       'Content-Type': 'application/octet-stream'
-    }
+    },
+    signal
   });
   return response.data;
 };

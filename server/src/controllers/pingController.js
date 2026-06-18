@@ -10,7 +10,7 @@ const createPingTestSchema = z.object({
     })
   ).min(1),
   packet_loss_percent: z.number().min(0).max(100).optional().default(0),
-  test_duration_seconds: z.number().int().min(0).optional(),
+  test_duration_seconds: z.number().min(0).optional(),
   isp_name: z.string().optional(),
   country: z.string().optional(),
   province: z.string().optional(),
@@ -18,6 +18,21 @@ const createPingTestSchema = z.object({
   device_type: z.string().optional(),
   browser_name: z.string().optional()
 });
+
+// @desc    Simple health check for ping testing
+// @route   GET /api/ping/health
+// @access  Public
+const pingHealthCheck = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'pong',
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // @desc    Run a new ping test
 // @route   POST /api/ping/tests
@@ -107,6 +122,7 @@ const getPingSummary = async (req, res, next) => {
 };
 
 module.exports = {
+  pingHealthCheck,
   runPingTest,
   getPingTestById,
   getPingHistory,
