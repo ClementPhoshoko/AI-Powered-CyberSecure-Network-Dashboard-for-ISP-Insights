@@ -20,13 +20,13 @@ class AiSummaryService {
 
     // Build summary
     if (suitability.length === 3) {
-      return `Your connection is ${quality} overall. It performs well for gaming, streaming, and video calls, providing a smooth experience for all your online activities.`;
+      return `Your connection looks ${quality} overall based on your measured speed and responsiveness. It appears suitable for gaming, streaming, and video calls, with smooth performance for most online activities.`;
     } else if (suitability.length === 2) {
-      return `Your connection is ${quality}. It is suitable for ${suitability.join(' and ')}, but may have some limitations in other areas.`;
+      return `Your connection looks ${quality} based on your measured speed and responsiveness. It appears suitable for ${suitability.join(' and ')}, but you may notice some limits in other activities.`;
     } else if (suitability.length === 1) {
-      return `Your connection is ${quality}. It is suitable for ${suitability[0]}, but you may experience issues with other online activities.`;
+      return `Your connection looks ${quality} from the available test data. It appears suitable for ${suitability[0]}, but you may experience issues with other online activities.`;
     } else {
-      return `Your connection is ${quality}. You may experience issues with gaming, streaming, and video calls. Browsing may also be slower than expected.`;
+      return `Your connection looks ${quality} from the available test data. You may experience issues with gaming, streaming, and video calls, and browsing may also feel slower than expected.`;
     }
   }
 
@@ -39,21 +39,25 @@ class AiSummaryService {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    const prompt = `
-You are a network performance summarizer. You will be given network metrics and scores, and you must generate a friendly, human-readable summary (2-4 sentences).
+    const prompt = `You are a network performance summarizer. You will be given network metrics and scores, and you must generate a friendly, human-readable summary (2-4 sentences).
 
 RULES:
+- STRICT LIMIT: The final text MUST NOT exceed 300 characters total. 
 - ONLY use the provided metrics and scores. DO NOT calculate anything new.
 - Describe overall network quality (excellent, good, fair, poor) based on network_health_score.
 - Mention suitability for gaming, streaming, and video calls based on their respective scores.
 - Highlight strengths and weaknesses without listing every single raw number.
-- Keep it natural and conversational, not robotic.
+- Keep it natural and conversational, not robotic. Explain what the current network state means in plain language.
+- Avoid internal terms like probe, ICMP, transport-layer, backend timing model, or confidence metadata.
+- Describe latency or responsiveness simply as responsiveness or delay.
+- Keep the wording user-friendly and product-facing.
+- If a metric is 'N/A', ignore it naturally. Do not say 'N/A' in the text.
 
 METRICS AND SCORES:
 - Download speed: ${metrics.download_speed_mbps || 'N/A'} Mbps
 - Upload speed: ${metrics.upload_speed_mbps || 'N/A'} Mbps
-- Ping: ${metrics.ping_avg_ms || 'N/A'} ms
-- Jitter: ${metrics.jitter_ms || 'N/A'} ms
+- Latency: ${metrics.ping_avg_ms || 'N/A'} ms
+- Stability variation: ${metrics.jitter_ms || 'N/A'} ms
 - Packet loss: ${metrics.packet_loss_percent || 'N/A'}%
 - Network health score: ${metrics.network_health_score || 0}/100
 - Gaming score: ${metrics.gaming_score || 0}/100
@@ -61,8 +65,8 @@ METRICS AND SCORES:
 - Video call score: ${metrics.video_call_score || 0}/100
 - Browsing score: ${metrics.browsing_score || 0}/100
 
-Please return ONLY the summary text, no extra formatting or JSON.
-    `.trim();
+Please return ONLY the summary text, no extra formatting, no quote marks, and no JSON.
+`.trim();
 
     const result = await model.generateContent(prompt);
     const response = result.response;

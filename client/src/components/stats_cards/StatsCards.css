@@ -6,6 +6,39 @@
   padding-top: var(--space-7);
 }
 
+.stats-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.stats-note--score {
+  margin-top: var(--space-1);
+}
+
+.stats-note-label {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stats-note-text {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.stats-note-subtle {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 /* Speed Cards */
 .speed-cards {
   display: grid;

@@ -3,6 +3,14 @@ import { motion } from 'framer-motion';
 import './StatsCards.css';
 
 const StatsCards = ({ testResult }) => {
+  const measurementContext = testResult?.measurement_context || {};
+  const scoreContext = testResult?.score_context || {};
+  const latencyLabel = 'App Latency';
+  const jitterLabel = 'Latency Variation';
+  const packetLossLabel = 'Failed Requests';
+  const scoreLabel = 'Estimated Suitability Score';
+  const scoreConfidenceValue = scoreContext.score_confidence_value ?? testResult?.score_confidence_value ?? 60;
+
   const speedCards = [
     {
       label: 'Download',
@@ -34,7 +42,7 @@ const StatsCards = ({ testResult }) => {
 
   const latencyCards = [
     { 
-      label: 'Ping', 
+      label: latencyLabel, 
       value: testResult?.ping_avg_ms, 
       unit: 'ms', 
       color: 'var(--ping)',
@@ -47,7 +55,7 @@ const StatsCards = ({ testResult }) => {
       )
     },
     { 
-      label: 'Jitter', 
+      label: jitterLabel, 
       value: testResult?.jitter_ms, 
       unit: 'ms', 
       color: 'var(--jitter)',
@@ -59,7 +67,7 @@ const StatsCards = ({ testResult }) => {
       )
     },
     { 
-      label: 'Packet Loss', 
+      label: packetLossLabel, 
       value: testResult?.packet_loss_percent, 
       unit: '%', 
       color: 'var(--text-muted)',
@@ -135,6 +143,16 @@ const StatsCards = ({ testResult }) => {
 
   return (
     <div className="stats-container">
+      <div className="stats-note">
+        <span className="stats-note-label">How Latency Is Measured</span>
+        <span className="stats-note-text">
+          Quick app requests are sent to this service to estimate responsiveness from your current device and network.
+        </span>
+        <span className="stats-note-subtle">
+          This is useful for real browsing-style performance, but it is not the same as classic ICMP ping.
+        </span>
+      </div>
+
       {/* Speed Cards */}
       <div className="speed-cards">
         {speedCards.map((card, index) => (
@@ -208,6 +226,17 @@ const StatsCards = ({ testResult }) => {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      <div className="stats-note stats-note--score">
+        <span className="stats-note-label">{scoreLabel}</span>
+        <span className="stats-note-text">
+          Estimated from speed and app response timing.
+          {' '}Confidence: {scoreContext.score_confidence_label || 'medium'} ({scoreConfidenceValue}%).
+        </span>
+        <span className="stats-note-subtle">
+          {scoreContext.score_explanation || testResult?.score_explanation || 'Use these scores as guidance rather than exact transport-level measurements.'}
+        </span>
       </div>
     </div>
   );

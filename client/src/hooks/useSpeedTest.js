@@ -6,6 +6,7 @@ import {
   submitUploadResults
 } from '../services/speedService';
 import { runPingTest } from '../services/pingService';
+import { generateAISummary } from '../services/networkService';
 import api from '../services/api';
 
 const TEST_PHASES = {
@@ -21,7 +22,26 @@ const TEST_PHASES = {
 
 const DOWNLOAD_SIZES = [1, 5, 10, 20]; // MB
 const UPLOAD_SIZES = [0.5, 1, 5, 10, 20]; // MB
-const PING_COUNT = 5;
+const PING_COUNT = 10;
+const DEFAULT_MEASUREMENT_CONTEXT = {
+  probe_method: 'http-health',
+  probe_method_label: 'HTTP health endpoint probe',
+  latency_label: 'HTTP probe latency',
+  latency_summary_label: 'HTTP probe latency (avg)',
+  jitter_label: 'HTTP probe jitter',
+  packet_loss_label: 'HTTP probe failure rate estimate',
+  transport_level: false,
+  description: 'Latency and jitter are measured with repeated HTTP requests to the backend health endpoint, not ICMP.'
+};
+const DEFAULT_SCORE_CONTEXT = {
+  score_label: 'Derived suitability score',
+  score_method: 'derived-http-probe-estimate',
+  score_method_label: 'Derived estimate from throughput + HTTP probes',
+  score_confidence_label: 'medium',
+  score_confidence_value: 60,
+  score_explanation:
+    'Scores are derived estimates from measured throughput plus HTTP probe latency and HTTP probe jitter. They are directional and should not be treated like true ICMP or transport-layer measurements.'
+};
 
 export function useSpeedTest() {
   const [phase, setPhase] = useState(TEST_PHASES.IDLE);
@@ -49,6 +69,14 @@ export function useSpeedTest() {
 
     const pings = [];
     const startTotal = performance.now();
+    let probeTarget = '/api/ping/health';
+    if (api.defaults.baseURL) {
+      try {
+        probeTarget = new URL('/api/ping/health', api.defaults.baseURL).toString();
+      } catch {
+        probeTarget = `${api.defaults.baseURL}/api/ping/health`;
+      }
+    }
 
     for (let i = 0; i < PING_COUNT; i++) {
       const start = performance.now();
@@ -57,24 +85,30 @@ export function useSpeedTest() {
         const end = performance.now();
         pings.push({
           sequence_number: i,
-          latency_ms: Math.max(1, end - start)
+          latency_ms: Math.max(1, end - start),
+          success: true,
+          failure_reason: null
         });
-      } catch {
+      } catch (err) {
         pings.push({
           sequence_number: i,
-          latency_ms: 0
+          latency_ms: null,
+          success: false,
+          failure_reason: err?.code || err?.name || 'request_failed'
         });
       }
       setProgress(20 + ((i + 1) / PING_COUNT) * 10);
     }
 
     const totalDuration = (performance.now() - startTotal) / 1000;
-    const packetLossPercent = ((PING_COUNT - pings.filter(p => p.latency_ms > 0).length) / PING_COUNT) * 100;
+    const packetLossPercent = ((PING_COUNT - pings.filter((ping) => ping.success).length) / PING_COUNT) * 100;
 
     const pingResult = await runPingTest({
       pings,
       packet_loss_percent: packetLossPercent,
-      test_duration_seconds: totalDuration
+      test_duration_seconds: totalDuration,
+      probe_method: 'http-health',
+      probe_target: probeTarget
     });
 
     return pingResult.data;
@@ -186,6 +220,11 @@ export function useSpeedTest() {
     return response.data.data;
   }, []);
 
+  const createAISummary = useCallback(async (testResultId) => {
+    const response = await generateAISummary(testResultId);
+    return response.data;
+  }, []);
+
   const startTest = useCallback(async () => {
     try {
       resetTest();
@@ -205,18 +244,42 @@ export function useSpeedTest() {
       // 4. Calculate network scores
       const scores = await calculateNetworkScores(testResultId);
 
-      // 5. Combine all data into the format expected by components
+      // 5. Generate AI summary for the completed test result
+      let aiSummaryResult = null;
+      try {
+        aiSummaryResult = await createAISummary(testResultId);
+      } catch (summaryError) {
+        console.error('AI summary generation failed:', summaryError);
+      }
+
+      // 6. Combine all data into the format expected by components
       const completeResult = {
         download_speed_mbps: downloadData.finalResult?.download_speed_mbps || 0,
         upload_speed_mbps: uploadData.finalUploadSpeed || 0,
         ping_avg_ms: pingData.ping_avg_ms || 0,
+        ping_median_ms: pingData.ping_median_ms || 0,
         jitter_ms: pingData.jitter_ms || 0,
         packet_loss_percent: pingData.packet_loss_percent || 0,
+        probe_method: pingData.probe_method || 'http-health',
+        probe_target: pingData.probe_target || null,
+        probe_sample_count: pingData.probe_sample_count || PING_COUNT,
+        successful_probe_count: pingData.successful_probe_count || 0,
+        failed_probe_count: pingData.failed_probe_count || 0,
         network_health_score: scores.network_health_score || 0,
         gaming_score: scores.gaming_score || 0,
         streaming_score: scores.streaming_score || 0,
         video_call_score: scores.video_call_score || 0,
         browsing_score: scores.browsing_score || 0,
+        score_method: scores.score_method || DEFAULT_SCORE_CONTEXT.score_method,
+        score_confidence_label:
+          scores.score_confidence_label || DEFAULT_SCORE_CONTEXT.score_confidence_label,
+        score_confidence_value:
+          scores.score_confidence_value ?? DEFAULT_SCORE_CONTEXT.score_confidence_value,
+        score_explanation: scores.score_explanation || DEFAULT_SCORE_CONTEXT.score_explanation,
+        score_context: scores.score_context || DEFAULT_SCORE_CONTEXT,
+        raw_weighted_scores: scores.raw_weighted_scores || null,
+        measurement_context: pingData.measurement_context || DEFAULT_MEASUREMENT_CONTEXT,
+        ai_summary: aiSummaryResult?.ai_summary || '',
         download_measurements: downloadData.measurements || [],
         upload_measurements: uploadData.measurements || [],
         ping_measurements: pingData.ping_measurements || []
@@ -235,7 +298,7 @@ export function useSpeedTest() {
     } finally {
       setLoading(false);
     }
-  }, [resetTest, runPingTests, runDownloadTest, runUploadTest, calculateNetworkScores]);
+  }, [resetTest, runPingTests, runDownloadTest, runUploadTest, calculateNetworkScores, createAISummary]);
 
   return {
     startTest,

@@ -1,5 +1,10 @@
 const { supabaseAdmin } = require('../config/db');
 const TestResult = require('../models/TestResult');
+const {
+  annotateTestResult,
+  getMeasurementContext,
+  getScoreContext
+} = require('../utils/testResultPresentation');
 
 class AnalyticsService {
   // Helper to parse range parameter
@@ -34,6 +39,13 @@ class AnalyticsService {
       .eq('user_id', userId);
 
     if (error) throw error;
+    const latestTest = data[0];
+    const measurementContext = getMeasurementContext(
+      latestTest?.probe_method,
+      latestTest?.probe_target
+    );
+    const scoreContext = getScoreContext(latestTest || {});
+
     if (data.length === 0) {
       return {
         total_tests: 0,
@@ -43,7 +55,9 @@ class AnalyticsService {
         avg_jitter_ms: 0,
         avg_packet_loss_percent: 0,
         best_network_health_score: 0,
-        worst_network_health_score: 0
+        worst_network_health_score: 0,
+        measurement_context: measurementContext,
+        score_context: scoreContext
       };
     }
 
@@ -94,7 +108,9 @@ class AnalyticsService {
       avg_jitter_ms: Number(avg_jitter_ms.toFixed(2)),
       avg_packet_loss_percent: Number(avg_packet_loss_percent.toFixed(2)),
       best_network_health_score,
-      worst_network_health_score
+      worst_network_health_score,
+      measurement_context: measurementContext,
+      score_context: scoreContext
     };
   }
 
@@ -125,6 +141,7 @@ class AnalyticsService {
     // Convert to array and calculate daily averages
     const history = Object.keys(groupedByDate).sort().map(date => {
       const tests = groupedByDate[date];
+      const latestDailyTest = tests[tests.length - 1];
       
       const downloads = tests.filter(t => t.download_speed_mbps != null).map(t => t.download_speed_mbps);
       const uploads = tests.filter(t => t.upload_speed_mbps != null).map(t => t.upload_speed_mbps);
@@ -136,7 +153,12 @@ class AnalyticsService {
         avg_download: downloads.length > 0 ? Number((downloads.reduce((a, b) => a + b, 0) / downloads.length).toFixed(2)) : 0,
         avg_upload: uploads.length > 0 ? Number((uploads.reduce((a, b) => a + b, 0) / uploads.length).toFixed(2)) : 0,
         avg_ping: pings.length > 0 ? Number((pings.reduce((a, b) => a + b, 0) / pings.length).toFixed(2)) : 0,
-        avg_health_score: healthScores.length > 0 ? Math.round(healthScores.reduce((a, b) => a + b, 0) / healthScores.length) : 0
+        avg_health_score: healthScores.length > 0 ? Math.round(healthScores.reduce((a, b) => a + b, 0) / healthScores.length) : 0,
+        measurement_context: getMeasurementContext(
+          latestDailyTest?.probe_method,
+          latestDailyTest?.probe_target
+        ),
+        score_context: getScoreContext(latestDailyTest || {})
       };
     });
 
@@ -155,7 +177,7 @@ class AnalyticsService {
       throw new Error('Unauthorized: You do not own this test result');
     }
     
-    return testResult;
+    return annotateTestResult(testResult);
   }
 
   // 4. Get Anomalies
@@ -177,8 +199,9 @@ class AnalyticsService {
           test_result_id: test.id,
           type: 'high_latency',
           severity: test.ping_avg_ms > 200 ? 'high' : 'medium',
-          description: 'Ping above normal range detected',
-          created_at: test.created_at
+          description: 'HTTP probe latency above normal range detected',
+          created_at: test.created_at,
+          measurement_context: getMeasurementContext(test.probe_method, test.probe_target)
         });
       }
       
@@ -188,8 +211,9 @@ class AnalyticsService {
           test_result_id: test.id,
           type: 'instability',
           severity: test.jitter_ms > 50 ? 'high' : 'medium',
-          description: 'High jitter detected - connection may be unstable',
-          created_at: test.created_at
+          description: 'High HTTP probe jitter detected - connection may be unstable',
+          created_at: test.created_at,
+          measurement_context: getMeasurementContext(test.probe_method, test.probe_target)
         });
       }
       
@@ -199,8 +223,9 @@ class AnalyticsService {
           test_result_id: test.id,
           type: 'packet_loss',
           severity: test.packet_loss_percent > 5 ? 'high' : 'medium',
-          description: 'Packet loss detected',
-          created_at: test.created_at
+          description: 'HTTP probe failure rate estimate is elevated',
+          created_at: test.created_at,
+          measurement_context: getMeasurementContext(test.probe_method, test.probe_target)
         });
       }
       
@@ -211,7 +236,8 @@ class AnalyticsService {
           type: 'slow_connection',
           severity: test.download_speed_mbps < 5 ? 'high' : 'medium',
           description: 'Slow download speed detected',
-          created_at: test.created_at
+          created_at: test.created_at,
+          score_context: getScoreContext(test)
         });
       }
     });

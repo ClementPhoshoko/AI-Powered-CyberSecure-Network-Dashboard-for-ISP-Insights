@@ -49,12 +49,15 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *                     avg_ping_ms:
  *                       type: number
  *                       example: 25.7
+ *                       description: Average HTTP probe latency
  *                     avg_jitter_ms:
  *                       type: number
  *                       example: 5.2
+ *                       description: Average HTTP probe jitter
  *                     avg_packet_loss_percent:
  *                       type: number
  *                       example: 0.5
+ *                       description: Average HTTP probe failure rate estimate
  *                     best_network_health_score:
  *                       type: integer
  *                       example: 92
@@ -111,6 +114,7 @@ router.get('/overview', validateSupabaseJWT, getOverview);
  *                       avg_ping:
  *                         type: number
  *                         example: 20
+ *                         description: Daily average HTTP probe latency
  *                       avg_health_score:
  *                         type: integer
  *                         example: 85

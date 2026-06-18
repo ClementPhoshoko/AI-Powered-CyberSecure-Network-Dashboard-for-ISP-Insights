@@ -13,14 +13,14 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  * @swagger
  * tags:
  *   name: Ping
- *   description: Ping test management
+ *   description: HTTP probe latency test management
  */
 
 /**
  * @swagger
  * /api/ping/health:
  *   get:
- *     summary: Simple health check for ping testing
+ *     summary: Simple health check used for HTTP probe latency sampling
  *     tags: [Ping]
  *     responses:
  *       200:
@@ -32,7 +32,7 @@ router.get('/health', pingHealthCheck);
  * @swagger
  * /api/ping/tests:
  *   post:
- *     summary: Run a new ping test
+ *     summary: Run a new HTTP probe latency test
  *     tags: [Ping]
  *     security:
  *       - bearerAuth: []
@@ -59,8 +59,15 @@ router.get('/health', pingHealthCheck);
  *                       type: number
  *               packet_loss_percent:
  *                 type: number
+ *                 description: Estimated failure rate across HTTP probe samples
  *               test_duration_seconds:
  *                 type: integer
+ *               probe_method:
+ *                 type: string
+ *                 example: http-health
+ *               probe_target:
+ *                 type: string
+ *                 description: HTTP endpoint targeted by the probe
  *               isp_name:
  *                 type: string
  *               country:
@@ -75,7 +82,7 @@ router.get('/health', pingHealthCheck);
  *                 type: string
  *     responses:
  *       201:
- *         description: Ping test created successfully
+ *         description: HTTP probe latency test created successfully
  *       400:
  *         description: Invalid request data
  *       401:
@@ -87,7 +94,7 @@ router.post('/tests', validateSupabaseJWT, runPingTest);
  * @swagger
  * /api/ping/tests/{id}:
  *   get:
- *     summary: Get a specific ping test by ID
+ *     summary: Get a specific HTTP probe latency test by ID
  *     tags: [Ping]
  *     security:
  *       - bearerAuth: []
@@ -113,7 +120,7 @@ router.get('/tests/:id', validateSupabaseJWT, getPingTestById);
  * @swagger
  * /api/ping/history:
  *   get:
- *     summary: Get ping test history
+ *     summary: Get HTTP probe latency test history
  *     tags: [Ping]
  *     security:
  *       - bearerAuth: []
@@ -142,7 +149,7 @@ router.get('/history', validateSupabaseJWT, getPingHistory);
  * @swagger
  * /api/ping/summary:
  *   get:
- *     summary: Get ping summary statistics
+ *     summary: Get HTTP probe latency summary statistics
  *     tags: [Ping]
  *     security:
  *       - bearerAuth: []
@@ -156,10 +163,13 @@ router.get('/history', validateSupabaseJWT, getPingHistory);
  *               properties:
  *                 averagePing:
  *                   type: number
+ *                   description: Average HTTP probe latency in milliseconds
  *                 averageJitter:
  *                   type: number
+ *                   description: Average HTTP probe jitter in milliseconds
  *                 averagePacketLoss:
  *                   type: number
+ *                   description: Average HTTP probe failure rate estimate
  *                 totalTests:
  *                   type: integer
  *       401:

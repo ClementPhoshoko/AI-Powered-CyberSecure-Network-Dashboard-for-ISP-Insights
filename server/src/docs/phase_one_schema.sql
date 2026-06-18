@@ -451,3 +451,64 @@ FROM test_results
 GROUP BY user_id, DATE(created_at);
 
 CREATE INDEX IF NOT EXISTS idx_mv_history_user_date ON mv_user_daily_history(user_id, date);
+
+-- =====================================================
+-- Ping Accuracy Step 1
+-- Improve HTTP-based ping observability without changing
+-- the overall speed-test architecture yet.
+-- =====================================================
+
+BEGIN;
+
+-- =====================================================
+-- Test Result Enhancements
+-- =====================================================
+
+ALTER TABLE test_results
+ADD COLUMN IF NOT EXISTS ping_median_ms NUMERIC(10,2),
+ADD COLUMN IF NOT EXISTS probe_method VARCHAR(50),
+ADD COLUMN IF NOT EXISTS probe_target VARCHAR(255),
+ADD COLUMN IF NOT EXISTS probe_sample_count INTEGER,
+ADD COLUMN IF NOT EXISTS successful_probe_count INTEGER,
+ADD COLUMN IF NOT EXISTS failed_probe_count INTEGER;
+
+-- Backfill new summary metadata for existing rows where possible.
+UPDATE test_results tr
+SET
+    probe_method = COALESCE(tr.probe_method, 'http-health'),
+    probe_sample_count = COALESCE(tr.probe_sample_count, stats.total_count, 0),
+    successful_probe_count = COALESCE(tr.successful_probe_count, stats.success_count, 0),
+    failed_probe_count = COALESCE(tr.failed_probe_count, stats.failure_count, 0),
+    ping_median_ms = COALESCE(tr.ping_median_ms, stats.median_latency)
+FROM (
+    SELECT
+        pm.test_result_id,
+        COUNT(*) AS total_count,
+        COUNT(*) FILTER (WHERE COALESCE(pm.latency_ms, 0) > 0) AS success_count,
+        COUNT(*) FILTER (WHERE COALESCE(pm.latency_ms, 0) <= 0) AS failure_count,
+        percentile_cont(0.5) WITHIN GROUP (ORDER BY pm.latency_ms)
+            FILTER (WHERE COALESCE(pm.latency_ms, 0) > 0) AS median_latency
+    FROM ping_measurements pm
+    GROUP BY pm.test_result_id
+) AS stats
+WHERE tr.id = stats.test_result_id;
+
+-- =====================================================
+-- Ping Measurement Enhancements
+-- =====================================================
+
+ALTER TABLE ping_measurements
+ADD COLUMN IF NOT EXISTS success BOOLEAN,
+ADD COLUMN IF NOT EXISTS failure_reason VARCHAR(100);
+
+-- Backfill success state for historical rows.
+UPDATE ping_measurements
+SET
+    success = COALESCE(success, COALESCE(latency_ms, 0) > 0),
+    failure_reason = CASE
+        WHEN failure_reason IS NOT NULL THEN failure_reason
+        WHEN COALESCE(latency_ms, 0) > 0 THEN NULL
+        ELSE 'request_failed'
+    END;
+
+COMMIT;

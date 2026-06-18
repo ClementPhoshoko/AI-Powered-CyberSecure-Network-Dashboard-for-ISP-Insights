@@ -1,22 +1,30 @@
+const getSuccessfulLatencies = (pings) => pings
+  .filter((ping) => ping?.success !== false && Number.isFinite(Number(ping?.latency_ms)))
+  .map((ping) => Number(ping.latency_ms))
+  .filter((latency) => latency > 0);
+
 const calculatePingAverage = (pings) => {
-  if (pings.length === 0) return 0;
-  const total = pings.reduce((sum, ping) => sum + Number(ping.latency_ms), 0);
-  return total / pings.length;
+  const latencies = getSuccessfulLatencies(pings);
+  if (latencies.length === 0) return 0;
+  const total = latencies.reduce((sum, latency) => sum + latency, 0);
+  return total / latencies.length;
 };
 
 const calculatePingMin = (pings) => {
-  if (pings.length === 0) return 0;
-  return Math.min(...pings.map(ping => Number(ping.latency_ms)));
+  const latencies = getSuccessfulLatencies(pings);
+  if (latencies.length === 0) return 0;
+  return Math.min(...latencies);
 };
 
 const calculatePingMax = (pings) => {
-  if (pings.length === 0) return 0;
-  return Math.max(...pings.map(ping => Number(ping.latency_ms)));
+  const latencies = getSuccessfulLatencies(pings);
+  if (latencies.length === 0) return 0;
+  return Math.max(...latencies);
 };
 
 const calculatePingMedian = (pings) => {
-  if (pings.length === 0) return 0;
-  const latencies = pings.map(ping => Number(ping.latency_ms)).sort((a, b) => a - b);
+  const latencies = getSuccessfulLatencies(pings).sort((a, b) => a - b);
+  if (latencies.length === 0) return 0;
   const mid = Math.floor(latencies.length / 2);
   if (latencies.length % 2 === 0) {
     return (latencies[mid - 1] + latencies[mid]) / 2;
@@ -25,13 +33,14 @@ const calculatePingMedian = (pings) => {
 };
 
 const calculateJitter = (pings) => {
-  if (pings.length < 2) return 0;
+  const latencies = getSuccessfulLatencies(pings);
+  if (latencies.length < 2) return 0;
   let totalDiff = 0;
-  for (let i = 1; i < pings.length; i++) {
-    const diff = Math.abs(Number(pings[i].latency_ms) - Number(pings[i - 1].latency_ms));
+  for (let i = 1; i < latencies.length; i++) {
+    const diff = Math.abs(latencies[i] - latencies[i - 1]);
     totalDiff += diff;
   }
-  return totalDiff / (pings.length - 1);
+  return totalDiff / (latencies.length - 1);
 };
 
 module.exports = {

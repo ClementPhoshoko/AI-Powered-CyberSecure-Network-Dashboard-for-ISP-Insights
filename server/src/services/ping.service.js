@@ -1,20 +1,33 @@
 const TestResult = require('../models/TestResult');
 const PingMeasurement = require('../models/PingMeasurement');
+const {
+  annotateTestResult,
+  annotateTestResults,
+  getMeasurementContext
+} = require('../utils/testResultPresentation');
 const { 
   calculatePingAverage, 
   calculatePingMin, 
   calculatePingMax, 
+  calculatePingMedian,
   calculateJitter 
 } = require('../utils/networkMetrics');
 
 class PingService {
   static async runPingTest(userId, rawPings, optionalData = {}) {
     // 1. Calculate summary metrics from raw pings
+    const successfulPings = rawPings.filter(
+      (ping) => ping?.success !== false && Number.isFinite(Number(ping?.latency_ms)) && Number(ping.latency_ms) > 0
+    );
+    const failedPings = rawPings.length - successfulPings.length;
     const pingAvgMs = calculatePingAverage(rawPings);
     const pingMinMs = calculatePingMin(rawPings);
     const pingMaxMs = calculatePingMax(rawPings);
+    const pingMedianMs = calculatePingMedian(rawPings);
     const jitterMs = calculateJitter(rawPings);
-    const packetLossPercent = optionalData.packet_loss_percent || 0;
+    const packetLossPercent = rawPings.length === 0
+      ? 0
+      : (failedPings / rawPings.length) * 100;
     const normalizedTestDurationSeconds = optionalData.test_duration_seconds == null
       ? undefined
       : optionalData.test_duration_seconds > 0
@@ -24,12 +37,18 @@ class PingService {
     // 2. Create test result in DB
     const testResult = await TestResult.create({
       user_id: userId,
+      ...optionalData,
       ping_avg_ms: Number(pingAvgMs.toFixed(2)),
       ping_min_ms: Number(pingMinMs.toFixed(2)),
       ping_max_ms: Number(pingMaxMs.toFixed(2)),
+      ping_median_ms: Number(pingMedianMs.toFixed(2)),
       jitter_ms: Number(jitterMs.toFixed(2)),
       packet_loss_percent: Number(packetLossPercent.toFixed(2)),
-      ...optionalData,
+      probe_method: optionalData.probe_method || 'http-health',
+      probe_target: optionalData.probe_target || null,
+      probe_sample_count: rawPings.length,
+      successful_probe_count: successfulPings.length,
+      failed_probe_count: failedPings,
       test_duration_seconds: normalizedTestDurationSeconds
     });
 
@@ -37,31 +56,43 @@ class PingService {
     const pingMeasurements = rawPings.map(ping => ({
       test_result_id: testResult.id,
       sequence_number: ping.sequence_number,
-      latency_ms: Number(ping.latency_ms)
+      latency_ms: Number.isFinite(Number(ping.latency_ms)) ? Number(ping.latency_ms) : null,
+      success: ping.success !== false,
+      failure_reason: ping.failure_reason || null
     }));
 
     await PingMeasurement.bulkCreate(pingMeasurements);
 
     // 4. Return full test result with pings
-    return TestResult.findById(testResult.id);
+    const fullResult = await TestResult.findById(testResult.id);
+    return annotateTestResult(fullResult);
   }
 
   static async getPingTestById(testId) {
-    return TestResult.findById(testId);
+    const testResult = await TestResult.findById(testId);
+    return annotateTestResult(testResult);
   }
 
   static async getPingHistory(userId, limit = 100, offset = 0) {
-    return TestResult.findByCurrentUser(userId, limit, offset);
+    const history = await TestResult.findByCurrentUser(userId, limit, offset);
+    return annotateTestResults(history);
   }
 
   static async getPingSummary(userId) {
     const history = await TestResult.findByCurrentUser(userId, 1000, 0); // Get last 1000 tests max
+    const latestTest = history[0];
+    const measurementContext = getMeasurementContext(
+      latestTest?.probe_method,
+      latestTest?.probe_target
+    );
+
     if (history.length === 0) {
       return {
         averagePing: 0,
         averageJitter: 0,
         averagePacketLoss: 0,
-        totalTests: 0
+        totalTests: 0,
+        measurement_context: measurementContext
       };
     }
 
@@ -74,7 +105,8 @@ class PingService {
       averagePing: Number((totalPing / totalTests).toFixed(2)),
       averageJitter: Number((totalJitter / totalTests).toFixed(2)),
       averagePacketLoss: Number((totalPacketLoss / totalTests).toFixed(2)),
-      totalTests
+      totalTests,
+      measurement_context: measurementContext
     };
   }
 }

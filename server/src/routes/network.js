@@ -17,7 +17,7 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  * @swagger
  * /api/network/score:
  *   post:
- *     summary: Calculate and save network scores for a test result
+ *     summary: Calculate and save derived network scores for a test result
  *     tags: [Network Scoring]
  *     security:
  *       - bearerAuth: []
@@ -71,6 +71,18 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *                       type: integer
  *                       minimum: 0
  *                       maximum: 100
+ *                     score_method:
+ *                       type: string
+ *                       example: derived-http-probe-estimate
+ *                     score_confidence_label:
+ *                       type: string
+ *                       example: medium
+ *                     score_confidence_value:
+ *                       type: number
+ *                       example: 60
+ *                     score_explanation:
+ *                       type: string
+ *                       description: Explains that the scores are derived from throughput plus HTTP probe metrics
  *       400:
  *         description: Invalid request data
  *       401:

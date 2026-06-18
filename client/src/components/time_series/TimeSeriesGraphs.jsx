@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import './TimeSeriesGraphs.css';
 
 const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
+  const measurementContext = testResult?.measurement_context || {};
+  const latencyChartTitle = measurementContext.latency_label || 'HTTP probe latency';
   const defaultColors = {
     download: { stroke: 'var(--download)', fill: '#3B82F6' },
     upload: { stroke: 'var(--upload)', fill: '#8B5CF6' },
@@ -21,7 +23,7 @@ const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
   }));
 
   const pingData = (testResult?.ping_measurements || []).map((m) => ({
-    name: `Ping ${m.sequence_number}`,
+    name: `Probe ${Number(m.sequence_number) + 1}`,
     latency: m.latency_ms
   }));
 
@@ -84,7 +86,7 @@ const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
     <div className="graphs-container">
       {renderChart(downloadData, 'Download Speed Over Time', colors.download, 'Mbps')}
       {renderChart(uploadData, 'Upload Speed Over Time', colors.upload, 'Mbps')}
-      {renderChart(pingData, 'Ping Latency', colors.ping, 'ms', LineChart)}
+      {renderChart(pingData, latencyChartTitle, colors.ping, 'ms', LineChart)}
     </div>
   );
 };

@@ -1,6 +1,22 @@
 const TestResult = require('../models/TestResult');
+const {
+  DEFAULT_HTTP_SCORE_CONFIDENCE_VALUE,
+  DEFAULT_HTTP_SCORE_METHOD,
+  DEFAULT_HTTP_SCORE_EXPLANATION,
+  getScoreContext
+} = require('../utils/testResultPresentation');
 
 class NetworkScoringService {
+  static clampScore(score) {
+    return Math.max(0, Math.min(100, score));
+  }
+
+  static applyConfidenceAdjustment(score, confidenceValue) {
+    const confidenceFactor = Math.max(0, Math.min(1, confidenceValue / 100));
+    const adjustedScore = 50 + ((score - 50) * confidenceFactor);
+    return this.clampScore(Math.round(adjustedScore));
+  }
+
   // Normalization functions for each metric
   static normalizeDownloadScore(downloadSpeedMbps) {
     if (downloadSpeedMbps >= 100) return 100;
@@ -54,7 +70,8 @@ class NetworkScoringService {
       upload_speed_mbps,
       ping_avg_ms,
       jitter_ms,
-      packet_loss_percent
+      packet_loss_percent,
+      probe_method
     } = metrics;
 
     // Normalize each metric
@@ -65,7 +82,7 @@ class NetworkScoringService {
     const packetLossScore = this.normalizePacketLossScore(packet_loss_percent || 0);
 
     // Calculate each composite score with weights
-    const networkHealthScore = Math.round(
+    const rawNetworkHealthScore = Math.round(
       (downloadScore * 0.35) +
       (uploadScore * 0.20) +
       (pingScore * 0.20) +
@@ -73,14 +90,14 @@ class NetworkScoringService {
       (packetLossScore * 0.10)
     );
 
-    const gamingScore = Math.round(
+    const rawGamingScore = Math.round(
       (pingScore * 0.45) +
       (jitterScore * 0.30) +
       (packetLossScore * 0.20) +
       (downloadScore * 0.05)
     );
 
-    const streamingScore = Math.round(
+    const rawStreamingScore = Math.round(
       (downloadScore * 0.60) +
       (uploadScore * 0.10) +
       (pingScore * 0.10) +
@@ -88,7 +105,7 @@ class NetworkScoringService {
       (packetLossScore * 0.10)
     );
 
-    const videoCallScore = Math.round(
+    const rawVideoCallScore = Math.round(
       (uploadScore * 0.30) +
       (pingScore * 0.25) +
       (jitterScore * 0.25) +
@@ -96,7 +113,7 @@ class NetworkScoringService {
       (downloadScore * 0.05)
     );
 
-    const browsingScore = Math.round(
+    const rawBrowsingScore = Math.round(
       (downloadScore * 0.40) +
       (pingScore * 0.30) +
       (uploadScore * 0.10) +
@@ -104,15 +121,32 @@ class NetworkScoringService {
       (packetLossScore * 0.10)
     );
 
-    // Clamp scores between 0 and 100
-    const clamp = (score) => Math.max(0, Math.min(100, score));
+    const scoreContext = getScoreContext({
+      probe_method: probe_method || 'http-health',
+      score_method: DEFAULT_HTTP_SCORE_METHOD,
+      score_confidence_value: DEFAULT_HTTP_SCORE_CONFIDENCE_VALUE,
+      score_explanation: DEFAULT_HTTP_SCORE_EXPLANATION
+    });
+    const confidenceValue = scoreContext.score_confidence_value;
 
     return {
-      network_health_score: clamp(networkHealthScore),
-      gaming_score: clamp(gamingScore),
-      streaming_score: clamp(streamingScore),
-      video_call_score: clamp(videoCallScore),
-      browsing_score: clamp(browsingScore)
+      network_health_score: this.applyConfidenceAdjustment(rawNetworkHealthScore, confidenceValue),
+      gaming_score: this.applyConfidenceAdjustment(rawGamingScore, confidenceValue),
+      streaming_score: this.applyConfidenceAdjustment(rawStreamingScore, confidenceValue),
+      video_call_score: this.applyConfidenceAdjustment(rawVideoCallScore, confidenceValue),
+      browsing_score: this.applyConfidenceAdjustment(rawBrowsingScore, confidenceValue),
+      score_method: scoreContext.score_method,
+      score_confidence_label: scoreContext.score_confidence_label,
+      score_confidence_value: scoreContext.score_confidence_value,
+      score_explanation: scoreContext.score_explanation,
+      score_context: scoreContext,
+      raw_weighted_scores: {
+        network_health_score: this.clampScore(rawNetworkHealthScore),
+        gaming_score: this.clampScore(rawGamingScore),
+        streaming_score: this.clampScore(rawStreamingScore),
+        video_call_score: this.clampScore(rawVideoCallScore),
+        browsing_score: this.clampScore(rawBrowsingScore)
+      }
     };
   }
 
@@ -133,7 +167,8 @@ class NetworkScoringService {
       upload_speed_mbps: testResult.upload_speed_mbps,
       ping_avg_ms: testResult.ping_avg_ms,
       jitter_ms: testResult.jitter_ms,
-      packet_loss_percent: testResult.packet_loss_percent
+      packet_loss_percent: testResult.packet_loss_percent,
+      probe_method: testResult.probe_method
     };
 
     // Validate required metrics exist (at least some of them)
@@ -144,13 +179,26 @@ class NetworkScoringService {
 
     // Calculate scores
     const scores = this.calculateScores(metrics);
+    const persistedScores = {
+      network_health_score: scores.network_health_score,
+      gaming_score: scores.gaming_score,
+      streaming_score: scores.streaming_score,
+      video_call_score: scores.video_call_score,
+      browsing_score: scores.browsing_score,
+      score_method: scores.score_method,
+      score_confidence_label: scores.score_confidence_label,
+      score_confidence_value: scores.score_confidence_value,
+      score_explanation: scores.score_explanation
+    };
 
     // Update test result in database
-    const updatedTestResult = await TestResult.update(testResultId, scores);
+    await TestResult.update(testResultId, persistedScores);
 
     return {
       test_result_id: testResultId,
-      ...scores
+      ...persistedScores,
+      score_context: scores.score_context,
+      raw_weighted_scores: scores.raw_weighted_scores
     };
   }
 }

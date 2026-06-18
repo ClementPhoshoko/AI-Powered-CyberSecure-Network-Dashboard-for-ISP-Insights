@@ -1,16 +1,28 @@
 const PingService = require('../services/ping.service');
 const { z } = require('zod');
 
+const pingMeasurementSchema = z.object({
+  sequence_number: z.number().int().min(0),
+  latency_ms: z.number().min(0).nullable().optional(),
+  success: z.boolean().optional().default(true),
+  failure_reason: z.string().max(100).nullable().optional()
+}).superRefine((ping, ctx) => {
+  if (ping.success !== false && typeof ping.latency_ms !== 'number') {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['latency_ms'],
+      message: 'latency_ms is required for successful ping measurements'
+    });
+  }
+});
+
 // Zod validation schemas
 const createPingTestSchema = z.object({
-  pings: z.array(
-    z.object({
-      sequence_number: z.number().int().min(0),
-      latency_ms: z.number().min(0)
-    })
-  ).min(1),
+  pings: z.array(pingMeasurementSchema).min(1),
   packet_loss_percent: z.number().min(0).max(100).optional().default(0),
   test_duration_seconds: z.number().min(0).optional(),
+  probe_method: z.string().max(50).optional(),
+  probe_target: z.string().max(255).optional(),
   isp_name: z.string().optional(),
   country: z.string().optional(),
   province: z.string().optional(),

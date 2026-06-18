@@ -2,6 +2,7 @@ import './Home.css';
 import SpeedMeter from '../../components/speedmeter/SpeedMeter';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import aiIcon from '../../assets/avatars/ai.png';
+import speakerAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
 import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
 import { useSpeedTest } from '../../hooks/useSpeedTest';
@@ -18,14 +19,17 @@ function Home() {
     isRunning,
     isComplete
   } = useSpeedTest();
+  const aiSummaryText =
+    testResult?.ai_summary ||
+    'Your speed test summary will appear here after the system interprets the results.';
 
   const getPhaseLabel = () => {
     switch (phase) {
       case 'initializing': return 'Initializing...';
-      case 'ping': return 'Testing Ping...';
+      case 'ping': return 'Testing App Latency...';
       case 'download': return 'Testing Download...';
       case 'upload': return 'Testing Upload...';
-      case 'calculating': return 'Calculating Scores...';
+      case 'calculating': return 'Calculating Derived Scores...';
       default: return '';
     }
   };
@@ -78,8 +82,26 @@ function Home() {
             <h3 className="graph-advisory-title">Understand Your Speedtest</h3>
             <p>• <strong>Download Speed Over Time:</strong> Shows consistency of connection</p>
             <p>• <strong>Upload Speed Over Time:</strong> Measures upload performance</p>
-            <p>• <strong>Ping Latency:</strong> Tracks response time consistency</p>
+            <p>• <strong>App Latency:</strong> Tracks how quickly your device reaches this service during the test</p>
           </div>
+
+          <section className="speaker-section" aria-label="How to read this test">
+            <img
+              src={speakerAvatar}
+              alt="Instructor avatar"
+              className="speaker-avatar"
+            />
+            <div className="speaker-card">
+              <span className="speaker-tag">How To Read This Test</span>
+              <h3 className="speaker-title">Visitors can test the network they are using right now</h3>
+              <p className="speaker-text">
+                Anyone opening your website can run a speed test from their current device and connection. If they are on home Wi-Fi, the results reflect that real-world experience to your service.
+              </p>
+              <p className="speaker-text">
+                It measures device-to-server performance, not a deep inspection of the router, signal strength, or every internal Wi-Fi detail.
+              </p>
+            </div>
+          </section>
         </div>
         <div className="home-col">
           {testResult && (
@@ -91,7 +113,7 @@ function Home() {
                   AI-Powered Summary
                 </h3>
                 <p className="ai-summary-text">
-                  Your connection is excellent overall. It performs well for gaming, streaming, and video calls, providing a smooth experience for all your online activities.
+                  {aiSummaryText}
                 </p>
               </div>
             </>
