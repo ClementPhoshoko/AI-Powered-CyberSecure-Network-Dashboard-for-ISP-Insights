@@ -104,7 +104,7 @@ function Login() {
         <div className="auth-form-options">
           <label className="auth-form-checkbox-label">
             <input type="checkbox" className="auth-form-checkbox" />
-            Save Details
+            Remember me
           </label>
           <a href="#" className="auth-form-forgot">Forgot password?</a>
         </div>

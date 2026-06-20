@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import './AuthLayout.css';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
@@ -11,6 +11,12 @@ function AuthLayout({ activeTab = 'login', children }) {
   
   return (
     <div className="auth-container">
+      <div className="auth-header-logo">
+        <Link to="/" className="auth-top-logo">
+          <img src={loginLogo} alt="AkovoLabs Logo" className="auth-top-logo-icon" />
+          <span className="auth-top-logo-text">Home</span>
+        </Link>
+      </div>
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-tabs">

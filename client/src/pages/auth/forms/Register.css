@@ -90,6 +90,11 @@
   border-color: var(--primary);
 }
 
+.auth-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .auth-form-button-icon {
   width: 16px;
   height: 16px;

@@ -1,10 +1,45 @@
 .auth-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   padding: var(--space-6);
+}
+
+.auth-header-logo {
+  position: absolute;
+  top: var(--space-6);
+  left: var(--space-6);
+  z-index: 1;
+}
+
+.auth-top-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--ease-out);
+  text-decoration: none;
+}
+
+.auth-top-logo:hover {
+  transform: scale(1.02);
+}
+
+.auth-top-logo-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
+.auth-top-logo-text {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
 .auth-card {

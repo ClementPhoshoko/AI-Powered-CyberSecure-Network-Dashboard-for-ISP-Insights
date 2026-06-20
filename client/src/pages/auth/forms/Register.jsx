@@ -15,6 +15,7 @@ function Register() {
   const [success, setSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [animationKey, setAnimationKey] = useState(Date.now());
   const navigate = useNavigate();
 
@@ -60,6 +61,11 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPasswordError('');
+
+    if (!agreeToTerms) {
+      setErrorModal({ isOpen: true, message: 'You must agree to the Terms & Conditions and Privacy Policy to create an account.' });
+      return;
+    }
 
     if (password !== confirmPassword) {
       setErrorModal({ isOpen: true, message: 'Passwords do not match' });
@@ -196,7 +202,20 @@ function Register() {
           </div>
         </div>
         
-        <button type="submit" className="auth-form-button" disabled={isLoading}>
+        <div className="auth-form-field">
+          <label className="auth-form-checkbox-label">
+            <input 
+              type="checkbox" 
+              className="auth-form-checkbox" 
+              checked={agreeToTerms}
+              onChange={(e) => setAgreeToTerms(e.target.checked)}
+              required
+            />
+            I agree to the Terms & Conditions and Privacy Policy
+          </label>
+        </div>
+        
+        <button type="submit" className="auth-form-button" disabled={isLoading || !agreeToTerms}>
           <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 5v14M5 12h14" />
           </svg>
