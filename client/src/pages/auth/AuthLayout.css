@@ -120,6 +120,16 @@
   padding: var(--space-4);
 }
 
+.auth-advisory-text {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+  text-align: center;
+}
+
 .auth-info-column {
   padding: var(--space-6);
   display: flex;
