@@ -2,19 +2,25 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
+import ErrorModal from '../../../components/error_modal/ErrorModal';
 import './Register.css';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
+  const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [passwordError, setPasswordError] = useState('');
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [animationKey, setAnimationKey] = useState(Date.now());
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setAnimationKey(Date.now());
+  }, []);
 
   // Update progress bar
   useEffect(() => {
@@ -53,17 +59,16 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setPasswordError('');
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setErrorModal({ isOpen: true, message: 'Passwords do not match' });
       return;
     }
 
     const passwordValidationError = validatePassword(password);
     if (passwordValidationError) {
-      setPasswordError(passwordValidationError);
+      setErrorModal({ isOpen: true, message: passwordValidationError });
       return;
     }
 
@@ -76,7 +81,7 @@ function Register() {
         setSuccess(true);
       })
       .catch((err) => {
-        setError(err.message);
+        setErrorModal({ isOpen: true, message: err.message });
       })
       .finally(() => {
         setIsLoading(false);
@@ -108,10 +113,9 @@ function Register() {
         message="Creating your account"
         status="AkovoLabs Auth System v1.0"
       />
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form key={animationKey} className="auth-form" onSubmit={handleSubmit}>
         <h1 className="auth-form-title">Create account</h1>
         
-        {error && <div className="auth-form-error">{error}</div>}
         {passwordError && <div className="auth-form-error">{passwordError}</div>}
 
         <div className="auth-form-field">
@@ -199,6 +203,11 @@ function Register() {
           {isLoading ? 'Signing up...' : 'Sign up'}
         </button>
       </form>
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ isOpen: false, message: '' })}
+      />
     </>
   );
 }

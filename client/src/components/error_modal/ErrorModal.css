@@ -1,0 +1,130 @@
+.er-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--glass-bg-soft);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+  animation: errorModalOverlayFade 300ms ease-out forwards;
+}
+
+.er-modal-overlay.closing {
+  animation: errorModalOverlayFadeOut 300ms ease-in forwards;
+}
+
+@keyframes errorModalOverlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes errorModalOverlayFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.er-modal-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem 1.75rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: var(--blur-xl);
+  -webkit-backdrop-filter: var(--blur-xl);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: errorModalCardSlideUp 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.er-modal-card.closing {
+  animation: errorModalCardFadeOut 300ms ease-in forwards;
+}
+
+@keyframes errorModalCardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes errorModalCardFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.er-modal-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all 200ms ease;
+}
+
+.er-modal-close-btn:hover {
+  background: var(--glass-bg-strong);
+  color: var(--text-primary);
+}
+
+.er-modal-close-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.er-modal-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.er-modal-icon {
+  width: auto;
+  height: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.er-modal-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.er-modal-message {
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  text-align: left;
+  font-weight: 500;
+  flex: 1;
+}

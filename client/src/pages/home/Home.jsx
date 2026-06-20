@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import SpeedMeter from '../../components/speedmeter/SpeedMeter';
@@ -8,11 +8,13 @@ import speakerAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
 import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
 import Modal from '../../components/modal/Modal';
+import ErrorModal from '../../components/error_modal/ErrorModal';
 import { useSpeedTest } from '../../hooks/useSpeedTest';
 import { useAuth } from '../../context/AuthContext';
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const {
@@ -27,6 +29,19 @@ function Home() {
     isRunning,
     isComplete
   } = useSpeedTest();
+
+  // Watch for error state and open error modal
+  useEffect(() => {
+    if (error) {
+      setShowErrorModal(true);
+    }
+  }, [error]);
+
+  // Reset error state when closing modal
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+    resetTest();
+  };
   const aiSummaryText =
     testResult?.ai_summary ||
     'Your speed test summary will appear here after the system interprets the results.';
@@ -92,12 +107,6 @@ function Home() {
               </>
             )}
           </button>
-
-          {error && (
-            <div className="error-message">
-              Error: {error}
-            </div>
-          )}
 
           <div className="graph-advisory">
             <h3 className="graph-advisory-title">Understand Your Speedtest</h3>
@@ -181,6 +190,11 @@ function Home() {
             navigate('/login');
           }
         }}
+      />
+      <ErrorModal
+        isOpen={showErrorModal}
+        message={error}
+        onClose={handleCloseErrorModal}
       />
     </div>
   );

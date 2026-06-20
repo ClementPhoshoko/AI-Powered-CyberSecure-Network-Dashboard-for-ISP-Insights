@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Modal from '../modal/Modal';
+import ErrorModal from '../error_modal/ErrorModal';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import './Nav.css';
 
@@ -11,6 +12,7 @@ function Nav() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
 
   const toggleDropdown = (name) => {
     setActiveDropdown(activeDropdown === name ? null : name);
@@ -52,6 +54,16 @@ function Nav() {
       ]
     }
   ];
+
+  const handleLogout = async () => {
+    setShowLogoutModal(false);
+    try {
+      await logout();
+      navigate("/");
+    } catch (err) {
+      setErrorModal({ isOpen: true, message: err.message });
+    }
+  };
 
   return (
     <nav className="nav-container" onMouseLeave={closeDropdown}>
@@ -204,12 +216,13 @@ function Nav() {
             </svg>
           ),
           label: "Proceed",
-          onClick: async () => {
-            setShowLogoutModal(false);
-            await logout();
-            navigate("/");
-          }
+          onClick: handleLogout
         }}
+      />
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ isOpen: false, message: '' })}
       />
     </nav>
   );

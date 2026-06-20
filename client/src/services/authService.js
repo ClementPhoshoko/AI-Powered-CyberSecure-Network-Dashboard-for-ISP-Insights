@@ -1,8 +1,46 @@
 import { supabase } from './supabase';
 
+const getFriendlyAuthErrorMessage = (error) => {
+  if (!error || !error.message) {
+    return 'Something went wrong. Please try again.';
+  }
+
+  const msg = error.message.toLowerCase();
+
+  if (msg.includes('invalid login credentials')) {
+    return 'Invalid email or password. Please check your details and try again.';
+  }
+
+  if (msg.includes('email not confirmed')) {
+    return 'Please verify your email address before signing in.';
+  }
+
+  if (msg.includes('user already registered')) {
+    return 'An account with this email already exists. Please sign in instead.';
+  }
+
+  if (msg.includes('password should be at least')) {
+    return 'Your password must be at least 8 characters long.';
+  }
+
+  if (msg.includes('network error')) {
+    return 'Network error. Please check your internet connection and try again.';
+  }
+
+  if (msg.includes('rate limit')) {
+    return 'Too many attempts. Please try again later.';
+  }
+
+  return 'Something went wrong. Please try again.';
+};
+
 export const login = async (email, password) => {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) {
+    const friendlyError = new Error(getFriendlyAuthErrorMessage(error));
+    friendlyError.originalError = error;
+    throw friendlyError;
+  }
   return data;
 };
 
@@ -14,13 +52,21 @@ export const register = async (email, password) => {
       redirectTo: window.location.origin
     }
   });
-  if (error) throw error;
+  if (error) {
+    const friendlyError = new Error(getFriendlyAuthErrorMessage(error));
+    friendlyError.originalError = error;
+    throw friendlyError;
+  }
   return data;
 };
 
 export const logout = async () => {
   const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+  if (error) {
+    const friendlyError = new Error(getFriendlyAuthErrorMessage(error));
+    friendlyError.originalError = error;
+    throw friendlyError;
+  }
 };
 
 export const getCurrentUser = async () => {

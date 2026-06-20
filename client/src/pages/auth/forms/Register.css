@@ -3,6 +3,18 @@
   flex-direction: column;
   gap: var(--space-4);
   width: 100%;
+  animation: blurToClear 0.5s ease-out forwards;
+}
+
+@keyframes blurToClear {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
 
 .auth-form-title {

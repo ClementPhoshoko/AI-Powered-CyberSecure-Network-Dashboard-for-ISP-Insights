@@ -2,15 +2,21 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
+import ErrorModal from '../../../components/error_modal/ErrorModal';
 import './Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [animationKey, setAnimationKey] = useState(Date.now());
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setAnimationKey(Date.now());
+  }, []);
 
   // Update progress bar
   useEffect(() => {
@@ -30,7 +36,6 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
     setProgress(0);
 
@@ -40,7 +45,7 @@ function Login() {
         navigate('/');
       })
       .catch((err) => {
-        setError(err.message);
+        setErrorModal({ isOpen: true, message: err.message });
       })
       .finally(() => {
         setIsLoading(false);
@@ -55,10 +60,8 @@ function Login() {
         message="Signing you in"
         status="AkovoLabs Auth System v1.0"
       />
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form key={animationKey} className="auth-form" onSubmit={handleSubmit}>
         <h1 className="auth-form-title">Welcome back</h1>
-        
-        {error && <div className="auth-form-error">{error}</div>}
 
         <div className="auth-form-field">
           <label className="auth-form-label">Email</label>
@@ -115,6 +118,11 @@ function Login() {
           {isLoading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ isOpen: false, message: '' })}
+      />
     </>
   );
 }
