@@ -30,13 +30,29 @@ class TestResult {
   }
 
   // Find all test results for current user
-  static async findByCurrentUser(userId, limit = 100, offset = 0) {
-    const { data, error } = await supabaseAdmin
+  static async findByCurrentUser(userId, limit = 100, offset = 0, filters = {}) {
+    let query = supabaseAdmin
       .from('test_results')
       .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+      .eq('user_id', userId);
+    
+    if (filters.startDate) {
+      query = query.gte('created_at', new Date(filters.startDate).toISOString());
+    }
+    
+    if (filters.endDate) {
+      const end = new Date(filters.endDate);
+      end.setHours(23, 59, 59, 999);
+      query = query.lte('created_at', end.toISOString());
+    }
+    
+    query = query.order('created_at', { ascending: false });
+    
+    if (limit > 0) {
+      query = query.range(offset, offset + limit - 1);
+    }
+    
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   }
@@ -84,6 +100,28 @@ class TestResult {
       .range(offset, offset + limit - 1);
     if (error) throw error;
     return data;
+  }
+
+  // Count test results for current user (with optional filters)
+  static async countByCurrentUser(userId, filters = {}) {
+    let query = supabaseAdmin
+      .from('test_results')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+    
+    if (filters.startDate) {
+      query = query.gte('created_at', new Date(filters.startDate).toISOString());
+    }
+    
+    if (filters.endDate) {
+      const end = new Date(filters.endDate);
+      end.setHours(23, 59, 59, 999);
+      query = query.lte('created_at', end.toISOString());
+    }
+    
+    const { count, error } = await query;
+    if (error) throw error;
+    return count;
   }
 }
 

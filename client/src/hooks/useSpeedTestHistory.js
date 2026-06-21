@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getPingHistory } from '../services/pingService';
 
-export function useSpeedTestHistory(limit = 20, offset = 0) {
+export function useSpeedTestHistory(limit = 10, offset = 0, filters = {}) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,12 +12,11 @@ export function useSpeedTestHistory(limit = 20, offset = 0) {
       setLoading(true);
       setError(null);
 
-      // Get ping history as the main test result container
-      const pingResponse = await getPingHistory(limit, offset);
+      const pingResponse = await getPingHistory(limit, offset, filters);
       
       if (pingResponse.data) {
         setHistory(pingResponse.data);
-        setTotal(pingResponse.pagination?.total || pingResponse.data.length);
+        setTotal(pingResponse.pagination?.total || 0);
       }
     } catch (err) {
       console.error('Failed to fetch test history:', err);
@@ -25,7 +24,7 @@ export function useSpeedTestHistory(limit = 20, offset = 0) {
     } finally {
       setLoading(false);
     }
-  }, [limit, offset]);
+  }, [limit, offset, filters]);
 
   useEffect(() => {
     fetchHistory();

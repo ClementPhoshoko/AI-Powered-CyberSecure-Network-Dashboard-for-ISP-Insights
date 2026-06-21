@@ -137,9 +137,41 @@ router.get('/tests/:id', validateSupabaseJWT, getPingTestById);
  *           type: integer
  *           default: 0
  *         description: Number of results to skip
+ *       - in: query
+ *         name: start_date
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter tests created on or after this date
+ *       - in: query
+ *         name: end_date
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Filter tests created on or before this date
  *     responses:
  *       200:
  *         description: History retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     limit:
+ *                       type: integer
+ *                     offset:
+ *                       type: integer
+ *                     total:
+ *                       type: integer
  *       401:
  *         description: Unauthorized
  */

@@ -73,9 +73,12 @@ class PingService {
     return annotateTestResult(testResult);
   }
 
-  static async getPingHistory(userId, limit = 100, offset = 0) {
-    const history = await TestResult.findByCurrentUser(userId, limit, offset);
-    return annotateTestResults(history);
+  static async getPingHistory(userId, limit = 100, offset = 0, filters = {}) {
+    const [history, total] = await Promise.all([
+      TestResult.findByCurrentUser(userId, limit, offset, filters),
+      TestResult.countByCurrentUser(userId, filters)
+    ]);
+    return { history: annotateTestResults(history), total };
   }
 
   static async getPingSummary(userId) {

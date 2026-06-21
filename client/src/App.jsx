@@ -5,6 +5,7 @@ import AuthLayout from './pages/auth/AuthLayout'
 import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
 import Home from './pages/home/Home'
+import History from './pages/history/History'
 import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
 
@@ -42,6 +43,7 @@ function AppContent() {
       <div className="app-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/tests" element={<History />} />
           <Route path="/login" element={<AuthLayout activeTab="login"><Login /></AuthLayout>} />
           <Route path="/signup" element={<AuthLayout activeTab="signup"><Register /></AuthLayout>} />
         </Routes>

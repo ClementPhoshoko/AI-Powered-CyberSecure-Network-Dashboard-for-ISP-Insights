@@ -99,8 +99,10 @@ const getPingHistory = async (req, res, next) => {
     const userId = req.user.id;
     const limit = Number(req.query.limit) || 100;
     const offset = Number(req.query.offset) || 0;
+    const startDate = req.query.start_date;
+    const endDate = req.query.end_date;
     
-    const history = await PingService.getPingHistory(userId, limit, offset);
+    const { history, total } = await PingService.getPingHistory(userId, limit, offset, { startDate, endDate });
     
     res.status(200).json({
       status: 'success',
@@ -108,7 +110,7 @@ const getPingHistory = async (req, res, next) => {
       pagination: {
         limit,
         offset,
-        total: history.length
+        total
       }
     });
   } catch (error) {
