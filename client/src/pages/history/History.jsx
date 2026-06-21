@@ -54,12 +54,20 @@ function History() {
   const [tableOffset, setTableOffset] = useState(0);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [tempStartDate, setTempStartDate] = useState(startDate);
+  const [tempEndDate, setTempEndDate] = useState(endDate);
   const [expandedTestId, setExpandedTestId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [activeTab, setActiveTab] = useState('trends');
   
+  // Sync temp date state when real date state changes
+  useEffect(() => {
+    setTempStartDate(startDate);
+    setTempEndDate(endDate);
+  }, [startDate, endDate]);
+
   // Pick random tip immediately without waiting
   const randomTip = useMemo(() => {
     const randomIndex = Math.floor(Math.random() * proTips.length);
@@ -145,6 +153,16 @@ function History() {
       videoCallScore: test.video_call_score || 0,
       browsingScore: test.browsing_score || 0
     }));
+
+  // Get first and last dates in chartData
+  const getDateRange = () => {
+    if (chartData.length === 0) return null;
+    const firstDate = chartData[0].date;
+    const lastDate = chartData[chartData.length - 1].date;
+    return { firstDate, lastDate };
+  };
+
+  const dateRange = getDateRange();
 
   const radarData = [
     { subject: 'Gaming', A: summary?.bestTest?.gaming_score || 0, fullMark: 100 },
@@ -451,8 +469,8 @@ function History() {
                           <span className="date-label">From</span>
                           <input 
                             type="date" 
-                            value={startDate} 
-                            onChange={(e) => { setStartDate(e.target.value); setTableOffset(0); }} 
+                            value={tempStartDate} 
+                            onChange={(e) => { setTempStartDate(e.target.value); }} 
                             className="date-input"
                           />
                         </label>
@@ -460,14 +478,29 @@ function History() {
                           <span className="date-label">To</span>
                           <input 
                             type="date" 
-                            value={endDate} 
-                            onChange={(e) => { setEndDate(e.target.value); setTableOffset(0); }} 
+                            value={tempEndDate} 
+                            onChange={(e) => { setTempEndDate(e.target.value); }} 
                             className="date-input"
                           />
                         </label>
                         <button 
+                          className="apply-filters-btn"
+                          onClick={() => {
+                            setStartDate(tempStartDate);
+                            setEndDate(tempEndDate);
+                            setTableOffset(0);
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                          Apply
+                        </button>
+                        <button 
                           className="clear-filters-btn"
                           onClick={() => {
+                            setTempStartDate('');
+                            setTempEndDate('');
                             setStartDate('');
                             setEndDate('');
                             setTableOffset(0);
@@ -521,6 +554,11 @@ function History() {
                           />
                         </LineChart>
                       </ResponsiveContainer>
+                      {dateRange && (
+                        <p className="graph-date-range">
+                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                        </p>
+                      )}
                     </div>
 
                     {/* Graph 2: Latency Quality */}
@@ -566,6 +604,11 @@ function History() {
                           />
                         </LineChart>
                       </ResponsiveContainer>
+                      {dateRange && (
+                        <p className="graph-date-range">
+                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                        </p>
+                      )}
                     </div>
 
                     {/* Graph 3: Network Health Score */}
@@ -608,6 +651,11 @@ function History() {
                           />
                         </AreaChart>
                       </ResponsiveContainer>
+                      {dateRange && (
+                        <p className="graph-date-range">
+                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                        </p>
+                      )}
                     </div>
 
                     {/* Graph 4: Experience Scores (Radar Chart) */}
@@ -629,6 +677,11 @@ function History() {
                           />
                         </RadarChart>
                       </ResponsiveContainer>
+                      {dateRange && (
+                        <p className="graph-date-range">
+                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
