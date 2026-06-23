@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import useSpeedTestHistory from '../../hooks/useSpeedTestHistory';
 import Loading from '../../components/loading/Loading';
 import heroImage from '../../assets/hero/Modern_office_with_data_flow_dynamics.png';
@@ -52,8 +54,8 @@ const proTips = [
 function History() {
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [tempStartDate, setTempStartDate] = useState(startDate);
   const [tempEndDate, setTempEndDate] = useState(endDate);
   const [expandedTestId, setExpandedTestId] = useState(null);
@@ -75,8 +77,8 @@ function History() {
   }, []);
 
   const dateFilters = useMemo(() => ({
-    startDate: startDate || undefined,
-    endDate: endDate || undefined
+    startDate: startDate ? startDate.toISOString().split('T')[0] : undefined,
+    endDate: endDate ? endDate.toISOString().split('T')[0] : undefined
   }), [startDate, endDate]);
 
   // Fetch all history for graphs/summary/insights (limit 1000)
@@ -465,22 +467,26 @@ function History() {
                     <div className="trends-header">
                       <h2 className="section-title">Performance Trends</h2>
                       <div className="date-filters">
-                        <label>
+                        <label className="date-label-field">
                           <span className="date-label">From</span>
-                          <input 
-                            type="date" 
-                            value={tempStartDate} 
-                            onChange={(e) => { setTempStartDate(e.target.value); }} 
+                          <DatePicker
+                            selected={tempStartDate}
+                            onChange={(date) => setTempStartDate(date)}
                             className="date-input"
+                            placeholderText="Select start date"
+                            isClearable
+                            dateFormat="yyyy-MM-dd"
                           />
                         </label>
-                        <label>
+                        <label className="date-label-field">
                           <span className="date-label">To</span>
-                          <input 
-                            type="date" 
-                            value={tempEndDate} 
-                            onChange={(e) => { setTempEndDate(e.target.value); }} 
+                          <DatePicker
+                            selected={tempEndDate}
+                            onChange={(date) => setTempEndDate(date)}
                             className="date-input"
+                            placeholderText="Select end date"
+                            isClearable
+                            dateFormat="yyyy-MM-dd"
                           />
                         </label>
                         <button 
@@ -492,17 +498,17 @@ function History() {
                           }}
                         >
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="20 6 9 17 4 12" />
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
                           </svg>
-                          Apply
                         </button>
                         <button 
                           className="clear-filters-btn"
                           onClick={() => {
-                            setTempStartDate('');
-                            setTempEndDate('');
-                            setStartDate('');
-                            setEndDate('');
+                            setTempStartDate(null);
+                            setTempEndDate(null);
+                            setStartDate(null);
+                            setEndDate(null);
                             setTableOffset(0);
                           }}
                         >
