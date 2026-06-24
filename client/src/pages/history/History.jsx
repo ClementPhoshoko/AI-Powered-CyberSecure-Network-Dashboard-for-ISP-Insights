@@ -112,7 +112,7 @@ function History() {
   const getScoreColor = (score) => {
     if (score >= 80) return 'var(--success)';
     if (score >= 60) return 'var(--warning)';
-    return 'var(--danger)';
+    return 'var(--error)';
   };
 
   const calculateSummary = () => {
@@ -180,7 +180,14 @@ function History() {
 
     insights.push({
       type: 'info',
-      icon: '📊',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+        </svg>
+      ),
       title: 'Speed Overview',
       message: `Your average download speed is ${summary?.avgDownload} Mbps and upload is ${summary?.avgUpload} Mbps.`
     });
@@ -188,21 +195,37 @@ function History() {
     if (parseInt(summary?.avgPing) < 50) {
       insights.push({
         type: 'success',
-        icon: '⚡',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+        ),
         title: 'Excellent Latency',
         message: 'Your ping is consistently low, great for gaming and video calls!'
       });
     } else if (parseInt(summary?.avgPing) < 100) {
       insights.push({
         type: 'warning',
-        icon: '⚠️',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        ),
         title: 'Moderate Latency',
         message: 'Your ping is acceptable, but could be better for real-time applications.'
       });
     } else {
       insights.push({
         type: 'danger',
-        icon: '🚨',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        ),
         title: 'High Latency',
         message: 'Your ping is quite high, consider checking your network connection.'
       });
@@ -210,7 +233,12 @@ function History() {
 
     insights.push({
       type: 'success',
-      icon: '🏆',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+          <circle cx="12" cy="8" r="7" />
+          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+        </svg>
+      ),
       title: 'Best Performance',
       message: `Your best test achieved a health score of ${summary?.bestTest?.network_health_score?.toFixed(0)}!`
     });
@@ -220,14 +248,7 @@ function History() {
 
   const aiInsights = generateAIInsights();
 
-  const filteredTests = [...tableHistory].filter(test => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      test.isp_name?.toLowerCase().includes(query) ||
-      formatDate(test.created_at).toLowerCase().includes(query)
-    );
-  }).sort((a, b) => {
+  const filteredTests = [...tableHistory].sort((a, b) => {
     let aVal = a[sortColumn];
     let bVal = b[sortColumn];
     
@@ -244,7 +265,7 @@ function History() {
 
   const exportToCSV = () => {
     const headers = ['Date', 'Download (Mbps)', 'Upload (Mbps)', 'Ping (ms)', 'Jitter (ms)', 'Health Score', 'ISP'];
-    const rows = filteredTests.map(test => [
+    const rows = allHistory.map(test => [
       formatDate(test.created_at),
       test.download_speed_mbps?.toFixed(1) || 0,
       test.upload_speed_mbps?.toFixed(1) || 0,
@@ -664,25 +685,60 @@ function History() {
                       )}
                     </div>
 
-                    {/* Graph 4: Experience Scores (Radar Chart) */}
+                    {/* Graph 4: Experience Scores (Radar Chart + Horizontal Bars) */}
                     <div className="graph-card">
                       <h3 className="graph-title">Experience Scores</h3>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                          <PolarGrid stroke="var(--glass-border)" />
-                          <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: 12 }} />
-                          <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
-                          <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
-                          <Legend wrapperStyle={{ fontSize: 12 }} />
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: 'var(--glass-bg)',
-                              border: '1px solid var(--glass-border)',
-                              borderRadius: 'var(--radius-md)'
-                            }}
-                          />
-                        </RadarChart>
-                      </ResponsiveContainer>
+                      <div className="experience-scores-container">
+                        <div className="radar-chart-wrapper">
+                          <ResponsiveContainer width="100%" height={300}>
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                              <PolarGrid stroke="var(--glass-border)" />
+                              <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: 12 }} />
+                              <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
+                              <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
+                              <Legend wrapperStyle={{ fontSize: 12 }} />
+                              <Tooltip 
+                                contentStyle={{
+                                  backgroundColor: 'var(--glass-bg)',
+                                  border: '1px solid var(--glass-border)',
+                                  borderRadius: 'var(--radius-md)'
+                                }}
+                              />
+                            </RadarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <div className="score-bars-wrapper">
+                          {radarData.map((item, index) => (
+                            <div key={index} className="score-bar-item">
+                              <div className="score-bar-label">{item.subject}</div>
+                              <div className="score-bar-container">
+                                <div 
+                                  className="score-bar-fill"
+                                  style={{ 
+                                    width: `${item.A}%`,
+                                    backgroundColor: getScoreColor(item.A)
+                                  }}
+                                ></div>
+                              </div>
+                              <div className="score-bar-value">{item.A}</div>
+                            </div>
+                          ))}
+                          <div className="score-bar-legend">
+                            <div className="legend-item">
+                              <div className="legend-color" style={{ backgroundColor: 'var(--success)' }}></div>
+                              <div className="legend-text">Excellent (80-100)</div>
+                            </div>
+                            <div className="legend-item">
+                              <div className="legend-color" style={{ backgroundColor: 'var(--warning)' }}></div>
+                              <div className="legend-text">Good (60-79)</div>
+                            </div>
+                            <div className="legend-item">
+                              <div className="legend-color" style={{ backgroundColor: 'var(--error)' }}></div>
+                              <div className="legend-text">Poor (0-59)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       {dateRange && (
                         <p className="graph-date-range">
                           Showing results from {dateRange.firstDate} to {dateRange.lastDate}
@@ -737,7 +793,7 @@ function History() {
                     <h2 className="section-title">AI Insights</h2>
                     <div className="ai-insights-grid">
                       {aiInsights.map((insight, index) => (
-                        <div key={index} className={`ai-insight-card ai-insight-card--${insight.type}`}>
+                        <div key={index} className="ai-insight-card">
                           <div className="ai-insight-icon">{insight.icon}</div>
                           <div className="ai-insight-content">
                             <h4 className="ai-insight-title">{insight.title}</h4>
@@ -745,6 +801,39 @@ function History() {
                           </div>
                         </div>
                       ))}
+                    </div>
+                    {/* Coming Soon Section */}
+                    <div className="coming-soon-section">
+                      <img 
+                        src={womanAvatar} 
+                        alt="Coming Soon" 
+                        className="coming-soon-avatar"
+                      />
+                      <div className="coming-soon-content">
+                        <h3 className="coming-soon-title">Coming Soon - Advanced Network Analysis</h3>
+                        <ul className="coming-soon-list">
+                          <li className="coming-soon-item">
+                            <span className="coming-soon-bullet"></span>
+                            Port Risk Detection
+                          </li>
+                          <li className="coming-soon-item">
+                            <span className="coming-soon-bullet"></span>
+                            Public Wi-Fi Security Analysis
+                          </li>
+                          <li className="coming-soon-item">
+                            <span className="coming-soon-bullet"></span>
+                            Network Traffic Anomaly Detection
+                          </li>
+                          <li className="coming-soon-item">
+                            <span className="coming-soon-bullet"></span>
+                            ISP Performance Benchmarking
+                          </li>
+                          <li className="coming-soon-item">
+                            <span className="coming-soon-bullet"></span>
+                            Device-Level Network Health Checks
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -789,22 +878,66 @@ function History() {
                   <div className="test-table-section">
                     <div className="test-table-header">
                       <h2 className="section-title">Test History</h2>
-                      <div className="test-table-controls">
-                        <input
-                          type="text"
-                          placeholder="Search tests..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="search-input"
-                        />
-                        <button onClick={exportToCSV} className="export-btn">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                          </svg>
-                          Export CSV
-                        </button>
+                      <div className="test-table-right-section">
+                        <div className="date-filters">
+                          <label className="date-label-field">
+                            <span className="date-label">From</span>
+                            <DatePicker
+                              selected={tempStartDate}
+                              onChange={(date) => setTempStartDate(date)}
+                              className="date-input"
+                              placeholderText="Select start date"
+                              isClearable
+                              dateFormat="yyyy-MM-dd"
+                            />
+                          </label>
+                          <label className="date-label-field">
+                            <span className="date-label">To</span>
+                            <DatePicker
+                              selected={tempEndDate}
+                              onChange={(date) => setTempEndDate(date)}
+                              className="date-input"
+                              placeholderText="Select end date"
+                              isClearable
+                              dateFormat="yyyy-MM-dd"
+                            />
+                          </label>
+                          <button 
+                            className="apply-filters-btn"
+                            onClick={() => {
+                              setStartDate(tempStartDate);
+                              setEndDate(tempEndDate);
+                              setTableOffset(0);
+                            }}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="11" cy="11" r="8" />
+                              <path d="M21 21l-4.35-4.35" />
+                            </svg>
+                          </button>
+                          <button 
+                            className="clear-filters-btn"
+                            onClick={() => {
+                              setTempStartDate(null);
+                              setTempEndDate(null);
+                              setStartDate(null);
+                              setEndDate(null);
+                              setTableOffset(0);
+                            }}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                        <div className="test-table-controls">
+                          <button onClick={exportToCSV} className="export-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Export CSV
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -887,72 +1020,74 @@ function History() {
                                 <tr key={`${test.id}-expanded`} className="test-table-row--expanded">
                                   <td colSpan={8} className="test-table-cell--expanded">
                                     <div className="test-details-container">
-                                      <div className="test-details-section">
-                                        <h4 className="test-details-section-title">Performance</h4>
-                                        <div className="test-details-grid">
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Download Speed</span>
-                                            <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Upload Speed</span>
-                                            <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Ping (Avg)</span>
-                                            <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Ping (Min)</span>
-                                            <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Ping (Max)</span>
-                                            <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Jitter</span>
-                                            <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Packet Loss</span>
-                                            <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                      <div className="test-details-wrapper">
+                                        <div className="test-details-section test-details-section--two-col">
+                                          <h4 className="test-details-section-title">Performance</h4>
+                                          <div className="test-details-grid">
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Download Speed</span>
+                                              <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Upload Speed</span>
+                                              <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Ping (Avg)</span>
+                                              <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Ping (Min)</span>
+                                              <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Ping (Max)</span>
+                                              <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Jitter</span>
+                                              <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Packet Loss</span>
+                                              <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
 
-                                      <div className="test-details-section">
-                                        <h4 className="test-details-section-title">Experience Scores</h4>
-                                        <div className="test-details-grid">
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Network Health</span>
-                                            <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
-                                              {test.network_health_score?.toFixed(0) || 0}
-                                            </span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Gaming</span>
-                                            <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
-                                              {test.gaming_score?.toFixed(0) || 0}
-                                            </span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Streaming</span>
-                                            <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
-                                              {test.streaming_score?.toFixed(0) || 0}
-                                            </span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Video Call</span>
-                                            <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
-                                              {test.video_call_score?.toFixed(0) || 0}
-                                            </span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Browsing</span>
-                                            <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
-                                              {test.browsing_score?.toFixed(0) || 0}
-                                            </span>
+                                        <div className="test-details-section test-details-section--two-col">
+                                          <h4 className="test-details-section-title">Experience Scores</h4>
+                                          <div className="test-details-grid">
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Network Health</span>
+                                              <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
+                                                {test.network_health_score?.toFixed(0) || 0}
+                                              </span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Gaming</span>
+                                              <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
+                                                {test.gaming_score?.toFixed(0) || 0}
+                                              </span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Streaming</span>
+                                              <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
+                                                {test.streaming_score?.toFixed(0) || 0}
+                                              </span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Video Call</span>
+                                              <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
+                                                {test.video_call_score?.toFixed(0) || 0}
+                                              </span>
+                                            </div>
+                                            <div className="test-details-item">
+                                              <span className="test-details-label">Browsing</span>
+                                              <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
+                                                {test.browsing_score?.toFixed(0) || 0}
+                                              </span>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
