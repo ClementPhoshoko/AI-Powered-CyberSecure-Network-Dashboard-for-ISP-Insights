@@ -8,6 +8,9 @@ import Home from './pages/home/Home'
 import History from './pages/history/History'
 import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
+import NotFound from './pages/not_found/NotFound'
+import AuthRequired from './pages/auth_required/AuthRequired'
+import ProtectedRoute from './components/protected_route/ProtectedRoute'
 
 function AppContent() {
   const location = useLocation();
@@ -43,9 +46,15 @@ function AppContent() {
       <div className="app-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/tests" element={<History />} />
+          <Route path="/tests" element={
+            <ProtectedRoute>
+              <History />
+            </ProtectedRoute>
+          } />
           <Route path="/login" element={<AuthLayout activeTab="login"><Login /></AuthLayout>} />
           <Route path="/signup" element={<AuthLayout activeTab="signup"><Register /></AuthLayout>} />
+          <Route path="/auth-required" element={<AuthRequired />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
 
