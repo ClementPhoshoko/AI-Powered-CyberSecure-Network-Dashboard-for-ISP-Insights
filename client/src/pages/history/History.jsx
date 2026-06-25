@@ -928,8 +928,6 @@ function History() {
                           >
                             Clear
                           </button>
-                        </div>
-                        <div className="test-table-controls">
                           <button onClick={exportToCSV} className="export-btn">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
