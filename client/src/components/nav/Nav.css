@@ -118,7 +118,7 @@
 
 .nav-dropdown {
   position: absolute;
-  top: calc(100% + var(--space-2));
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   min-width: 200px;
@@ -130,12 +130,14 @@
   padding: var(--space-2);
   box-shadow: 0 8px 32px var(--glass-shadow);
   animation: dropdownIn var(--motion-fast) var(--ease-out);
+  padding-top: var(--space-2);
+  margin-top: var(--space-1);
 }
 
 @keyframes dropdownIn {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-8px);
+    transform: translateX(-50%) translateY(-4px);
   }
   100% {
     opacity: 1;

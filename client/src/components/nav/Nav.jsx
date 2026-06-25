@@ -14,16 +14,6 @@ function Nav() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
 
-  const toggleDropdown = (name) => {
-    setActiveDropdown(activeDropdown === name ? null : name);
-    setAccountDropdownOpen(false);
-  };
-
-  const closeDropdown = () => {
-    setActiveDropdown(null);
-    setAccountDropdownOpen(false);
-  };
-
   const navItems = [
     {
       name: 'about',
@@ -66,7 +56,7 @@ function Nav() {
   };
 
   return (
-    <nav className="nav-container" onMouseLeave={closeDropdown}>
+    <nav className="nav-container">
       <div className="nav-content">
         {/* Left Side: Logo & System Name */}
         <div className="nav-left">
@@ -83,7 +73,11 @@ function Nav() {
               <div
                 key={item.name}
                 className={`nav-item ${activeDropdown === item.name ? 'nav-item-active' : ''}`}
-                onMouseEnter={() => toggleDropdown(item.name)}
+                onMouseEnter={() => {
+                  setActiveDropdown(item.name);
+                  setAccountDropdownOpen(false);
+                }}
+                onMouseLeave={() => setActiveDropdown(null)}
               >
                 <button className="nav-item-button">
                   {item.label}
