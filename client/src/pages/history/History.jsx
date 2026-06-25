@@ -7,6 +7,7 @@ import useSpeedTestHistory from '../../hooks/useSpeedTestHistory';
 import Loading from '../../components/loading/Loading';
 import heroImage from '../../assets/hero/Modern_office_with_data_flow_dynamics.png';
 import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png';
+import aiIcon from '../../assets/avatars/ai.png';
 import './History.css';
 
 const proTips = [
@@ -1094,7 +1095,14 @@ function History() {
 
                                       {test.ai_summary && (
                                         <div className="test-details-section">
-                                          <h4 className="test-details-section-title">AI Analysis</h4>
+                                          <h4 className="test-details-section-title">
+                                            <img 
+                                              src={aiIcon} 
+                                              alt="AI" 
+                                              className="test-details-section-icon"
+                                            />
+                                            AI Analysis
+                                          </h4>
                                           <div className="test-details-ai-summary">
                                             <p>{test.ai_summary}</p>
                                           </div>
