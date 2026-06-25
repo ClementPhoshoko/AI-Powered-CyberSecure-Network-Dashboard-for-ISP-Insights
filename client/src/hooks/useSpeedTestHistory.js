@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getPingHistory } from '../services/pingService';
 import { getFriendlyErrorMessage } from '../services/errorUtils';
 
-export function useSpeedTestHistory(limit = 10, offset = 0, filters = {}) {
+export function useSpeedTestHistory(limit = 10, offset = 0, filters = {}, isAuthReady = true) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,8 +28,10 @@ export function useSpeedTestHistory(limit = 10, offset = 0, filters = {}) {
   }, [limit, offset, filters]);
 
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    if (isAuthReady) {
+      fetchHistory();
+    }
+  }, [fetchHistory, isAuthReady]);
 
   return {
     history,

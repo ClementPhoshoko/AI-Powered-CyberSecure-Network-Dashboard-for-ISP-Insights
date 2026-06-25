@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useProfile from '../../hooks/useProfile';
 import { useAuth } from '../../context/AuthContext';
 import Loading from '../../components/loading/Loading';
 import ErrorModal from '../../components/error_modal/ErrorModal';
+import Modal from '../../components/modal/Modal';
 import { updateEmail } from '../../services/authService';
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
 import successAvatar2 from '../../assets/avatars/success_avatar_2.png';
 import './Account.css';
 
 function Account() {
-  const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useProfile();
-  const { user } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useProfile(!authLoading);
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -24,10 +26,13 @@ function Account() {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [progress, setProgress] = useState(0);
   const [animationKey, setAnimationKey] = useState(Date.now());
+  const [showSavePersonalInfoConfirm, setShowSavePersonalInfoConfirm] = useState(false);
+  const [showSaveEmailConfirm, setShowSaveEmailConfirm] = useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   useEffect(() => {
     setAnimationKey(Date.now());
-  }, []);
+  }, [editingPersonalInfo, editingEmail]);
 
   useEffect(() => {
     if (profile) {
@@ -42,7 +47,7 @@ function Account() {
 
   useEffect(() => {
     let interval;
-    if (isUpdating) {
+    if (isUpdating || authLoading || profileLoading) {
       setProgress(0);
       interval = setInterval(() => {
         setProgress(prev => {
@@ -51,11 +56,14 @@ function Account() {
           return Math.min(prev + increment, 95);
         });
       }, 400);
+    } else {
+      setProgress(100);
     }
     return () => clearInterval(interval);
-  }, [isUpdating]);
+  }, [isUpdating, authLoading, profileLoading]);
 
-  const handleSavePersonalInfo = async () => {
+  const handleSavePersonalInfoConfirm = async () => {
+    setShowSavePersonalInfoConfirm(false);
     setIsUpdating(true);
     setProgress(0);
 
@@ -75,7 +83,8 @@ function Account() {
     }
   };
 
-  const handleSaveEmail = async () => {
+  const handleSaveEmailConfirm = async () => {
+    setShowSaveEmailConfirm(false);
     setIsUpdating(true);
     setProgress(0);
 
@@ -88,6 +97,15 @@ function Account() {
       setErrorModal({ isOpen: true, message: err.message });
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleSignOutConfirm = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (err) {
+      setErrorModal({ isOpen: true, message: err.message });
     }
   };
 
@@ -107,7 +125,7 @@ function Account() {
     setEditingEmail(false);
   };
 
-  if (profileLoading) {
+  if (authLoading || profileLoading) {
     return (
       <div className="account-page">
         <Loading 
@@ -206,7 +224,21 @@ function Account() {
         status="AkovoLabs Profile System v1.0"
       />
       <div key={animationKey} className="account-form-container">
-        <h1 className="account-title">Manage your profile</h1>
+        <div className="account-header">
+          <h1 className="account-title">Manage your profile</h1>
+          <button 
+            type="button" 
+            className="account-sign-out-btn"
+            onClick={() => setShowSignOutConfirm(true)}
+          >
+            <svg className="account-sign-out-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Sign Out
+          </button>
+        </div>
         
         {/* Personal Info */}
         <div className="account-section">
@@ -317,7 +349,7 @@ function Account() {
               <button 
                 type="button" 
                 className="account-field-btn account-field-btn-save"
-                onClick={handleSavePersonalInfo}
+                onClick={() => setShowSavePersonalInfoConfirm(true)}
                 disabled={isUpdating}
               >
                 Save
@@ -385,7 +417,7 @@ function Account() {
                 <button 
                   type="button" 
                   className="account-field-btn account-field-btn-save"
-                  onClick={handleSaveEmail}
+                  onClick={() => setShowSaveEmailConfirm(true)}
                   disabled={isUpdating}
                 >
                   Save
@@ -417,6 +449,48 @@ function Account() {
         isOpen={errorModal.isOpen}
         message={errorModal.message}
         onClose={() => setErrorModal({ isOpen: false, message: '' })}
+      />
+      
+      {/* Save Personal Info Confirmation Modal */}
+      <Modal
+        isOpen={showSavePersonalInfoConfirm}
+        message="Are you sure you want to save your personal information changes?"
+        leftOption={{
+          label: "Cancel",
+          onClick: () => setShowSavePersonalInfoConfirm(false)
+        }}
+        rightOption={{
+          label: "Save",
+          onClick: handleSavePersonalInfoConfirm
+        }}
+      />
+      
+      {/* Save Email Confirmation Modal */}
+      <Modal
+        isOpen={showSaveEmailConfirm}
+        message="Are you sure you want to update your email address? You'll need to verify your new email."
+        leftOption={{
+          label: "Cancel",
+          onClick: () => setShowSaveEmailConfirm(false)
+        }}
+        rightOption={{
+          label: "Save",
+          onClick: handleSaveEmailConfirm
+        }}
+      />
+      
+      {/* Sign Out Confirmation Modal */}
+      <Modal
+        isOpen={showSignOutConfirm}
+        message="Are you sure you want to sign out of your account?"
+        leftOption={{
+          label: "Cancel",
+          onClick: () => setShowSignOutConfirm(false)
+        }}
+        rightOption={{
+          label: "Sign Out",
+          onClick: handleSignOutConfirm
+        }}
       />
     </div>
   );

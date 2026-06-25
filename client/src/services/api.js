@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 import { createFriendlyError } from './errorUtils';
+import { getCachedSession } from './sessionCache';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -12,7 +13,13 @@ const api = axios.create({
 // Request interceptor to add JWT token to requests
 api.interceptors.request.use(
   async (config) => {
-    const { data: { session } } = await supabase.auth.getSession();
+    let session = getCachedSession();
+    
+    if (!session) {
+      const { data: { session: freshSession } } = await supabase.auth.getSession();
+      session = freshSession;
+    }
+    
     if (session?.access_token) {
       config.headers.Authorization = `Bearer ${session.access_token}`;
     }

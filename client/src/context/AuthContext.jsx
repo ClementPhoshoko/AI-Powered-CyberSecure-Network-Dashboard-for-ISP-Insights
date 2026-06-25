@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { onAuthStateChange, getSession, logout } from '../services/authService';
+import { setCachedSession } from '../services/sessionCache';
 
 const AuthContext = createContext();
 
@@ -14,6 +15,7 @@ export const AuthProvider = ({ children }) => {
         const currentSession = await getSession();
         setSession(currentSession);
         setUser(currentSession?.user || null);
+        setCachedSession(currentSession);
       } catch (error) {
         console.error('Auth initialization error:', error);
       } finally {
@@ -26,6 +28,7 @@ export const AuthProvider = ({ children }) => {
     const { data: { subscription } } = onAuthStateChange((event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user || null);
+      setCachedSession(newSession);
     });
 
     return () => subscription.unsubscribe();

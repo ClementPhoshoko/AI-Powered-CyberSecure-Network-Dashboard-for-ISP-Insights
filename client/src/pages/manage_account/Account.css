@@ -24,11 +24,58 @@
   }
 }
 
+.account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.account-sign-out-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--error);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: calc(var(--space-1) + 2px) var(--space-3);
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: var(--radius-lg);
+  transition: all var(--motion-normal) var(--ease-out);
+  /* border: 1px solid rgba(239, 68, 68, 0.3); */
+  border: none;
+  cursor: pointer;
+}
+
+.account-sign-out-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 16px var(--error-soft);
+}
+
+.account-sign-out-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--error);
+}
+
+@keyframes blurToClear {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
 .account-title {
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--space-6);
+  /* margin-bottom: var(--space-6); */
 }
 
 .account-section {
@@ -140,11 +187,12 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-4);
+  padding: calc(var(--space-1) + 2px) var(--space-3);
   font-size: var(--text-sm);
   font-weight: 600;
   background: none;
-  border: 1px solid var(--border-dark);
+  /* border: 1px solid var(--border-dark); */
+  border: none;
   cursor: pointer;
   transition: all var(--motion-normal) var(--ease-out);
   border-radius: var(--radius-lg);
@@ -343,6 +391,16 @@
 }
 
 @media (max-width: 640px) {
+  .account-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  
+  .account-sign-out-btn {
+    width: 100%;
+  }
+  
   .account-field-row {
     grid-template-columns: 1fr;
   }

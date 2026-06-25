@@ -4,6 +4,7 @@ import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import useSpeedTestHistory from '../../hooks/useSpeedTestHistory';
+import { useAuth } from '../../context/AuthContext';
 import heroImage from '../../assets/hero/Modern_office_with_data_flow_dynamics.png';
 import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import aiIcon from '../../assets/avatars/ai.png';
@@ -220,6 +221,7 @@ function HistoryErrorState({ error, onRetry }) {
 }
 
 function History() {
+  const { loading: authLoading } = useAuth();
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
   const [startDate, setStartDate] = useState(null);
@@ -231,6 +233,7 @@ function History() {
   const [sortDirection, setSortDirection] = useState('desc');
   const [activeTab, setActiveTab] = useState('trends');
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [progress, setProgress] = useState(0);
   
   // Sync temp date state when real date state changes
   useEffect(() => {
@@ -255,7 +258,7 @@ function History() {
     loading: allLoading, 
     error: allError,
     refetch: refetchAllHistory
-  } = useSpeedTestHistory(1000, 0, dateFilters);
+  } = useSpeedTestHistory(1000, 0, dateFilters, !authLoading);
 
   // Fetch paginated history for the table (limit 10)
   const { 
@@ -264,7 +267,25 @@ function History() {
     error: tableError, 
     total: tableTotal,
     refetch: refetchTableHistory
-  } = useSpeedTestHistory(tableLimit, tableOffset, dateFilters);
+  } = useSpeedTestHistory(tableLimit, tableOffset, dateFilters, !authLoading);
+  
+  // Update progress when loading starts
+  useEffect(() => {
+    let interval;
+    if (allLoading || tableLoading) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) return prev;
+          const increment = Math.random() * 15;
+          return Math.min(prev + increment, 95);
+        });
+      }, 400);
+    } else {
+      setProgress(100);
+    }
+    return () => clearInterval(interval);
+  }, [allLoading, tableLoading]);
 
   // Watch for error states and open error modal
   useEffect(() => {
@@ -473,7 +494,7 @@ function History() {
 
   return (
     <div className="history-page">
-      <Loading isLoading={allLoading} message="Loading test history" status="AkovoLabs Test History System v1.0" />
+      <Loading isLoading={allLoading || tableLoading} progress={progress} message="Loading test history" status="AkovoLabs Test History System v1.0" />
       
       {/* Title Section */}
       {!allLoading && (

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getProfile, updateProfile } from '../services/profileService';
 import { getFriendlyErrorMessage } from '../services/errorUtils';
 
-export function useProfile() {
+export function useProfile(isAuthReady = true) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,8 +44,10 @@ export function useProfile() {
   }, []);
 
   useEffect(() => {
-    fetchProfile();
-  }, [fetchProfile]);
+    if (isAuthReady) {
+      fetchProfile();
+    }
+  }, [fetchProfile, isAuthReady]);
 
   return {
     profile,
