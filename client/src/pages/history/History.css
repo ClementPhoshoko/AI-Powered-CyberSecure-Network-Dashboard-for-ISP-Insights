@@ -207,6 +207,10 @@
   text-align: center;
 }
 
+.summary-mini-card--skeleton {
+  align-items: flex-start;
+}
+
 .summary-mini-card--best {
   background: rgba(34, 197, 94, 0.1);
   border: 1px solid rgba(34, 197, 94, 0.2);
@@ -673,27 +677,41 @@
   gap: var(--space-4);
   padding: var(--space-10) var(--space-6);
   text-align: center;
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-glass);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
-.empty-state svg {
-  width: 64px;
-  height: 64px;
-  color: var(--text-secondary);
+.empty-state-avatar {
+  width: 144px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
-.empty-state p {
+.empty-state-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 520px;
+}
+
+.empty-state-title {
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  font-weight: 600;
+  margin: 0;
+}
+
+.empty-state-description {
   color: var(--text-secondary);
   font-size: var(--text-sm);
+  line-height: 1.6;
+  margin: 0;
 }
 
 .link-btn {
-  background: var(--glass-bg);
+  background: transparent;
   color: var(--primary);
   border: 1px solid var(--glass-border);
   padding: var(--space-2) var(--space-4);
@@ -708,8 +726,152 @@
 }
 
 .link-btn:hover {
-  background: var(--glass-bg-strong);
+  background: transparent;
   transform: translateY(-1px);
+}
+
+.history-skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.history-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 100%
+  );
+  animation: history-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.history-skeleton--metric-value {
+  width: 72px;
+  height: 28px;
+}
+
+.history-skeleton--metric-label {
+  width: 96px;
+  height: 12px;
+}
+
+.history-skeleton--section-title {
+  width: 180px;
+  height: 24px;
+}
+
+.history-skeleton--filter-label {
+  width: 56px;
+  height: 10px;
+  margin-bottom: var(--space-2);
+}
+
+.history-skeleton--filter-input {
+  width: 160px;
+  height: 36px;
+}
+
+.history-skeleton--icon-btn {
+  width: 36px;
+  height: 36px;
+}
+
+.history-skeleton--button {
+  width: 92px;
+  height: 36px;
+}
+
+.history-skeleton--export-btn {
+  width: 128px;
+}
+
+.history-skeleton--graph-title {
+  width: 140px;
+  height: 14px;
+  margin-bottom: var(--space-4);
+}
+
+.history-skeleton--chart {
+  width: 100%;
+  height: 280px;
+}
+
+.history-skeleton--graph-footer {
+  width: 240px;
+  height: 12px;
+  margin-top: var(--space-3);
+}
+
+.history-skeleton--avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.history-skeleton--avatar-large {
+  width: 110px;
+  height: 110px;
+}
+
+.history-skeleton--insight-title {
+  width: 140px;
+  height: 16px;
+  margin-bottom: var(--space-2);
+}
+
+.history-skeleton--text-line {
+  width: 100%;
+  height: 12px;
+  margin-bottom: var(--space-2);
+}
+
+.history-skeleton--text-line-short {
+  width: 82%;
+}
+
+.history-skeleton--text-line-shorter {
+  width: 66%;
+}
+
+.history-skeleton--table-head {
+  width: 72px;
+  height: 12px;
+}
+
+.history-skeleton--toggle-cell {
+  width: 20px;
+  height: 20px;
+}
+
+.history-skeleton--table-cell {
+  width: 100%;
+  height: 16px;
+}
+
+.history-skeleton--pagination-btn {
+  width: 112px;
+  height: 36px;
+}
+
+.history-skeleton--pagination-info {
+  width: 160px;
+  height: 16px;
+}
+
+.date-filters--skeleton {
+  pointer-events: none;
+}
+
+@keyframes history-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Section 3: AI Insights */
@@ -1084,6 +1246,11 @@
     align-items: stretch;
   }
 
+  .date-filters--skeleton {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .search-input {
     flex: 1;
   }
@@ -1102,6 +1269,19 @@
   .history-subtitle-with-avatar {
     flex-direction: column;
     text-align: center;
+  }
+
+  .history-skeleton--filter-input {
+    width: 100%;
+  }
+
+  .history-skeleton--graph-footer,
+  .history-skeleton--pagination-info {
+    width: 100%;
+  }
+
+  .empty-state-avatar {
+    width: 120px;
   }
   
   .subtitle-avatar {

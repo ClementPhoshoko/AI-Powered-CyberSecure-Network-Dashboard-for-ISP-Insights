@@ -1,13 +1,13 @@
-import { useState, useMemo, useEffect } from 'react';
+import { Fragment, useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import useSpeedTestHistory from '../../hooks/useSpeedTestHistory';
-import Loading from '../../components/loading/Loading';
 import heroImage from '../../assets/hero/Modern_office_with_data_flow_dynamics.png';
 import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import aiIcon from '../../assets/avatars/ai.png';
+import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
 import './History.css';
 
 const proTips = [
@@ -52,6 +52,156 @@ const proTips = [
   "Review your historical performance data regularly to spot gradual network degradation before it becomes noticeable. Early detection makes it easier to troubleshoot issues and maintain optimal performance."
 ];
 
+function SkeletonBlock({ className = '' }) {
+  return <div className={`history-skeleton ${className}`.trim()} aria-hidden="true" />;
+}
+
+function SummarySkeleton() {
+  return (
+    <div className="summary-grid" aria-hidden="true">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index} className="summary-mini-card summary-mini-card--skeleton">
+          <SkeletonBlock className="history-skeleton--metric-value" />
+          <SkeletonBlock className="history-skeleton--metric-label" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FiltersSkeleton() {
+  return (
+    <div className="date-filters date-filters--skeleton" aria-hidden="true">
+      <div className="date-label-field">
+        <SkeletonBlock className="history-skeleton--filter-label" />
+        <SkeletonBlock className="history-skeleton--filter-input" />
+      </div>
+      <div className="date-label-field">
+        <SkeletonBlock className="history-skeleton--filter-label" />
+        <SkeletonBlock className="history-skeleton--filter-input" />
+      </div>
+      <SkeletonBlock className="history-skeleton--icon-btn" />
+      <SkeletonBlock className="history-skeleton--button" />
+    </div>
+  );
+}
+
+function GraphSkeleton({ showFilters = false, count = 1 }) {
+  return (
+    <div className="trends-section" aria-hidden="true">
+      {showFilters && (
+        <div className="trends-header">
+          <SkeletonBlock className="history-skeleton--section-title" />
+          <FiltersSkeleton />
+        </div>
+      )}
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="graph-card">
+          <SkeletonBlock className="history-skeleton--graph-title" />
+          <SkeletonBlock className="history-skeleton--chart" />
+          <SkeletonBlock className="history-skeleton--graph-footer" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function InsightsSkeleton() {
+  return (
+    <div className="ai-insights-section" aria-hidden="true">
+      <SkeletonBlock className="history-skeleton--section-title" />
+      <div className="ai-insights-grid">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="ai-insight-card">
+            <SkeletonBlock className="history-skeleton--avatar" />
+            <div className="ai-insight-content">
+              <SkeletonBlock className="history-skeleton--insight-title" />
+              <SkeletonBlock className="history-skeleton--text-line" />
+              <SkeletonBlock className="history-skeleton--text-line history-skeleton--text-line-short" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="coming-soon-section">
+        <SkeletonBlock className="history-skeleton--avatar history-skeleton--avatar-large" />
+        <div className="coming-soon-content">
+          <SkeletonBlock className="history-skeleton--section-title" />
+          <SkeletonBlock className="history-skeleton--text-line" />
+          <SkeletonBlock className="history-skeleton--text-line history-skeleton--text-line-short" />
+          <SkeletonBlock className="history-skeleton--text-line history-skeleton--text-line-shorter" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TableSkeleton({ showSummary = false }) {
+  return (
+    <>
+      {showSummary && <SummarySkeleton />}
+      <div className="test-table-section" aria-hidden="true">
+        <div className="test-table-header">
+          <SkeletonBlock className="history-skeleton--section-title" />
+          <div className="test-table-right-section">
+            <FiltersSkeleton />
+            <SkeletonBlock className="history-skeleton--button history-skeleton--export-btn" />
+          </div>
+        </div>
+
+        <div className="test-table-container glass-card">
+          <table className="test-table">
+            <thead>
+              <tr>
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <th key={index}>
+                    <SkeletonBlock className="history-skeleton--table-head" />
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 6 }).map((_, rowIndex) => (
+                <tr key={rowIndex} className="test-table-row">
+                  {Array.from({ length: 8 }).map((_, cellIndex) => (
+                    <td key={cellIndex}>
+                      <SkeletonBlock className={cellIndex === 0 ? 'history-skeleton--toggle-cell' : 'history-skeleton--table-cell'} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="pagination-controls glass-card">
+          <SkeletonBlock className="history-skeleton--pagination-btn" />
+          <SkeletonBlock className="history-skeleton--pagination-info" />
+          <SkeletonBlock className="history-skeleton--pagination-btn" />
+        </div>
+      </div>
+    </>
+  );
+}
+
+function HistoryEmptyState({ hasActiveFilters }) {
+  return (
+    <div className="empty-state">
+      <img src={notFoundAvatar} alt="No results found" className="empty-state-avatar" />
+      <div className="empty-state-copy">
+        <p className="empty-state-title">
+          {hasActiveFilters ? 'No speed tests matched the filters you applied.' : 'No speed test history is available yet.'}
+        </p>
+        <p className="empty-state-description">
+          {hasActiveFilters
+            ? 'Try widening the date range or clearing filters to see more results.'
+            : 'Run a speed test to start building your history and unlock trend insights.'}
+        </p>
+      </div>
+      <Link to="/" className="link-btn">Go to Speed Test</Link>
+    </div>
+  );
+}
+
 function History() {
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
@@ -60,7 +210,6 @@ function History() {
   const [tempStartDate, setTempStartDate] = useState(startDate);
   const [tempEndDate, setTempEndDate] = useState(endDate);
   const [expandedTestId, setExpandedTestId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [activeTab, setActiveTab] = useState('trends');
@@ -86,8 +235,7 @@ function History() {
   const { 
     history: allHistory, 
     loading: allLoading, 
-    error: allError, 
-    refetch: refetchAll 
+    error: allError
   } = useSpeedTestHistory(1000, 0, dateFilters);
 
   // Fetch paginated history for the table (limit 10)
@@ -95,8 +243,7 @@ function History() {
     history: tableHistory, 
     loading: tableLoading, 
     error: tableError, 
-    total: tableTotal, 
-    refetch: refetchTable 
+    total: tableTotal
   } = useSpeedTestHistory(tableLimit, tableOffset, dateFilters);
 
   const formatDate = (dateString) => {
@@ -248,6 +395,12 @@ function History() {
   };
 
   const aiInsights = generateAIInsights();
+  const hasActiveFilters = Boolean(startDate || endDate);
+  const hasAnyError = Boolean(allError || tableError);
+  const shouldShowEmptyState = !allLoading && !hasAnyError && allHistory.length === 0;
+  const shouldShowTableSkeleton = activeTab === 'history' && (tableLoading || (allLoading && allHistory.length === 0));
+  const shouldShowInsightsSkeleton = activeTab === 'insights' && allLoading;
+  const shouldShowTrendsSkeleton = activeTab === 'trends' && allLoading;
 
   const filteredTests = [...tableHistory].sort((a, b) => {
     let aVal = a[sortColumn];
@@ -286,111 +439,6 @@ function History() {
     URL.revokeObjectURL(url);
   };
 
-  if (allLoading || tableLoading) {
-    return (
-      <div className="history-page">
-        {/* Title Section */}
-        <div className="history-title-section">
-          <h1 className="history-title-section-title">Test History</h1>
-          <div className="history-subtitle-with-avatar">
-            <img src={womanAvatar} alt="Instructor" className="subtitle-avatar" />
-            <div className="subtitle-text">
-              <p className="history-title-section-subtitle">Review your past speed tests, track performance trends, and gain insights into your network health.</p>
-              <p className="pro-tip-text">
-                <span className="pro-tip-label">Pro Tip!</span> {randomTip}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Hero Section */}
-        <section className="history-hero">
-          <img src={heroImage} alt="Test History Hero" className="history-hero-image" />
-        </section>
-
-        {/* Tab Navigation */}
-        <div className="history-tabs">
-          <button 
-            className={`history-tab ${activeTab === 'trends' ? 'history-tab--active' : ''}`}
-            onClick={() => setActiveTab('trends')}
-          >
-            Trends
-          </button>
-          <button 
-            className={`history-tab ${activeTab === 'insights' ? 'history-tab--active' : ''}`}
-            onClick={() => setActiveTab('insights')}
-          >
-            Insights
-          </button>
-          <button 
-            className={`history-tab ${activeTab === 'history' ? 'history-tab--active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            History
-          </button>
-        </div>
-
-        <div className="history-container">
-          <Loading />
-        </div>
-      </div>
-    );
-  }
-
-  if (allError || tableError) {
-    return (
-      <div className="history-page">
-        {/* Title Section */}
-        <div className="history-title-section">
-          <h1 className="history-title-section-title">Test History</h1>
-          <div className="history-subtitle-with-avatar">
-            <img src={womanAvatar} alt="Instructor" className="subtitle-avatar" />
-            <div className="subtitle-text">
-              <p className="history-title-section-subtitle">Review your past speed tests, track performance trends, and gain insights into your network health.</p>
-              <p className="pro-tip-text">
-                <span className="pro-tip-label">Pro Tip!</span> {randomTip}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Hero Section */}
-        <section className="history-hero">
-          <img src={heroImage} alt="Test History Hero" className="history-hero-image" />
-        </section>
-
-        {/* Tab Navigation */}
-        <div className="history-tabs">
-          <button 
-            className={`history-tab ${activeTab === 'trends' ? 'history-tab--active' : ''}`}
-            onClick={() => setActiveTab('trends')}
-          >
-            Trends
-          </button>
-          <button 
-            className={`history-tab ${activeTab === 'insights' ? 'history-tab--active' : ''}`}
-            onClick={() => setActiveTab('insights')}
-          >
-            Insights
-          </button>
-          <button 
-            className={`history-tab ${activeTab === 'history' ? 'history-tab--active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            History
-          </button>
-        </div>
-
-        <div className="history-container">
-          <div className="history-error">
-            <p>{allError || tableError}</p>
-            <button className="retry-btn" onClick={() => { refetchAll(); refetchTable(); }}>Try Again</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="history-page">
       {/* Title Section */}
@@ -401,7 +449,7 @@ function History() {
           <div className="subtitle-text">
             <p className="history-title-section-subtitle">Review your past speed tests, track performance trends, and gain insights into your network health.</p>
             <p className="pro-tip-text">
-              <span className="pro-tip-label">Pro Tip!</span> For the most accurate results, close background apps and use a wired connection when testing. Run multiple tests at different times to get a better picture of your network's performance!
+              <span className="pro-tip-label">Pro Tip!</span> {randomTip}
             </p>
           </div>
         </div>
@@ -435,269 +483,122 @@ function History() {
       </div>
       
       <div className="history-container">
-        {/* Empty State */}
-        {allHistory.length === 0 && (
-          <div className="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
-            <p>No tests yet. Run your first speed test!</p>
-            <Link to="/" className="link-btn">Go to Speed Test</Link>
-          </div>
-        )}
-
-        {allHistory.length > 0 && (
+        {shouldShowEmptyState ? (
+          <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
+        ) : (
           <>
             {/* Trends Tab Content */}
             {activeTab === 'trends' && (
               <>
-                {/* Section 1: Summary Metrics */}
-                {summary && (
-                  <div className="summary-grid">
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.totalTests}</span>
-                      <span className="summary-mini-label">Total Tests</span>
-                    </div>
+                {shouldShowTrendsSkeleton ? (
+                  <>
+                    <SummarySkeleton />
+                    <GraphSkeleton showFilters count={4} />
+                  </>
+                ) : (
+                  <>
+                    {/* Section 1: Summary Metrics */}
+                    {summary && (
+                      <div className="summary-grid">
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.totalTests}</span>
+                          <span className="summary-mini-label">Total Tests</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                      <span className="summary-mini-label">Avg Download</span>
-                    </div>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                          <span className="summary-mini-label">Avg Download</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                      <span className="summary-mini-label">Avg Upload</span>
-                    </div>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                          <span className="summary-mini-label">Avg Upload</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                      <span className="summary-mini-label">Avg Ping</span>
-                    </div>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                          <span className="summary-mini-label">Avg Ping</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                      <span className="summary-mini-label">Avg Health Score</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Section 2: Performance Trends */}
-                {chartData.length > 0 && (
-                  <div className="trends-section">
-                    <div className="trends-header">
-                      <h2 className="section-title">Performance Trends</h2>
-                      <div className="date-filters">
-                        <label className="date-label-field">
-                          <span className="date-label">From</span>
-                          <DatePicker
-                            selected={tempStartDate}
-                            onChange={(date) => setTempStartDate(date)}
-                            className="date-input"
-                            placeholderText="Select start date"
-                            isClearable
-                            dateFormat="yyyy-MM-dd"
-                          />
-                        </label>
-                        <label className="date-label-field">
-                          <span className="date-label">To</span>
-                          <DatePicker
-                            selected={tempEndDate}
-                            onChange={(date) => setTempEndDate(date)}
-                            className="date-input"
-                            placeholderText="Select end date"
-                            isClearable
-                            dateFormat="yyyy-MM-dd"
-                          />
-                        </label>
-                        <button 
-                          className="apply-filters-btn"
-                          onClick={() => {
-                            setStartDate(tempStartDate);
-                            setEndDate(tempEndDate);
-                            setTableOffset(0);
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="M21 21l-4.35-4.35" />
-                          </svg>
-                        </button>
-                        <button 
-                          className="clear-filters-btn"
-                          onClick={() => {
-                            setTempStartDate(null);
-                            setTempEndDate(null);
-                            setStartDate(null);
-                            setEndDate(null);
-                            setTableOffset(0);
-                          }}
-                        >
-                          Clear
-                        </button>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                          <span className="summary-mini-label">Avg Health Score</span>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    {/* Graph 1: Speed Trends */}
-                    <div className="graph-card">
-                      <h3 className="graph-title">Speed Trends</h3>
-                      <ResponsiveContainer width="100%" height={280}>
-                        <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
-                          <XAxis 
-                            dataKey="date" 
-                            stroke="var(--text-muted)" 
-                            tick={{ fontSize: 11 }} 
-                            interval={Math.floor(chartData.length / 5)} 
-                          />
-                          <YAxis 
-                            stroke="var(--text-muted)" 
-                            tick={{ fontSize: 11 }} 
-                          />
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: 'var(--glass-bg)',
-                              border: '1px solid var(--glass-border)',
-                              borderRadius: 'var(--radius-md)'
-                            }}
-                          />
-                          <Legend wrapperStyle={{ fontSize: 12 }} />
-                          <Line
-                            type="monotone"
-                            dataKey="download"
-                            stroke="var(--download)"
-                            strokeWidth={2}
-                            dot={{ r: 3 }}
-                            name="Download (Mbps)"
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="upload"
-                            stroke="var(--upload)"
-                            strokeWidth={2}
-                            dot={{ r: 3 }}
-                            strokeDasharray="5 5"
-                            name="Upload (Mbps)"
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                      {dateRange && (
-                        <p className="graph-date-range">
-                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
-                        </p>
-                      )}
-                    </div>
+                    {/* Section 2: Performance Trends */}
+                    {chartData.length > 0 && (
+                      <div className="trends-section">
+                        <div className="trends-header">
+                          <h2 className="section-title">Performance Trends</h2>
+                          <div className="date-filters">
+                            <label className="date-label-field">
+                              <span className="date-label">From</span>
+                              <DatePicker
+                                selected={tempStartDate}
+                                onChange={(date) => setTempStartDate(date)}
+                                className="date-input"
+                                placeholderText="Select start date"
+                                isClearable
+                                dateFormat="yyyy-MM-dd"
+                              />
+                            </label>
+                            <label className="date-label-field">
+                              <span className="date-label">To</span>
+                              <DatePicker
+                                selected={tempEndDate}
+                                onChange={(date) => setTempEndDate(date)}
+                                className="date-input"
+                                placeholderText="Select end date"
+                                isClearable
+                                dateFormat="yyyy-MM-dd"
+                              />
+                            </label>
+                            <button 
+                              className="apply-filters-btn"
+                              onClick={() => {
+                                setStartDate(tempStartDate);
+                                setEndDate(tempEndDate);
+                                setTableOffset(0);
+                              }}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
+                              </svg>
+                            </button>
+                            <button 
+                              className="clear-filters-btn"
+                              onClick={() => {
+                                setTempStartDate(null);
+                                setTempEndDate(null);
+                                setStartDate(null);
+                                setEndDate(null);
+                                setTableOffset(0);
+                              }}
+                            >
+                              Clear
+                            </button>
+                          </div>
+                        </div>
 
-                    {/* Graph 2: Latency Quality */}
-                    <div className="graph-card">
-                      <h3 className="graph-title">Latency Quality</h3>
-                      <ResponsiveContainer width="100%" height={280}>
-                        <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
-                          <XAxis 
-                            dataKey="date" 
-                            stroke="var(--text-muted)" 
-                            tick={{ fontSize: 11 }} 
-                            interval={Math.floor(chartData.length / 5)} 
-                          />
-                          <YAxis 
-                            stroke="var(--text-muted)" 
-                            tick={{ fontSize: 11 }} 
-                          />
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: 'var(--glass-bg)',
-                              border: '1px solid var(--glass-border)',
-                              borderRadius: 'var(--radius-md)'
-                            }}
-                          />
-                          <Legend wrapperStyle={{ fontSize: 12 }} />
-                          <Line
-                            type="monotone"
-                            dataKey="ping"
-                            stroke="var(--ping)"
-                            strokeWidth={2}
-                            dot={{ r: 3 }}
-                            name="Ping (ms)"
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="jitter"
-                            stroke="#f59e0b"
-                            strokeWidth={2}
-                            dot={{ r: 3 }}
-                            strokeDasharray="5 5"
-                            name="Jitter (ms)"
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                      {dateRange && (
-                        <p className="graph-date-range">
-                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Graph 3: Network Health Score */}
-                    <div className="graph-card">
-                      <h3 className="graph-title">Network Health Score</h3>
-                      <ResponsiveContainer width="100%" height={280}>
-                        <AreaChart data={chartData}>
-                          <defs>
-                            <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
-                              <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
-                          <XAxis 
-                            dataKey="date" 
-                            stroke="var(--text-muted)" 
-                            tick={{ fontSize: 11 }} 
-                            interval={Math.floor(chartData.length / 5)} 
-                          />
-                          <YAxis 
-                            stroke="var(--text-muted)" 
-                            tick={{ fontSize: 11 }} 
-                            domain={[0, 100]}
-                          />
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: 'var(--glass-bg)',
-                              border: '1px solid var(--glass-border)',
-                              borderRadius: 'var(--radius-md)'
-                            }}
-                          />
-                          <Area 
-                            type="monotone" 
-                            dataKey="healthScore" 
-                            stroke="var(--primary)" 
-                            fillOpacity={1} 
-                            fill="url(#colorScore)" 
-                            name="Health Score"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                      {dateRange && (
-                        <p className="graph-date-range">
-                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Graph 4: Experience Scores (Radar Chart + Horizontal Bars) */}
-                    <div className="graph-card">
-                      <h3 className="graph-title">Experience Scores</h3>
-                      <div className="experience-scores-container">
-                        <div className="radar-chart-wrapper">
-                          <ResponsiveContainer width="100%" height={300}>
-                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                              <PolarGrid stroke="var(--glass-border)" />
-                              <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: 12 }} />
-                              <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
-                              <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
-                              <Legend wrapperStyle={{ fontSize: 12 }} />
+                        {/* Graph 1: Speed Trends */}
+                        <div className="graph-card">
+                          <h3 className="graph-title">Speed Trends</h3>
+                          <ResponsiveContainer width="100%" height={280}>
+                            <LineChart data={chartData}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
+                              <XAxis 
+                                dataKey="date" 
+                                stroke="var(--text-muted)" 
+                                tick={{ fontSize: 11 }} 
+                                interval={Math.floor(chartData.length / 5)} 
+                              />
+                              <YAxis 
+                                stroke="var(--text-muted)" 
+                                tick={{ fontSize: 11 }} 
+                              />
                               <Tooltip 
                                 contentStyle={{
                                   backgroundColor: 'var(--glass-bg)',
@@ -705,48 +606,193 @@ function History() {
                                   borderRadius: 'var(--radius-md)'
                                 }}
                               />
-                            </RadarChart>
+                              <Legend wrapperStyle={{ fontSize: 12 }} />
+                              <Line
+                                type="monotone"
+                                dataKey="download"
+                                stroke="var(--download)"
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                                name="Download (Mbps)"
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="upload"
+                                stroke="var(--upload)"
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                                strokeDasharray="5 5"
+                                name="Upload (Mbps)"
+                              />
+                            </LineChart>
                           </ResponsiveContainer>
+                          {dateRange && (
+                            <p className="graph-date-range">
+                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                            </p>
+                          )}
                         </div>
-                        <div className="score-bars-wrapper">
-                          {radarData.map((item, index) => (
-                            <div key={index} className="score-bar-item">
-                              <div className="score-bar-label">{item.subject}</div>
-                              <div className="score-bar-container">
-                                <div 
-                                  className="score-bar-fill"
-                                  style={{ 
-                                    width: `${item.A}%`,
-                                    backgroundColor: getScoreColor(item.A)
-                                  }}
-                                ></div>
+
+                        {/* Graph 2: Latency Quality */}
+                        <div className="graph-card">
+                          <h3 className="graph-title">Latency Quality</h3>
+                          <ResponsiveContainer width="100%" height={280}>
+                            <LineChart data={chartData}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
+                              <XAxis 
+                                dataKey="date" 
+                                stroke="var(--text-muted)" 
+                                tick={{ fontSize: 11 }} 
+                                interval={Math.floor(chartData.length / 5)} 
+                              />
+                              <YAxis 
+                                stroke="var(--text-muted)" 
+                                tick={{ fontSize: 11 }} 
+                              />
+                              <Tooltip 
+                                contentStyle={{
+                                  backgroundColor: 'var(--glass-bg)',
+                                  border: '1px solid var(--glass-border)',
+                                  borderRadius: 'var(--radius-md)'
+                                }}
+                              />
+                              <Legend wrapperStyle={{ fontSize: 12 }} />
+                              <Line
+                                type="monotone"
+                                dataKey="ping"
+                                stroke="var(--ping)"
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                                name="Ping (ms)"
+                              />
+                              <Line
+                                type="monotone"
+                                dataKey="jitter"
+                                stroke="#f59e0b"
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                                strokeDasharray="5 5"
+                                name="Jitter (ms)"
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                          {dateRange && (
+                            <p className="graph-date-range">
+                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Graph 3: Network Health Score */}
+                        <div className="graph-card">
+                          <h3 className="graph-title">Network Health Score</h3>
+                          <ResponsiveContainer width="100%" height={280}>
+                            <AreaChart data={chartData}>
+                              <defs>
+                                <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
+                                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
+                              <XAxis 
+                                dataKey="date" 
+                                stroke="var(--text-muted)" 
+                                tick={{ fontSize: 11 }} 
+                                interval={Math.floor(chartData.length / 5)} 
+                              />
+                              <YAxis 
+                                stroke="var(--text-muted)" 
+                                tick={{ fontSize: 11 }} 
+                                domain={[0, 100]}
+                              />
+                              <Tooltip 
+                                contentStyle={{
+                                  backgroundColor: 'var(--glass-bg)',
+                                  border: '1px solid var(--glass-border)',
+                                  borderRadius: 'var(--radius-md)'
+                                }}
+                              />
+                              <Area 
+                                type="monotone" 
+                                dataKey="healthScore" 
+                                stroke="var(--primary)" 
+                                fillOpacity={1} 
+                                fill="url(#colorScore)" 
+                                name="Health Score"
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                          {dateRange && (
+                            <p className="graph-date-range">
+                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Graph 4: Experience Scores (Radar Chart + Horizontal Bars) */}
+                        <div className="graph-card">
+                          <h3 className="graph-title">Experience Scores</h3>
+                          <div className="experience-scores-container">
+                            <div className="radar-chart-wrapper">
+                              <ResponsiveContainer width="100%" height={300}>
+                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                                  <PolarGrid stroke="var(--glass-border)" />
+                                  <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: 12 }} />
+                                  <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
+                                  <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
+                                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                                  <Tooltip 
+                                    contentStyle={{
+                                      backgroundColor: 'var(--glass-bg)',
+                                      border: '1px solid var(--glass-border)',
+                                      borderRadius: 'var(--radius-md)'
+                                    }}
+                                  />
+                                </RadarChart>
+                              </ResponsiveContainer>
+                            </div>
+                            <div className="score-bars-wrapper">
+                              {radarData.map((item, index) => (
+                                <div key={index} className="score-bar-item">
+                                  <div className="score-bar-label">{item.subject}</div>
+                                  <div className="score-bar-container">
+                                    <div 
+                                      className="score-bar-fill"
+                                      style={{ 
+                                        width: `${item.A}%`,
+                                        backgroundColor: getScoreColor(item.A)
+                                      }}
+                                    ></div>
+                                  </div>
+                                  <div className="score-bar-value">{item.A}</div>
+                                </div>
+                              ))}
+                              <div className="score-bar-legend">
+                                <div className="legend-item">
+                                  <div className="legend-color" style={{ backgroundColor: 'var(--success)' }}></div>
+                                  <div className="legend-text">Excellent (80-100)</div>
+                                </div>
+                                <div className="legend-item">
+                                  <div className="legend-color" style={{ backgroundColor: 'var(--warning)' }}></div>
+                                  <div className="legend-text">Good (60-79)</div>
+                                </div>
+                                <div className="legend-item">
+                                  <div className="legend-color" style={{ backgroundColor: 'var(--error)' }}></div>
+                                  <div className="legend-text">Poor (0-59)</div>
+                                </div>
                               </div>
-                              <div className="score-bar-value">{item.A}</div>
-                            </div>
-                          ))}
-                          <div className="score-bar-legend">
-                            <div className="legend-item">
-                              <div className="legend-color" style={{ backgroundColor: 'var(--success)' }}></div>
-                              <div className="legend-text">Excellent (80-100)</div>
-                            </div>
-                            <div className="legend-item">
-                              <div className="legend-color" style={{ backgroundColor: 'var(--warning)' }}></div>
-                              <div className="legend-text">Good (60-79)</div>
-                            </div>
-                            <div className="legend-item">
-                              <div className="legend-color" style={{ backgroundColor: 'var(--error)' }}></div>
-                              <div className="legend-text">Poor (0-59)</div>
                             </div>
                           </div>
+                          {dateRange && (
+                            <p className="graph-date-range">
+                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                            </p>
+                          )}
                         </div>
                       </div>
-                      {dateRange && (
-                        <p className="graph-date-range">
-                          Showing results from {dateRange.firstDate} to {dateRange.lastDate}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -754,89 +800,96 @@ function History() {
             {/* Insights Tab Content */}
             {activeTab === 'insights' && (
               <>
-                {/* Section 1: Summary Metrics */}
-                {summary && (
+                {shouldShowInsightsSkeleton ? (
                   <>
-                    <div className="summary-grid">
-                      <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.totalTests}</span>
-                        <span className="summary-mini-label">Total Tests</span>
-                      </div>
-
-                      <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                        <span className="summary-mini-label">Avg Download</span>
-                      </div>
-
-                      <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                        <span className="summary-mini-label">Avg Upload</span>
-                      </div>
-
-                      <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                        <span className="summary-mini-label">Avg Ping</span>
-                      </div>
-
-                      <div className="summary-mini-card">
-                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                        <span className="summary-mini-label">Avg Health Score</span>
-                      </div>
-                    </div>
-
-
+                    <SummarySkeleton />
+                    <InsightsSkeleton />
                   </>
-                )}
+                ) : (
+                  <>
+                    {/* Section 1: Summary Metrics */}
+                    {summary && (
+                      <>
+                        <div className="summary-grid">
+                          <div className="summary-mini-card">
+                            <span className="summary-mini-value">{summary.totalTests}</span>
+                            <span className="summary-mini-label">Total Tests</span>
+                          </div>
 
-                {/* Section 3: AI Insights Panel */}
-                {aiInsights.length > 0 && (
-                  <div className="ai-insights-section">
-                    <h2 className="section-title">AI Insights</h2>
-                    <div className="ai-insights-grid">
-                      {aiInsights.map((insight, index) => (
-                        <div key={index} className="ai-insight-card">
-                          <div className="ai-insight-icon">{insight.icon}</div>
-                          <div className="ai-insight-content">
-                            <h4 className="ai-insight-title">{insight.title}</h4>
-                            <p className="ai-insight-message">{insight.message}</p>
+                          <div className="summary-mini-card">
+                            <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                            <span className="summary-mini-label">Avg Download</span>
+                          </div>
+
+                          <div className="summary-mini-card">
+                            <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                            <span className="summary-mini-label">Avg Upload</span>
+                          </div>
+
+                          <div className="summary-mini-card">
+                            <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                            <span className="summary-mini-label">Avg Ping</span>
+                          </div>
+
+                          <div className="summary-mini-card">
+                            <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                            <span className="summary-mini-label">Avg Health Score</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                    {/* Coming Soon Section */}
-                    <div className="coming-soon-section">
-                      <img 
-                        src={womanAvatar} 
-                        alt="Coming Soon" 
-                        className="coming-soon-avatar"
-                      />
-                      <div className="coming-soon-content">
-                        <h3 className="coming-soon-title">Coming Soon - Advanced Network Analysis</h3>
-                        <ul className="coming-soon-list">
-                          <li className="coming-soon-item">
-                            <span className="coming-soon-bullet"></span>
-                            Port Risk Detection
-                          </li>
-                          <li className="coming-soon-item">
-                            <span className="coming-soon-bullet"></span>
-                            Public Wi-Fi Security Analysis
-                          </li>
-                          <li className="coming-soon-item">
-                            <span className="coming-soon-bullet"></span>
-                            Network Traffic Anomaly Detection
-                          </li>
-                          <li className="coming-soon-item">
-                            <span className="coming-soon-bullet"></span>
-                            ISP Performance Benchmarking
-                          </li>
-                          <li className="coming-soon-item">
-                            <span className="coming-soon-bullet"></span>
-                            Device-Level Network Health Checks
-                          </li>
-                        </ul>
+                      </>
+                    )}
+
+                    {/* Section 3: AI Insights Panel */}
+                    {aiInsights.length > 0 && (
+                      <div className="ai-insights-section">
+                        <h2 className="section-title">AI Insights</h2>
+                        <div className="ai-insights-grid">
+                          {aiInsights.map((insight, index) => (
+                            <div key={index} className="ai-insight-card">
+                              <div className="ai-insight-icon">{insight.icon}</div>
+                              <div className="ai-insight-content">
+                                <h4 className="ai-insight-title">{insight.title}</h4>
+                                <p className="ai-insight-message">{insight.message}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Coming Soon Section */}
+                        <div className="coming-soon-section">
+                          <img 
+                            src={womanAvatar} 
+                            alt="Coming Soon" 
+                            className="coming-soon-avatar"
+                          />
+                          <div className="coming-soon-content">
+                            <h3 className="coming-soon-title">Coming Soon - Advanced Network Analysis</h3>
+                            <ul className="coming-soon-list">
+                              <li className="coming-soon-item">
+                                <span className="coming-soon-bullet"></span>
+                                Port Risk Detection
+                              </li>
+                              <li className="coming-soon-item">
+                                <span className="coming-soon-bullet"></span>
+                                Public Wi-Fi Security Analysis
+                              </li>
+                              <li className="coming-soon-item">
+                                <span className="coming-soon-bullet"></span>
+                                Network Traffic Anomaly Detection
+                              </li>
+                              <li className="coming-soon-item">
+                                <span className="coming-soon-bullet"></span>
+                                ISP Performance Benchmarking
+                              </li>
+                              <li className="coming-soon-item">
+                                <span className="coming-soon-bullet"></span>
+                                Device-Level Network Health Checks
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    )}
+                  </>
                 )}
               </>
             )}
@@ -844,332 +897,339 @@ function History() {
             {/* History Tab Content */}
             {activeTab === 'history' && (
               <>
-                {/* Section 1: Summary Metrics */}
-                {summary && (
-                  <div className="summary-grid">
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.totalTests}</span>
-                      <span className="summary-mini-label">Total Tests</span>
-                    </div>
+                {shouldShowTableSkeleton ? (
+                  <TableSkeleton showSummary={allLoading} />
+                ) : (
+                  <>
+                    {/* Section 1: Summary Metrics */}
+                    {summary && (
+                      <div className="summary-grid">
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.totalTests}</span>
+                          <span className="summary-mini-label">Total Tests</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                      <span className="summary-mini-label">Avg Download</span>
-                    </div>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                          <span className="summary-mini-label">Avg Download</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                      <span className="summary-mini-label">Avg Upload</span>
-                    </div>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                          <span className="summary-mini-label">Avg Upload</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                      <span className="summary-mini-label">Avg Ping</span>
-                    </div>
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                          <span className="summary-mini-label">Avg Ping</span>
+                        </div>
 
-                    <div className="summary-mini-card">
-                      <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                      <span className="summary-mini-label">Avg Health Score</span>
-                    </div>
-                  </div>
-                )}
+                        <div className="summary-mini-card">
+                          <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                          <span className="summary-mini-label">Avg Health Score</span>
+                        </div>
+                      </div>
+                    )}
 
-                {/* Section 4: Historical Test Table */}
-                {tableHistory.length > 0 && (
-                  <div className="test-table-section">
-                    <div className="test-table-header">
-                      <h2 className="section-title">Test History</h2>
-                      <div className="test-table-right-section">
-                        <div className="date-filters">
-                          <label className="date-label-field">
-                            <span className="date-label">From</span>
-                            <DatePicker
-                              selected={tempStartDate}
-                              onChange={(date) => setTempStartDate(date)}
-                              className="date-input"
-                              placeholderText="Select start date"
-                              isClearable
-                              dateFormat="yyyy-MM-dd"
-                            />
-                          </label>
-                          <label className="date-label-field">
-                            <span className="date-label">To</span>
-                            <DatePicker
-                              selected={tempEndDate}
-                              onChange={(date) => setTempEndDate(date)}
-                              className="date-input"
-                              placeholderText="Select end date"
-                              isClearable
-                              dateFormat="yyyy-MM-dd"
-                            />
-                          </label>
-                          <button 
-                            className="apply-filters-btn"
-                            onClick={() => {
-                              setStartDate(tempStartDate);
-                              setEndDate(tempEndDate);
-                              setTableOffset(0);
-                            }}
+                    {/* Section 4: Historical Test Table */}
+                    {tableHistory.length > 0 ? (
+                      <div className="test-table-section">
+                        <div className="test-table-header">
+                          <h2 className="section-title">Test History</h2>
+                          <div className="test-table-right-section">
+                            <div className="date-filters">
+                              <label className="date-label-field">
+                                <span className="date-label">From</span>
+                                <DatePicker
+                                  selected={tempStartDate}
+                                  onChange={(date) => setTempStartDate(date)}
+                                  className="date-input"
+                                  placeholderText="Select start date"
+                                  isClearable
+                                  dateFormat="yyyy-MM-dd"
+                                />
+                              </label>
+                              <label className="date-label-field">
+                                <span className="date-label">To</span>
+                                <DatePicker
+                                  selected={tempEndDate}
+                                  onChange={(date) => setTempEndDate(date)}
+                                  className="date-input"
+                                  placeholderText="Select end date"
+                                  isClearable
+                                  dateFormat="yyyy-MM-dd"
+                                />
+                              </label>
+                              <button 
+                                className="apply-filters-btn"
+                                onClick={() => {
+                                  setStartDate(tempStartDate);
+                                  setEndDate(tempEndDate);
+                                  setTableOffset(0);
+                                }}
+                              >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <circle cx="11" cy="11" r="8" />
+                                  <path d="M21 21l-4.35-4.35" />
+                                </svg>
+                              </button>
+                              <button 
+                                className="clear-filters-btn"
+                                onClick={() => {
+                                  setTempStartDate(null);
+                                  setTempEndDate(null);
+                                  setStartDate(null);
+                                  setEndDate(null);
+                                  setTableOffset(0);
+                                }}
+                              >
+                                Clear
+                              </button>
+                              <button onClick={exportToCSV} className="export-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                  <polyline points="7 10 12 15 17 10" />
+                                  <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                Export CSV
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="test-table-container glass-card">
+                          <table className="test-table">
+                            <thead>
+                              <tr>
+                                <th></th>
+                                <th onClick={() => {
+                                  setSortColumn('created_at');
+                                  setSortDirection(sortColumn === 'created_at' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                }}>
+                                  Date {sortColumn === 'created_at' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                </th>
+                                <th onClick={() => {
+                                  setSortColumn('download_speed_mbps');
+                                  setSortDirection(sortColumn === 'download_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                }}>
+                                  Download {sortColumn === 'download_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                </th>
+                                <th onClick={() => {
+                                  setSortColumn('upload_speed_mbps');
+                                  setSortDirection(sortColumn === 'upload_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                }}>
+                                  Upload {sortColumn === 'upload_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                </th>
+                                <th onClick={() => {
+                                  setSortColumn('ping_avg_ms');
+                                  setSortDirection(sortColumn === 'ping_avg_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                }}>
+                                  Ping {sortColumn === 'ping_avg_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                </th>
+                                <th onClick={() => {
+                                  setSortColumn('jitter_ms');
+                                  setSortDirection(sortColumn === 'jitter_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                }}>
+                                  Jitter {sortColumn === 'jitter_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                </th>
+                                <th onClick={() => {
+                                  setSortColumn('network_health_score');
+                                  setSortDirection(sortColumn === 'network_health_score' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                }}>
+                                  Health {sortColumn === 'network_health_score' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                </th>
+                                <th>ISP</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredTests.map((test) => (
+                                <Fragment key={test.id}>
+                                  <tr 
+                                    onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)} 
+                                    className="test-table-row"
+                                  >
+                                    <td className="test-table-cell--toggle">
+                                      <svg 
+                                        viewBox="0 0 24 24" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        strokeWidth="2"
+                                        className={`test-table-toggle-icon ${expandedTestId === test.id ? 'test-table-toggle-icon--expanded' : ''}`}
+                                      >
+                                        <polyline points="9 18 15 12 9 6" />
+                                      </svg>
+                                    </td>
+                                    <td>{formatDate(test.created_at)}</td>
+                                    <td>{test.download_speed_mbps?.toFixed(1) || 0} Mbps</td>
+                                    <td>{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</td>
+                                    <td>{test.ping_avg_ms?.toFixed(1) || 0} ms</td>
+                                    <td>{test.jitter_ms?.toFixed(1) || 0} ms</td>
+                                    <td>
+                                      <span style={{ color: getScoreColor(test.network_health_score) }}>
+                                        {test.network_health_score?.toFixed(0) || 0}
+                                      </span>
+                                    </td>
+                                    <td>{test.isp_name || 'N/A'}</td>
+                                  </tr>
+                                  {expandedTestId === test.id && (
+                                    <tr className="test-table-row--expanded">
+                                      <td colSpan={8} className="test-table-cell--expanded">
+                                        <div className="test-details-container">
+                                          <div className="test-details-wrapper">
+                                            <div className="test-details-section test-details-section--two-col">
+                                              <h4 className="test-details-section-title">Performance</h4>
+                                              <div className="test-details-grid">
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Download Speed</span>
+                                                  <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Upload Speed</span>
+                                                  <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Ping (Avg)</span>
+                                                  <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Ping (Min)</span>
+                                                  <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Ping (Max)</span>
+                                                  <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Jitter</span>
+                                                  <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Packet Loss</span>
+                                                  <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            <div className="test-details-section test-details-section--two-col">
+                                              <h4 className="test-details-section-title">Experience Scores</h4>
+                                              <div className="test-details-grid">
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Network Health</span>
+                                                  <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
+                                                    {test.network_health_score?.toFixed(0) || 0}
+                                                  </span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Gaming</span>
+                                                  <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
+                                                    {test.gaming_score?.toFixed(0) || 0}
+                                                  </span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Streaming</span>
+                                                  <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
+                                                    {test.streaming_score?.toFixed(0) || 0}
+                                                  </span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Video Call</span>
+                                                  <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
+                                                    {test.video_call_score?.toFixed(0) || 0}
+                                                  </span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Browsing</span>
+                                                  <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
+                                                    {test.browsing_score?.toFixed(0) || 0}
+                                                  </span>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {test.ai_summary && (
+                                            <div className="test-details-section">
+                                              <h4 className="test-details-section-title">
+                                                <img 
+                                                  src={aiIcon} 
+                                                  alt="AI" 
+                                                  className="test-details-section-icon"
+                                                />
+                                                AI Analysis
+                                              </h4>
+                                              <div className="test-details-ai-summary">
+                                                <p>{test.ai_summary}</p>
+                                              </div>
+                                            </div>
+                                          )}
+
+                                          <div className="test-details-section">
+                                            <h4 className="test-details-section-title">Environment</h4>
+                                            <div className="test-details-grid">
+                                              <div className="test-details-item">
+                                                <span className="test-details-label">Date & Time</span>
+                                                <span className="test-details-value">{formatDate(test.created_at)}</span>
+                                              </div>
+                                              <div className="test-details-item">
+                                                <span className="test-details-label">ISP</span>
+                                                <span className="test-details-value">{test.isp_name || 'N/A'}</span>
+                                              </div>
+                                              {test.country && (
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Country</span>
+                                                  <span className="test-details-value">{test.country}</span>
+                                                </div>
+                                              )}
+                                              {test.probe_method && (
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Probe Method</span>
+                                                  <span className="test-details-value">{test.probe_method}</span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  )}
+                                </Fragment>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Pagination Controls */}
+                        <div className="pagination-controls glass-card">
+                          <button
+                            className="pagination-btn"
+                            onClick={() => setTableOffset(Math.max(0, tableOffset - tableLimit))}
+                            disabled={tableOffset === 0 || tableLoading}
                           >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="11" cy="11" r="8" />
-                              <path d="M21 21l-4.35-4.35" />
+                              <polyline points="15 18 9 12 15 6" />
                             </svg>
+                            Previous
                           </button>
-                          <button 
-                            className="clear-filters-btn"
-                            onClick={() => {
-                              setTempStartDate(null);
-                              setTempEndDate(null);
-                              setStartDate(null);
-                              setEndDate(null);
-                              setTableOffset(0);
-                            }}
+                          <span className="pagination-info">
+                            Showing {tableOffset + 1}-{Math.min(tableOffset + tableLimit, tableTotal || tableOffset + tableHistory.length)}
+                            {tableTotal > 0 && ` of ${tableTotal}`}
+                          </span>
+                          <button
+                            className="pagination-btn"
+                            onClick={() => setTableOffset(tableOffset + tableLimit)}
+                            disabled={!tableTotal || (tableOffset + tableLimit >= tableTotal) || tableLoading}
                           >
-                            Clear
-                          </button>
-                          <button onClick={exportToCSV} className="export-btn">
+                            Next
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                              <polyline points="7 10 12 15 17 10" />
-                              <line x1="12" y1="15" x2="12" y2="3" />
+                              <polyline points="9 18 15 12 9 6" />
                             </svg>
-                            Export CSV
                           </button>
                         </div>
                       </div>
-                    </div>
-
-                    <div className="test-table-container glass-card">
-                      <table className="test-table">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th onClick={() => {
-                              setSortColumn('created_at');
-                              setSortDirection(sortColumn === 'created_at' && sortDirection === 'desc' ? 'asc' : 'desc');
-                            }}>
-                              Date {sortColumn === 'created_at' && (sortDirection === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th onClick={() => {
-                              setSortColumn('download_speed_mbps');
-                              setSortDirection(sortColumn === 'download_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
-                            }}>
-                              Download {sortColumn === 'download_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th onClick={() => {
-                              setSortColumn('upload_speed_mbps');
-                              setSortDirection(sortColumn === 'upload_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
-                            }}>
-                              Upload {sortColumn === 'upload_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th onClick={() => {
-                              setSortColumn('ping_avg_ms');
-                              setSortDirection(sortColumn === 'ping_avg_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
-                            }}>
-                              Ping {sortColumn === 'ping_avg_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th onClick={() => {
-                              setSortColumn('jitter_ms');
-                              setSortDirection(sortColumn === 'jitter_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
-                            }}>
-                              Jitter {sortColumn === 'jitter_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th onClick={() => {
-                              setSortColumn('network_health_score');
-                              setSortDirection(sortColumn === 'network_health_score' && sortDirection === 'desc' ? 'asc' : 'desc');
-                            }}>
-                              Health {sortColumn === 'network_health_score' && (sortDirection === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>ISP</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredTests.map((test) => (
-                            <>
-                              <tr 
-                                key={test.id} 
-                                onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)} 
-                                className="test-table-row"
-                              >
-                                <td className="test-table-cell--toggle">
-                                  <svg 
-                                    viewBox="0 0 24 24" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    strokeWidth="2"
-                                    className={`test-table-toggle-icon ${expandedTestId === test.id ? 'test-table-toggle-icon--expanded' : ''}`}
-                                  >
-                                    <polyline points="9 18 15 12 9 6" />
-                                  </svg>
-                                </td>
-                                <td>{formatDate(test.created_at)}</td>
-                                <td>{test.download_speed_mbps?.toFixed(1) || 0} Mbps</td>
-                                <td>{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</td>
-                                <td>{test.ping_avg_ms?.toFixed(1) || 0} ms</td>
-                                <td>{test.jitter_ms?.toFixed(1) || 0} ms</td>
-                                <td>
-                                  <span style={{ color: getScoreColor(test.network_health_score) }}>
-                                    {test.network_health_score?.toFixed(0) || 0}
-                                  </span>
-                                </td>
-                                <td>{test.isp_name || 'N/A'}</td>
-                              </tr>
-                              {expandedTestId === test.id && (
-                                <tr key={`${test.id}-expanded`} className="test-table-row--expanded">
-                                  <td colSpan={8} className="test-table-cell--expanded">
-                                    <div className="test-details-container">
-                                      <div className="test-details-wrapper">
-                                        <div className="test-details-section test-details-section--two-col">
-                                          <h4 className="test-details-section-title">Performance</h4>
-                                          <div className="test-details-grid">
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Download Speed</span>
-                                              <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Upload Speed</span>
-                                              <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Ping (Avg)</span>
-                                              <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Ping (Min)</span>
-                                              <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Ping (Max)</span>
-                                              <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Jitter</span>
-                                              <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Packet Loss</span>
-                                              <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <div className="test-details-section test-details-section--two-col">
-                                          <h4 className="test-details-section-title">Experience Scores</h4>
-                                          <div className="test-details-grid">
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Network Health</span>
-                                              <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
-                                                {test.network_health_score?.toFixed(0) || 0}
-                                              </span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Gaming</span>
-                                              <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
-                                                {test.gaming_score?.toFixed(0) || 0}
-                                              </span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Streaming</span>
-                                              <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
-                                                {test.streaming_score?.toFixed(0) || 0}
-                                              </span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Video Call</span>
-                                              <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
-                                                {test.video_call_score?.toFixed(0) || 0}
-                                              </span>
-                                            </div>
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Browsing</span>
-                                              <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
-                                                {test.browsing_score?.toFixed(0) || 0}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {test.ai_summary && (
-                                        <div className="test-details-section">
-                                          <h4 className="test-details-section-title">
-                                            <img 
-                                              src={aiIcon} 
-                                              alt="AI" 
-                                              className="test-details-section-icon"
-                                            />
-                                            AI Analysis
-                                          </h4>
-                                          <div className="test-details-ai-summary">
-                                            <p>{test.ai_summary}</p>
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      <div className="test-details-section">
-                                        <h4 className="test-details-section-title">Environment</h4>
-                                        <div className="test-details-grid">
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">Date & Time</span>
-                                            <span className="test-details-value">{formatDate(test.created_at)}</span>
-                                          </div>
-                                          <div className="test-details-item">
-                                            <span className="test-details-label">ISP</span>
-                                            <span className="test-details-value">{test.isp_name || 'N/A'}</span>
-                                          </div>
-                                          {test.country && (
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Country</span>
-                                              <span className="test-details-value">{test.country}</span>
-                                            </div>
-                                          )}
-                                          {test.probe_method && (
-                                            <div className="test-details-item">
-                                              <span className="test-details-label">Probe Method</span>
-                                              <span className="test-details-value">{test.probe_method}</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              )}
-                            </>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Pagination Controls */}
-                    <div className="pagination-controls glass-card">
-                      <button
-                        className="pagination-btn"
-                        onClick={() => setTableOffset(Math.max(0, tableOffset - tableLimit))}
-                        disabled={tableOffset === 0 || tableLoading}
-                      >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="15 18 9 12 15 6" />
-                        </svg>
-                        Previous
-                      </button>
-                      <span className="pagination-info">
-                        Showing {tableOffset + 1}-{Math.min(tableOffset + tableLimit, tableTotal || tableOffset + tableHistory.length)}
-                        {tableTotal > 0 && ` of ${tableTotal}`}
-                      </span>
-                      <button
-                        className="pagination-btn"
-                        onClick={() => setTableOffset(tableOffset + tableLimit)}
-                        disabled={!tableTotal || (tableOffset + tableLimit >= tableTotal) || tableLoading}
-                      >
-                        Next
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                    ) : (
+                      !hasAnyError && <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
+                    )}
+                  </>
                 )}
               </>
             )}
