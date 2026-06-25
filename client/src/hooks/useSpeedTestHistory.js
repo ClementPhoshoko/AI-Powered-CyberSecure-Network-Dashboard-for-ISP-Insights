@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getPingHistory } from '../services/pingService';
+import { getFriendlyErrorMessage } from '../services/errorUtils';
 
 export function useSpeedTestHistory(limit = 10, offset = 0, filters = {}) {
   const [history, setHistory] = useState([]);
@@ -20,7 +21,7 @@ export function useSpeedTestHistory(limit = 10, offset = 0, filters = {}) {
       }
     } catch (err) {
       console.error('Failed to fetch test history:', err);
-      setError(err.message || 'Failed to fetch test history');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }

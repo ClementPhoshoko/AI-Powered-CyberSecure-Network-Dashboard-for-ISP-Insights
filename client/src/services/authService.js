@@ -1,8 +1,9 @@
 import { supabase } from './supabase';
+import { getFriendlyErrorMessage as getGeneralFriendlyMessage } from './errorUtils';
 
 const getFriendlyAuthErrorMessage = (error) => {
   if (!error || !error.message) {
-    return 'Something went wrong. Please try again.';
+    return getGeneralFriendlyMessage(error);
   }
 
   const msg = error.message.toLowerCase();
@@ -31,7 +32,7 @@ const getFriendlyAuthErrorMessage = (error) => {
     return 'Too many attempts. Please try again later.';
   }
 
-  return 'Something went wrong. Please try again.';
+  return getGeneralFriendlyMessage(error);
 };
 
 export const login = async (email, password) => {

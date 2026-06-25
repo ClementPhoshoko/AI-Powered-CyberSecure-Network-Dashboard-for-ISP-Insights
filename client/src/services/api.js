@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { supabase } from './supabase';
+import { createFriendlyError } from './errorUtils';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -17,7 +18,13 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(createFriendlyError(error))
+);
+
+// Response interceptor to transform errors to friendly messages
+api.interceptors.response.use(
+  (response) => response,
+  (error) => Promise.reject(createFriendlyError(error))
 );
 
 export default api;

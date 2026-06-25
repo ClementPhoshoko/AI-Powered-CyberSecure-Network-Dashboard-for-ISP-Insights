@@ -8,6 +8,7 @@ import heroImage from '../../assets/hero/Modern_office_with_data_flow_dynamics.p
 import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import aiIcon from '../../assets/avatars/ai.png';
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
+import ErrorModal from '../../components/error_modal/ErrorModal';
 import './History.css';
 
 const proTips = [
@@ -202,6 +203,21 @@ function HistoryEmptyState({ hasActiveFilters }) {
   );
 }
 
+function HistoryErrorState({ error, onRetry }) {
+  return (
+    <div className="error-state">
+      <img src={notFoundAvatar} alt="Error occurred" className="error-state-avatar" />
+      <div className="error-state-copy">
+        <p className="error-state-title">Something went wrong</p>
+        <p className="error-state-description">
+          {error}
+        </p>
+      </div>
+      <button onClick={onRetry} className="link-btn">Try Again</button>
+    </div>
+  );
+}
+
 function History() {
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
@@ -213,6 +229,7 @@ function History() {
   const [sortColumn, setSortColumn] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
   const [activeTab, setActiveTab] = useState('trends');
+  const [showErrorModal, setShowErrorModal] = useState(false);
   
   // Sync temp date state when real date state changes
   useEffect(() => {
@@ -235,7 +252,8 @@ function History() {
   const { 
     history: allHistory, 
     loading: allLoading, 
-    error: allError
+    error: allError,
+    refetch: refetchAllHistory
   } = useSpeedTestHistory(1000, 0, dateFilters);
 
   // Fetch paginated history for the table (limit 10)
@@ -243,8 +261,21 @@ function History() {
     history: tableHistory, 
     loading: tableLoading, 
     error: tableError, 
-    total: tableTotal
+    total: tableTotal,
+    refetch: refetchTableHistory
   } = useSpeedTestHistory(tableLimit, tableOffset, dateFilters);
+
+  // Watch for error states and open error modal
+  useEffect(() => {
+    if (allError || tableError) {
+      setShowErrorModal(true);
+    }
+  }, [allError, tableError]);
+
+  // Reset error state when closing modal
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -483,106 +514,109 @@ function History() {
       </div>
       
       <div className="history-container">
-        {shouldShowEmptyState ? (
-          <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
-        ) : (
-          <>
-            {/* Trends Tab Content */}
-            {activeTab === 'trends' && (
-              <>
-                {shouldShowTrendsSkeleton ? (
-                  <>
-                    <SummarySkeleton />
-                    <GraphSkeleton showFilters count={4} />
-                  </>
-                ) : (
-                  <>
-                    {/* Section 1: Summary Metrics */}
-                    {summary && (
-                      <div className="summary-grid">
-                        <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.totalTests}</span>
-                          <span className="summary-mini-label">Total Tests</span>
-                        </div>
-
-                        <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                          <span className="summary-mini-label">Avg Download</span>
-                        </div>
-
-                        <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                          <span className="summary-mini-label">Avg Upload</span>
-                        </div>
-
-                        <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                          <span className="summary-mini-label">Avg Ping</span>
-                        </div>
-
-                        <div className="summary-mini-card">
-                          <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                          <span className="summary-mini-label">Avg Health Score</span>
-                        </div>
+        <>
+          {/* Trends Tab Content */}
+          {activeTab === 'trends' && (
+            <>
+              {shouldShowTrendsSkeleton ? (
+                <>
+                  <SummarySkeleton />
+                  <GraphSkeleton showFilters count={4} />
+                </>
+              ) : (
+                <>
+                  {/* Section 1: Summary Metrics */}
+                  {summary && (
+                    <div className="summary-grid">
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.totalTests}</span>
+                        <span className="summary-mini-label">Total Tests</span>
                       </div>
-                    )}
 
-                    {/* Section 2: Performance Trends */}
-                    {chartData.length > 0 && (
-                      <div className="trends-section">
-                        <div className="trends-header">
-                          <h2 className="section-title">Performance Trends</h2>
-                          <div className="date-filters">
-                            <label className="date-label-field">
-                              <span className="date-label">From</span>
-                              <DatePicker
-                                selected={tempStartDate}
-                                onChange={(date) => setTempStartDate(date)}
-                                className="date-input"
-                                placeholderText="Select start date"
-                                isClearable
-                                dateFormat="yyyy-MM-dd"
-                              />
-                            </label>
-                            <label className="date-label-field">
-                              <span className="date-label">To</span>
-                              <DatePicker
-                                selected={tempEndDate}
-                                onChange={(date) => setTempEndDate(date)}
-                                className="date-input"
-                                placeholderText="Select end date"
-                                isClearable
-                                dateFormat="yyyy-MM-dd"
-                              />
-                            </label>
-                            <button 
-                              className="apply-filters-btn"
-                              onClick={() => {
-                                setStartDate(tempStartDate);
-                                setEndDate(tempEndDate);
-                                setTableOffset(0);
-                              }}
-                            >
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="11" cy="11" r="8" />
-                                <path d="M21 21l-4.35-4.35" />
-                              </svg>
-                            </button>
-                            <button 
-                              className="clear-filters-btn"
-                              onClick={() => {
-                                setTempStartDate(null);
-                                setTempEndDate(null);
-                                setStartDate(null);
-                                setEndDate(null);
-                                setTableOffset(0);
-                              }}
-                            >
-                              Clear
-                            </button>
-                          </div>
-                        </div>
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-label">Avg Download</span>
+                      </div>
 
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-label">Avg Upload</span>
+                      </div>
+
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                        <span className="summary-mini-label">Avg Ping</span>
+                      </div>
+
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                        <span className="summary-mini-label">Avg Health Score</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 2: Performance Trends */}
+                  <div className="trends-section">
+                    <div className="trends-header">
+                      <h2 className="section-title">Performance Trends</h2>
+                      <div className="date-filters">
+                        <label className="date-label-field">
+                          <span className="date-label">From</span>
+                          <DatePicker
+                            selected={tempStartDate}
+                            onChange={(date) => setTempStartDate(date)}
+                            className="date-input"
+                            placeholderText="Select start date"
+                            isClearable
+                            dateFormat="yyyy-MM-dd"
+                          />
+                        </label>
+                        <label className="date-label-field">
+                          <span className="date-label">To</span>
+                          <DatePicker
+                            selected={tempEndDate}
+                            onChange={(date) => setTempEndDate(date)}
+                            className="date-input"
+                            placeholderText="Select end date"
+                            isClearable
+                            dateFormat="yyyy-MM-dd"
+                          />
+                        </label>
+                        <button 
+                          className="apply-filters-btn"
+                          onClick={() => {
+                            setStartDate(tempStartDate);
+                            setEndDate(tempEndDate);
+                            setTableOffset(0);
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
+                          </svg>
+                        </button>
+                        <button 
+                          className="clear-filters-btn"
+                          onClick={() => {
+                            setTempStartDate(null);
+                            setTempEndDate(null);
+                            setStartDate(null);
+                            setEndDate(null);
+                            setTableOffset(0);
+                          }}
+                        >
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    {hasAnyError ? (
+                      <HistoryErrorState 
+                        error={allError || tableError} 
+                        onRetry={refetchAllHistory} 
+                      />
+                    ) : chartData.length > 0 ? (
+                      <>
                         {/* Graph 1: Speed Trends */}
                         <div className="graph-card">
                           <h3 className="graph-title">Speed Trends</h3>
@@ -790,119 +824,29 @@ function History() {
                             </p>
                           )}
                         </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-
-            {/* Insights Tab Content */}
-            {activeTab === 'insights' && (
-              <>
-                {shouldShowInsightsSkeleton ? (
-                  <>
-                    <SummarySkeleton />
-                    <InsightsSkeleton />
-                  </>
-                ) : (
-                  <>
-                    {/* Section 1: Summary Metrics */}
-                    {summary && (
-                      <>
-                        <div className="summary-grid">
-                          <div className="summary-mini-card">
-                            <span className="summary-mini-value">{summary.totalTests}</span>
-                            <span className="summary-mini-label">Total Tests</span>
-                          </div>
-
-                          <div className="summary-mini-card">
-                            <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                            <span className="summary-mini-label">Avg Download</span>
-                          </div>
-
-                          <div className="summary-mini-card">
-                            <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                            <span className="summary-mini-label">Avg Upload</span>
-                          </div>
-
-                          <div className="summary-mini-card">
-                            <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                            <span className="summary-mini-label">Avg Ping</span>
-                          </div>
-
-                          <div className="summary-mini-card">
-                            <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                            <span className="summary-mini-label">Avg Health Score</span>
-                          </div>
-                        </div>
                       </>
+                    ) : (
+                      <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
                     )}
+                  </div>
+                </>
+              )}
+            </>
+          )}
 
-                    {/* Section 3: AI Insights Panel */}
-                    {aiInsights.length > 0 && (
-                      <div className="ai-insights-section">
-                        <h2 className="section-title">AI Insights</h2>
-                        <div className="ai-insights-grid">
-                          {aiInsights.map((insight, index) => (
-                            <div key={index} className="ai-insight-card">
-                              <div className="ai-insight-icon">{insight.icon}</div>
-                              <div className="ai-insight-content">
-                                <h4 className="ai-insight-title">{insight.title}</h4>
-                                <p className="ai-insight-message">{insight.message}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        {/* Coming Soon Section */}
-                        <div className="coming-soon-section">
-                          <img 
-                            src={womanAvatar} 
-                            alt="Coming Soon" 
-                            className="coming-soon-avatar"
-                          />
-                          <div className="coming-soon-content">
-                            <h3 className="coming-soon-title">Coming Soon - Advanced Network Analysis</h3>
-                            <ul className="coming-soon-list">
-                              <li className="coming-soon-item">
-                                <span className="coming-soon-bullet"></span>
-                                Port Risk Detection
-                              </li>
-                              <li className="coming-soon-item">
-                                <span className="coming-soon-bullet"></span>
-                                Public Wi-Fi Security Analysis
-                              </li>
-                              <li className="coming-soon-item">
-                                <span className="coming-soon-bullet"></span>
-                                Network Traffic Anomaly Detection
-                              </li>
-                              <li className="coming-soon-item">
-                                <span className="coming-soon-bullet"></span>
-                                ISP Performance Benchmarking
-                              </li>
-                              <li className="coming-soon-item">
-                                <span className="coming-soon-bullet"></span>
-                                Device-Level Network Health Checks
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-
-            {/* History Tab Content */}
-            {activeTab === 'history' && (
-              <>
-                {shouldShowTableSkeleton ? (
-                  <TableSkeleton showSummary={allLoading} />
-                ) : (
-                  <>
-                    {/* Section 1: Summary Metrics */}
-                    {summary && (
+          {/* Insights Tab Content */}
+          {activeTab === 'insights' && (
+            <>
+              {shouldShowInsightsSkeleton ? (
+                <>
+                  <SummarySkeleton />
+                  <InsightsSkeleton />
+                </>
+              ) : (
+                <>
+                  {/* Section 1: Summary Metrics */}
+                  {summary && (
+                    <>
                       <div className="summary-grid">
                         <div className="summary-mini-card">
                           <span className="summary-mini-value">{summary.totalTests}</span>
@@ -929,74 +873,180 @@ function History() {
                           <span className="summary-mini-label">Avg Health Score</span>
                         </div>
                       </div>
-                    )}
+                    </>
+                  )}
 
-                    {/* Section 4: Historical Test Table */}
-                    {tableHistory.length > 0 ? (
-                      <div className="test-table-section">
-                        <div className="test-table-header">
-                          <h2 className="section-title">Test History</h2>
-                          <div className="test-table-right-section">
-                            <div className="date-filters">
-                              <label className="date-label-field">
-                                <span className="date-label">From</span>
-                                <DatePicker
-                                  selected={tempStartDate}
-                                  onChange={(date) => setTempStartDate(date)}
-                                  className="date-input"
-                                  placeholderText="Select start date"
-                                  isClearable
-                                  dateFormat="yyyy-MM-dd"
-                                />
-                              </label>
-                              <label className="date-label-field">
-                                <span className="date-label">To</span>
-                                <DatePicker
-                                  selected={tempEndDate}
-                                  onChange={(date) => setTempEndDate(date)}
-                                  className="date-input"
-                                  placeholderText="Select end date"
-                                  isClearable
-                                  dateFormat="yyyy-MM-dd"
-                                />
-                              </label>
-                              <button 
-                                className="apply-filters-btn"
-                                onClick={() => {
-                                  setStartDate(tempStartDate);
-                                  setEndDate(tempEndDate);
-                                  setTableOffset(0);
-                                }}
-                              >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <circle cx="11" cy="11" r="8" />
-                                  <path d="M21 21l-4.35-4.35" />
-                                </svg>
-                              </button>
-                              <button 
-                                className="clear-filters-btn"
-                                onClick={() => {
-                                  setTempStartDate(null);
-                                  setTempEndDate(null);
-                                  setStartDate(null);
-                                  setEndDate(null);
-                                  setTableOffset(0);
-                                }}
-                              >
-                                Clear
-                              </button>
-                              <button onClick={exportToCSV} className="export-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                  <polyline points="7 10 12 15 17 10" />
-                                  <line x1="12" y1="15" x2="12" y2="3" />
-                                </svg>
-                                Export CSV
-                              </button>
+                  {/* Section 3: AI Insights Panel */}
+                  {hasAnyError ? (
+                    <HistoryErrorState 
+                      error={allError || tableError} 
+                      onRetry={refetchAllHistory} 
+                    />
+                  ) : aiInsights.length > 0 ? (
+                    <div className="ai-insights-section">
+                      <h2 className="section-title">AI Insights</h2>
+                      <div className="ai-insights-grid">
+                        {aiInsights.map((insight, index) => (
+                          <div key={index} className="ai-insight-card">
+                            <div className="ai-insight-icon">{insight.icon}</div>
+                            <div className="ai-insight-content">
+                              <h4 className="ai-insight-title">{insight.title}</h4>
+                              <p className="ai-insight-message">{insight.message}</p>
                             </div>
                           </div>
+                        ))}
+                      </div>
+                      {/* Coming Soon Section */}
+                      <div className="coming-soon-section">
+                        <img 
+                          src={womanAvatar} 
+                          alt="Coming Soon" 
+                          className="coming-soon-avatar"
+                        />
+                        <div className="coming-soon-content">
+                          <h3 className="coming-soon-title">Coming Soon - Advanced Network Analysis</h3>
+                          <ul className="coming-soon-list">
+                            <li className="coming-soon-item">
+                              <span className="coming-soon-bullet"></span>
+                              Port Risk Detection
+                            </li>
+                            <li className="coming-soon-item">
+                              <span className="coming-soon-bullet"></span>
+                              Public Wi-Fi Security Analysis
+                            </li>
+                            <li className="coming-soon-item">
+                              <span className="coming-soon-bullet"></span>
+                              Network Traffic Anomaly Detection
+                            </li>
+                            <li className="coming-soon-item">
+                              <span className="coming-soon-bullet"></span>
+                              ISP Performance Benchmarking
+                            </li>
+                            <li className="coming-soon-item">
+                              <span className="coming-soon-bullet"></span>
+                              Device-Level Network Health Checks
+                            </li>
+                          </ul>
                         </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
+                  )}
+                </>
+              )}
+            </>
+          )}
 
+          {/* History Tab Content */}
+          {activeTab === 'history' && (
+            <>
+              {shouldShowTableSkeleton ? (
+                <TableSkeleton showSummary={allLoading} />
+              ) : (
+                <>
+                  {/* Section 1: Summary Metrics */}
+                  {summary && (
+                    <div className="summary-grid">
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.totalTests}</span>
+                        <span className="summary-mini-label">Total Tests</span>
+                      </div>
+
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-label">Avg Download</span>
+                      </div>
+
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-label">Avg Upload</span>
+                      </div>
+
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                        <span className="summary-mini-label">Avg Ping</span>
+                      </div>
+
+                      <div className="summary-mini-card">
+                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                        <span className="summary-mini-label">Avg Health Score</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 4: Historical Test Table */}
+                  <div className="test-table-section">
+                    <div className="test-table-header">
+                      <h2 className="section-title">Test History</h2>
+                      <div className="test-table-right-section">
+                        <div className="date-filters">
+                          <label className="date-label-field">
+                            <span className="date-label">From</span>
+                            <DatePicker
+                              selected={tempStartDate}
+                              onChange={(date) => setTempStartDate(date)}
+                              className="date-input"
+                              placeholderText="Select start date"
+                              isClearable
+                              dateFormat="yyyy-MM-dd"
+                            />
+                          </label>
+                          <label className="date-label-field">
+                            <span className="date-label">To</span>
+                            <DatePicker
+                              selected={tempEndDate}
+                              onChange={(date) => setTempEndDate(date)}
+                              className="date-input"
+                              placeholderText="Select end date"
+                              isClearable
+                              dateFormat="yyyy-MM-dd"
+                            />
+                          </label>
+                          <button 
+                            className="apply-filters-btn"
+                            onClick={() => {
+                              setStartDate(tempStartDate);
+                              setEndDate(tempEndDate);
+                              setTableOffset(0);
+                            }}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="11" cy="11" r="8" />
+                              <path d="M21 21l-4.35-4.35" />
+                            </svg>
+                          </button>
+                          <button 
+                            className="clear-filters-btn"
+                            onClick={() => {
+                              setTempStartDate(null);
+                              setTempEndDate(null);
+                              setStartDate(null);
+                              setEndDate(null);
+                              setTableOffset(0);
+                            }}
+                          >
+                            Clear
+                          </button>
+                          <button onClick={exportToCSV} className="export-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="7 10 12 15 17 10" />
+                              <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Export CSV
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {hasAnyError ? (
+                      <HistoryErrorState 
+                        error={tableError || allError} 
+                        onRetry={refetchTableHistory} 
+                      />
+                    ) : tableHistory.length > 0 ? (
+                      <>
                         <div className="test-table-container glass-card">
                           <table className="test-table">
                             <thead>
@@ -1225,17 +1275,22 @@ function History() {
                             </svg>
                           </button>
                         </div>
-                      </div>
+                      </>
                     ) : (
-                      !hasAnyError && <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
+                      <HistoryEmptyState hasActiveFilters={hasActiveFilters} />
                     )}
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </>
       </div>
+      <ErrorModal
+        isOpen={showErrorModal}
+        message={allError || tableError}
+        onClose={handleCloseErrorModal}
+      />
     </div>
   );
 }

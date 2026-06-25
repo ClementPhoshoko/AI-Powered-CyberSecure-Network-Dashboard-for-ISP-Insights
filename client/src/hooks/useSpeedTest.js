@@ -8,6 +8,7 @@ import {
 import { runPingTest } from '../services/pingService';
 import { generateAISummary } from '../services/networkService';
 import api from '../services/api';
+import { getFriendlyErrorMessage } from '../services/errorUtils';
 
 const TEST_PHASES = {
   IDLE: 'idle',
@@ -339,18 +340,7 @@ export function useSpeedTest() {
       console.error('Speed test failed:', err);
       
       // User-friendly error messages
-      let userFriendlyError = 'Something went wrong while running the speed test.';
-      if (err.message?.toLowerCase().includes('network')) {
-        userFriendlyError = 'Looks like there was a network issue. Please check your internet connection and try again.';
-      } else if (err.message?.toLowerCase().includes('timeout')) {
-        userFriendlyError = 'The speed test timed out. Please try again.';
-      } else if (err.response?.status >= 500) {
-        userFriendlyError = 'Our server is having issues. Please try again later.';
-      } else if (err.response?.status === 401 || err.response?.status === 403) {
-        userFriendlyError = 'You need to be signed in to run a speed test. Please sign in and try again.';
-      }
-
-      setError(userFriendlyError);
+      setError(getFriendlyErrorMessage(err));
       setPhase(TEST_PHASES.ERROR);
       return null;
     } finally {
