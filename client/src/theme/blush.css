@@ -1,0 +1,121 @@
+/* =========================================================
+   BLUSH THEME - Soft Pink
+   ========================================================= */
+
+:root[data-theme='blush'] {
+  /* =========================================================
+     1. COLOR SYSTEM (BASE BACKGROUNDS)
+     ========================================================= */
+
+  --bg-primary: #FDF2F8;
+  --bg-secondary: #FCE7F3;
+  --bg-tertiary: #FBCFE8;
+  --bg-deep: #F9A8D4;
+
+  /* Gradient background (app shell) */
+  --bg-gradient:
+    linear-gradient(
+      180deg,
+      #FDF2F8 0%,
+      #FCE7F3 50%,
+      #FBCFE8 100%
+    );
+
+  /* =========================================================
+     2. GLASSMORPHISM SYSTEM
+     ========================================================= */
+
+  --glass-bg: rgba(255, 255, 255, 0.60);
+  --glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --glass-bg-soft: rgba(255, 255, 255, 0.40);
+
+  --glass-border: rgba(255, 255, 255, 0.40);
+  --glass-border-strong: rgba(255, 255, 255, 0.60);
+
+  --glass-shadow: rgba(157, 23, 77, 0.08);
+  --glass-shadow-strong: rgba(157, 23, 77, 0.14);
+
+  /* Blur levels */
+  --blur-sm: 8px;
+  --blur-md: 14px;
+  --blur-lg: 22px;
+  --blur-xl: 32px;
+
+  /* Glass noise overlay (optional texture layer) */
+  --glass-noise-opacity: 0.04;
+
+  /* =========================================================
+     3. PRIMARY BRAND (AI + SPEED IDENTITY)
+     ========================================================= */
+
+  --primary: #DB2777;
+  --primary-light: #F472B6;
+  --primary-dark: #BE185D;
+
+  --primary-glow: rgba(219, 39, 119, 0.25);
+
+  --primary-gradient:
+    linear-gradient(135deg, #DB2777, #EC4899, #F472B6);
+
+  /* =========================================================
+     4. ACCENT COLORS (SPEED + ENERGY)
+     ========================================================= */
+
+  --accent: #EC4899;
+  --accent-alt: #10B981;
+
+  --accent-glow: rgba(236, 72, 153, 0.25);
+
+  /* =========================================================
+     5. SEMANTIC STATES
+     ========================================================= */
+
+  --success: #10B981;
+  --success-soft: rgba(16, 185, 129, 0.15);
+
+  --warning: #F59E0B;
+  --warning-soft: rgba(245, 158, 11, 0.15);
+
+  --error: #EF4444;
+  --error-soft: rgba(239, 68, 68, 0.15);
+
+  --info: #3B82F6;
+  --info-soft: rgba(59, 130, 246, 0.15);
+
+  /* =========================================================
+     6. SPEED TEST DATA COLORS
+     ========================================================= */
+
+  --download: #db2777ad;
+  --upload: #ec4899ad;
+  --ping: #10b981ad;
+  --jitter: #f59e0bad;
+
+  --download-glow: rgba(219, 39, 119, 0.25);
+  --upload-glow: rgba(236, 72, 153, 0.25);
+  --ping-glow: rgba(16, 185, 129, 0.25);
+  --jitter-glow: rgba(245, 158, 11, 0.25);
+
+  /* =========================================================
+     7. AI SYSTEM STATES
+     ========================================================= */
+
+  --ai-idle: #DB2777;
+  --ai-thinking: #EC4899;
+  --ai-processing: linear-gradient(90deg, #DB2777, #EC4899, #F472B6);
+  --ai-complete: #10B981;
+
+  --ai-glow: rgba(219, 39, 119, 0.20);
+
+  /* =========================================================
+     8. TEXT COLORS
+     ========================================================= */
+
+  --text-primary: #500724;
+  --text-secondary: #831843;
+  --text-muted: #9F1239;
+  --text-inverse: #FFFFFF;
+
+  /* Numbers / metrics */
+  --text-metric: #500724;
+}

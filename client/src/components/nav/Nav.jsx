@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import Modal from '../modal/Modal';
 import ErrorModal from '../error_modal/ErrorModal';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
@@ -9,6 +10,7 @@ import './Nav.css';
 function Nav() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { getCurrentThemeData, cycleTheme } = useTheme();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -147,7 +149,11 @@ function Nav() {
                   </Link>
                 )}
                 
-                <button className="nav-chain-item" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                <button 
+                  className="nav-chain-item" 
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  onClick={cycleTheme}
+                >
                     <div className="nav-chain-circle">
                       <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="5" />
@@ -163,7 +169,7 @@ function Nav() {
                     </div>
                     <div className="nav-theme-wrapper">
                       <span className="nav-chain-label">Change Theme</span>
-                      <span className="nav-theme-label">Lighture - Bright Blue</span>
+                      <span className="nav-theme-label">{getCurrentThemeData().name}</span>
                     </div>
                   </button>
                 
