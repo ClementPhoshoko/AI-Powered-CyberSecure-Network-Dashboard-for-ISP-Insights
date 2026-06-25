@@ -87,3 +87,18 @@ export const getSession = async () => {
 export const onAuthStateChange = (callback) => {
   return supabase.auth.onAuthStateChange(callback);
 };
+
+export const updateEmail = async (email) => {
+  const { data, error } = await supabase.auth.updateUser({ 
+    email,
+    options: {
+      redirectTo: window.location.origin
+    }
+  });
+  if (error) {
+    const friendlyError = new Error(getFriendlyAuthErrorMessage(error));
+    friendlyError.originalError = error;
+    throw friendlyError;
+  }
+  return data;
+};

@@ -10,7 +10,9 @@ import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
 import NotFound from './pages/not_found/NotFound'
 import AuthRequired from './pages/auth_required/AuthRequired'
+import Account from './pages/manage_account/Account'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
+import PublicRoute from './components/public_route/PublicRoute'
 
 function AppContent() {
   const location = useLocation();
@@ -51,8 +53,21 @@ function AppContent() {
               <History />
             </ProtectedRoute>
           } />
-          <Route path="/login" element={<AuthLayout activeTab="login"><Login /></AuthLayout>} />
-          <Route path="/signup" element={<AuthLayout activeTab="signup"><Register /></AuthLayout>} />
+          <Route path="/account" element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          } />
+          <Route path="/login" element={
+            <PublicRoute>
+              <AuthLayout activeTab="login"><Login /></AuthLayout>
+            </PublicRoute>
+          } />
+          <Route path="/signup" element={
+            <PublicRoute>
+              <AuthLayout activeTab="signup"><Register /></AuthLayout>
+            </PublicRoute>
+          } />
           <Route path="/auth-required" element={<AuthRequired />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

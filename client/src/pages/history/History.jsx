@@ -9,6 +9,7 @@ import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import aiIcon from '../../assets/avatars/ai.png';
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
 import ErrorModal from '../../components/error_modal/ErrorModal';
+import Loading from '../../components/loading/Loading';
 import './History.css';
 
 const proTips = [
@@ -472,50 +473,54 @@ function History() {
 
   return (
     <div className="history-page">
-      {/* Title Section */}
-      <div className="history-title-section">
-        <h1 className="history-title-section-title">Test History</h1>
-        <div className="history-subtitle-with-avatar">
-          <img src={womanAvatar} alt="Instructor" className="subtitle-avatar" />
-          <div className="subtitle-text">
-            <p className="history-title-section-subtitle">Review your past speed tests, track performance trends, and gain insights into your network health.</p>
-            <p className="pro-tip-text">
-              <span className="pro-tip-label">Pro Tip!</span> {randomTip}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <section className="history-hero">
-        <img src={heroImage} alt="Test History Hero" className="history-hero-image" />
-      </section>
-
-      {/* Tab Navigation */}
-      <div className="history-tabs">
-        <button 
-          className={`history-tab ${activeTab === 'trends' ? 'history-tab--active' : ''}`}
-          onClick={() => setActiveTab('trends')}
-        >
-          Trends
-        </button>
-        <button 
-          className={`history-tab ${activeTab === 'insights' ? 'history-tab--active' : ''}`}
-          onClick={() => setActiveTab('insights')}
-        >
-          Insights
-        </button>
-        <button 
-          className={`history-tab ${activeTab === 'history' ? 'history-tab--active' : ''}`}
-          onClick={() => setActiveTab('history')}
-        >
-          History
-        </button>
-      </div>
+      <Loading isLoading={allLoading} message="Loading test history" status="AkovoLabs Test History System v1.0" />
       
-      <div className="history-container">
+      {/* Title Section */}
+      {!allLoading && (
         <>
-          {/* Trends Tab Content */}
+          <div className="history-title-section">
+            <h1 className="history-title-section-title">Test History</h1>
+            <div className="history-subtitle-with-avatar">
+              <img src={womanAvatar} alt="Instructor" className="subtitle-avatar" />
+              <div className="subtitle-text">
+                <p className="history-title-section-subtitle">Review your past speed tests, track performance trends, and gain insights into your network health.</p>
+                <p className="pro-tip-text">
+                  <span className="pro-tip-label">Pro Tip!</span> {randomTip}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Hero Section */}
+          <section className="history-hero">
+            <img src={heroImage} alt="Test History Hero" className="history-hero-image" />
+          </section>
+
+          {/* Tab Navigation */}
+          <div className="history-tabs">
+            <button 
+              className={`history-tab ${activeTab === 'trends' ? 'history-tab--active' : ''}`}
+              onClick={() => setActiveTab('trends')}
+            >
+              Trends
+            </button>
+            <button 
+              className={`history-tab ${activeTab === 'insights' ? 'history-tab--active' : ''}`}
+              onClick={() => setActiveTab('insights')}
+            >
+              Insights
+            </button>
+            <button 
+              className={`history-tab ${activeTab === 'history' ? 'history-tab--active' : ''}`}
+              onClick={() => setActiveTab('history')}
+            >
+              History
+            </button>
+          </div>
+          
+          <div className="history-container">
+            <>
+              {/* Trends Tab Content */}
           {activeTab === 'trends' && (
             <>
               {shouldShowTrendsSkeleton ? (
@@ -1284,8 +1289,10 @@ function History() {
               )}
             </>
           )}
+            </>
+          </div>
         </>
-      </div>
+      )}
       <ErrorModal
         isOpen={showErrorModal}
         message={allError || tableError}
