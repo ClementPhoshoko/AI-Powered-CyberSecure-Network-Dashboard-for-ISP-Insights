@@ -1,4 +1,4 @@
-# Research Notes: AI-Powered CyberSecure Network Dashboard
+# Research Notes: AI-Powered AkovoLabs Speedtest
 
 ## Project Vision
 "A smart network dashboard that leverages artificial intelligence and cybersecurity analytics to track patterns, detect anomalies, and provide actionable suggestions for Internet Service Providers."

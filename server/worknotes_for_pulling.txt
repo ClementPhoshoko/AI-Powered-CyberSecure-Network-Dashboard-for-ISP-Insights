@@ -2,8 +2,8 @@ Work Notes: Git Repository Collaboration
 - Collaborator: Accept the invitation via email or GitHub notifications.
 
 2. Clone the Repository
-git clone https://github.com/ClementPhoshoko/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights.git
-cd AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights
+git clone https://github.com/ClementPhoshoko/AI-Powered-AkovoLabs-Speedtest.git
+cd AI-Powered-AkovoLabs-Speedtest
 
 3. Configure Git Identity
 git config --global user.name "Your Real Name"

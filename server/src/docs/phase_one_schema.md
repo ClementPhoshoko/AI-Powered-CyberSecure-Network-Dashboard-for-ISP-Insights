@@ -1,4 +1,4 @@
-# CyberSecure Network Dashboard - Schema ER Diagram
+# AkovoLabs Speedtest - Schema ER Diagram
 
 ```mermaid
 erDiagram

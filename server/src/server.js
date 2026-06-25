@@ -31,7 +31,7 @@ const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'AI-Powered CyberSecure Network Dashboard API',
+            title: 'AI-Powered AkovoLabs Speedtest API',
             version: '1.0.0',
             description: 'API documentation for the ISP Insights Dashboard',
         },
@@ -60,7 +60,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health Check Route
 app.get('/', (req, res) => {
-    res.send('AI-Powered CyberSecure Network Dashboard API is running...');
+    res.send('AI-Powered AkovoLabs Speedtest API is running...');
 });
 
 // Test Database Connection

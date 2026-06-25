@@ -1,5 +1,5 @@
 -- =====================================================
--- CyberSecure Network Dashboard
+-- AkovoLabs Speedtest
 -- Phase 1 + research expansion:
 -- Raw + aggregated data (balanced, not overkill)
 -- Supabase Auth security
