@@ -18,16 +18,27 @@ class AiSummaryService {
     if (metrics.streaming_score >= 70) suitability.push('streaming');
     if (metrics.video_call_score >= 70) suitability.push('video calls');
 
-    // Build summary
-    if (suitability.length === 3) {
-      return `Your connection looks ${quality} overall based on your measured speed and responsiveness. It appears suitable for gaming, streaming, and video calls, with smooth performance for most online activities.`;
-    } else if (suitability.length === 2) {
-      return `Your connection looks ${quality} based on your measured speed and responsiveness. It appears suitable for ${suitability.join(' and ')}, but you may notice some limits in other activities.`;
-    } else if (suitability.length === 1) {
-      return `Your connection looks ${quality} from the available test data. It appears suitable for ${suitability[0]}, but you may experience issues with other online activities.`;
+    // Generate actionable advice
+    let advice = '';
+    if (quality === 'excellent' || quality === 'good') {
+      advice = ' For the best experience, try to keep other devices from downloading large files while you game or stream.';
     } else {
-      return `Your connection looks ${quality} from the available test data. You may experience issues with gaming, streaming, and video calls, and browsing may also feel slower than expected.`;
+      advice = ' Consider moving closer to your router or checking for Wi-Fi interference. If issues persist, you might want to restart your router.';
     }
+
+    // Build summary
+    let summary = '';
+    if (suitability.length === 3) {
+      summary = `Your connection looks ${quality} overall based on your measured speed and responsiveness. It appears suitable for gaming, streaming, and video calls, with smooth performance for most online activities.`;
+    } else if (suitability.length === 2) {
+      summary = `Your connection looks ${quality} based on your measured speed and responsiveness. It appears suitable for ${suitability.join(' and ')}, but you may notice some limits in other activities.`;
+    } else if (suitability.length === 1) {
+      summary = `Your connection looks ${quality} from the available test data. It appears suitable for ${suitability[0]}, but you may experience issues with other online activities.`;
+    } else {
+      summary = `Your connection looks ${quality} from the available test data. You may experience issues with gaming, streaming, and video calls, and browsing may also feel slower than expected.`;
+    }
+
+    return summary + advice;
   }
 
   // Gemini API client
@@ -39,13 +50,14 @@ class AiSummaryService {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    const prompt = `You are a network performance summarizer. You will be given network metrics and scores, and you must generate a friendly, human-readable summary (2-4 sentences).
+    const prompt = `You are a friendly network performance assistant. You will be given network metrics and scores, and you must generate a human-readable summary with actionable advice (total 3-5 sentences).
 
 RULES:
-- STRICT LIMIT: The final text MUST NOT exceed 350 characters total. 
+- STRICT LIMIT: The final text MUST NOT exceed 600 characters total. 
 - ONLY use the provided metrics and scores. DO NOT calculate anything new.
 - Describe overall network quality (excellent, good, fair, poor) based on network_health_score.
 - Mention suitability for gaming, streaming, and video calls based on their respective scores.
+- Include 1-2 specific, actionable pieces of advice (e.g., move closer to router, limit other downloads, restart router, etc.)
 - Highlight strengths and weaknesses without listing every single raw number.
 - Keep it natural and conversational, not robotic. Explain what the current network state means in plain language.
 - Avoid internal terms like probe, ICMP, transport-layer, backend timing model, or confidence metadata.
