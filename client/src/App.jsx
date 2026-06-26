@@ -11,6 +11,9 @@ import Footer from './components/footer/Footer'
 import NotFound from './pages/not_found/NotFound'
 import AuthRequired from './pages/auth_required/AuthRequired'
 import Account from './pages/manage_account/Account'
+import About from './pages/about/About'
+import Services from './pages/services/Services'
+import News from './pages/news/News'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
 
@@ -48,6 +51,9 @@ function AppContent() {
       <div className="app-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/news" element={<News />} />
           <Route path="/tests" element={
             <ProtectedRoute>
               <History />

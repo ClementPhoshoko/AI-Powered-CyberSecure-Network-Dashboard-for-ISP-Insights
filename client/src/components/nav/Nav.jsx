@@ -21,8 +21,8 @@ function Nav() {
       name: 'about',
       label: 'About',
       items: [
-        { label: 'Company', href: '#' },
-        { label: 'Team', href: '#' },
+        { label: 'Company', href: '/about' },
+        { label: 'Team', href: '/about' },
         { label: 'Careers', href: '#' }
       ]
     },
@@ -30,19 +30,19 @@ function Nav() {
       name: 'services',
       label: 'Services',
       items: [
-        { label: 'Speed Testing', href: '#' },
-        { label: 'Network Analytics', href: '#' },
-        { label: 'Security', href: '#' },
-        { label: 'AI Insights', href: '#' }
+        { label: 'Speed Testing', href: '/services' },
+        { label: 'Network Analytics', href: '/services' },
+        { label: 'Security', href: '/services' },
+        { label: 'AI Insights', href: '/services' }
       ]
     },
     {
       name: 'news',
       label: 'News',
       items: [
-        { label: 'Blog', href: '#' },
-        { label: 'Updates', href: '#' },
-        { label: 'Press', href: '#' }
+        { label: 'Blog', href: '/news' },
+        { label: 'Updates', href: '/news' },
+        { label: 'Press', href: '/news' }
       ]
     }
   ];
@@ -81,12 +81,35 @@ function Nav() {
                 }}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <button className="nav-item-button">
-                  {item.label}
-                  <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </button>
+                {item.name === 'about' ? (
+                  <Link to="/about" className="nav-item-button">
+                    {item.label}
+                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </Link>
+                ) : item.name === 'services' ? (
+                  <Link to="/services" className="nav-item-button">
+                    {item.label}
+                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </Link>
+                ) : item.name === 'news' ? (
+                  <Link to="/news" className="nav-item-button">
+                    {item.label}
+                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </Link>
+                ) : (
+                  <button className="nav-item-button">
+                    {item.label}
+                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                )}
                 
                 {activeDropdown === item.name && (
                   <div className="nav-dropdown">
