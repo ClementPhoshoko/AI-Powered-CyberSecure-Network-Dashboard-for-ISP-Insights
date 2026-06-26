@@ -5,6 +5,7 @@ import * as blogs from './blogs';
 const News = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [dockedPostId, setDockedPostId] = useState(null);
   const postsPerPage = 5; // 1 large + 4 small
 
   // Simulate loading state
@@ -25,10 +26,20 @@ const News = () => {
   const totalPages = Math.ceil(allPosts.length / postsPerPage);
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
+  let currentPosts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Reorder posts if there's a docked post
+  if (dockedPostId) {
+    const dockedPost = currentPosts.find(post => post.id === dockedPostId);
+    if (dockedPost) {
+      const otherPosts = currentPosts.filter(post => post.id !== dockedPostId);
+      currentPosts = [dockedPost, ...otherPosts];
+    }
+  }
 
   const goToPage = (pageNumber) => {
     setIsLoading(true);
+    setDockedPostId(null); // Reset docked post when changing pages
     setCurrentPage(pageNumber);
     // Simulate loading when changing pages
     setTimeout(() => {
@@ -50,6 +61,16 @@ const News = () => {
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       goToPage(currentPage + 1);
+    }
+  };
+
+  const handlePostClick = (postId, index) => {
+    if (index === 0) {
+      // Clicked the large post, undock
+      setDockedPostId(null);
+    } else {
+      // Clicked a small post, dock it
+      setDockedPostId(postId);
     }
   };
 
@@ -116,7 +137,8 @@ const News = () => {
               currentPosts.map((post, index) => (
                 <article 
                   key={post.id} 
-                  className={`news_post ${index === 0 ? 'news_post_large' : 'news_post_small'}`}
+                  className={`news_post ${index === 0 ? 'news_post_large' : 'news_post_small'} ${dockedPostId === post.id && index === 0 ? 'docking' : ''}`}
+                  onClick={() => handlePostClick(post.id, index)}
                 >
                   <div className="news_post_image_container">
                     <img src={post.image} alt={post.title} className="news_post_image" />
