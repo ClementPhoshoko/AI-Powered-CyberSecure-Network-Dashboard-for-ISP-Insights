@@ -1,0 +1,68 @@
+.bubble-container {
+  max-width: 280px;
+  position: relative;
+}
+
+.bubble {
+  background: transparent;
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Bubble tail - left position */
+.bubble-left .bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid var(--glass-bg);
+}
+
+.bubble-left .bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 29px;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 13px solid var(--glass-border);
+}
+
+/* Bubble tail - right position */
+.bubble-right .bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: 30px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid var(--glass-bg);
+}
+
+.bubble-right .bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  right: 29px;
+  width: 0;
+  height: 0;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 13px solid var(--glass-border);
+}

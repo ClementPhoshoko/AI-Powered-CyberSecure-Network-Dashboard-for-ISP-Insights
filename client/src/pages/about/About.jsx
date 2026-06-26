@@ -3,6 +3,8 @@ import './About.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import networkEngineer from '../../assets/avatars/network_engineer_preview.png';
 import fullStackDev from '../../assets/avatars/full_stack_engineer_preview.png';
+import Bubble from '../../components/speech_bubble/Bubble';
+import Contact from './contact/Contact';
 
 const About = () => {
   return (
@@ -97,20 +99,32 @@ const About = () => {
           <h2 className="about_section_title">The Team</h2>
           <div className="about_team_grid">
             <div className="about_team_member">
+              <Bubble position="left">
+                "Every great product starts with solving a real problem. I build AI-driven, automated, and scalable solutions with modern glass-inspired interfaces."
+              </Bubble>
               <div className="about_member_photo">
-                <img src={fullStackDev} alt="Team Member 1" />
+                <img src={fullStackDev} alt="Clement Phoshoko" />
               </div>
               <h3 className="about_member_name">Clement Phoshoko</h3>
-              <p className="about_member_role">Full Stack Developer</p>
+              <p className="about_member_role">Full-Stack Product Engineer</p>
             </div>
             <div className="about_team_member">
+              <Bubble position="right">
+                "Imagine seeing every connection, every metric, and every anomaly in one place. That's the power of intelligent network analytics."
+              </Bubble>
               <div className="about_member_photo">
-                <img src={networkEngineer} alt="Team Member 2" />
+                <img src={networkEngineer} alt="Tsumbedzo Matloga" />
               </div>
               <h3 className="about_member_name">Tsumbedzo Matloga</h3>
               <p className="about_member_role">Network Software Engineer</p>
             </div>
           </div>
+        </section>
+
+        {/* Contact Section */}
+        <section className="about_team_section">
+          <h2 className="about_section_title">Contact Us</h2>
+          <Contact />
         </section>
         
       </div>

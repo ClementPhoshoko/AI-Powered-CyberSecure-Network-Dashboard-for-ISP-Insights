@@ -118,4 +118,10 @@
 
   /* Numbers / metrics */
   --text-metric: #451A03;
+
+  /* Background star colors */
+  --bg-star-color: linear-gradient(135deg, #F59E0B, #FCD34D);
+  --bg-star-glow-soft: rgba(245, 158, 11, 0.6);
+  --bg-star-glow-strong: rgba(245, 158, 11, 0.3);
+  --bg-grid-line: rgba(245, 158, 11, 0.08);
 }
