@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './About.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import networkEngineer from '../../assets/avatars/network_engineer_preview.png';
@@ -7,6 +8,19 @@ import Bubble from '../../components/speech_bubble/Bubble';
 import Contact from './contact/Contact';
 
 const About = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const hash = location.hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location]);
   return (
     <div className="about_page">
       <div className="about_container">
@@ -65,7 +79,7 @@ const About = () => {
         </section>
         
         {/* Company Story */}
-        <section className="about_story">
+        <section id="our-story" className="about_story">
           <h2 className="about_story_heading">Our Story</h2>
           
           <div className="about_story_content">
@@ -95,7 +109,7 @@ const About = () => {
         </section>
         
         {/* Team Section */}
-        <section className="about_team_section">
+        <section id="the-team" className="about_team_section">
           <h2 className="about_section_title">The Team</h2>
           <div className="about_team_grid">
             <div className="about_team_member">
@@ -122,7 +136,7 @@ const About = () => {
         </section>
 
         {/* Contact Section */}
-        <section className="about_team_section">
+        <section id="contact-us" className="about_team_section">
           <h2 className="about_section_title">Contact Us</h2>
           <Contact />
         </section>

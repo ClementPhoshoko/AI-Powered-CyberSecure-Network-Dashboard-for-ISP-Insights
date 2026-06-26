@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Services.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import speedTestPreview2 from '../../assets/avatars/speedtest_preview_image_2.png';
@@ -6,6 +7,19 @@ import logo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import comingSoon from '../../assets/avatars/coming_soon_features_design.png';
 
 const Services = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const hash = location.hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location]);
   return (
     <div className="services_page">
       <div className="services_container">
@@ -39,7 +53,7 @@ const Services = () => {
           <div className="services_grid">
             
             {/* Speedtest Service */}
-            <div className="services_service_card">
+            <div id="speedtest" className="services_service_card">
               <div className="services_service_image_container">
                 <img src={speedTestPreview1} alt="Speedtest" className="services_service_image"/>
               </div>
@@ -57,7 +71,7 @@ const Services = () => {
             </div>
             
             {/* Network Analysis Service */}
-            <div className="services_service_card">
+            <div id="network-analysis" className="services_service_card">
               <div className="services_service_image_container">
                 <img src={speedTestPreview2} alt="Network Analysis" className="services_service_image"/>
               </div>
@@ -75,7 +89,7 @@ const Services = () => {
             </div>
             
             {/* Security Service - Coming Soon */}
-            <div className="services_service_card services_coming_soon">
+            <div id="security" className="services_service_card services_coming_soon">
               <div className="services_service_image_container">
                 <img src={comingSoon} alt="Security Coming Soon" className="services_service_image"/>
                 <div className="services_coming_soon_badge">Coming Soon</div>
@@ -94,7 +108,7 @@ const Services = () => {
             </div>
             
             {/* AI Insights Service - Coming Soon */}
-            <div className="services_service_card services_coming_soon">
+            <div id="ai-insights" className="services_service_card services_coming_soon">
               <div className="services_service_image_container">
                 <img src={comingSoon} alt="AI Insights Coming Soon" className="services_service_image"/>
                 <div className="services_coming_soon_badge">Coming Soon</div>

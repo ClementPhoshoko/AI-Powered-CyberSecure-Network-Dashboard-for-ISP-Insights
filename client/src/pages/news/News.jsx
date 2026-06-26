@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './News.css';
 import * as blogs from './blogs';
 
@@ -7,6 +8,7 @@ const News = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dockedPostId, setDockedPostId] = useState(null);
   const postsPerPage = 5; // 1 large + 4 small
+  const location = useLocation();
 
   // Simulate loading state
   useEffect(() => {
@@ -15,6 +17,19 @@ const News = () => {
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
+  
+  // Handle smooth scroll for hash links
+  useEffect(() => {
+    if (location.hash) {
+      const hash = location.hash.replace('#', '');
+      setTimeout(() => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location]);
 
   // Convert blogs object to array and sort by date (newest first)
   const allPosts = useMemo(() => {
@@ -129,7 +144,7 @@ const News = () => {
         </section>
         
         {/* News Grid */}
-        <section className="news_grid_section">
+        <section id="latest-updates" className="news_grid_section">
           <div className="news_grid">
             {isLoading ? (
               renderSkeletons()
