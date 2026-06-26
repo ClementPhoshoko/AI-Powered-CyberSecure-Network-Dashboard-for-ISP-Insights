@@ -174,9 +174,13 @@ const StatsCards = ({ testResult, isLoading = false }) => {
     return (
       <div className="stats-container" style={{ paddingTop: 'var(--space-7)' }}>
         <div className="stats-note">
-          <span className="skeleton stats-note-label"></span>
-          <span className="skeleton stats-note-text"></span>
-          <span className="skeleton stats-note-subtle"></span>
+          <span className="stats-note-label">How Latency Is Measured</span>
+          <span className="stats-note-text">
+            Quick app requests are sent to this service to estimate responsiveness from your current device and network.
+          </span>
+          <span className="stats-note-subtle">
+            This is useful for real browsing-style performance, but it is not the same as classic ICMP ping.
+          </span>
         </div>
 
         {/* Speed Cards Skeletons */}

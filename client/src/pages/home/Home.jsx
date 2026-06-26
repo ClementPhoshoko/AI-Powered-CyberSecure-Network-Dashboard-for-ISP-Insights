@@ -146,15 +146,19 @@ function Home() {
           ) : (
             <>
               <StatsCards testResult={testResult} isLoading={isRunning} />     
-              {testResult && (
+              {(isRunning || isComplete) && (
                 <div className="ai-summary-section">
                   <h3 className="ai-summary-title">
                     <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
                     AI-Powered Summary
                   </h3>
-                  <p className="ai-summary-text">
-                    {aiSummaryText}
-                  </p>
+                  {isRunning ? (
+                    <p className="skeleton ai-summary-text"></p>
+                  ) : testResult && (
+                    <p className="ai-summary-text">
+                      {aiSummaryText}
+                    </p>
+                  )}
                 </div>
               )}
             </>

@@ -6,6 +6,9 @@
 /* Import all themes */
 @import '../theme/lighture.css';
 @import '../theme/darkwood.css';
+@import '../theme/dracula.css';
+@import '../theme/monokai-pro.css';
+@import '../theme/standard-dark.css';
 @import '../theme/sunset.css';
 @import '../theme/crimson.css';
 @import '../theme/nimbus.css';

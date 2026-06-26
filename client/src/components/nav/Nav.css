@@ -325,9 +325,9 @@
   }
 }
 
-.nav-chain-item:hover {
+/* .nav-chain-item:hover {
   background: var(--glass-bg-soft);
-}
+} */
 
 .nav-chain-item:hover .nav-chain-circle {
   border-color: var(--primary);

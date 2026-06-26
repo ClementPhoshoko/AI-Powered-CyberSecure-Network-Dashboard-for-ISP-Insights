@@ -266,6 +266,29 @@
   margin-top: var(--space-2);
 }
 
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton.ai-summary-text {
+  width: 100%;
+  height: 72px;
+  display: block;
+}
+
 .graphs-section {
   width: 100%;
   max-width: var(--container-xl);

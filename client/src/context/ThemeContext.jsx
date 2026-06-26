@@ -13,6 +13,21 @@ export const THEMES = [
     description: 'Dark theme with deep blues and purples',
   },
   {
+    id: 'dracula',
+    name: 'Dracula - High Contrast',
+    description: 'High-contrast, saturated syntax highlighting theme',
+  },
+  {
+    id: 'monokai-pro',
+    name: 'Monokai Pro - Professional',
+    description: 'Muted, professional dark palette',
+  },
+  {
+    id: 'standard-dark',
+    name: 'Dark Mode - Standard',
+    description: 'Standard dark mode for Android, iOS, macOS, and Chrome',
+  },
+  {
     id: 'sunset',
     name: 'Sunset - Warm Orange',
     description: 'Warm theme with orange and pink accents',
