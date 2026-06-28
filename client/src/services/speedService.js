@@ -1,10 +1,21 @@
 import api from './api';
 
-export const streamDownloadTest = async (sizeMb, signal) => {
+export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
+  const startTime = performance.now();
+  
   const response = await api.get('/speed/download', {
     params: { sizeMb },
     responseType: 'blob',
-    signal
+    signal,
+    onDownloadProgress: (progressEvent) => {
+      if (onProgress && progressEvent.total > 0) {
+        const elapsedSeconds = (performance.now() - startTime) / 1000;
+        const receivedMb = progressEvent.loaded / (1024 * 1024);
+        const speedMbps = (receivedMb * 8) / elapsedSeconds;
+        const progress = (progressEvent.loaded / progressEvent.total) * 100;
+        onProgress(speedMbps, progress);
+      }
+    }
   });
   return response.data;
 };
@@ -14,13 +25,24 @@ export const submitDownloadResults = async (data) => {
   return response.data;
 };
 
-export const streamUploadTest = async (sizeMb, data, signal) => {
+export const streamUploadTest = async (sizeMb, data, signal, onProgress) => {
+  const startTime = performance.now();
+  
   const response = await api.post('/speed/upload', data, {
     params: { sizeMb },
     headers: {
       'Content-Type': 'application/octet-stream'
     },
-    signal
+    signal,
+    onUploadProgress: (progressEvent) => {
+      if (onProgress && progressEvent.total > 0) {
+        const elapsedSeconds = (performance.now() - startTime) / 1000;
+        const uploadedMb = progressEvent.loaded / (1024 * 1024);
+        const speedMbps = (uploadedMb * 8) / elapsedSeconds;
+        const progress = (progressEvent.loaded / progressEvent.total) * 100;
+        onProgress(speedMbps, progress);
+      }
+    }
   });
   return response.data;
 };

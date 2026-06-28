@@ -152,7 +152,16 @@ export function useSpeedTest() {
       
       try {
         abortControllerRef.current = new AbortController();
-        await streamDownloadTest(sizeMb, abortControllerRef.current.signal);
+        
+        // Track progress in real-time
+        const onDownloadProgress = (speedMbps, fileProgress) => {
+          setCurrentSpeed(speedMbps);
+          // Calculate overall progress (30% to 60% for download phase)
+          const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_SIZES.length) * 30;
+          setProgress(phaseProgress);
+        };
+        
+        await streamDownloadTest(sizeMb, abortControllerRef.current.signal, onDownloadProgress);
         const end = performance.now();
         const durationSeconds = (end - start) / 1000;
         const speedMbps = (sizeMb * 8) / durationSeconds;
@@ -165,13 +174,10 @@ export function useSpeedTest() {
 
         measurements.push(measurement);
         finalResult = measurement;
-        setCurrentSpeed(speedMbps);
       } catch (err) {
         if (err.name === 'AbortError') throw err;
         console.error('Download test failed:', err);
       }
-
-      setProgress(30 + ((i + 1) / DOWNLOAD_SIZES.length) * 30);
     }
 
     if (isStoppedRef.current) return null;
@@ -204,7 +210,16 @@ export function useSpeedTest() {
 
       try {
         abortControllerRef.current = new AbortController();
-        await streamUploadTest(sizeMb, data, abortControllerRef.current.signal);
+        
+        // Track progress in real-time
+        const onUploadProgress = (speedMbps, fileProgress) => {
+          setCurrentSpeed(speedMbps);
+          // Calculate overall progress (60% to 85% for upload phase)
+          const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_SIZES.length) * 25;
+          setProgress(phaseProgress);
+        };
+        
+        await streamUploadTest(sizeMb, data, abortControllerRef.current.signal, onUploadProgress);
         const end = performance.now();
         const durationSeconds = (end - start) / 1000;
         const speedMbps = (sizeMb * 8) / durationSeconds;
@@ -217,13 +232,10 @@ export function useSpeedTest() {
 
         measurements.push(measurement);
         finalUploadSpeed = speedMbps;
-        setCurrentSpeed(speedMbps);
       } catch (err) {
         if (err.name === 'AbortError') throw err;
         console.error('Upload test failed:', err);
       }
-
-      setProgress(60 + ((i + 1) / UPLOAD_SIZES.length) * 25);
     }
 
     if (isStoppedRef.current) return null;

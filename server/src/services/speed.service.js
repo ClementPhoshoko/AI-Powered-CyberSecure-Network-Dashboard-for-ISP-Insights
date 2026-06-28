@@ -3,12 +3,16 @@ const DownloadMeasurement = require('../models/DownloadMeasurement');
 const UploadMeasurement = require('../models/UploadMeasurement');
 const crypto = require('crypto');
 
+// Cache a large chunk of random data for faster streaming
+const CACHED_RANDOM_DATA = crypto.randomBytes(1 * 1024 * 1024); // 1MB cached random data
+
 class SpeedService {
   // Generate random binary data efficiently (for streaming)
   static generateRandomDataStream(sizeMb) {
     const sizeBytes = sizeMb * 1024 * 1024;
     let bytesSent = 0;
     const chunkSize = 64 * 1024; // 64KB chunks
+    const cacheSize = CACHED_RANDOM_DATA.length;
 
     return {
       get sizeBytes() { return sizeBytes; },
@@ -20,8 +24,26 @@ class SpeedService {
             }
             const remaining = sizeBytes - bytesSent;
             const currentChunkSize = Math.min(chunkSize, remaining);
+            
+            // Use cached random data for faster streaming
+            let chunk;
+            if (currentChunkSize <= cacheSize) {
+              // Slice from cached data
+              const offset = bytesSent % cacheSize;
+              if (offset + currentChunkSize <= cacheSize) {
+                chunk = CACHED_RANDOM_DATA.slice(offset, offset + currentChunkSize);
+              } else {
+                // Wrap around if needed
+                const part1 = CACHED_RANDOM_DATA.slice(offset);
+                const part2 = CACHED_RANDOM_DATA.slice(0, currentChunkSize - part1.length);
+                chunk = Buffer.concat([part1, part2]);
+              }
+            } else {
+              // Fall back to generating new data for very large chunks
+              chunk = crypto.randomBytes(currentChunkSize);
+            }
+            
             bytesSent += currentChunkSize;
-            const chunk = crypto.randomBytes(currentChunkSize);
             return { done: false, value: chunk };
           }
         };
