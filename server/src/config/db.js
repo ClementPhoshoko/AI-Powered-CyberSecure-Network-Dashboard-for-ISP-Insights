@@ -10,12 +10,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
   process.exit(1);
 }
 
-// Create clients
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create clients (disable realtime to avoid WebSocket dependency)
+const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  realtime: {
+    enabled: false
+  }
+});
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
+  },
+  realtime: {
+    enabled: false
   }
 });
 

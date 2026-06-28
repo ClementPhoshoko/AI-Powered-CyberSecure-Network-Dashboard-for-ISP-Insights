@@ -22,7 +22,18 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+  // Disable HTTPS forcing for production deployment without SSL
+  hsts: false,
+  contentSecurityPolicy: {
+    directives: {
+      // Allow Swagger UI assets
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"]
+    }
+  }
+}));
 app.use(cors());
 app.use(compression()); // Compress responses
 app.use(express.json({ limit: '50mb' }));
@@ -39,7 +50,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: `http://localhost:${PORT}`,
+                url: '/', // Relative path - works with any host/protocol
             },
         ],
         components: {

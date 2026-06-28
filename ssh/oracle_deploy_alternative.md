@@ -260,11 +260,16 @@ sudo apt install -y git nginx curl ufw unzip build-essential
 
 ---
 
-## 6. Install Node.js 20 LTS
+## 6. Install Node.js 20+ LTS (22 recommended)
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# Node 22 (recommended)
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
+
+# OR Node 20 LTS (also works perfectly)
+# curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# sudo apt install -y nodejs
 ```
 
 Verify:
@@ -274,7 +279,7 @@ node -v
 npm -v
 ```
 
-You should see Node `20.x`.
+You should see Node `20.x` or `22.x`. The code works on any Node 20+ because we disabled realtime to avoid WebSocket dependency issues.
 
 ---
 
@@ -502,29 +507,33 @@ server {
     root /var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights/client/dist;
     index index.html;
 
+    # ---------------------------
+    # FRONTEND (React SPA)
+    # ---------------------------
     location / {
         try_files $uri $uri/ /index.html;
     }
 
+    # ---------------------------
+    # BACKEND API
+    # ---------------------------
     location /api/ {
-        proxy_pass http://127.0.0.1:5000/;
+        proxy_pass http://127.0.0.1:5000;
+
         proxy_http_version 1.1;
 
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
-        proxy_read_timeout 300;
-        proxy_connect_timeout 300;
-        proxy_send_timeout 300;
     }
 
-    location /api-docs/ {
+    # ---------------------------
+    # SWAGGER DOCS
+    # ---------------------------
+    location /api-docs {
         proxy_pass http://127.0.0.1:5000/api-docs/;
+
         proxy_http_version 1.1;
 
         proxy_set_header Host $host;
@@ -581,9 +590,27 @@ http://YOUR_ORACLE_PUBLIC_IP/api-docs
 
 ## 14. Configure Ubuntu Firewall
 
+### Critical Oracle Cloud Step (iptables reset):
+Oracle Cloud instances often have default iptables rules that block traffic even with ufw. First reset and clear them:
+
 ```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 'Nginx Full'
+# Reset iptables rules completely
+sudo iptables -F
+sudo iptables -X
+sudo iptables -Z
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+
+# Save iptables rules (if iptables-persistent is installed)
+sudo netfilter-persistent save 2>/dev/null || true
+```
+
+### Configure ufw:
+```bash
+sudo ufw reset
+sudo ufw allow 22/tcp
+sudo ufw allow 80,443/tcp
 sudo ufw enable
 ```
 

@@ -324,37 +324,48 @@ pm2 save
 
 ```nginx
 server {
-
     listen 80;
-
     server_name _;
 
-    root /var/www/speedtest;
+    client_max_body_size 500M;
 
+    root /var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights/client/dist;
     index index.html;
 
+    # ---------------------------
+    # FRONTEND (React SPA)
+    # ---------------------------
     location / {
-
-        try_files $uri /index.html;
-
+        try_files $uri $uri/ /index.html;
     }
 
+    # ---------------------------
+    # BACKEND API
+    # ---------------------------
     location /api/ {
-
-        proxy_pass http://localhost:5000/;
+        proxy_pass http://127.0.0.1:5000;
 
         proxy_http_version 1.1;
 
-        proxy_set_header Upgrade $http_upgrade;
-
-        proxy_set_header Connection "upgrade";
-
         proxy_set_header Host $host;
-
-        proxy_cache_bypass $http_upgrade;
-
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    # ---------------------------
+    # SWAGGER DOCS
+    # ---------------------------
+    location /api-docs {
+        proxy_pass http://127.0.0.1:5000/api-docs/;
+
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 }
 ```
 
@@ -384,16 +395,31 @@ Open only
 
 * Port 22 (SSH)
 * Port 80 (HTTP)
+* Port 443 (HTTPS later)
 
 Do **not** expose port **5000** publicly.
 
-Ubuntu Firewall
+### Critical Oracle Cloud Step (iptables reset):
+Oracle Cloud instances often have default iptables rules that block traffic even with ufw. First reset and clear them:
 
 ```bash
-sudo ufw allow OpenSSH
+# Reset iptables rules completely
+sudo iptables -F
+sudo iptables -X
+sudo iptables -Z
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P OUTPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
 
-sudo ufw allow 'Nginx Full'
+# Save iptables rules (if iptables-persistent is installed)
+sudo netfilter-persistent save 2>/dev/null || true
+```
 
+### Configure ufw:
+```bash
+sudo ufw reset
+sudo ufw allow 22/tcp
+sudo ufw allow 80,443/tcp
 sudo ufw enable
 ```
 
