@@ -5,6 +5,9 @@ const compression = require('compression');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+require('dotenv').config({
+    path: process.env.NODE_ENV === 'production' ? '.env.production' : './src/.env'
+});
 const { supabase } = require('./config/db');
 const profilesRouter = require('./routes/profiles');
 const devAuthRouter = require('./routes/devAuth');
@@ -13,9 +16,6 @@ const speedRouter = require('./routes/speed');
 const networkRouter = require('./routes/network');
 const analyticsRouter = require('./routes/analytics');
 const errorHandler = require('./middleware/errorHandler');
-require('dotenv').config({
-    path: process.env.NODE_ENV === 'production' ? '.env.production' : './src/.env'
-});
 
 const app = express();
 const PORT = process.env.PORT || 5000;

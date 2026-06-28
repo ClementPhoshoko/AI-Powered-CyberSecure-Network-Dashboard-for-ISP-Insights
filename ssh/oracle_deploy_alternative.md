@@ -305,7 +305,7 @@ cd /var/www
 Clone your repo:
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights.git
+git clone https://github.com/ClementPhoshoko/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights.git
 ```
 
 Enter project directory:
