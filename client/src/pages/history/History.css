@@ -581,6 +581,69 @@
   text-align: left;
 }
 
+.history-chart-tooltip {
+  min-width: 210px;
+  padding: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: rgba(10, 16, 28, 0.88);
+  color: var(--text-primary);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  box-shadow: var(--shadow-glass);
+}
+
+.history-chart-tooltip__label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.history-chart-tooltip__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.history-chart-tooltip__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.history-chart-tooltip__series {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.history-chart-tooltip__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.history-chart-tooltip__name {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.history-chart-tooltip__value {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  white-space: nowrap;
+}
+
 /* Experience Scores Layout */
 .experience-scores-container {
   display: flex;

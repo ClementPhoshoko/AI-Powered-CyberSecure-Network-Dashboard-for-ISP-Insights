@@ -220,6 +220,211 @@ function HistoryErrorState({ error, onRetry }) {
   );
 }
 
+function formatAxisTick(value) {
+  if (!Number.isFinite(value)) return '';
+
+  if (Math.abs(value) >= 100 || Number.isInteger(value)) {
+    return `${value}`;
+  }
+
+  if (Math.abs(value) >= 10) {
+    return value.toFixed(1).replace(/\.0$/, '');
+  }
+
+  if (Math.abs(value) >= 1) {
+    return value.toFixed(2).replace(/\.?0+$/, '');
+  }
+
+  return value.toFixed(3).replace(/\.?0+$/, '');
+}
+
+function getNiceStep(step) {
+  const safeStep = step > 0 ? step : 1;
+  const magnitude = 10 ** Math.floor(Math.log10(safeStep));
+  const normalized = safeStep / magnitude;
+
+  if (normalized <= 1) return magnitude;
+  if (normalized <= 2) return 2 * magnitude;
+  if (normalized <= 5) return 5 * magnitude;
+  return 10 * magnitude;
+}
+
+function getSmartAxis(values, { targetTickCount = 5, fallbackMax = 10 } = {}) {
+  const cleanedValues = values.filter((value) => Number.isFinite(value));
+
+  if (cleanedValues.length === 0) {
+    return {
+      domain: [0, fallbackMax],
+      ticks: Array.from({ length: targetTickCount }, (_, index) =>
+        Number(((fallbackMax / Math.max(targetTickCount - 1, 1)) * index).toFixed(3))
+      )
+    };
+  }
+
+  let minValue = Math.min(...cleanedValues);
+  let maxValue = Math.max(...cleanedValues);
+
+  if (minValue === maxValue) {
+    const singleValuePadding = Math.max(Math.abs(maxValue) * 0.25, maxValue < 10 ? 1 : 5);
+    minValue = Math.max(0, minValue - singleValuePadding);
+    maxValue += singleValuePadding;
+  } else {
+    const padding = (maxValue - minValue) * 0.12;
+    minValue = Math.max(0, minValue - padding);
+    maxValue += padding;
+  }
+
+  const roughStep = (maxValue - minValue) / Math.max(targetTickCount - 1, 1);
+  const niceStep = getNiceStep(roughStep);
+  const domainMin = Math.max(0, Math.floor(minValue / niceStep) * niceStep);
+  let domainMax = Math.ceil(maxValue / niceStep) * niceStep;
+
+  if (domainMax <= domainMin) {
+    domainMax = domainMin + niceStep * Math.max(targetTickCount - 1, 1);
+  }
+
+  const ticks = [];
+  for (let tick = domainMin; tick <= domainMax + niceStep / 2; tick += niceStep) {
+    ticks.push(Number(tick.toFixed(3)));
+  }
+
+  return {
+    domain: [domainMin, domainMax],
+    ticks
+  };
+}
+
+function getChartDateFormatter(dates) {
+  const validDates = dates
+    .map((value) => new Date(value))
+    .filter((date) => !Number.isNaN(date.getTime()));
+
+  if (validDates.length === 0) {
+    return (value) => value;
+  }
+
+  const firstDate = validDates[0];
+  const lastDate = validDates[validDates.length - 1];
+  const sameYear = firstDate.getFullYear() === lastDate.getFullYear();
+  const sameMonth =
+    sameYear && firstDate.getMonth() === lastDate.getMonth();
+  const sameDay =
+    sameMonth && firstDate.getDate() === lastDate.getDate();
+
+  const formatter = sameDay
+    ? new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit'
+      })
+    : sameYear
+      ? new Intl.DateTimeFormat('en-US', {
+          month: 'short',
+          day: 'numeric'
+        })
+      : new Intl.DateTimeFormat('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: '2-digit'
+        });
+
+  return (value) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return formatter.format(date);
+  };
+}
+
+function getChartTicks(data, maxTicks = 6) {
+  if (data.length === 0) return [];
+  if (data.length <= maxTicks) {
+    return data.map((point) => point.createdAt);
+  }
+
+  const step = Math.ceil((data.length - 1) / (maxTicks - 1));
+  const ticks = [];
+
+  for (let index = 0; index < data.length; index += step) {
+    ticks.push(data[index].createdAt);
+  }
+
+  const lastTick = data[data.length - 1].createdAt;
+  if (ticks[ticks.length - 1] !== lastTick) {
+    ticks.push(lastTick);
+  }
+
+  return ticks;
+}
+
+function formatTooltipDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+}
+
+function formatTooltipMetricValue(value, unit, digits = 1) {
+  if (!Number.isFinite(value)) {
+    return `0 ${unit}`.trim();
+  }
+
+  const formatted = digits === 0
+    ? Math.round(value).toString()
+    : value.toFixed(digits).replace(/\.?0+$/, '');
+
+  return unit ? `${formatted} ${unit}` : formatted;
+}
+
+function HistoryChartTooltip({ active, payload, label, config = {} }) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+
+  const visibleRows = payload.filter((entry) => Number.isFinite(Number(entry?.value)));
+  if (visibleRows.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="history-chart-tooltip">
+      <div className="history-chart-tooltip__label">{formatTooltipDate(label)}</div>
+      <div className="history-chart-tooltip__rows">
+        {visibleRows.map((entry) => {
+          const settings = config[entry.dataKey] || {};
+          const value = Number(entry.value);
+          const displayValue = formatTooltipMetricValue(value, settings.unit || '', settings.digits ?? 1);
+
+          return (
+            <div key={entry.dataKey} className="history-chart-tooltip__row">
+              <div className="history-chart-tooltip__series">
+                <span
+                  className="history-chart-tooltip__swatch"
+                  style={{ backgroundColor: entry.color || settings.color || 'var(--primary)' }}
+                />
+                <span className="history-chart-tooltip__name">
+                  {settings.label || entry.name || entry.dataKey}
+                </span>
+              </div>
+              <span className="history-chart-tooltip__value">{displayValue}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function History() {
   const { loading: authLoading } = useAuth();
   const [tableLimit] = useState(10);
@@ -342,26 +547,67 @@ function History() {
 
   const summary = calculateSummary();
 
-  const chartData = [...allHistory]
-    .reverse()
-    .map(test => ({
-      date: formatDate(test.created_at),
-      download: test.download_speed_mbps || 0,
-      upload: test.upload_speed_mbps || 0,
-      ping: test.ping_avg_ms || 0,
-      jitter: test.jitter_ms || 0,
-      healthScore: test.network_health_score || 0,
-      gamingScore: test.gaming_score || 0,
-      streamingScore: test.streaming_score || 0,
-      videoCallScore: test.video_call_score || 0,
-      browsingScore: test.browsing_score || 0
-    }));
+  const chartData = useMemo(() => (
+    [...allHistory]
+      .reverse()
+      .map(test => ({
+        createdAt: test.created_at,
+        download: test.download_speed_mbps || 0,
+        upload: test.upload_speed_mbps || 0,
+        ping: test.ping_avg_ms || 0,
+        jitter: test.jitter_ms || 0,
+        healthScore: test.network_health_score || 0,
+        gamingScore: test.gaming_score || 0,
+        streamingScore: test.streaming_score || 0,
+        videoCallScore: test.video_call_score || 0,
+        browsingScore: test.browsing_score || 0
+      }))
+  ), [allHistory]);
+
+  const speedDownloadAxis = useMemo(
+    () => getSmartAxis(chartData.map((point) => point.download), { fallbackMax: 20 }),
+    [chartData]
+  );
+
+  const speedUploadAxis = useMemo(
+    () => getSmartAxis(chartData.map((point) => point.upload), { fallbackMax: 10 }),
+    [chartData]
+  );
+
+  const latencyAxis = useMemo(
+    () => getSmartAxis(chartData.flatMap((point) => [point.ping, point.jitter]), { fallbackMax: 50 }),
+    [chartData]
+  );
+
+  const chartDateTickFormatter = useMemo(
+    () => getChartDateFormatter(chartData.map((point) => point.createdAt)),
+    [chartData]
+  );
+
+  const chartXTicks = useMemo(
+    () => getChartTicks(chartData),
+    [chartData]
+  );
+
+  const speedTooltipConfig = useMemo(() => ({
+    download: { label: 'Download', unit: 'Mbps', digits: 1, color: 'var(--download)' },
+    upload: { label: 'Upload', unit: 'Mbps', digits: 1, color: 'var(--upload)' }
+  }), []);
+
+  const latencyTooltipConfig = useMemo(() => ({
+    ping: { label: 'Ping', unit: 'ms', digits: 1, color: 'var(--ping)' },
+    jitter: { label: 'Jitter', unit: 'ms', digits: 1, color: '#f59e0b' }
+  }), []);
+
+  const healthTooltipConfig = useMemo(() => ({
+    healthScore: { label: 'Health Score', unit: '', digits: 0, color: 'var(--primary)' }
+  }), []);
 
   // Get first and last dates in chartData
   const getDateRange = () => {
     if (chartData.length === 0) return null;
-    const firstDate = chartData[0].date;
-    const lastDate = chartData[chartData.length - 1].date;
+    const firstDate = formatDate(chartData[0].createdAt);
+    const lastDate = formatDate(chartData[chartData.length - 1].createdAt);
     return { firstDate, lastDate };
   };
 
@@ -650,24 +896,39 @@ function History() {
                             <LineChart data={chartData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
                               <XAxis 
-                                dataKey="date" 
+                                dataKey="createdAt" 
                                 stroke="var(--text-muted)" 
                                 tick={{ fontSize: 11 }} 
-                                interval={Math.floor(chartData.length / 5)} 
+                                ticks={chartXTicks}
+                                tickFormatter={chartDateTickFormatter}
+                                minTickGap={24}
+                                interval={0}
                               />
                               <YAxis 
+                                yAxisId="download"
                                 stroke="var(--text-muted)" 
                                 tick={{ fontSize: 11 }} 
+                                width={52}
+                                domain={speedDownloadAxis.domain}
+                                ticks={speedDownloadAxis.ticks}
+                                tickFormatter={formatAxisTick}
+                              />
+                              <YAxis
+                                yAxisId="upload"
+                                orientation="right"
+                                stroke="var(--text-muted)"
+                                tick={{ fontSize: 11 }}
+                                width={52}
+                                domain={speedUploadAxis.domain}
+                                ticks={speedUploadAxis.ticks}
+                                tickFormatter={formatAxisTick}
                               />
                               <Tooltip 
-                                contentStyle={{
-                                  backgroundColor: 'var(--glass-bg)',
-                                  border: '1px solid var(--glass-border)',
-                                  borderRadius: 'var(--radius-md)'
-                                }}
+                                content={<HistoryChartTooltip config={speedTooltipConfig} />}
                               />
                               <Legend wrapperStyle={{ fontSize: 12 }} />
                               <Line
+                                yAxisId="download"
                                 type="monotone"
                                 dataKey="download"
                                 stroke="var(--download)"
@@ -676,6 +937,7 @@ function History() {
                                 name="Download (Mbps)"
                               />
                               <Line
+                                yAxisId="upload"
                                 type="monotone"
                                 dataKey="upload"
                                 stroke="var(--upload)"
@@ -686,6 +948,9 @@ function History() {
                               />
                             </LineChart>
                           </ResponsiveContainer>
+                          <p className="graph-date-range">
+                            Speed axes auto-scale independently for download and upload so smaller trends remain readable.
+                          </p>
                           {dateRange && (
                             <p className="graph-date-range">
                               Showing results from {dateRange.firstDate} to {dateRange.lastDate}
@@ -700,21 +965,24 @@ function History() {
                             <LineChart data={chartData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
                               <XAxis 
-                                dataKey="date" 
+                                dataKey="createdAt" 
                                 stroke="var(--text-muted)" 
                                 tick={{ fontSize: 11 }} 
-                                interval={Math.floor(chartData.length / 5)} 
+                                ticks={chartXTicks}
+                                tickFormatter={chartDateTickFormatter}
+                                minTickGap={24}
+                                interval={0}
                               />
                               <YAxis 
                                 stroke="var(--text-muted)" 
                                 tick={{ fontSize: 11 }} 
+                                width={52}
+                                domain={latencyAxis.domain}
+                                ticks={latencyAxis.ticks}
+                                tickFormatter={formatAxisTick}
                               />
                               <Tooltip 
-                                contentStyle={{
-                                  backgroundColor: 'var(--glass-bg)',
-                                  border: '1px solid var(--glass-border)',
-                                  borderRadius: 'var(--radius-md)'
-                                }}
+                                content={<HistoryChartTooltip config={latencyTooltipConfig} />}
                               />
                               <Legend wrapperStyle={{ fontSize: 12 }} />
                               <Line
@@ -736,6 +1004,9 @@ function History() {
                               />
                             </LineChart>
                           </ResponsiveContainer>
+                          <p className="graph-date-range">
+                            Latency values auto-scale to the visible ping and jitter range.
+                          </p>
                           {dateRange && (
                             <p className="graph-date-range">
                               Showing results from {dateRange.firstDate} to {dateRange.lastDate}
@@ -756,10 +1027,13 @@ function History() {
                               </defs>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
                               <XAxis 
-                                dataKey="date" 
+                                dataKey="createdAt" 
                                 stroke="var(--text-muted)" 
                                 tick={{ fontSize: 11 }} 
-                                interval={Math.floor(chartData.length / 5)} 
+                                ticks={chartXTicks}
+                                tickFormatter={chartDateTickFormatter}
+                                minTickGap={24}
+                                interval={0}
                               />
                               <YAxis 
                                 stroke="var(--text-muted)" 
@@ -767,11 +1041,7 @@ function History() {
                                 domain={[0, 100]}
                               />
                               <Tooltip 
-                                contentStyle={{
-                                  backgroundColor: 'var(--glass-bg)',
-                                  border: '1px solid var(--glass-border)',
-                                  borderRadius: 'var(--radius-md)'
-                                }}
+                                content={<HistoryChartTooltip config={healthTooltipConfig} />}
                               />
                               <Area 
                                 type="monotone" 
