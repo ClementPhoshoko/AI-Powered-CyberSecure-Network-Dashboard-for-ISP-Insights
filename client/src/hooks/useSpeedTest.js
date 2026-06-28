@@ -87,12 +87,12 @@ export function useSpeedTest() {
 
     const pings = [];
     const startTotal = performance.now();
-    let probeTarget = '/api/ping/health';
+    let probeTarget = '/ping/health';
     if (api.defaults.baseURL) {
       try {
-        probeTarget = new URL('/api/ping/health', api.defaults.baseURL).toString();
+        probeTarget = new URL('/ping/health', api.defaults.baseURL).toString();
       } catch {
-        probeTarget = `${api.defaults.baseURL}/api/ping/health`;
+        probeTarget = `${api.defaults.baseURL}/ping/health`;
       }
     }
 
@@ -101,7 +101,7 @@ export function useSpeedTest() {
       const start = performance.now();
       try {
         abortControllerRef.current = new AbortController();
-        await api.get('/api/ping/health', { signal: abortControllerRef.current.signal }); // Simple health check for ping
+        await api.get('/ping/health', { signal: abortControllerRef.current.signal }); // Simple health check for ping
         const end = performance.now();
         pings.push({
           sequence_number: i,
@@ -243,7 +243,7 @@ export function useSpeedTest() {
     setPhase(TEST_PHASES.CALCULATING);
     setProgress(90);
 
-    const response = await api.post('/api/network/score', {
+    const response = await api.post('/network/score', {
       test_result_id: testResultId
     });
 

@@ -39,7 +39,7 @@ client/.env
 Current development value:
 
 ```env
-VITE_API_BASE_URL=http://localhost:5000
+VITE_API_BASE_URL=http://localhost:5000/api
 VITE_SUPABASE_URL=****
 VITE_SUPABASE_ANON_KEY=****
 ```

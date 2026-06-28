@@ -24,47 +24,28 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 // Middleware: Smart security headers based on deployment type
 const USE_HTTPS = process.env.USE_HTTPS === 'true' || NODE_ENV === 'production-with-ssl';
 
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api-docs') && !USE_HTTPS) {
-    // Skip strict helmet headers for Swagger UI over plain HTTP
-    return next();
-  }
-
-  // Apply appropriate helmet config based on HTTPS usage
-  const helmetConfig = USE_HTTPS
-    ? {
-        // Full security for HTTPS deployment
-        hsts: {
-          maxAge: 31536000,
-          includeSubDomains: true,
-          preload: true
-        },
-        contentSecurityPolicy: {
-          directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"]
-          }
-        },
-        crossOriginOpenerPolicy: true,
-        crossOriginResourcePolicy: true,
-        crossOriginEmbedderPolicy: true,
-        xssFilter: true,
-        noSniff: true
+if (USE_HTTPS) {
+  // Full security for HTTPS deployment
+  app.use(helmet({
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"]
       }
-    : {
-        // Minimal security for plain HTTP deployment
-        hsts: false,
-        contentSecurityPolicy: false,
-        crossOriginOpenerPolicy: false,
-        crossOriginResourcePolicy: false,
-        crossOriginEmbedderPolicy: false,
-        xssFilter: true,
-        noSniff: true
-      };
-
-  helmet(helmetConfig)(req, res, next);
-});
+    },
+    xssFilter: true,
+    noSniff: true
+  }));
+} else {
+  // No helmet headers for plain HTTP to avoid Swagger UI issues
+  console.warn('⚠️ Running in HTTP-only mode - security headers disabled');
+}
 app.use(cors());
 app.use(compression()); // Compress responses
 app.use(express.json({ limit: '50mb' }));
@@ -100,7 +81,19 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  // Force Swagger UI to use relative paths and current protocol
+  swaggerOptions: {
+    url: '', // Use the spec we're serving, no external URL
+    tryItOutEnabled: true,
+    persistAuthorization: true
+  },
+  // Explicitly set Swagger UI to load assets relative
+  customCss: '',
+  customJs: '',
+  customCssUrl: '',
+  customSiteTitle: 'ISP Speedtest API Docs'
+}));
 
 // Health Check Route
 app.get('/', (req, res) => {
