@@ -1042,3 +1042,46 @@ NODE_ENV=production
 SUPABASE_URL=****
 GEMINI_API_KEY=****
 ```
+
+---
+
+## 22. Manual Update Instructions
+
+If you want to manually update the app (without GitHub Actions):
+
+1. SSH into your Oracle VM:
+
+```bash
+ssh ubuntu@YOUR_ORACLE_PUBLIC_IP
+```
+
+2. Pull the latest code:
+
+```bash
+cd /var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights
+git pull origin main
+```
+
+3. Rebuild the frontend:
+
+```bash
+cd client
+npm run build
+```
+
+4. Restart the backend:
+
+```bash
+cd ../server
+pm2 restart all
+```
+
+5. Verify the update worked:
+
+```bash
+pm2 logs speedtest-api
+```
+
+6. If you changed env files (e.g., `client/.env.production` or `server/.env.production`), remember to rebuild the frontend after changes!
+
+---

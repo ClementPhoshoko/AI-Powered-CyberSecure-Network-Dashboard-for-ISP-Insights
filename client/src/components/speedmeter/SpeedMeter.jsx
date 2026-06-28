@@ -122,7 +122,7 @@ const SpeedMeter = ({
     const fromValue = animatedValueRef.current;
     const delta = clampedValue - fromValue;
     const startTime = performance.now();
-    const duration = 1200;
+    const duration = 220;
     let frameId = 0;
 
     const step = (now) => {

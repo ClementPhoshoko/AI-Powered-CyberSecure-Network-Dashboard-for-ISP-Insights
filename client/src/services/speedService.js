@@ -2,17 +2,19 @@ import api from './api';
 
 export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
   const startTime = performance.now();
+  const expectedTotalBytes = sizeMb * 1024 * 1024;
   
   const response = await api.get('/speed/download', {
     params: { sizeMb },
     responseType: 'blob',
     signal,
     onDownloadProgress: (progressEvent) => {
-      if (onProgress && progressEvent.total > 0) {
-        const elapsedSeconds = (performance.now() - startTime) / 1000;
+      if (onProgress) {
+        const totalBytes = progressEvent.total || expectedTotalBytes;
+        const elapsedSeconds = Math.max((performance.now() - startTime) / 1000, 0.05);
         const receivedMb = progressEvent.loaded / (1024 * 1024);
         const speedMbps = (receivedMb * 8) / elapsedSeconds;
-        const progress = (progressEvent.loaded / progressEvent.total) * 100;
+        const progress = Math.min((progressEvent.loaded / totalBytes) * 100, 100);
         onProgress(speedMbps, progress);
       }
     }
@@ -27,6 +29,7 @@ export const submitDownloadResults = async (data) => {
 
 export const streamUploadTest = async (sizeMb, data, signal, onProgress) => {
   const startTime = performance.now();
+  const expectedTotalBytes = sizeMb * 1024 * 1024;
   
   const response = await api.post('/speed/upload', data, {
     params: { sizeMb },
@@ -35,11 +38,12 @@ export const streamUploadTest = async (sizeMb, data, signal, onProgress) => {
     },
     signal,
     onUploadProgress: (progressEvent) => {
-      if (onProgress && progressEvent.total > 0) {
-        const elapsedSeconds = (performance.now() - startTime) / 1000;
+      if (onProgress) {
+        const totalBytes = progressEvent.total || expectedTotalBytes;
+        const elapsedSeconds = Math.max((performance.now() - startTime) / 1000, 0.05);
         const uploadedMb = progressEvent.loaded / (1024 * 1024);
         const speedMbps = (uploadedMb * 8) / elapsedSeconds;
-        const progress = (progressEvent.loaded / progressEvent.total) * 100;
+        const progress = Math.min((progressEvent.loaded / totalBytes) * 100, 100);
         onProgress(speedMbps, progress);
       }
     }

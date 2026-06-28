@@ -174,6 +174,8 @@ export function useSpeedTest() {
 
         measurements.push(measurement);
         finalResult = measurement;
+        setCurrentSpeed(speedMbps);
+        setProgress(30 + ((i + 1) / DOWNLOAD_SIZES.length) * 30);
       } catch (err) {
         if (err.name === 'AbortError') throw err;
         console.error('Download test failed:', err);
@@ -232,6 +234,8 @@ export function useSpeedTest() {
 
         measurements.push(measurement);
         finalUploadSpeed = speedMbps;
+        setCurrentSpeed(speedMbps);
+        setProgress(60 + ((i + 1) / UPLOAD_SIZES.length) * 25);
       } catch (err) {
         if (err.name === 'AbortError') throw err;
         console.error('Upload test failed:', err);
