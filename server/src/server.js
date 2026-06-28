@@ -13,7 +13,9 @@ const speedRouter = require('./routes/speed');
 const networkRouter = require('./routes/network');
 const analyticsRouter = require('./routes/analytics');
 const errorHandler = require('./middleware/errorHandler');
-require('dotenv').config({ path: './src/.env' });
+require('dotenv').config({
+    path: process.env.NODE_ENV === 'production' ? '.env.production' : './src/.env'
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -103,7 +105,7 @@ app.use('/api/analytics', analyticsRouter);
 app.use(errorHandler);
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
     console.log('Database configuration loaded');
