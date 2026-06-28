@@ -97,14 +97,14 @@ class SpeedService {
       throw new Error('Unauthorized: You do not own this test result');
     }
 
-    // Find the largest measurement to use as the test size/duration, or just take the first one (since frontend sends final speed)
-    const largestMeasurement = allMeasurements.reduce((a, b) => (a.size_mb > b.size_mb ? a : b), allMeasurements[0]);
+    // Keep the saved summary aligned with the last successful adaptive upload measurement.
+    const finalMeasurement = allMeasurements[allMeasurements.length - 1];
 
     // Update the test result with final data
     const updatedTestResult = await TestResult.update(testResultId, {
       upload_speed_mbps: finalUploadSpeedMbps,
-      upload_test_size_mb: largestMeasurement.size_mb,
-      upload_test_duration_seconds: largestMeasurement.duration_seconds
+      upload_test_size_mb: finalMeasurement.size_mb,
+      upload_test_duration_seconds: finalMeasurement.duration_seconds
     });
 
     // Prepare measurements for insertion

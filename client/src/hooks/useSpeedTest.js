@@ -24,6 +24,16 @@ const TEST_PHASES = {
 const DOWNLOAD_SIZES = [1, 5, 10, 20]; // MB
 const UPLOAD_SIZES = [0.5, 1, 5, 10, 20]; // MB
 const PING_COUNT = 10;
+const DOWNLOAD_PHASE_TARGET_SECONDS = 5;
+const UPLOAD_PHASE_TARGET_SECONDS = 4;
+const DOWNLOAD_MIN_ATTEMPTS = 2;
+const UPLOAD_MIN_ATTEMPTS = 2;
+const DOWNLOAD_MAX_ATTEMPTS = 4;
+const UPLOAD_MAX_ATTEMPTS = 4;
+const DOWNLOAD_STABILITY_THRESHOLD = 0.12;
+const UPLOAD_STABILITY_THRESHOLD = 0.15;
+const DOWNLOAD_STABLE_AFTER_SECONDS = 3;
+const UPLOAD_STABLE_AFTER_SECONDS = 2.5;
 const DEFAULT_MEASUREMENT_CONTEXT = {
   probe_method: 'http-health',
   probe_method_label: 'HTTP health endpoint probe',
@@ -43,6 +53,77 @@ const DEFAULT_SCORE_CONTEXT = {
   score_explanation:
     'Scores are derived estimates from measured throughput plus HTTP probe latency and HTTP probe jitter. They are directional and should not be treated like true ICMP or transport-layer measurements.'
 };
+
+function getRelativeDelta(currentValue, previousValue) {
+  if (!Number.isFinite(currentValue) || !Number.isFinite(previousValue)) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const baseline = Math.max(Math.abs(previousValue), 1);
+  return Math.abs(currentValue - previousValue) / baseline;
+}
+
+function shouldStopAdaptivePhase({
+  measurements,
+  elapsedSeconds,
+  minAttempts,
+  maxAttempts,
+  targetSeconds,
+  stabilityThreshold,
+  stableAfterSeconds
+}) {
+  if (measurements.length >= maxAttempts) {
+    return true;
+  }
+
+  if (elapsedSeconds >= targetSeconds && measurements.length >= minAttempts) {
+    return true;
+  }
+
+  if (measurements.length < minAttempts) {
+    return false;
+  }
+
+  if (measurements.length < minAttempts + 1) {
+    return false;
+  }
+
+  if (elapsedSeconds < stableAfterSeconds) {
+    return false;
+  }
+
+  const lastMeasurement = measurements[measurements.length - 1];
+  const previousMeasurement = measurements[measurements.length - 2];
+  const currentSpeed =
+    lastMeasurement.download_speed_mbps ?? lastMeasurement.upload_speed_mbps ?? 0;
+  const previousSpeed =
+    previousMeasurement.download_speed_mbps ?? previousMeasurement.upload_speed_mbps ?? 0;
+
+  return getRelativeDelta(currentSpeed, previousSpeed) <= stabilityThreshold;
+}
+
+function chooseAdaptiveDownloadSize(lastSpeedMbps) {
+  if (!Number.isFinite(lastSpeedMbps) || lastSpeedMbps <= 0) {
+    return DOWNLOAD_SIZES[0];
+  }
+
+  if (lastSpeedMbps < 15) return 1;
+  if (lastSpeedMbps < 80) return 5;
+  if (lastSpeedMbps < 250) return 10;
+  return 20;
+}
+
+function chooseAdaptiveUploadSize(lastSpeedMbps) {
+  if (!Number.isFinite(lastSpeedMbps) || lastSpeedMbps <= 0) {
+    return UPLOAD_SIZES[0];
+  }
+
+  if (lastSpeedMbps < 8) return 0.5;
+  if (lastSpeedMbps < 25) return 1;
+  if (lastSpeedMbps < 120) return 5;
+  if (lastSpeedMbps < 250) return 10;
+  return 20;
+}
 
 export function useSpeedTest() {
   const [phase, setPhase] = useState(TEST_PHASES.IDLE);
@@ -144,10 +225,16 @@ export function useSpeedTest() {
 
     const measurements = [];
     let finalResult = null;
+    const phaseStart = performance.now();
+    let lastSpeedMbps = 0;
+    let lastError = null;
 
-    for (let i = 0; i < DOWNLOAD_SIZES.length; i++) {
+    for (let i = 0; i < DOWNLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
-      const sizeMb = DOWNLOAD_SIZES[i];
+      const sizeMb =
+        i === 0
+          ? DOWNLOAD_SIZES[0]
+          : chooseAdaptiveDownloadSize(lastSpeedMbps);
       const start = performance.now();
       
       try {
@@ -157,7 +244,7 @@ export function useSpeedTest() {
         const onDownloadProgress = (speedMbps, fileProgress) => {
           setCurrentSpeed(speedMbps);
           // Calculate overall progress (30% to 60% for download phase)
-          const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_SIZES.length) * 30;
+          const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_MAX_ATTEMPTS) * 30;
           setProgress(phaseProgress);
         };
         
@@ -174,15 +261,35 @@ export function useSpeedTest() {
 
         measurements.push(measurement);
         finalResult = measurement;
+        lastSpeedMbps = speedMbps;
         setCurrentSpeed(speedMbps);
-        setProgress(30 + ((i + 1) / DOWNLOAD_SIZES.length) * 30);
+        setProgress(30 + ((i + 1) / DOWNLOAD_MAX_ATTEMPTS) * 30);
+
+        const elapsedSeconds = (performance.now() - phaseStart) / 1000;
+        if (
+          shouldStopAdaptivePhase({
+            measurements,
+            elapsedSeconds,
+            minAttempts: DOWNLOAD_MIN_ATTEMPTS,
+            maxAttempts: DOWNLOAD_MAX_ATTEMPTS,
+            targetSeconds: DOWNLOAD_PHASE_TARGET_SECONDS,
+            stabilityThreshold: DOWNLOAD_STABILITY_THRESHOLD,
+            stableAfterSeconds: DOWNLOAD_STABLE_AFTER_SECONDS
+          })
+        ) {
+          break;
+        }
       } catch (err) {
         if (err.name === 'AbortError') throw err;
+        lastError = err;
         console.error('Download test failed:', err);
       }
     }
 
     if (isStoppedRef.current) return null;
+    if (measurements.length === 0 || !finalResult) {
+      throw lastError || new Error('Download test failed before a valid measurement could be captured.');
+    }
     if (measurements.length > 0) {
       await submitDownloadResults({
         test_result_id: testResultId,
@@ -202,10 +309,16 @@ export function useSpeedTest() {
 
     const measurements = [];
     let finalUploadSpeed = 0;
+    let finalResult = null;
+    const phaseStart = performance.now();
+    let lastError = null;
 
-    for (let i = 0; i < UPLOAD_SIZES.length; i++) {
+    for (let i = 0; i < UPLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
-      const sizeMb = UPLOAD_SIZES[i];
+      const sizeMb =
+        i === 0
+          ? UPLOAD_SIZES[0]
+          : chooseAdaptiveUploadSize(finalUploadSpeed);
       const sizeBytes = sizeMb * 1024 * 1024;
       const data = new Blob([new ArrayBuffer(sizeBytes)]);
       const start = performance.now();
@@ -217,7 +330,7 @@ export function useSpeedTest() {
         const onUploadProgress = (speedMbps, fileProgress) => {
           setCurrentSpeed(speedMbps);
           // Calculate overall progress (60% to 85% for upload phase)
-          const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_SIZES.length) * 25;
+          const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_MAX_ATTEMPTS) * 25;
           setProgress(phaseProgress);
         };
         
@@ -233,16 +346,36 @@ export function useSpeedTest() {
         };
 
         measurements.push(measurement);
+        finalResult = measurement;
         finalUploadSpeed = speedMbps;
         setCurrentSpeed(speedMbps);
-        setProgress(60 + ((i + 1) / UPLOAD_SIZES.length) * 25);
+        setProgress(60 + ((i + 1) / UPLOAD_MAX_ATTEMPTS) * 25);
+
+        const elapsedSeconds = (performance.now() - phaseStart) / 1000;
+        if (
+          shouldStopAdaptivePhase({
+            measurements,
+            elapsedSeconds,
+            minAttempts: UPLOAD_MIN_ATTEMPTS,
+            maxAttempts: UPLOAD_MAX_ATTEMPTS,
+            targetSeconds: UPLOAD_PHASE_TARGET_SECONDS,
+            stabilityThreshold: UPLOAD_STABILITY_THRESHOLD,
+            stableAfterSeconds: UPLOAD_STABLE_AFTER_SECONDS
+          })
+        ) {
+          break;
+        }
       } catch (err) {
         if (err.name === 'AbortError') throw err;
+        lastError = err;
         console.error('Upload test failed:', err);
       }
     }
 
     if (isStoppedRef.current) return null;
+    if (measurements.length === 0 || !finalResult) {
+      throw lastError || new Error('Upload test failed before a valid measurement could be captured.');
+    }
     if (measurements.length > 0) {
       await submitUploadResults({
         test_result_id: testResultId,
@@ -251,7 +384,7 @@ export function useSpeedTest() {
       });
     }
 
-    return { measurements, finalUploadSpeed };
+    return { measurements, finalResult, finalUploadSpeed };
   }, []);
 
   const calculateNetworkScores = useCallback(async (testResultId) => {
@@ -312,7 +445,7 @@ export function useSpeedTest() {
       // 6. Combine all data into the format expected by components
       const completeResult = {
         download_speed_mbps: downloadData.finalResult?.download_speed_mbps || 0,
-        upload_speed_mbps: uploadData.finalUploadSpeed || 0,
+        upload_speed_mbps: uploadData.finalResult?.upload_speed_mbps || 0,
         ping_avg_ms: pingData.ping_avg_ms || 0,
         ping_median_ms: pingData.ping_median_ms || 0,
         jitter_ms: pingData.jitter_ms || 0,

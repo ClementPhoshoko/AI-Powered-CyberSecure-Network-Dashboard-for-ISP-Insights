@@ -18,7 +18,7 @@ const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
   }));
 
   const uploadData = (testResult?.upload_measurements || []).map((m, i) => ({
-    name: `Test ${i + 1} (${m.file_size_mb}MB)`,
+    name: `Test ${i + 1} (${m.file_size_mb ?? m.size_mb}MB)`,
     speed: m.upload_speed_mbps
   }));
 
