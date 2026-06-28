@@ -97,6 +97,9 @@ SUPABASE_URL=****
 SUPABASE_ANON_KEY=****
 SUPABASE_SERVICE_ROLE_KEY=****
 GEMINI_API_KEY=****
+
+# Set to 'true' when you add HTTPS later
+USE_HTTPS=false
 ```
 
 If your backend only uses `SUPABASE_URL` and `GEMINI_API_KEY`, keep only those.

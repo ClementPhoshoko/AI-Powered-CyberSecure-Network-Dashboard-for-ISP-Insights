@@ -21,21 +21,49 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
-// Middleware: Skip helmet for Swagger UI to avoid HTTP protocol issues
+// Middleware: Smart security headers based on deployment type
+const USE_HTTPS = process.env.USE_HTTPS === 'true' || NODE_ENV === 'production-with-ssl';
+
 app.use((req, res, next) => {
-  if (req.path.startsWith('/api-docs')) {
-    return next(); // Skip helmet for Swagger UI
+  if (req.path.startsWith('/api-docs') && !USE_HTTPS) {
+    // Skip strict helmet headers for Swagger UI over plain HTTP
+    return next();
   }
-  // Only apply helmet security headers to other routes
-  helmet({
-    hsts: false,
-    contentSecurityPolicy: false,
-    crossOriginOpenerPolicy: false,
-    crossOriginResourcePolicy: false,
-    crossOriginEmbedderPolicy: false,
-    xssFilter: true,
-    noSniff: true
-  })(req, res, next);
+
+  // Apply appropriate helmet config based on HTTPS usage
+  const helmetConfig = USE_HTTPS
+    ? {
+        // Full security for HTTPS deployment
+        hsts: {
+          maxAge: 31536000,
+          includeSubDomains: true,
+          preload: true
+        },
+        contentSecurityPolicy: {
+          directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"]
+          }
+        },
+        crossOriginOpenerPolicy: true,
+        crossOriginResourcePolicy: true,
+        crossOriginEmbedderPolicy: true,
+        xssFilter: true,
+        noSniff: true
+      }
+    : {
+        // Minimal security for plain HTTP deployment
+        hsts: false,
+        contentSecurityPolicy: false,
+        crossOriginOpenerPolicy: false,
+        crossOriginResourcePolicy: false,
+        crossOriginEmbedderPolicy: false,
+        xssFilter: true,
+        noSniff: true
+      };
+
+  helmet(helmetConfig)(req, res, next);
 });
 app.use(cors());
 app.use(compression()); // Compress responses

@@ -134,7 +134,7 @@ VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 Create
 
 ```text
-server/src/.env
+server/.env.production
 ```
 
 ```env
@@ -147,6 +147,9 @@ SUPABASE_URL=YOUR_SUPABASE_URL
 SUPABASE_KEY=YOUR_SUPABASE_SERVICE_KEY
 
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+
+# Set to 'true' when you add HTTPS with a custom domain later
+USE_HTTPS=false
 ```
 
 ---
