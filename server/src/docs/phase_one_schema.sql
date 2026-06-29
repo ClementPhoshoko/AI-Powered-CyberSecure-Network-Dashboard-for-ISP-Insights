@@ -634,3 +634,169 @@ CREATE TRIGGER trg_subscribers_updated_at
 BEFORE UPDATE ON subscribers
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at();
+
+-- =====================================================
+-- Phase 3: System Metrics for About Page
+-- Public stats (users count, uptime, etc.)
+-- =====================================================
+
+-- System Metrics Table
+CREATE TABLE IF NOT EXISTS system_metrics (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    metric_key VARCHAR(100) UNIQUE NOT NULL,
+    metric_value TEXT NOT NULL,
+    metric_type VARCHAR(20) DEFAULT 'string', -- string, number, date
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for fast lookups
+CREATE INDEX IF NOT EXISTS idx_system_metrics_key ON system_metrics(metric_key);
+
+-- Insert initial metrics
+INSERT INTO system_metrics (metric_key, metric_value, metric_type) VALUES
+('founded_year', '2026', 'number'),
+('uptime_percentage', '99.9', 'number')
+ON CONFLICT (metric_key) DO NOTHING;
+
+-- =====================================================
+-- Function to Update User Count Automatically
+-- =====================================================
+CREATE OR REPLACE FUNCTION update_user_count_metric()
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO system_metrics (metric_key, metric_value, metric_type, updated_at)
+    VALUES (
+        'total_users',
+        (SELECT COUNT(*)::TEXT FROM auth.users),
+        'number',
+        NOW()
+    )
+    ON CONFLICT (metric_key) DO UPDATE 
+    SET 
+        metric_value = EXCLUDED.metric_value,
+        updated_at = NOW();
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Function to Update Countries Count Automatically
+-- =====================================================
+CREATE OR REPLACE FUNCTION update_countries_count_metric()
+RETURNS VOID AS $$
+BEGIN
+    INSERT INTO system_metrics (metric_key, metric_value, metric_type, updated_at)
+    VALUES (
+        'countries_count',
+        (SELECT COUNT(DISTINCT country)::TEXT FROM test_results WHERE country IS NOT NULL),
+        'number',
+        NOW()
+    )
+    ON CONFLICT (metric_key) DO UPDATE 
+    SET 
+        metric_value = EXCLUDED.metric_value,
+        updated_at = NOW();
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- Trigger to Update Metrics When Profiles Change
+-- =====================================================
+CREATE OR REPLACE FUNCTION handle_profile_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    PERFORM update_user_count_metric();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create triggers for auth.users (but note: triggers on auth.users require service role)
+-- For now, we'll update metrics via backend endpoint
+-- We can also refresh periodically
+
+-- =====================================================
+-- RLS for System Metrics (Public Read, Admin Only Write)
+-- =====================================================
+ALTER TABLE system_metrics ENABLE ROW LEVEL SECURITY;
+
+-- Allow public to read metrics
+CREATE POLICY "Public can view system metrics"
+ON system_metrics FOR SELECT
+USING (true);
+
+-- =====================================================
+-- Optional: Materialized View for Fast Stats
+-- =====================================================
+CREATE MATERIALIZED VIEW IF NOT EXISTS public_stats AS
+SELECT
+    (SELECT metric_value::INTEGER FROM system_metrics WHERE metric_key = 'total_users') AS total_users,
+    (SELECT metric_value::INTEGER FROM system_metrics WHERE metric_key = 'countries_count') AS countries_count,
+    (SELECT metric_value::NUMERIC FROM system_metrics WHERE metric_key = 'uptime_percentage') AS uptime_percentage,
+    (SELECT metric_value::INTEGER FROM system_metrics WHERE metric_key = 'founded_year') AS founded_year;
+
+-- =====================================================
+-- Phase 3: System Metrics for About Page
+-- Public stats (users, uptime, etc.)
+-- =====================================================
+
+-- System Metrics Table
+CREATE TABLE IF NOT EXISTS system_metrics (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    metric_key VARCHAR(100) UNIQUE NOT NULL,
+    metric_value TEXT NOT NULL,
+    metric_type VARCHAR(20) DEFAULT 'string', -- string, number, date
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for fast lookups
+CREATE INDEX IF NOT EXISTS idx_system_metrics_key ON system_metrics(metric_key);
+
+-- =====================================================
+-- RLS for System Metrics (Public Read)
+-- =====================================================
+ALTER TABLE system_metrics ENABLE ROW LEVEL SECURITY;
+
+-- Allow public to read metrics
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+        AND tablename = 'system_metrics' 
+        AND policyname = 'Public can view system metrics'
+    ) THEN
+        CREATE POLICY "Public can view system metrics"
+        ON system_metrics FOR SELECT
+        USING (true);
+    END IF;
+END $$;
+
+-- Allow authenticated users to insert metrics
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+        AND tablename = 'system_metrics' 
+        AND policyname = 'Authenticated users can insert metrics'
+    ) THEN
+        CREATE POLICY "Authenticated users can insert metrics"
+        ON system_metrics FOR INSERT
+        WITH CHECK (true);
+    END IF;
+END $$;
+
+-- Allow authenticated users to update metrics
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+        AND tablename = 'system_metrics' 
+        AND policyname = 'Authenticated users can update metrics'
+    ) THEN
+        CREATE POLICY "Authenticated users can update metrics"
+        ON system_metrics FOR UPDATE
+        USING (true);
+    END IF;
+END $$;
+

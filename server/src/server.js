@@ -16,6 +16,7 @@ const pingRouter = require('./routes/ping');
 const speedRouter = require('./routes/speed');
 const networkRouter = require('./routes/network');
 const analyticsRouter = require('./routes/analytics');
+const systemMetricsRouter = require('./routes/systemMetrics');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -137,6 +138,7 @@ app.use('/api/ping', pingRouter);
 app.use('/api/speed', speedRouter);
 app.use('/api/network', networkRouter);
 app.use('/api/analytics', analyticsRouter);
+app.use('/api/system', systemMetricsRouter);
 
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);

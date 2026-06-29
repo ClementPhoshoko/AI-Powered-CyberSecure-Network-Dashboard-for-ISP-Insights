@@ -1,14 +1,31 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './About.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import networkEngineer from '../../assets/avatars/network_engineer_preview.png';
 import fullStackDev from '../../assets/avatars/full_stack_engineer_preview.png';
 import Bubble from '../../components/speech_bubble/Bubble';
 import Contact from './contact/Contact';
+import AnimatedNumber from '../../components/AnimatedNumber';
+import useSystemMetrics from '../../hooks/useSystemMetrics';
 
 const About = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { metrics, loading, error } = useSystemMetrics();
+
+  const scrollToContact = (e) => {
+    e.preventDefault();
+    const element = document.getElementById('contact-us');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const goToServices = (e) => {
+    e.preventDefault();
+    navigate('/services');
+  };
 
   useEffect(() => {
     if (location.hash) {
@@ -21,6 +38,7 @@ const About = () => {
       }, 100);
     }
   }, [location]);
+
   return (
     <div className="about_page">
       <div className="about_container">
@@ -41,28 +59,38 @@ const About = () => {
             
             <div className="about_stats">
               <div className="about_stat">
-                <span className="about_stat_number">5,000+</span>
+                <span className="about_stat_number">
+                  {loading ? '...' : <><AnimatedNumber value={metrics.total_users || 0} />+</>}
+                </span>
                 <span className="about_stat_label">Users</span>
               </div>
               <div className="about_stat">
-                <span className="about_stat_number">2</span>
+                <span className="about_stat_number">
+                  {loading ? '...' : <AnimatedNumber value={metrics.countries_count || 0} />}
+                </span>
                 <span className="about_stat_label">Countries</span>
               </div>
               <div className="about_stat">
-                <span className="about_stat_number">99.9%</span>
-                <span className="about_stat_label">Uptime</span>
+                <span className="about_stat_number">
+                  {loading ? '...' : <><AnimatedNumber value={metrics.uptime_percentage} />%</>}
+                </span>
+                <span className="about_stat_label">
+                  {error && metrics.uptime_percentage === 0 ? 'Offline' : 'Uptime'}
+                </span>
               </div>
               <div className="about_stat">
-                <span className="about_stat_number">2026</span>
+                <span className="about_stat_number">
+                  {loading ? '...' : <AnimatedNumber value={metrics.founded_year || 2026} />}
+                </span>
                 <span className="about_stat_label">Founded</span>
               </div>
             </div>
             
             <div className="about_cta_container">
-              <button className="about_cta_primary">
+              <button className="about_cta_primary" onClick={goToServices}>
                 Learn More
               </button>
-              <a href="#" className="about_cta_secondary">
+              <a href="#contact-us" className="about_cta_secondary" onClick={scrollToContact}>
                 Contact Us
                 <svg className="about_cta_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
