@@ -12,7 +12,7 @@ import './Account.css';
 
 function Account() {
   const { user, logout, loading: authLoading } = useAuth();
-  const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useProfile(!authLoading);
+  const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useProfile(!authLoading && !!user);
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');

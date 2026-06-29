@@ -113,8 +113,12 @@ Please return ONLY the summary text, no extra formatting, no quote marks, and no
 
     let summary;
     try {
-      // Try primary provider (Gemini)
-      summary = await AiSummaryService.generateGeminiSummary(metrics);
+      // Try primary provider (Gemini) only if API key exists
+      if (process.env.GEMINI_API_KEY) {
+        summary = await AiSummaryService.generateGeminiSummary(metrics);
+      } else {
+        throw new Error('GEMINI_API_KEY not configured');
+      }
     } catch (error) {
       console.warn('Gemini API failed, using rule-based fallback:', error.message);
       // Fallback to rule-based

@@ -1,13 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getProfile, updateProfile } from '../services/profileService';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getProfile, updateProfile as updateProfileService } from '../services/profileService';
 import { getFriendlyErrorMessage } from '../services/errorUtils';
 
 export function useProfile(isAuthReady = true) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const isAuthReadyRef = useRef(isAuthReady);
+
+  useEffect(() => {
+    isAuthReadyRef.current = isAuthReady;
+  }, [isAuthReady]);
 
   const fetchProfile = useCallback(async () => {
+    if (!isAuthReadyRef.current) {
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
@@ -29,7 +37,7 @@ export function useProfile(isAuthReady = true) {
       setLoading(true);
       setError(null);
 
-      const response = await updateProfile(profileData);
+      const response = await updateProfileService(profileData);
       if (response.data) {
         setProfile(response.data);
       }
@@ -46,6 +54,11 @@ export function useProfile(isAuthReady = true) {
   useEffect(() => {
     if (isAuthReady) {
       fetchProfile();
+    } else {
+      // Reset state when not authenticated
+      setProfile(null);
+      setLoading(false);
+      setError(null);
     }
   }, [fetchProfile, isAuthReady]);
 

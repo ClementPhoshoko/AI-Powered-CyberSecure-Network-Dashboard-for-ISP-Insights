@@ -432,17 +432,7 @@ export function useSpeedTest() {
       const scores = await calculateNetworkScores(testResultId);
       if (isStoppedRef.current || !scores) return null;
 
-      // 5. Generate AI summary for the completed test result
-      let aiSummaryResult = null;
-      try {
-        aiSummaryResult = await createAISummary(testResultId);
-      } catch (summaryError) {
-        console.error('AI summary generation failed:', summaryError);
-      }
-
-      if (isStoppedRef.current) return null;
-
-      // 6. Combine all data into the format expected by components
+      // 5. Combine all data (without AI summary first) and show results immediately!
       const completeResult = {
         download_speed_mbps: downloadData.finalResult?.download_speed_mbps || 0,
         upload_speed_mbps: uploadData.finalResult?.upload_speed_mbps || 0,
@@ -469,15 +459,30 @@ export function useSpeedTest() {
         score_context: scores.score_context || DEFAULT_SCORE_CONTEXT,
         raw_weighted_scores: scores.raw_weighted_scores || null,
         measurement_context: pingData.measurement_context || DEFAULT_MEASUREMENT_CONTEXT,
-        ai_summary: aiSummaryResult?.ai_summary || '',
+        ai_summary: '', // Start with empty, will update later
         download_measurements: downloadData.measurements || [],
         upload_measurements: uploadData.measurements || [],
         ping_measurements: pingData.ping_measurements || []
       };
 
+      // Show results immediately!
       setTestResult(completeResult);
       setPhase(TEST_PHASES.COMPLETE);
       setCurrentSpeed(0);
+
+      // 6. Generate AI summary in the background, don't wait for it!
+      (async () => {
+        try {
+          const aiSummaryResult = await createAISummary(testResultId);
+          // Update test result with AI summary once it's ready
+          setTestResult(prevResult => prevResult ? {
+            ...prevResult,
+            ai_summary: aiSummaryResult?.ai_summary || prevResult.ai_summary
+          } : null);
+        } catch (summaryError) {
+          console.error('AI summary generation failed:', summaryError);
+        }
+      })();
 
       return completeResult;
     } catch (err) {

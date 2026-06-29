@@ -152,7 +152,7 @@ function Home() {
                     <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
                     AI-Powered Summary
                   </h3>
-                  {isRunning ? (
+                  {isRunning || (testResult && !testResult.ai_summary) ? (
                     <p className="skeleton ai-summary-text"></p>
                   ) : testResult && (
                     <p className="ai-summary-text">

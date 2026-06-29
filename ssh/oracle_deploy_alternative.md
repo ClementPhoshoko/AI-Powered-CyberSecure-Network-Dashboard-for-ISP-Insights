@@ -237,14 +237,16 @@ TCP 5000   source YOUR_IP_ONLY, optional for debugging
 
 ## 4. SSH Into the Oracle VM
 
-```bash
-ssh ubuntu@YOUR_ORACLE_PUBLIC_IP
-```
-
-If using a private key:
+Using a private key (recommended):
 
 ```bash
 ssh -i /path/to/private-key ubuntu@YOUR_ORACLE_PUBLIC_IP
+```
+
+Alternatively, if no key is needed (not recommended):
+
+```bash
+ssh ubuntu@YOUR_ORACLE_PUBLIC_IP
 ```
 
 ---
@@ -664,10 +666,10 @@ Copy public key:
 cat oracle_deploy_key.pub
 ```
 
-SSH into VM:
+SSH into VM (using your private key):
 
 ```bash
-ssh ubuntu@YOUR_ORACLE_PUBLIC_IP
+ssh -i /path/to/private-key ubuntu@YOUR_ORACLE_PUBLIC_IP
 ```
 
 Then:
@@ -1049,10 +1051,10 @@ GEMINI_API_KEY=****
 
 If you want to manually update the app (without GitHub Actions):
 
-1. SSH into your Oracle VM:
+1. SSH into your Oracle VM (using your private key):
 
 ```bash
-ssh ubuntu@YOUR_ORACLE_PUBLIC_IP
+ssh -i /path/to/private-key ubuntu@YOUR_ORACLE_PUBLIC_IP
 ```
 
 2. Pull the latest code:

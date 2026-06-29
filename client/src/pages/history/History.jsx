@@ -426,7 +426,7 @@ function HistoryChartTooltip({ active, payload, label, config = {} }) {
 }
 
 function History() {
-  const { loading: authLoading } = useAuth();
+  const { loading: authLoading, user } = useAuth();
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
   const [startDate, setStartDate] = useState(null);
@@ -463,7 +463,7 @@ function History() {
     loading: allLoading, 
     error: allError,
     refetch: refetchAllHistory
-  } = useSpeedTestHistory(1000, 0, dateFilters, !authLoading);
+  } = useSpeedTestHistory(1000, 0, dateFilters, !authLoading && !!user);
 
   // Fetch paginated history for the table (limit 10)
   const { 
@@ -472,7 +472,7 @@ function History() {
     error: tableError, 
     total: tableTotal,
     refetch: refetchTableHistory
-  } = useSpeedTestHistory(tableLimit, tableOffset, dateFilters, !authLoading);
+  } = useSpeedTestHistory(tableLimit, tableOffset, dateFilters, !authLoading && !!user);
   
   // Update progress when loading starts
   useEffect(() => {
