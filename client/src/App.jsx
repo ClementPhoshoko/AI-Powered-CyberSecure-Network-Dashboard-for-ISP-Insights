@@ -14,6 +14,7 @@ import Account from './pages/manage_account/Account'
 import About from './pages/about/About'
 import Services from './pages/services/Services'
 import News from './pages/news/News'
+import Download from './pages/download/Download'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
 
@@ -54,6 +55,7 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services />} />
           <Route path="/news" element={<News />} />
+          <Route path="/download" element={<Download />} />
           <Route path="/tests" element={
             <ProtectedRoute>
               <History />

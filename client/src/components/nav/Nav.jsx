@@ -112,6 +112,43 @@ function Nav() {
       ]
     },
     {
+      name: 'download',
+      label: 'Download',
+      items: [
+        { 
+          label: 'Get the App', 
+          href: '/download',
+          description: 'Download our mobile app',
+          icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 20h8v2H4v-2h8" />
+              <path d="M12 2l-4 4h3v11h2V6h3l-4-4z" />
+            </svg>
+          )
+        },
+        { 
+          label: 'iOS App', 
+          href: '/download#ios',
+          description: 'Download for iPhone and iPad',
+          icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 7h.01M6 7h.01M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z" />
+            </svg>
+          )
+        },
+        { 
+          label: 'Android App', 
+          href: '/download#android',
+          description: 'Download for Android devices',
+          icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 18h18M3 12h18M3 6h18" />
+            </svg>
+          )
+        }
+      ]
+    },
+    {
       name: 'news',
       label: 'News',
       items: [
@@ -188,6 +225,13 @@ function Nav() {
                   </Link>
                 ) : item.name === 'services' ? (
                   <Link to="/services" className="nav-item-button">
+                    {item.label}
+                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </Link>
+                ) : item.name === 'download' ? (
+                  <Link to="/download" className="nav-item-button">
                     {item.label}
                     <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="6 9 12 15 18 9" />

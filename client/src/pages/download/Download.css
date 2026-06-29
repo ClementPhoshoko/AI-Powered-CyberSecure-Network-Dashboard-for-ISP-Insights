@@ -1,0 +1,293 @@
+.download_page {
+  width: 100%;
+  background-image:
+    linear-gradient(var(--bg-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid-line) 1px, transparent 1px);
+  background-size: var(--bg-grid-size) var(--bg-grid-size);
+  animation: fadeIn 0.6s ease-out, gridMove var(--bg-grid-speed) linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gridMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: var(--bg-grid-size) var(--bg-grid-size);
+  }
+}
+
+.download_container {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-6) var(--space-8) var(--space-6);
+}
+
+/* Hero Section */
+.download_hero {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  /* gap: var(--space-8); */
+  align-items: center;
+  padding-bottom: var(--space-4);
+}
+
+.download_hero_left {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: slideInLeft 0.8s ease-out;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.download_logo_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+}
+
+.download_logo {
+  width: 320px;
+  height: 320px;
+  object-fit: contain;
+}
+
+.download_subtitle {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: var(--space-5);
+  letter-spacing: -0.02em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.download_headline {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 var(--space-6);
+  text-align: center;
+  letter-spacing: -0.02em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Feature Grid */
+.download_features {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.download_feature {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-4);
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.download_feature_icon {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.download_feature_icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--primary);
+}
+
+.download_feature_content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.download_feature_text_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.download_feature_title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.download_feature_subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Right Side - Image */
+.download_hero_right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: slideInRight 0.8s ease-out 0.2s both;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.download_image_container {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.download_image_container::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 60px;
+  background: radial-gradient(ellipse at center, var(--primary-glow) 0%, transparent 60%);
+  opacity: 1;
+  filter: blur(15px);
+}
+
+.download_mockup_image {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+/* App Store Badges */
+.download_app_badges {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.download_app_badge_link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  height: 120px;
+  aspect-ratio: 1200 / 800; /* Same as the SVG dimensions */
+}
+
+.download_app_badge_link:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.download_app_badge {
+  height: 100%;
+  width: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.download_google_play_badge {
+  transform: scale(1.25);
+}
+
+.download_advisory {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: var(--space-4);
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .download_hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  
+  .download_hero_right {
+    order: -1;
+  }
+  
+  .download_mockup_image {
+    max-height: none;
+    height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .download_container {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  
+  .download_headline {
+    font-size: var(--text-2xl);
+  }
+  
+  .download_logo {
+    width: 200px;
+    height: 200px;
+  }
+
+  .download_app_badges {
+    flex-direction: column;
+  }
+
+  .download_app_badge_link {
+    height: 90px;
+  }
+
+  .download_app_badge {
+    height: 100%;
+    width: 100%;
+  }
+}
