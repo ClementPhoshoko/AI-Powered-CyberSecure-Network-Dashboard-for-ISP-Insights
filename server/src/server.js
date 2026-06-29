@@ -10,6 +10,7 @@ require('dotenv').config({
 });
 const { supabase } = require('./config/db');
 const profilesRouter = require('./routes/profiles');
+const subscribersRouter = require('./routes/subscribers');
 const devAuthRouter = require('./routes/devAuth');
 const pingRouter = require('./routes/ping');
 const speedRouter = require('./routes/speed');
@@ -131,6 +132,7 @@ if (NODE_ENV === 'development') {
     app.use('/dev/auth', devAuthRouter);
 }
 app.use('/api/profile', profilesRouter);
+app.use('/api/subscriber', subscribersRouter);
 app.use('/api/ping', pingRouter);
 app.use('/api/speed', speedRouter);
 app.use('/api/network', networkRouter);

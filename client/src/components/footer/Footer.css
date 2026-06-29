@@ -82,17 +82,17 @@
 
 .footer-subscribe {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  flex-direction: row;
+  gap: var(--space-6);
   flex: 0 0 auto;
-  min-width: 350px;
+  align-items: flex-start;
   align-self: center;
 }
 
 .footer-form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .footer-form-label {
@@ -110,48 +110,111 @@
 
 .footer-form-wrapper {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.footer-form-input {
-  flex: 1;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-dark);
-  outline: none;
-  transition: border-color var(--motion-fast) var(--ease-out);
-}
 
-.footer-form-input::placeholder {
-  color: var(--text-muted);
-}
-
-.footer-form-input:focus {
-  border-color: var(--primary);
-}
 
 .footer-form-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  display: inline-block;
+  padding: var(--space-2) 0;
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--text-primary);
-  background: none;
-  border: 1px solid var(--border-dark);
+  background: transparent;
+  border: none;
+  text-align: center;
   cursor: pointer;
   transition: color var(--motion-fast) var(--ease-out),
-              border-color var(--motion-fast) var(--ease-out);
-  white-space: nowrap;
+              text-decoration var(--motion-fast) var(--ease-out);
 }
 
-.footer-form-button:hover {
+.footer-form-button:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.footer-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.footer-form-button--subscribe {
   color: var(--primary);
-  border-color: var(--primary);
+}
+
+.footer-form-button--subscribe:hover:not(:disabled) {
+  color: var(--primary-hover);
+}
+
+.footer-form-button--unsubscribe {
+  color: var(--danger);
+}
+
+.footer-form-button--unsubscribe:hover:not(:disabled) {
+  color: var(--danger);
+}
+
+.footer-success-message {
+  font-size: 11px;
+  color: var(--success);
+  margin: 0;
+  margin-top: var(--space-1);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.footer-apps-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.footer-apps-text {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 500;
+}
+
+.footer-apps-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+  margin-top: -var(--space-2);
+  line-height: 1.4;
+}
+
+.footer-apps-links {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.footer-apps-divider {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.footer-apps-link {
+  display: inline-block;
+  padding: var(--space-2) 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--primary);
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out),
+              text-decoration var(--motion-fast) var(--ease-out);
+}
+
+.footer-apps-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
 }
 
 /* =========================================================
@@ -189,6 +252,6 @@
   }
   
   .footer-form-wrapper {
-    flex-direction: column;
+    flex-direction: row;
   }
 }
