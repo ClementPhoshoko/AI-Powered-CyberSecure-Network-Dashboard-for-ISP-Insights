@@ -1,0 +1,57 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Speedtest App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            set -e
+
+            APP_DIR="/var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights"
+
+            cd $APP_DIR
+
+            echo "Pulling latest code from main..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "Installing backend dependencies..."
+            cd $APP_DIR/server
+            npm install
+
+            if npm run | grep -q "build"; then
+              echo "Building backend..."
+              npm run build
+            fi
+
+            echo "Restarting backend with PM2..."
+            NODE_ENV=production pm2 restart speedtest-api || NODE_ENV=production pm2 start npm --name speedtest-api -- start
+            pm2 save
+
+            echo "Installing frontend dependencies..."
+            cd $APP_DIR/client
+            npm install
+
+            echo "Building frontend..."
+            npm run build
+
+            echo "Testing Nginx..."
+            sudo nginx -t
+
+            echo "Reloading Nginx..."
+            sudo systemctl reload nginx
+
+            echo "Deployment completed successfully."
