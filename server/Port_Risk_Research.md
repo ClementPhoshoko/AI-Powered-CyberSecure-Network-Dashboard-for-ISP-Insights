@@ -10,7 +10,7 @@ The new feature should feel like a native part of the existing network analytics
 
 ---
 
-# Primary Goal
+## Primary Goal
 
 Extend the current analytics platform by adding a **Security Analysis** module that evaluates the user's Internet-facing network exposure through a controlled TCP port scan of their **public IP address**.
 
@@ -22,12 +22,17 @@ The feature must work alongside existing Speed Test analytics and produce:
 * AI Security Summary
 * Historical Analytics
 * Actionable Recommendations
+* **Unencrypted Protocol Detection**
+* **Dangerous Port Combination Alerts**
+* **Common Exploit Target Warnings**
+* **Scan Timing Anomaly Detection**
+* **Historical Scan Comparison**
 
 ---
 
-# Important Requirements
+## Important Requirements
 
-## DO NOT
+### DO NOT
 
 * Create a new backend architecture.
 * Create duplicate Express servers.
@@ -37,9 +42,7 @@ The feature must work alongside existing Speed Test analytics and produce:
 * Change the current project structure.
 * Build a separate application.
 
----
-
-## DO
+### DO
 
 Use the existing project architecture.
 
@@ -66,7 +69,7 @@ The implementation should follow the exact coding style already used throughout 
 
 ---
 
-# Feature Overview
+## Feature Overview
 
 Create a new module named:
 
@@ -76,17 +79,13 @@ This module should become part of the Network Analytics dashboard.
 
 ---
 
-# Workflow
+## Workflow
 
-User runs a Speed Test
-
-↓
-
-Existing analytics complete
+User runs a Speed Test or directly requests a port scan:
 
 ↓
 
-Retrieve the user's detected public IP
+If standalone, auto-detect public IP address
 
 ↓
 
@@ -102,6 +101,16 @@ Determine which ports are:
 
 ↓
 
+Analyze scan results for:
+
+* Unencrypted protocols
+* Dangerous port combinations
+* Common exploit targets
+* Scan timing anomalies
+* Changes from previous scan
+
+↓
+
 Identify services running on open ports
 
 ↓
@@ -114,7 +123,7 @@ Calculate an overall Port Risk Score
 
 ↓
 
-Store the results alongside the existing speed test analytics
+Store the results alongside the existing speed test analytics or as standalone records
 
 ↓
 
@@ -126,37 +135,118 @@ Display everything in the dashboard
 
 ---
 
-# Scan Scope
+## Enhanced Security Analysis Features
+
+### 1. Unencrypted Protocol Detection
+
+**What:** Identify open ports that use unencrypted protocols (HTTP, FTP, Telnet, POP3, IMAP, etc.)
+
+**Why:** Unencrypted protocols expose sensitive data (credentials, commands, personal information) to eavesdropping.
+
+**Implementation:**
+
+* Flag ports marked as `is_unencrypted = true` in `port_knowledge_base`
+* Add high-priority recommendations to switch to encrypted alternatives (HTTPS, SFTP, SSH, POP3S, IMAPS)
+* Highlight these ports with distinct styling in the UI
+
+**Example:** Port 23 (Telnet) is unencrypted - highly critical.
+
+---
+
+### 2. Dangerous Port Combination Alerts
+
+**What:** Detect when multiple ports that together pose an elevated risk are open simultaneously.
+
+**Why:** Certain combinations of open ports can indicate misconfigured firewalls, excessive remote access, or other security issues.
+
+**Predefined Dangerous Combinations:**
+
+1. **22 (SSH) + 3389 (RDP)** - Multiple remote access ports open
+2. **445 (SMB) + 139 (NetBIOS)** - Windows file sharing exposed to internet
+3. **80 (HTTP) + 8080 (HTTP Proxy)** - Possible misconfigured proxy
+4. **3306 (MySQL) + 5432 (PostgreSQL) + 1433 (SQL Server)** - Multiple databases exposed
+
+**Implementation:**
+
+* Define combinations in `portRisk.service.js`
+* Check for matches during scan analysis
+* Add high/critical priority recommendations
+* Show warning badges in UI
+
+---
+
+### 3. Common Exploit Target Warnings
+
+**What:** Alert on ports that are frequently targeted by known exploits and malware.
+
+**Why:** These ports require immediate attention due to their history of being abused by attackers.
+
+**Implementation:**
+
+* Flag ports marked as `is_common_exploit_target = true` in `port_knowledge_base`
+* Show `exploit_notes` field to explain known risks (e.g., EternalBlue for port 445)
+* Add critical priority recommendations
+* Highlight these ports with special badges in UI
+
+**Common Targets:**
+
+* Port 445 (SMB): EternalBlue, WannaCry, NotPetya
+* Port 3389 (RDP): BlueKeep, DejaBlue
+* Database ports (3306, 5432, 1433): Common brute-force and injection targets
+* Port 23 (Telnet): Unencrypted credentials and commands
+
+---
+
+### 4. Scan Timing Anomaly Detection
+
+**What:** Compare current scan duration against historical average scan times for the user.
+
+**Why:** Anomalous scan times can indicate:
+* Firewall rate limiting
+* Intrusion Detection System (IDS) interference
+* Network congestion
+* Device performance issues
+
+**Implementation:**
+
+* Track `scan_duration_seconds` in `port_risk_assessments`
+* Calculate average duration from user's previous scans
+* Alert if current scan deviates by 50% or more from average
+* Add medium priority recommendation to investigate
+
+---
+
+### 5. Historical Scan Comparison
+
+**What:** Compare current open ports with the user's most recent port scan.
+
+**Why:** Shows users:
+* Newly opened ports that might be security risks
+* Closed ports (positive security improvement)
+* Changes in their network exposure over time
+
+**Implementation:**
+
+* Retrieve most recent `port_risk_assessment` (and associated `port_scan_results`) for user
+* Identify ports that were open before and now closed, or closed before and now open
+* Add recommendations for new open ports, and congratulations for closed ports
+* Display side-by-side comparison in UI
+
+---
+
+## Scan Scope
 
 Initially scan a curated list of common TCP ports.
 
 Recommended ports:
 
-20
-21
-22
-23
-25
-53
-80
-110
-143
-443
-445
-993
-995
-1433
-3306
-3389
-5432
-5900
-8080
+20, 21, 22, 23, 25, 53, 80, 110, 143, 443, 445, 993, 995, 1433, 3306, 3389, 5432, 5900, 8080
 
 Design the scanner so additional ports can easily be configured later.
 
 ---
 
-# Port States
+## Port States
 
 Each scanned port must have one of the following states:
 
@@ -166,18 +256,13 @@ Each scanned port must have one of the following states:
 
 Definitions:
 
-Open
-A service is actively listening.
-
-Closed
-No service is listening.
-
-Filtered
-Traffic appears blocked by a firewall or packet filter.
+* **Open**: A service is actively listening.
+* **Closed**: No service is listening.
+* **Filtered**: Traffic appears blocked by a firewall or packet filter.
 
 ---
 
-# Service Identification
+## Service Identification
 
 Each detected open port should include:
 
@@ -187,29 +272,13 @@ Each detected open port should include:
 * Risk Level
 * Description
 * Security Recommendation
-
-Example
-
-Port: 22
-
-Service:
-SSH
-
-Status:
-Open
-
-Risk:
-Medium
-
-Reason:
-Remote administration service detected.
-
-Recommendation:
-Use SSH keys, disable password authentication where possible, and restrict access using a firewall.
+* Is Unencrypted?
+* Is Common Exploit Target?
+* Exploit Notes (if applicable)
 
 ---
 
-# Risk Classification Engine
+## Risk Classification Engine
 
 Implement a reusable rule-based engine.
 
@@ -220,88 +289,9 @@ Risk levels:
 * High
 * Critical
 
-Example knowledge base:
-
-22
-
-SSH
-
-Medium
-
-Reason:
-Remote administration.
-
 ---
 
-23
-
-Telnet
-
-Critical
-
-Reason:
-Credentials are transmitted unencrypted.
-
-Recommendation:
-Replace with SSH.
-
----
-
-80
-
-HTTP
-
-Low
-
-Reason:
-Standard web service.
-
----
-
-443
-
-HTTPS
-
-Low
-
-Reason:
-Encrypted web service.
-
----
-
-3389
-
-Remote Desktop
-
-High
-
-Reason:
-Frequently targeted by brute-force attacks.
-
-Recommendation:
-Restrict access using VPN or firewall rules.
-
----
-
-445
-
-Windows File Sharing
-
-High
-
-Reason:
-Frequently exploited by malware and ransomware.
-
-Recommendation:
-Disable public exposure.
-
----
-
-The rules engine should be modular so additional ports and rules can be added without modifying the scanning logic.
-
----
-
-# Overall Port Risk Score
+## Overall Port Risk Score
 
 Generate a score from:
 
@@ -309,27 +299,13 @@ Generate a score from:
 
 Example:
 
-92
+92 → Excellent
 
-Excellent
+65 → Moderate Risk
 
-↓
+34 → High Risk
 
-65
-
-Moderate Risk
-
-↓
-
-34
-
-High Risk
-
-↓
-
-12
-
-Critical Exposure
+12 → Critical Exposure
 
 The algorithm should consider:
 
@@ -337,10 +313,13 @@ The algorithm should consider:
 * Severity of each exposed service
 * Weighted scoring
 * Overall attack surface
+* Unencrypted protocols present
+* Dangerous combinations found
+* Exploit targets present
 
 ---
 
-# AI Security Summary
+## AI Security Summary
 
 Reuse the existing AI summary architecture.
 
@@ -348,15 +327,23 @@ Generate concise summaries such as:
 
 "Your network exposes three Internet-facing services. HTTPS is available and represents a low security risk when properly configured. SSH is accessible for remote administration and should be protected using key-based authentication and firewall restrictions. Telnet is also exposed, representing a critical security concern because it transmits credentials without encryption. Disabling Telnet would significantly reduce your attack surface."
 
-The summary should match the tone and style of the existing network health summaries.
+The summary should include mentions of:
+
+* Unencrypted protocols
+* Exploit targets
+* Dangerous combinations
+* Historical changes
+* Timing anomalies
+
+The summary should match the tone and style of the existing network health summaries, and have a rule-based fallback for when the Gemini API is unavailable.
 
 ---
 
-# Dashboard Integration
+## Dashboard Integration
 
-Create a new dashboard section called:
+Create a new dashboard section named:
 
-Port Risk Detection
+**Port Risk Detection**
 
 Display:
 
@@ -367,6 +354,10 @@ Display:
 * Highest Risk Level
 * Risk Trend
 * AI Summary
+* Enhanced alerts for unencrypted protocols
+* Dangerous combination warnings
+* Exploit target badges
+* Historical comparison section
 
 Below that display a table containing:
 
@@ -374,12 +365,14 @@ Below that display a table containing:
 * Service
 * Status
 * Risk
+* Encryption Status
+* Exploit Target Status
 * Description
 * Recommendation
 
 ---
 
-# Historical Analytics
+## Historical Analytics
 
 Store scan results with existing analytics records.
 
@@ -390,12 +383,13 @@ Support:
 * Risk score history
 * Open port history
 * Security improvements over time
+* Comparison between scans
 
 The implementation should integrate with the current analytics database instead of introducing a separate storage mechanism.
 
 ---
 
-# Backend Architecture
+## Backend Architecture
 
 Reuse the current backend folder structure.
 
@@ -409,9 +403,43 @@ Create only the additional modules required for:
 
 Follow existing dependency injection and service patterns.
 
+**Main Service File:** `src/services/portRisk.service.js`
+
+**Key Methods:**
+
+- `getPublicIp()`: Auto-detect user's public IP address
+- `scanPort()`: Scan a single port
+- `scanPorts()`: Scan multiple ports with concurrency control
+- `detectUnencryptedProtocols()`: Identify unencrypted protocols
+- `detectDangerousCombinations()`: Find dangerous port combinations
+- `detectExploitTargets()`: Identify common exploit targets
+- `detectTimingAnomalies()`: Check for scan timing issues
+- `compareWithPrevious()`: Compare with last scan
+- `calculateRiskScore()`: Calculate overall risk score
+- `generateRecommendations()`: Generate actionable recommendations
+- `generateAiSecuritySummary()`: Generate AI summary
+- `createAssessmentFromScan()`: Internal shared logic
+- `runPortRiskAssessment()`: Post-speed-test assessment (backward compatible)
+- `runStandalonePortRiskAssessment()`: Standalone scan (new feature)
+
 ---
 
-# Frontend
+## API Endpoints
+
+### Port Risk Detection Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/port-risk/assess` | Run a full port risk assessment using existing speed test |
+| POST | `/api/port-risk/standalone` | Run standalone port risk assessment (no speed test needed) |
+| GET | `/api/port-risk/assessment/:id` | Get a specific port risk assessment by ID |
+| GET | `/api/port-risk/test-result/:testResultId` | Get port risk assessment for a specific test result |
+| GET | `/api/port-risk/assessments` | Get all port risk assessments for the current user |
+| GET | `/api/port-risk/knowledge-base` | Get the port knowledge base (public) |
+
+---
+
+## Frontend
 
 Reuse:
 
@@ -429,7 +457,7 @@ Do not introduce a different UI design language.
 
 ---
 
-# Security Considerations
+## Security Considerations
 
 The scanner must only perform authorized scans against the user's detected public IP associated with the active speed test session.
 
@@ -439,7 +467,7 @@ Handle timeouts, connection failures, and unavailable hosts gracefully without a
 
 ---
 
-# Future Extensibility
+## Future Extensibility
 
 Design the module so future enhancements can be added without major refactoring, including:
 

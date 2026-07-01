@@ -60,8 +60,13 @@ Supabase Database
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
 - **Network Scoring**: Automated health, gaming, streaming, video call, and browsing scores
-- **Port Risk Detection**: TCP port scanning, risk scoring, and security recommendations
-- **AI-Powered Insights**: Google Gemini API integration for intelligent summaries
+- **Port Risk Detection**: TCP port scanning, risk scoring, and security recommendations with:
+  - Unencrypted protocol detection
+  - Dangerous port combination alerts
+  - Common exploit target warnings
+  - Scan timing anomaly detection
+  - Historical scan comparison
+- **AI-Powered Insights**: Google Gemini API integration for intelligent summaries (with rule-based fallback)
 - **Analytics Engine**: Time-series data and anomaly detection
 - **API Documentation**: Interactive Swagger/OpenAPI documentation
 - **Security**: Helmet for security headers, CORS configuration, JWT validation
@@ -110,6 +115,8 @@ server/
 │   │   ├── PortScanResult.js
 │   │   ├── Profile.js
 │   │   ├── SecurityRecommendation.js
+│   │   ├── Subscriber.js
+│   │   ├── SystemMetric.js
 │   │   ├── TestResult.js
 │   │   └── UploadMeasurement.js
 │   ├── routes/       # API routes
@@ -229,11 +236,8 @@ The rule-based system uses network_health_score to categorize connection quality
 ## Database Setup
 
 1. Log in to your Supabase project → **SQL Editor**
-2. Open `server/src/docs/phase_one_schema.sql` (base schema)
+2. Open `server/src/docs/phase_one_schema.sql` (complete schema including all features)
 3. Copy and paste the contents into the SQL Editor and run it
-4. (Important) If you already have the schema set up and need to fix the size columns:
-   - Open `server/src/docs/speed_module_schema_fix.sql` and run it
-5. (New) To add Port Risk Detection functionality, open `server/src/docs/phase_two_port_risk_schema.sql` and run it
 
 For more detailed setup instructions, see `server/SETUP.md`
 

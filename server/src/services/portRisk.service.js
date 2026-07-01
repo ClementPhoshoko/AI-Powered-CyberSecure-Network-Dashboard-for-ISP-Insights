@@ -28,6 +28,34 @@ class PortRiskService {
   // Common ports to scan
   static COMMON_PORTS = [20, 21, 22, 23, 25, 53, 80, 110, 143, 443, 445, 993, 995, 1433, 3306, 3389, 5432, 5900, 8080];
 
+  // Dangerous port combinations to detect
+  static DANGEROUS_COMBINATIONS = [
+    {
+      ports: [22, 3389], // SSH + RDP
+      name: 'Multiple Remote Access Ports',
+      risk: 'high',
+      description: 'Both SSH and RDP are exposed. Limit remote access to trusted IPs only.'
+    },
+    {
+      ports: [445, 139], // SMB + NetBIOS
+      name: 'Windows File Sharing Exposed',
+      risk: 'critical',
+      description: 'SMB/NetBIOS is exposed to the internet. Disable public access immediately.'
+    },
+    {
+      ports: [80, 8080], // HTTP + Proxy
+      name: 'Unencrypted Proxy Detected',
+      risk: 'medium',
+      description: 'HTTP and an alternative HTTP port are open. Ensure no misconfigured proxy is exposed.'
+    },
+    {
+      ports: [3306, 5432, 1433], // Multiple databases
+      name: 'Multiple Database Ports Exposed',
+      risk: 'critical',
+      description: 'Multiple database ports are open. Restrict all database access to internal networks.'
+    }
+  ];
+
   // Get public IP address from external service
   static async getPublicIp() {
     try {
@@ -89,6 +117,92 @@ class PortRiskService {
     return scanResults.sort((a, b) => a.port - b.port);
   }
 
+  // Detect unencrypted protocols in open ports
+  static detectUnencryptedProtocols(openPorts, portKnowledgeBase) {
+    return openPorts.filter(port => {
+      const kbEntry = portKnowledgeBase.find(
+        kb => kb.port_number === port.port && kb.protocol === 'tcp'
+      );
+      return kbEntry?.is_unencrypted;
+    });
+  }
+
+  // Detect dangerous port combinations
+  static detectDangerousCombinations(openPorts) {
+    const openPortNumbers = openPorts.map(p => p.port);
+    const detectedCombinations = [];
+
+    for (const combo of this.DANGEROUS_COMBINATIONS) {
+      const hasAllPorts = combo.ports.every(port => openPortNumbers.includes(port));
+      if (hasAllPorts) {
+        detectedCombinations.push(combo);
+      }
+    }
+
+    return detectedCombinations;
+  }
+
+  // Detect common exploit targets
+  static detectExploitTargets(openPorts, portKnowledgeBase) {
+    return openPorts.filter(port => {
+      const kbEntry = portKnowledgeBase.find(
+        kb => kb.port_number === port.port && kb.protocol === 'tcp'
+      );
+      return kbEntry?.is_common_exploit_target;
+    });
+  }
+
+  // Calculate scan timing anomalies
+  static detectTimingAnomalies(currentScanDuration, previousAssessments) {
+    if (!previousAssessments || previousAssessments.length === 0) {
+      return null;
+    }
+
+    const previousDurations = previousAssessments
+      .map(a => a.scan_duration_seconds)
+      .filter(d => d !== null && d !== undefined);
+
+    if (previousDurations.length === 0) {
+      return null;
+    }
+
+    const avgDuration = previousDurations.reduce((a, b) => a + b, 0) / previousDurations.length;
+    const deviation = Math.abs(currentScanDuration - avgDuration) / avgDuration;
+
+    if (deviation > 0.5) { // 50% deviation from average
+      return {
+        isAnomaly: true,
+        currentDuration: currentScanDuration,
+        averageDuration: avgDuration,
+        deviation: deviation,
+        message: deviation > 0 ? 'Scan took longer than usual - possible rate limiting or security device' : 'Scan was much faster than usual'
+      };
+    }
+
+    return null;
+  }
+
+  // Compare current scan with previous scan
+  static compareWithPrevious(currentScanResults, previousAssessment) {
+    if (!previousAssessment) {
+      return null;
+    }
+
+    const currentOpenPorts = currentScanResults.filter(r => r.state === 'open').map(r => r.port);
+    const previousOpenPorts = (previousAssessment.port_scan_results || [])
+      .filter(r => r.port_state === 'open')
+      .map(r => r.port_number);
+
+    const newOpenPorts = currentOpenPorts.filter(p => !previousOpenPorts.includes(p));
+    const closedPorts = previousOpenPorts.filter(p => !currentOpenPorts.includes(p));
+
+    return {
+      hasChanges: newOpenPorts.length > 0 || closedPorts.length > 0,
+      newOpenPorts,
+      closedPorts
+    };
+  }
+
   // Calculate overall risk score
   static calculateRiskScore(openPorts, portKnowledgeBase) {
     let totalRiskScore = 0;
@@ -116,7 +230,10 @@ class PortRiskService {
         riskLevel,
         serviceName: kbEntry?.service_name || 'Unknown',
         description: kbEntry?.description,
-        recommendation: kbEntry?.security_recommendation
+        recommendation: kbEntry?.security_recommendation,
+        isUnencrypted: kbEntry?.is_unencrypted,
+        isExploitTarget: kbEntry?.is_common_exploit_target,
+        exploitNotes: kbEntry?.exploit_notes
       });
     }
 
@@ -141,9 +258,10 @@ class PortRiskService {
   }
 
   // Generate security recommendations from scan results
-  static generateRecommendations(openPortsWithRisk, assessmentId) {
+  static generateRecommendations(openPortsWithRisk, assessmentId, extraInsights = {}) {
     const recommendations = [];
 
+    // Add recommendations for each open port
     for (const openPort of openPortsWithRisk) {
       const priority = openPort.riskLevel;
 
@@ -155,6 +273,86 @@ class PortRiskService {
         title: `Exposed ${openPort.serviceName} on port ${openPort.port}`,
         description: openPort.description || `Port ${openPort.port} (${openPort.serviceName}) is exposed to the internet.`,
         action_steps: openPort.recommendation || 'Restrict access to this port using a firewall or VPN.'
+      });
+
+      // Add unencrypted protocol warning if applicable
+      if (openPort.isUnencrypted) {
+        recommendations.push({
+          port_risk_assessment_id: assessmentId,
+          port_number: openPort.port,
+          recommendation_type: 'unencrypted_protocol',
+          priority: 'high',
+          title: `Unencrypted ${openPort.serviceName} Detected`,
+          description: `Port ${openPort.port} uses an unencrypted protocol. All traffic (including credentials) is visible to attackers.`,
+          action_steps: openPort.recommendation
+        });
+      }
+
+      // Add exploit target warning if applicable
+      if (openPort.isExploitTarget) {
+        recommendations.push({
+          port_risk_assessment_id: assessmentId,
+          port_number: openPort.port,
+          recommendation_type: 'exploit_target',
+          priority: 'critical',
+          title: `High-Risk Exploit Target: ${openPort.serviceName}`,
+          description: `Port ${openPort.port} is a common target for exploits. ${openPort.exploitNotes ? openPort.exploitNotes : 'Limit access immediately.'}`,
+          action_steps: openPort.recommendation
+        });
+      }
+    }
+
+    // Add dangerous combination recommendations
+    if (extraInsights.dangerousCombinations) {
+      for (const combo of extraInsights.dangerousCombinations) {
+        recommendations.push({
+          port_risk_assessment_id: assessmentId,
+          port_number: null,
+          recommendation_type: 'dangerous_combination',
+          priority: combo.risk,
+          title: combo.name,
+          description: combo.description,
+          action_steps: 'Review and restrict access to these ports immediately.'
+        });
+      }
+    }
+
+    // Add historical comparison notes
+    if (extraInsights.historicalComparison && extraInsights.historicalComparison.hasChanges) {
+      if (extraInsights.historicalComparison.newOpenPorts.length > 0) {
+        recommendations.push({
+          port_risk_assessment_id: assessmentId,
+          port_number: null,
+          recommendation_type: 'historical_change',
+          priority: 'high',
+          title: 'New Ports Open Since Last Scan',
+          description: `The following ports are now open: ${extraInsights.historicalComparison.newOpenPorts.join(', ')}. Verify these changes are intentional.`,
+          action_steps: 'Investigate each new open port and ensure it should be publicly accessible.'
+        });
+      }
+      if (extraInsights.historicalComparison.closedPorts.length > 0) {
+        recommendations.push({
+          port_risk_assessment_id: assessmentId,
+          port_number: null,
+          recommendation_type: 'historical_change',
+          priority: 'low',
+          title: 'Ports Closed Since Last Scan',
+          description: `Great! The following ports are now closed: ${extraInsights.historicalComparison.closedPorts.join(', ')}.`,
+          action_steps: 'Keep up the good work!'
+        });
+      }
+    }
+
+    // Add timing anomaly warning
+    if (extraInsights.timingAnomaly && extraInsights.timingAnomaly.isAnomaly) {
+      recommendations.push({
+        port_risk_assessment_id: assessmentId,
+        port_number: null,
+        recommendation_type: 'timing_anomaly',
+        priority: 'medium',
+        title: 'Scan Timing Anomaly Detected',
+        description: extraInsights.timingAnomaly.message,
+        action_steps: 'Monitor for unusual network activity or security device behavior.'
       });
     }
 
@@ -175,10 +373,10 @@ class PortRiskService {
   }
 
   // Generate AI security summary
-  static async generateAiSecuritySummary(scanData, riskScore, status) {
+  static async generateAiSecuritySummary(scanData, riskScore, status, extraInsights = {}) {
     if (!process.env.GEMINI_API_KEY) {
       // Fallback to rule-based summary
-      return this.generateRuleBasedSecuritySummary(scanData, riskScore, status);
+      return this.generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights);
     }
 
     try {
@@ -188,6 +386,17 @@ class PortRiskService {
       const openPortsText = scanData.openPortsWithRisk.map(p => 
         `${p.port} (${p.serviceName}, ${p.riskLevel})`
       ).join(', ') || 'No open ports detected';
+
+      const extraDetails = [];
+      if (extraInsights.unencryptedProtocols && extraInsights.unencryptedProtocols.length > 0) {
+        extraDetails.push(`Unencrypted ports: ${extraInsights.unencryptedProtocols.map(p => p.port).join(', ')}`);
+      }
+      if (extraInsights.exploitTargets && extraInsights.exploitTargets.length > 0) {
+        extraDetails.push(`Exploit targets: ${extraInsights.exploitTargets.map(p => p.port).join(', ')}`);
+      }
+      if (extraInsights.dangerousCombinations && extraInsights.dangerousCombinations.length > 0) {
+        extraDetails.push(`Dangerous combinations: ${extraInsights.dangerousCombinations.map(c => c.name).join(', ')}`);
+      }
 
       const prompt = `You are a network security expert. Generate a concise, friendly security summary (3-5 sentences) based on the following port scan results.
 
@@ -202,6 +411,7 @@ Scan Data:
 - Security Score: ${riskScore}/100
 - Security Status: ${status}
 - Open Ports: ${openPortsText}
+- Additional Details: ${extraDetails.length > 0 ? extraDetails.join('; ') : 'None'}
 
 Please return ONLY the summary text.`;
 
@@ -209,39 +419,66 @@ Please return ONLY the summary text.`;
       return result.response.text().trim();
     } catch (error) {
       console.warn('AI security summary failed, using fallback:', error);
-      return this.generateRuleBasedSecuritySummary(scanData, riskScore, status);
+      return this.generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights);
     }
   }
 
   // Rule-based fallback summary
-  static generateRuleBasedSecuritySummary(scanData, riskScore, status) {
+  static generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights = {}) {
     const openPortsCount = scanData.openPortsWithRisk.length;
+    const criticalPorts = scanData.openPortsWithRisk.filter(p => ['high', 'critical'].includes(p.riskLevel));
     
-    if (status === 'excellent' || status === 'good') {
-      return `Great! Your network security looks ${status} with a score of ${riskScore}/100. ${openPortsCount > 0 ? `You have ${openPortsCount} port${openPortsCount > 1 ? 's' : ''} open, but they appear to be low risk.` : 'No risky ports are exposed to the internet.'} Keep up the good work!`;
-    } else {
-      const criticalPorts = scanData.openPortsWithRisk.filter(p => ['high', 'critical'].includes(p.riskLevel));
-      return `Your network security is rated ${status} with a score of ${riskScore}/100. ${criticalPorts.length > 0 ? `You have ${criticalPorts.length} high/critical risk port${criticalPorts.length > 1 ? 's' : ''} exposed.` : ''} We recommend reviewing your firewall settings and closing unnecessary ports immediately.`;
+    let summary = `Your network security is rated ${status} with a score of ${riskScore}/100. `;
+    
+    if (openPortsCount > 0) {
+      summary += `You have ${openPortsCount} port${openPortsCount > 1 ? 's' : ''} open. `;
     }
+    
+    if (criticalPorts.length > 0) {
+      summary += `${criticalPorts.length} high/critical risk port${criticalPorts.length > 1 ? 's' : ''} exposed - take action immediately. `;
+    }
+    
+    if (extraInsights.unencryptedProtocols && extraInsights.unencryptedProtocols.length > 0) {
+      summary += `Unencrypted protocols detected - switch to encrypted alternatives. `;
+    }
+    
+    summary += 'We recommend reviewing your firewall settings and closing unnecessary ports.';
+    
+    return summary;
   }
 
   // Internal method to create assessment with known testResultId and publicIp
-  static async createAssessmentFromScan(userId, testResultId, publicIp, scanStartedAt) {
+  static async createAssessmentFromScan(userId, testResultId, publicIp, scanStartedAt, previousAssessments = []) {
     // 1. Get port knowledge base
     const portKnowledgeBase = await PortKnowledgeBase.findCommonPorts();
 
     // 2. Run port scan
     const scanResults = await this.scanPorts(publicIp);
+    const scanCompletedAt = new Date();
+    const scanDurationSeconds = (scanCompletedAt - scanStartedAt) / 1000;
     
-    // 3. Calculate risk
+    // 3. Calculate risk and insights
     const openPorts = scanResults.filter(r => r.state === 'open');
     const closedPorts = scanResults.filter(r => r.state === 'closed');
     const filteredPorts = scanResults.filter(r => r.state === 'filtered');
     
     const riskCalculation = this.calculateRiskScore(openPorts, portKnowledgeBase);
+    
+    const unencryptedProtocols = this.detectUnencryptedProtocols(openPorts, portKnowledgeBase);
+    const dangerousCombinations = this.detectDangerousCombinations(openPorts);
+    const exploitTargets = this.detectExploitTargets(openPorts, portKnowledgeBase);
+    const timingAnomaly = this.detectTimingAnomalies(scanDurationSeconds, previousAssessments);
+    const historicalComparison = this.compareWithPrevious(scanResults, previousAssessments[0]);
+    
+    const extraInsights = {
+      unencryptedProtocols,
+      dangerousCombinations,
+      exploitTargets,
+      timingAnomaly,
+      historicalComparison
+    };
 
     // 4. Create port risk assessment
-    const scanCompletedAt = new Date();
     const assessment = await PortRiskAssessment.create({
       test_result_id: testResultId,
       overall_risk_score: riskCalculation.score,
@@ -252,7 +489,7 @@ Please return ONLY the summary text.`;
       highest_risk_level: riskCalculation.highestRiskLevel,
       scan_started_at: scanStartedAt.toISOString(),
       scan_completed_at: scanCompletedAt.toISOString(),
-      scan_duration_seconds: (scanCompletedAt - scanStartedAt) / 1000
+      scan_duration_seconds: scanDurationSeconds
     });
 
     // 5. Save port scan results
@@ -275,7 +512,8 @@ Please return ONLY the summary text.`;
     // 6. Generate and save security recommendations
     const recommendations = this.generateRecommendations(
       riskCalculation.openPortsWithRisk,
-      assessment.id
+      assessment.id,
+      extraInsights
     );
     if (recommendations.length > 0) {
       await SecurityRecommendation.createMany(recommendations);
@@ -285,7 +523,8 @@ Please return ONLY the summary text.`;
     const aiSummary = await this.generateAiSecuritySummary(
       riskCalculation,
       riskCalculation.score,
-      riskCalculation.status
+      riskCalculation.status,
+      extraInsights
     );
     await PortRiskAssessment.update(assessment.id, { ai_security_summary: aiSummary });
 
@@ -304,8 +543,11 @@ Please return ONLY the summary text.`;
     const publicIp = testResult.ip_address;
     if (!publicIp) throw new Error('No public IP address available for this test result');
 
+    // 3. Get user's previous assessments for comparison
+    const previousAssessments = await PortRiskAssessment.findByUserId(userId);
+    
     const scanStartedAt = new Date();
-    return this.createAssessmentFromScan(userId, testResultId, publicIp, scanStartedAt);
+    return this.createAssessmentFromScan(userId, testResultId, publicIp, scanStartedAt, previousAssessments);
   }
 
   // New method for standalone port risk assessment
@@ -326,7 +568,10 @@ Please return ONLY the summary text.`;
       network_health_score: null
     });
 
-    return this.createAssessmentFromScan(userId, testResult.id, publicIp, scanStartedAt);
+    // 3. Get user's previous assessments for comparison
+    const previousAssessments = await PortRiskAssessment.findByUserId(userId);
+
+    return this.createAssessmentFromScan(userId, testResult.id, publicIp, scanStartedAt, previousAssessments);
   }
 }
 

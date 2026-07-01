@@ -819,6 +819,9 @@ CREATE TABLE IF NOT EXISTS port_knowledge_base (
     description TEXT,
     security_recommendation TEXT,
     is_common BOOLEAN DEFAULT true,
+    is_unencrypted BOOLEAN DEFAULT false,
+    is_common_exploit_target BOOLEAN DEFAULT false,
+    exploit_notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -1069,24 +1072,24 @@ EXECUTE FUNCTION update_updated_at();
 -- Common ports and services with risk levels
 -- =====================================================
 
-INSERT INTO port_knowledge_base (port_number, protocol, service_name, risk_level, description, security_recommendation, is_common) VALUES
-(20, 'tcp', 'FTP-Data', 'medium', 'File Transfer Protocol - Data (unencrypted)', 'Use SFTP instead of FTP for secure file transfers', true),
-(21, 'tcp', 'FTP', 'medium', 'File Transfer Protocol (unencrypted)', 'Use SFTP instead of FTP for secure file transfers', true),
-(22, 'tcp', 'SSH', 'medium', 'Secure Shell - Remote administration', 'Use SSH keys for authentication, disable password login if possible, restrict source IPs', true),
-(23, 'tcp', 'Telnet', 'critical', 'Telnet - Unencrypted remote administration', 'Disable Telnet immediately and use SSH instead', true),
-(25, 'tcp', 'SMTP', 'medium', 'Simple Mail Transfer Protocol', 'Configure TLS/SSL, use SMTP authentication, consider relay restrictions', true),
-(53, 'tcp', 'DNS', 'low', 'Domain Name System (TCP)', 'Restrict DNS queries to trusted servers, enable DNSSEC if possible', true),
-(80, 'tcp', 'HTTP', 'low', 'Hypertext Transfer Protocol (unencrypted)', 'Redirect HTTP to HTTPS for all traffic', true),
-(110, 'tcp', 'POP3', 'high', 'Post Office Protocol v3 (unencrypted)', 'Use POP3S (POP3 over TLS) or IMAPS instead', true),
-(143, 'tcp', 'IMAP', 'high', 'Internet Message Access Protocol (unencrypted)', 'Use IMAPS (IMAP over TLS) instead', true),
-(443, 'tcp', 'HTTPS', 'low', 'Hypertext Transfer Protocol Secure', 'Keep TLS updated, use strong ciphers, consider HSTS', true),
-(445, 'tcp', 'SMB', 'critical', 'Server Message Block - Windows file sharing', 'Disable public SMB exposure, restrict to internal networks only', true),
-(993, 'tcp', 'IMAPS', 'low', 'IMAP over SSL/TLS', 'Ensure TLS configuration is secure and up-to-date', true),
-(995, 'tcp', 'POP3S', 'low', 'POP3 over SSL/TLS', 'Ensure TLS configuration is secure and up-to-date', true),
-(1433, 'tcp', 'SQL Server', 'high', 'Microsoft SQL Server', 'Restrict access to trusted IPs, use strong passwords, enable encryption', true),
-(3306, 'tcp', 'MySQL', 'high', 'MySQL Database', 'Restrict access to trusted IPs, use strong passwords, enable SSL', true),
-(3389, 'tcp', 'RDP', 'high', 'Remote Desktop Protocol', 'Restrict access via VPN/firewall, enable Network Level Authentication, use strong passwords', true),
-(5432, 'tcp', 'PostgreSQL', 'high', 'PostgreSQL Database', 'Restrict access to trusted IPs, use strong passwords, enable SSL', true),
-(5900, 'tcp', 'VNC', 'high', 'Virtual Network Computing', 'Use VNC over SSH tunnel or VPN, set strong passwords', true),
-(8080, 'tcp', 'HTTP-Proxy', 'medium', 'HTTP Proxy/Alternative HTTP', 'If used internally, restrict to internal networks; consider HTTPS', true)
+INSERT INTO port_knowledge_base (port_number, protocol, service_name, risk_level, description, security_recommendation, is_common, is_unencrypted, is_common_exploit_target, exploit_notes) VALUES
+(20, 'tcp', 'FTP-Data', 'medium', 'File Transfer Protocol - Data (unencrypted)', 'Use SFTP instead of FTP for secure file transfers', true, true, false, null),
+(21, 'tcp', 'FTP', 'medium', 'File Transfer Protocol (unencrypted)', 'Use SFTP instead of FTP for secure file transfers', true, true, false, null),
+(22, 'tcp', 'SSH', 'medium', 'Secure Shell - Remote administration', 'Use SSH keys for authentication, disable password login if possible, restrict source IPs', true, false, false, null),
+(23, 'tcp', 'Telnet', 'critical', 'Telnet - Unencrypted remote administration', 'Disable Telnet immediately and use SSH instead', true, true, true, 'Unencrypted credentials and commands'),
+(25, 'tcp', 'SMTP', 'medium', 'Simple Mail Transfer Protocol', 'Configure TLS/SSL, use SMTP authentication, consider relay restrictions', true, false, false, null),
+(53, 'tcp', 'DNS', 'low', 'Domain Name System (TCP)', 'Restrict DNS queries to trusted servers, enable DNSSEC if possible', true, false, false, null),
+(80, 'tcp', 'HTTP', 'low', 'Hypertext Transfer Protocol (unencrypted)', 'Redirect HTTP to HTTPS for all traffic', true, true, false, null),
+(110, 'tcp', 'POP3', 'high', 'Post Office Protocol v3 (unencrypted)', 'Use POP3S (POP3 over TLS) or IMAPS instead', true, true, false, null),
+(143, 'tcp', 'IMAP', 'high', 'Internet Message Access Protocol (unencrypted)', 'Use IMAPS (IMAP over TLS) instead', true, true, false, null),
+(443, 'tcp', 'HTTPS', 'low', 'Hypertext Transfer Protocol Secure', 'Keep TLS updated, use strong ciphers, consider HSTS', true, false, false, null),
+(445, 'tcp', 'SMB', 'critical', 'Server Message Block - Windows file sharing', 'Disable public SMB exposure, restrict to internal networks only', true, false, true, 'EternalBlue, WannaCry, NotPetya'),
+(993, 'tcp', 'IMAPS', 'low', 'IMAP over SSL/TLS', 'Ensure TLS configuration is secure and up-to-date', true, false, false, null),
+(995, 'tcp', 'POP3S', 'low', 'POP3 over SSL/TLS', 'Ensure TLS configuration is secure and up-to-date', true, false, false, null),
+(1433, 'tcp', 'SQL Server', 'high', 'Microsoft SQL Server', 'Restrict access to trusted IPs, use strong passwords, enable encryption', true, false, true, 'Common brute-force and injection target'),
+(3306, 'tcp', 'MySQL', 'high', 'MySQL Database', 'Restrict access to trusted IPs, use strong passwords, enable SSL', true, false, true, 'Common brute-force and injection target'),
+(3389, 'tcp', 'RDP', 'high', 'Remote Desktop Protocol', 'Restrict access via VPN/firewall, enable Network Level Authentication, use strong passwords', true, false, true, 'BlueKeep, DejaBlue, brute-force attacks'),
+(5432, 'tcp', 'PostgreSQL', 'high', 'PostgreSQL Database', 'Restrict access to trusted IPs, use strong passwords, enable SSL', true, false, true, 'Common brute-force and injection target'),
+(5900, 'tcp', 'VNC', 'high', 'Virtual Network Computing', 'Use VNC over SSH tunnel or VPN, set strong passwords', true, false, true, 'Common brute-force target'),
+(8080, 'tcp', 'HTTP-Proxy', 'medium', 'HTTP Proxy/Alternative HTTP', 'If used internally, restrict to internal networks; consider HTTPS', true, true, false, null)
 ON CONFLICT DO NOTHING;
