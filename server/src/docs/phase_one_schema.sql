@@ -1093,3 +1093,37 @@ INSERT INTO port_knowledge_base (port_number, protocol, service_name, risk_level
 (5900, 'tcp', 'VNC', 'high', 'Virtual Network Computing', 'Use VNC over SSH tunnel or VPN, set strong passwords', true, false, true, 'Common brute-force target'),
 (8080, 'tcp', 'HTTP-Proxy', 'medium', 'HTTP Proxy/Alternative HTTP', 'If used internally, restrict to internal networks; consider HTTPS', true, true, false, null)
 ON CONFLICT DO NOTHING;
+
+-- =====================================================
+-- Migration: Fix Security Definer View for public.network_summary
+-- =====================================================
+-- Issue:
+--   Supabase flagged `public.network_summary` because views are
+--   security definer by default and can bypass underlying table RLS.
+--
+-- Fix:
+--   Recreate the view with `security_invoker = true` so reads honor
+--   the caller's permissions and the existing RLS policies on
+--   `public.test_results`.
+-- =====================================================
+
+BEGIN;
+
+CREATE OR REPLACE VIEW public.network_summary
+WITH (security_invoker = true) AS
+SELECT
+    tr.user_id,
+    COUNT(*) AS total_tests,
+    AVG(tr.download_speed_mbps) AS avg_download_speed,
+    AVG(tr.upload_speed_mbps) AS avg_upload_speed,
+    AVG(tr.ping_avg_ms) AS avg_ping,
+    AVG(tr.jitter_ms) AS avg_jitter,
+    AVG(tr.packet_loss_percent) AS avg_packet_loss,
+    AVG(tr.network_health_score) AS avg_health_score
+FROM public.test_results AS tr
+GROUP BY tr.user_id;
+
+COMMENT ON VIEW public.network_summary IS
+'Aggregated per-user network metrics. Uses security_invoker so public.test_results RLS is enforced for the querying role.';
+
+COMMIT;
