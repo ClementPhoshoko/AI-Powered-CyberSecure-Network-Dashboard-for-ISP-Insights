@@ -14,6 +14,7 @@ A Node.js and Express backend API for the AI-Powered AkovoLabs Speedtest, provid
   - [Speed Endpoints](#speed-endpoints)
   - [Network Scoring Endpoints](#network-scoring-endpoints)
   - [Analytics Endpoints](#analytics-endpoints)
+  - [Port Risk Detection Endpoints](#port-risk-detection-endpoints)
 - [AI Summary Fallback System](#ai-summary-fallback-system)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -59,6 +60,7 @@ Supabase Database
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
 - **Network Scoring**: Automated health, gaming, streaming, video call, and browsing scores
+- **Port Risk Detection**: TCP port scanning, risk scoring, and security recommendations
 - **AI-Powered Insights**: Google Gemini API integration for intelligent summaries
 - **Analytics Engine**: Time-series data and anomaly detection
 - **API Documentation**: Interactive Swagger/OpenAPI documentation
@@ -89,12 +91,12 @@ server/
 │   │   ├── devAuthController.js
 │   │   ├── networkScoringController.js
 │   │   ├── pingController.js
+│   │   ├── portRiskController.js
 │   │   ├── profileController.js
 │   │   └── speedController.js
 │   ├── docs/         # SQL schemas, setup guides, ER diagrams
 │   │   ├── phase_one_schema.md
 │   │   ├── phase_one_schema.sql
-│   │   ├── speed_module_schema_fix.sql
 │   │   └── testing_guide.md
 │   ├── middleware/   # Custom middleware
 │   │   ├── errorHandler.js
@@ -103,7 +105,11 @@ server/
 │   │   ├── AnomalyLog.js
 │   │   ├── DownloadMeasurement.js
 │   │   ├── PingMeasurement.js
+│   │   ├── PortKnowledgeBase.js
+│   │   ├── PortRiskAssessment.js
+│   │   ├── PortScanResult.js
 │   │   ├── Profile.js
+│   │   ├── SecurityRecommendation.js
 │   │   ├── TestResult.js
 │   │   └── UploadMeasurement.js
 │   ├── routes/       # API routes
@@ -111,6 +117,7 @@ server/
 │   │   ├── devAuth.js
 │   │   ├── network.js
 │   │   ├── ping.js
+│   │   ├── portRisk.js
 │   │   ├── profiles.js
 │   │   └── speed.js
 │   ├── services/    # Business logic
@@ -120,6 +127,7 @@ server/
 │   │   ├── network_scoring.md
 │   │   ├── ping.service.js
 │   │   ├── ping_formulas.md
+│   │   ├── portRisk.service.js
 │   │   ├── speed.service.js
 │   │   └── speed_notes.md
 │   ├── utils/        # Helper functions
@@ -170,6 +178,16 @@ server/
 | GET | /api/analytics/test/:test_result_id | Get full detailed breakdown of a single test |
 | GET | /api/analytics/anomalies | Detect and return network issues automatically |
 
+### Port Risk Detection Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/port-risk/assess | Run a full port risk assessment (scan, score, and recommendations) |
+| GET | /api/port-risk/assessment/:id | Get a specific port risk assessment by ID |
+| GET | /api/port-risk/test-result/:testResultId | Get port risk assessment for a specific test result |
+| GET | /api/port-risk/assessments | Get all port risk assessments for the current user |
+| GET | /api/port-risk/knowledge-base | Get the port knowledge base (public) |
+
 ## AI Summary Fallback System
 
 The AI summary endpoint includes a robust fallback system to ensure 100% uptime:
@@ -213,6 +231,7 @@ The rule-based system uses network_health_score to categorize connection quality
 3. Copy and paste the contents into the SQL Editor and run it
 4. (Important) If you already have the schema set up and need to fix the size columns:
    - Open `server/src/docs/speed_module_schema_fix.sql` and run it
+5. (New) To add Port Risk Detection functionality, open `server/src/docs/phase_two_port_risk_schema.sql` and run it
 
 For more detailed setup instructions, see `server/SETUP.md`
 

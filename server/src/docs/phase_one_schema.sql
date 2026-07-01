@@ -800,3 +800,293 @@ BEGIN
     END IF;
 END $$;
 
+-- =====================================================
+-- Phase Two: Port Risk Detection Schema
+-- Port scan results, risk scores, and security analysis
+-- =====================================================
+
+-- =====================================================
+-- 1. PORT KNOWLEDGE BASE (Reference Data)
+-- This contains known ports, services, and risk levels
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS port_knowledge_base (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    port_number INTEGER NOT NULL,
+    protocol VARCHAR(10) NOT NULL DEFAULT 'tcp', -- tcp, udp
+    service_name VARCHAR(100),
+    risk_level VARCHAR(20) NOT NULL CHECK (risk_level IN ('low', 'medium', 'high', 'critical')),
+    description TEXT,
+    security_recommendation TEXT,
+    is_common BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Index for fast lookups by port/protocol
+CREATE INDEX IF NOT EXISTS idx_port_kb_port_protocol ON port_knowledge_base(port_number, protocol);
+CREATE INDEX IF NOT EXISTS idx_port_kb_risk_level ON port_knowledge_base(risk_level);
+
+-- =====================================================
+-- 2. PORT SCAN RESULTS (Detailed Port States)
+-- Stores individual port scan results per test
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS port_scan_results (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    test_result_id UUID NOT NULL REFERENCES test_results(id) ON DELETE CASCADE,
+    port_number INTEGER NOT NULL,
+    protocol VARCHAR(10) NOT NULL DEFAULT 'tcp',
+    port_state VARCHAR(20) NOT NULL CHECK (port_state IN ('open', 'closed', 'filtered')),
+    service_name VARCHAR(100),
+    service_version VARCHAR(100),
+    risk_level VARCHAR(20) CHECK (risk_level IN ('low', 'medium', 'high', 'critical')),
+    scan_duration_ms NUMERIC(10,2),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_port_scan_test_result ON port_scan_results(test_result_id);
+CREATE INDEX IF NOT EXISTS idx_port_scan_port ON port_scan_results(port_number);
+CREATE INDEX IF NOT EXISTS idx_port_scan_state ON port_scan_results(port_state);
+
+-- =====================================================
+-- 3. PORT RISK ASSESSMENT (Aggregated Risk Score)
+-- Stores overall port risk assessment per test result
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS port_risk_assessments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    test_result_id UUID NOT NULL REFERENCES test_results(id) ON DELETE CASCADE,
+    overall_risk_score INTEGER NOT NULL CHECK (overall_risk_score BETWEEN 0 AND 100),
+    security_status VARCHAR(50) NOT NULL, -- excellent, good, moderate, high, critical
+    open_ports_count INTEGER DEFAULT 0,
+    closed_ports_count INTEGER DEFAULT 0,
+    filtered_ports_count INTEGER DEFAULT 0,
+    highest_risk_level VARCHAR(20) CHECK (highest_risk_level IN ('low', 'medium', 'high', 'critical')),
+    ai_security_summary TEXT,
+    scan_started_at TIMESTAMPTZ,
+    scan_completed_at TIMESTAMPTZ,
+    scan_duration_seconds NUMERIC(10,2),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_port_risk_test_result ON port_risk_assessments(test_result_id);
+CREATE INDEX IF NOT EXISTS idx_port_risk_score ON port_risk_assessments(overall_risk_score);
+CREATE INDEX IF NOT EXISTS idx_port_risk_status ON port_risk_assessments(security_status);
+
+-- =====================================================
+-- 4. SECURITY RECOMMENDATIONS (Per Assessment)
+-- Stores actionable security recommendations
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS security_recommendations (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    port_risk_assessment_id UUID NOT NULL REFERENCES port_risk_assessments(id) ON DELETE CASCADE,
+    port_number INTEGER,
+    recommendation_type VARCHAR(100) NOT NULL, -- firewall_config, service_disable, patch, etc.
+    priority VARCHAR(20) NOT NULL CHECK (priority IN ('low', 'medium', 'high', 'critical')),
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    action_steps TEXT,
+    is_resolved BOOLEAN DEFAULT false,
+    resolved_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_security_recs_assessment ON security_recommendations(port_risk_assessment_id);
+CREATE INDEX IF NOT EXISTS idx_security_recs_priority ON security_recommendations(priority);
+CREATE INDEX IF NOT EXISTS idx_security_recs_port ON security_recommendations(port_number);
+
+-- =====================================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- =====================================================
+
+-- Enable RLS on all new tables
+ALTER TABLE port_knowledge_base ENABLE ROW LEVEL SECURITY;
+ALTER TABLE port_scan_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE port_risk_assessments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE security_recommendations ENABLE ROW LEVEL SECURITY;
+
+-- =====================================================
+-- PORT KNOWLEDGE BASE POLICIES (Public Read)
+-- =====================================================
+
+-- Allow public to read port knowledge base (reference data)
+CREATE POLICY "Public can read port knowledge base"
+ON port_knowledge_base FOR SELECT
+USING (true);
+
+-- =====================================================
+-- PORT SCAN RESULTS POLICIES
+-- =====================================================
+
+-- Users can view their own port scan results
+CREATE POLICY "Users can view own port scan results"
+ON port_scan_results FOR SELECT
+USING (
+    EXISTS (
+        SELECT 1
+        FROM test_results tr
+        WHERE tr.id = port_scan_results.test_result_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- Users can insert their own port scan results
+CREATE POLICY "Users can insert own port scan results"
+ON port_scan_results FOR INSERT
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM test_results tr
+        WHERE tr.id = port_scan_results.test_result_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- =====================================================
+-- PORT RISK ASSESSMENTS POLICIES
+-- =====================================================
+
+-- Users can view their own port risk assessments
+CREATE POLICY "Users can view own port risk assessments"
+ON port_risk_assessments FOR SELECT
+USING (
+    EXISTS (
+        SELECT 1
+        FROM test_results tr
+        WHERE tr.id = port_risk_assessments.test_result_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- Users can insert their own port risk assessments
+CREATE POLICY "Users can insert own port risk assessments"
+ON port_risk_assessments FOR INSERT
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM test_results tr
+        WHERE tr.id = port_risk_assessments.test_result_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- Users can update their own port risk assessments
+CREATE POLICY "Users can update own port risk assessments"
+ON port_risk_assessments FOR UPDATE
+USING (
+    EXISTS (
+        SELECT 1
+        FROM test_results tr
+        WHERE tr.id = port_risk_assessments.test_result_id
+        AND tr.user_id = auth.uid()
+    )
+)
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM test_results tr
+        WHERE tr.id = port_risk_assessments.test_result_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- =====================================================
+-- SECURITY RECOMMENDATIONS POLICIES
+-- =====================================================
+
+-- Users can view their own security recommendations
+CREATE POLICY "Users can view own security recommendations"
+ON security_recommendations FOR SELECT
+USING (
+    EXISTS (
+        SELECT 1
+        FROM port_risk_assessments pra
+        JOIN test_results tr ON pra.test_result_id = tr.id
+        WHERE pra.id = security_recommendations.port_risk_assessment_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- Users can insert their own security recommendations
+CREATE POLICY "Users can insert own security recommendations"
+ON security_recommendations FOR INSERT
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM port_risk_assessments pra
+        JOIN test_results tr ON pra.test_result_id = tr.id
+        WHERE pra.id = security_recommendations.port_risk_assessment_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- Users can update their own security recommendations
+CREATE POLICY "Users can update own security recommendations"
+ON security_recommendations FOR UPDATE
+USING (
+    EXISTS (
+        SELECT 1
+        FROM port_risk_assessments pra
+        JOIN test_results tr ON pra.test_result_id = tr.id
+        WHERE pra.id = security_recommendations.port_risk_assessment_id
+        AND tr.user_id = auth.uid()
+    )
+)
+WITH CHECK (
+    EXISTS (
+        SELECT 1
+        FROM port_risk_assessments pra
+        JOIN test_results tr ON pra.test_result_id = tr.id
+        WHERE pra.id = security_recommendations.port_risk_assessment_id
+        AND tr.user_id = auth.uid()
+    )
+);
+
+-- =====================================================
+-- UPDATE_UPDATED_AT TRIGGERS
+-- =====================================================
+
+-- Trigger for port_knowledge_base
+CREATE TRIGGER trg_port_knowledge_base_updated_at
+BEFORE UPDATE ON port_knowledge_base
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at();
+
+-- Trigger for port_risk_assessments
+CREATE TRIGGER trg_port_risk_assessments_updated_at
+BEFORE UPDATE ON port_risk_assessments
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at();
+
+-- =====================================================
+-- INITIALIZE PORT KNOWLEDGE BASE DATA
+-- Common ports and services with risk levels
+-- =====================================================
+
+INSERT INTO port_knowledge_base (port_number, protocol, service_name, risk_level, description, security_recommendation, is_common) VALUES
+(20, 'tcp', 'FTP-Data', 'medium', 'File Transfer Protocol - Data (unencrypted)', 'Use SFTP instead of FTP for secure file transfers', true),
+(21, 'tcp', 'FTP', 'medium', 'File Transfer Protocol (unencrypted)', 'Use SFTP instead of FTP for secure file transfers', true),
+(22, 'tcp', 'SSH', 'medium', 'Secure Shell - Remote administration', 'Use SSH keys for authentication, disable password login if possible, restrict source IPs', true),
+(23, 'tcp', 'Telnet', 'critical', 'Telnet - Unencrypted remote administration', 'Disable Telnet immediately and use SSH instead', true),
+(25, 'tcp', 'SMTP', 'medium', 'Simple Mail Transfer Protocol', 'Configure TLS/SSL, use SMTP authentication, consider relay restrictions', true),
+(53, 'tcp', 'DNS', 'low', 'Domain Name System (TCP)', 'Restrict DNS queries to trusted servers, enable DNSSEC if possible', true),
+(80, 'tcp', 'HTTP', 'low', 'Hypertext Transfer Protocol (unencrypted)', 'Redirect HTTP to HTTPS for all traffic', true),
+(110, 'tcp', 'POP3', 'high', 'Post Office Protocol v3 (unencrypted)', 'Use POP3S (POP3 over TLS) or IMAPS instead', true),
+(143, 'tcp', 'IMAP', 'high', 'Internet Message Access Protocol (unencrypted)', 'Use IMAPS (IMAP over TLS) instead', true),
+(443, 'tcp', 'HTTPS', 'low', 'Hypertext Transfer Protocol Secure', 'Keep TLS updated, use strong ciphers, consider HSTS', true),
+(445, 'tcp', 'SMB', 'critical', 'Server Message Block - Windows file sharing', 'Disable public SMB exposure, restrict to internal networks only', true),
+(993, 'tcp', 'IMAPS', 'low', 'IMAP over SSL/TLS', 'Ensure TLS configuration is secure and up-to-date', true),
+(995, 'tcp', 'POP3S', 'low', 'POP3 over SSL/TLS', 'Ensure TLS configuration is secure and up-to-date', true),
+(1433, 'tcp', 'SQL Server', 'high', 'Microsoft SQL Server', 'Restrict access to trusted IPs, use strong passwords, enable encryption', true),
+(3306, 'tcp', 'MySQL', 'high', 'MySQL Database', 'Restrict access to trusted IPs, use strong passwords, enable SSL', true),
+(3389, 'tcp', 'RDP', 'high', 'Remote Desktop Protocol', 'Restrict access via VPN/firewall, enable Network Level Authentication, use strong passwords', true),
+(5432, 'tcp', 'PostgreSQL', 'high', 'PostgreSQL Database', 'Restrict access to trusted IPs, use strong passwords, enable SSL', true),
+(5900, 'tcp', 'VNC', 'high', 'Virtual Network Computing', 'Use VNC over SSH tunnel or VPN, set strong passwords', true),
+(8080, 'tcp', 'HTTP-Proxy', 'medium', 'HTTP Proxy/Alternative HTTP', 'If used internally, restrict to internal networks; consider HTTPS', true)
+ON CONFLICT DO NOTHING;

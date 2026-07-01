@@ -17,6 +17,7 @@ const speedRouter = require('./routes/speed');
 const networkRouter = require('./routes/network');
 const analyticsRouter = require('./routes/analytics');
 const systemMetricsRouter = require('./routes/systemMetrics');
+const portRiskRouter = require('./routes/portRisk');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -139,6 +140,7 @@ app.use('/api/speed', speedRouter);
 app.use('/api/network', networkRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/system', systemMetricsRouter);
+app.use('/api/port-risk', portRiskRouter);
 
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);
