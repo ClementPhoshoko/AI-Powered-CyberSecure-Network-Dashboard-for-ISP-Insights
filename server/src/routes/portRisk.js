@@ -2,6 +2,7 @@ const express = require('express');
 const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
 const {
   runPortRiskAssessment,
+  runStandalonePortRiskAssessment,
   getPortRiskAssessment,
   getPortRiskAssessmentByTestResult,
   getUserPortRiskAssessments,
@@ -48,6 +49,34 @@ const router = express.Router();
  *         description: Test result not found
  */
 router.post('/assess', validateSupabaseJWT, runPortRiskAssessment);
+
+/**
+ * @swagger
+ * /api/port-risk/standalone:
+ *   post:
+ *     summary: Run standalone port risk assessment (no speed test required)
+ *     tags: [Port Risk]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ip_address:
+ *                 type: string
+ *                 description: Optional custom IP address to scan (defaults to user's public IP)
+ *     responses:
+ *       200:
+ *         description: Standalone port risk assessment completed successfully
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Unauthorized
+ */
+router.post('/standalone', validateSupabaseJWT, runStandalonePortRiskAssessment);
 
 /**
  * @swagger

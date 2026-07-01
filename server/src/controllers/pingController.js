@@ -56,7 +56,13 @@ const runPingTest = async (req, res, next) => {
     
     const { pings, ...optionalData } = validatedData;
     
-    const testResult = await PingService.runPingTest(userId, pings, optionalData);
+    // Get client's IP address from request
+    const clientIp = req.ip || req.socket.remoteAddress || req.connection.remoteAddress;
+    
+    const testResult = await PingService.runPingTest(userId, pings, {
+      ...optionalData,
+      ip_address: clientIp
+    });
     
     res.status(201).json({
       status: 'success',

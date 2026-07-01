@@ -8,6 +8,11 @@ const assessmentRequestSchema = z.object({
   test_result_id: z.string().uuid()
 });
 
+// Zod validation for standalone scan
+const standaloneScanSchema = z.object({
+  ip_address: z.string().optional()
+});
+
 // @desc    Run full port risk assessment
 // @route   POST /api/port-risk/assess
 // @access  Private
@@ -19,6 +24,28 @@ const runPortRiskAssessment = async (req, res, next) => {
     const result = await PortRiskService.runPortRiskAssessment(
       userId,
       validatedData.test_result_id
+    );
+
+    res.status(200).json({
+      status: 'success',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Run standalone port risk assessment (no speed test required)
+// @route   POST /api/port-risk/standalone
+// @access  Private
+const runStandalonePortRiskAssessment = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const validatedData = standaloneScanSchema.parse(req.body);
+
+    const result = await PortRiskService.runStandalonePortRiskAssessment(
+      userId,
+      validatedData.ip_address
     );
 
     res.status(200).json({
@@ -115,6 +142,7 @@ const getPortKnowledgeBase = async (req, res, next) => {
 
 module.exports = {
   runPortRiskAssessment,
+  runStandalonePortRiskAssessment,
   getPortRiskAssessment,
   getPortRiskAssessmentByTestResult,
   getUserPortRiskAssessments,

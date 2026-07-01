@@ -1,4 +1,6 @@
 const { supabase, supabaseAdmin } = require('../config/db');
+const PortScanResult = require('./PortScanResult');
+const SecurityRecommendation = require('./SecurityRecommendation');
 
 class PortRiskAssessment {
   // Create a new port risk assessment
@@ -14,32 +16,50 @@ class PortRiskAssessment {
 
   // Find assessment by ID with scan results and recommendations
   static async findById(id) {
-    const { data, error } = await supabaseAdmin
+    // First get the assessment itself
+    const { data: assessment, error: assessmentError } = await supabaseAdmin
       .from('port_risk_assessments')
-      .select(`
-        *,
-        port_scan_results (*),
-        security_recommendations (*)
-      `)
+      .select('*')
       .eq('id', id)
       .single();
-    if (error && error.code !== 'PGRST116') throw error;
-    return data;
+    if (assessmentError && assessmentError.code !== 'PGRST116') throw assessmentError;
+    if (!assessment) return null;
+
+    // Then get the related data separately
+    const [scanResults, recommendations] = await Promise.all([
+      PortScanResult.findByTestResultId(assessment.test_result_id),
+      SecurityRecommendation.findByPortRiskAssessmentId(id)
+    ]);
+
+    return {
+      ...assessment,
+      port_scan_results: scanResults,
+      security_recommendations: recommendations
+    };
   }
 
   // Find assessment by test result ID
   static async findByTestResultId(testResultId) {
-    const { data, error } = await supabaseAdmin
+    // First get the assessment itself
+    const { data: assessment, error: assessmentError } = await supabaseAdmin
       .from('port_risk_assessments')
-      .select(`
-        *,
-        port_scan_results (*),
-        security_recommendations (*)
-      `)
+      .select('*')
       .eq('test_result_id', testResultId)
       .single();
-    if (error && error.code !== 'PGRST116') throw error;
-    return data;
+    if (assessmentError && assessmentError.code !== 'PGRST116') throw assessmentError;
+    if (!assessment) return null;
+
+    // Then get the related data separately
+    const [scanResults, recommendations] = await Promise.all([
+      PortScanResult.findByTestResultId(testResultId),
+      SecurityRecommendation.findByPortRiskAssessmentId(assessment.id)
+    ]);
+
+    return {
+      ...assessment,
+      port_scan_results: scanResults,
+      security_recommendations: recommendations
+    };
   }
 
   // Find all assessments for a user
@@ -48,16 +68,33 @@ class PortRiskAssessment {
       .from('port_risk_assessments')
       .select(`
         *,
-        test_results (id, created_at)
+        test_results (id, created_at, user_id)
       `)
       .order('created_at', { ascending: false });
     
     if (error) throw error;
     
     // Filter to only include assessments belonging to the user
-    return data.filter(assessment => 
-      assessment.test_results && assessment.test_results.length > 0
+    const userAssessments = data.filter(assessment => 
+      assessment.test_results && assessment.test_results.user_id === userId
     );
+
+    // For each assessment, get the related data
+    const assessmentsWithDetails = await Promise.all(
+      userAssessments.map(async (assessment) => {
+        const [scanResults, recommendations] = await Promise.all([
+          PortScanResult.findByTestResultId(assessment.test_result_id),
+          SecurityRecommendation.findByPortRiskAssessmentId(assessment.id)
+        ]);
+        return {
+          ...assessment,
+          port_scan_results: scanResults,
+          security_recommendations: recommendations
+        };
+      })
+    );
+
+    return assessmentsWithDetails;
   }
 
   // Update an assessment

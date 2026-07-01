@@ -28,6 +28,19 @@ class PortRiskService {
   // Common ports to scan
   static COMMON_PORTS = [20, 21, 22, 23, 25, 53, 80, 110, 143, 443, 445, 993, 995, 1433, 3306, 3389, 5432, 5900, 8080];
 
+  // Get public IP address from external service
+  static async getPublicIp() {
+    try {
+      const fetch = (await import('node-fetch')).default;
+      const response = await fetch('https://api.ipify.org?format=text');
+      const ip = await response.text();
+      return ip.trim();
+    } catch (error) {
+      console.error('Failed to get public IP:', error);
+      throw new Error('Could not detect public IP address');
+    }
+  }
+
   // Scan a single port
   static async scanPort(host, port, timeout = 2000) {
     return new Promise((resolve) => {
@@ -178,19 +191,19 @@ class PortRiskService {
 
       const prompt = `You are a network security expert. Generate a concise, friendly security summary (3-5 sentences) based on the following port scan results.
 
-RULES:
+Rules:
 - Keep under 500 characters
 - Explain security status clearly
 - Mention any open ports and their risk levels
 - Give 1-2 specific actionable recommendations
 - Keep it conversational, not too technical
 
-SCAN DATA:
+Scan Data:
 - Security Score: ${riskScore}/100
 - Security Status: ${status}
 - Open Ports: ${openPortsText}
 
-Please return ONLY the summary text.`.trim();
+Please return ONLY the summary text.`;
 
       const result = await model.generateContent(prompt);
       return result.response.text().trim();
@@ -212,33 +225,22 @@ Please return ONLY the summary text.`.trim();
     }
   }
 
-  // Main method to run full port risk assessment
-  static async runPortRiskAssessment(userId, testResultId) {
-    const scanStartedAt = new Date();
-    
-    // 1. Verify ownership and get test result
-    const testResult = await TestResult.findById(testResultId);
-    if (!testResult) throw new Error('Test result not found');
-    if (testResult.user_id !== userId) throw new Error('Unauthorized');
-    
-    // 2. Get public IP from test result
-    const publicIp = testResult.ip_address;
-    if (!publicIp) throw new Error('No public IP address available for this test result');
-
-    // 3. Get port knowledge base
+  // Internal method to create assessment with known testResultId and publicIp
+  static async createAssessmentFromScan(userId, testResultId, publicIp, scanStartedAt) {
+    // 1. Get port knowledge base
     const portKnowledgeBase = await PortKnowledgeBase.findCommonPorts();
 
-    // 4. Run port scan
+    // 2. Run port scan
     const scanResults = await this.scanPorts(publicIp);
     
-    // 5. Calculate risk
+    // 3. Calculate risk
     const openPorts = scanResults.filter(r => r.state === 'open');
     const closedPorts = scanResults.filter(r => r.state === 'closed');
     const filteredPorts = scanResults.filter(r => r.state === 'filtered');
     
     const riskCalculation = this.calculateRiskScore(openPorts, portKnowledgeBase);
 
-    // 6. Create port risk assessment
+    // 4. Create port risk assessment
     const scanCompletedAt = new Date();
     const assessment = await PortRiskAssessment.create({
       test_result_id: testResultId,
@@ -253,7 +255,7 @@ Please return ONLY the summary text.`.trim();
       scan_duration_seconds: (scanCompletedAt - scanStartedAt) / 1000
     });
 
-    // 7. Save port scan results
+    // 5. Save port scan results
     const scanResultsToInsert = scanResults.map(r => {
       const kbEntry = portKnowledgeBase.find(
         kb => kb.port_number === r.port && kb.protocol === 'tcp'
@@ -270,7 +272,7 @@ Please return ONLY the summary text.`.trim();
     });
     await PortScanResult.createMany(scanResultsToInsert);
 
-    // 8. Generate and save security recommendations
+    // 6. Generate and save security recommendations
     const recommendations = this.generateRecommendations(
       riskCalculation.openPortsWithRisk,
       assessment.id
@@ -279,7 +281,7 @@ Please return ONLY the summary text.`.trim();
       await SecurityRecommendation.createMany(recommendations);
     }
 
-    // 9. Generate AI security summary
+    // 7. Generate AI security summary
     const aiSummary = await this.generateAiSecuritySummary(
       riskCalculation,
       riskCalculation.score,
@@ -287,8 +289,44 @@ Please return ONLY the summary text.`.trim();
     );
     await PortRiskAssessment.update(assessment.id, { ai_security_summary: aiSummary });
 
-    // 10. Return complete result
+    // 8. Return complete result
     return PortRiskAssessment.findById(assessment.id);
+  }
+
+  // Original method (backward compatible)
+  static async runPortRiskAssessment(userId, testResultId) {
+    // 1. Verify ownership and get test result
+    const testResult = await TestResult.findById(testResultId);
+    if (!testResult) throw new Error('Test result not found');
+    if (testResult.user_id !== userId) throw new Error('Unauthorized');
+    
+    // 2. Get public IP from test result
+    const publicIp = testResult.ip_address;
+    if (!publicIp) throw new Error('No public IP address available for this test result');
+
+    const scanStartedAt = new Date();
+    return this.createAssessmentFromScan(userId, testResultId, publicIp, scanStartedAt);
+  }
+
+  // New method for standalone port risk assessment
+  static async runStandalonePortRiskAssessment(userId, customIp = null) {
+    const scanStartedAt = new Date();
+    // 1. Get public IP (custom or auto-detected)
+    const publicIp = customIp || await this.getPublicIp();
+    if (!publicIp) throw new Error('Could not detect public IP address');
+
+    // 2. Create minimal test result for tracking
+    const testResult = await TestResult.create({
+      user_id: userId,
+      ip_address: publicIp,
+      // Add minimal required fields, leave others null
+      download_speed_mbps: null,
+      upload_speed_mbps: null,
+      ping_avg_ms: null,
+      network_health_score: null
+    });
+
+    return this.createAssessmentFromScan(userId, testResult.id, publicIp, scanStartedAt);
   }
 }
 

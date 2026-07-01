@@ -24,6 +24,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
+// Trust proxy headers (for X-Forwarded-For to get real client IP)
+app.set('trust proxy', '127.0.0.1'); // Trust only localhost Nginx
+
 // Middleware: Smart security headers based on deployment type
 const USE_HTTPS = process.env.USE_HTTPS === 'true' || NODE_ENV === 'production-with-ssl';
 

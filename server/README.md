@@ -139,6 +139,7 @@ server/
 ├── package.json
 ├── README.md
 ├── Research.md
+├── Port_Risk_Research.md
 └── SETUP.md
 ```
 
@@ -183,6 +184,7 @@ server/
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | /api/port-risk/assess | Run a full port risk assessment (scan, score, and recommendations) |
+| POST | /api/port-risk/standalone | Run standalone port risk assessment (no speed test required) |
 | GET | /api/port-risk/assessment/:id | Get a specific port risk assessment by ID |
 | GET | /api/port-risk/test-result/:testResultId | Get port risk assessment for a specific test result |
 | GET | /api/port-risk/assessments | Get all port risk assessments for the current user |
