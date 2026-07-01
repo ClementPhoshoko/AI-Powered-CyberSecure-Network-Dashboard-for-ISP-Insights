@@ -398,22 +398,52 @@ class PortRiskService {
         extraDetails.push(`Dangerous combinations: ${extraInsights.dangerousCombinations.map(c => c.name).join(', ')}`);
       }
 
-      const prompt = `You are a network security expert. Generate a concise, friendly security summary (3-5 sentences) based on the following port scan results.
+      const prompt = `
+You are a senior ISP cybersecurity analyst reviewing a port scan.
+
+Generate a clear, operational security summary for network engineers.
 
 Rules:
-- Keep under 500 characters
-- Explain security status clearly
-- Mention any open ports and their risk levels
-- Give 1-2 specific actionable recommendations
-- Keep it conversational, not too technical
+- 4–6 sentences max
+- Start with overall security posture and severity
+- Prioritize issues by severity (critical > high > medium > low)
+- Mention ALL critical and high-risk issues if present
+- Mention medium/low risks only if space allows
+- Clearly highlight dangerous patterns (combinations, unencrypted services, exploit targets)
+- Provide 1–3 actionable remediation steps
+- Do NOT repeat raw scan data
+- No bullet points
+- Keep tone professional and suitable for ISP/security teams
 
-Scan Data:
-- Security Score: ${riskScore}/100
-- Security Status: ${status}
-- Open Ports: ${openPortsText}
-- Additional Details: ${extraDetails.length > 0 ? extraDetails.join('; ') : 'None'}
+Scan Results:
+Security Status: ${status}
+Security Score: ${riskScore}/100
 
-Please return ONLY the summary text.`;
+Open Ports Detail:
+${openPortsText}
+
+Highest Risk Level: ${highestRiskLevel}
+
+Risk Breakdown:
+Critical: ${criticalPorts?.join(", ") || "None"}
+High: ${highRiskPorts?.join(", ") || "None"}
+Medium: ${mediumRiskPorts?.join(", ") || "None"}
+Low: ${lowRiskPorts?.join(", ") || "None"}
+
+Dangerous Combinations (CRITICAL PATTERNS):
+${dangerousCombinations?.map(c => `${c.name} - ${c.description}`).join("; ") || "None"}
+
+Unencrypted Services:
+${unencryptedProtocols?.map(p => `${p.port} (${p.serviceName})`).join(", ") || "None"}
+
+Exploit Targets:
+${exploitTargets?.map(p => `${p.port} (${p.serviceName})`).join(", ") || "None"}
+
+Additional Context:
+${extraDetails.length ? extraDetails.join("; ") : "None"}
+
+Return ONLY the summary.
+`;
 
       const result = await model.generateContent(prompt);
       return result.response.text().trim();
