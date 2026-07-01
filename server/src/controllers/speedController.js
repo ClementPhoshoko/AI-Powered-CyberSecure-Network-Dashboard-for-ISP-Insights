@@ -76,7 +76,7 @@ const streamDownloadTest = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader('Content-Length', streamData.sizeBytes);
     res.setHeader('Content-Disposition', `attachment; filename="test-${sizeMb}mb.bin"`);
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, no-transform');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 

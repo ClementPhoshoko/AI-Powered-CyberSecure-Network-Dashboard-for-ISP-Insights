@@ -24,6 +24,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
+function shouldCompress(req, res) {
+  // Speed-test downloads must stay uncompressed to avoid skewed measurements
+  // and gzip backpressure/listener buildup on large streamed binary responses.
+  if (req.path === '/api/speed/download') {
+    return false;
+  }
+
+  return compression.filter(req, res);
+}
+
 // Trust proxy headers (for X-Forwarded-For to get real client IP)
 app.set('trust proxy', '127.0.0.1'); // Trust only localhost Nginx
 
@@ -53,7 +63,7 @@ if (USE_HTTPS) {
   console.warn('⚠️ Running in HTTP-only mode - security headers disabled');
 }
 app.use(cors());
-app.use(compression()); // Compress responses
+app.use(compression({ filter: shouldCompress })); // Compress responses except speed-test downloads
 app.use(express.json({ limit: '50mb' }));
 app.use(morgan('combined')); // Logging
 
