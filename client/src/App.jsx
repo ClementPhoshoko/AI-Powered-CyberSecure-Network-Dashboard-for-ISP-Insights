@@ -6,6 +6,7 @@ import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
 import Home from './pages/home/Home'
 import History from './pages/history/History'
+import Security from './pages/security/Security'
 import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
 import NotFound from './pages/not_found/NotFound'
@@ -59,6 +60,11 @@ function AppContent() {
           <Route path="/tests" element={
             <ProtectedRoute>
               <History />
+            </ProtectedRoute>
+          } />
+          <Route path="/security" element={
+            <ProtectedRoute>
+              <Security />
             </ProtectedRoute>
           } />
           <Route path="/account" element={

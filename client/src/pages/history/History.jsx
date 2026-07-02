@@ -1,4 +1,4 @@
-import { Fragment, useState, useMemo, useEffect } from 'react';
+import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -439,6 +439,8 @@ function History() {
   const [activeTab, setActiveTab] = useState('trends');
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const isInitialLoad = useRef(true);
   
   // Sync temp date state when real date state changes
   useEffect(() => {
@@ -491,6 +493,14 @@ function History() {
     }
     return () => clearInterval(interval);
   }, [allLoading, tableLoading]);
+
+  // Track initial load completion
+  useEffect(() => {
+    if (!allLoading && !tableLoading && !authLoading && isInitialLoad.current) {
+      setInitialLoadComplete(true);
+      isInitialLoad.current = false;
+    }
+  }, [allLoading, tableLoading, authLoading]);
 
   // Watch for error states and open error modal
   useEffect(() => {
@@ -697,9 +707,9 @@ function History() {
   const hasActiveFilters = Boolean(startDate || endDate);
   const hasAnyError = Boolean(allError || tableError);
   const shouldShowEmptyState = !allLoading && !hasAnyError && allHistory.length === 0;
-  const shouldShowTableSkeleton = activeTab === 'history' && (tableLoading || (allLoading && allHistory.length === 0));
-  const shouldShowInsightsSkeleton = activeTab === 'insights' && allLoading;
-  const shouldShowTrendsSkeleton = activeTab === 'trends' && allLoading;
+  const shouldShowTableSkeleton = activeTab === 'history' && !initialLoadComplete && (tableLoading || (allLoading && allHistory.length === 0));
+  const shouldShowInsightsSkeleton = activeTab === 'insights' && !initialLoadComplete && allLoading;
+  const shouldShowTrendsSkeleton = activeTab === 'trends' && !initialLoadComplete && allLoading;
 
   const filteredTests = [...tableHistory].sort((a, b) => {
     let aVal = a[sortColumn];
@@ -740,10 +750,10 @@ function History() {
 
   return (
     <div className="history-page">
-      <Loading isLoading={allLoading || tableLoading} progress={progress} message="Loading test history" status="AkovoLabs Test History System v1.0" />
+      <Loading isLoading={!initialLoadComplete && (allLoading || tableLoading || authLoading)} progress={progress} message="Loading test history" status="AkovoLabs Test History System v1.0" />
       
       {/* Title Section */}
-      {!allLoading && (
+      {(initialLoadComplete || !allLoading) && (
         <>
           <div className="history-title-section">
             <h1 className="history-title-section-title">Test History</h1>

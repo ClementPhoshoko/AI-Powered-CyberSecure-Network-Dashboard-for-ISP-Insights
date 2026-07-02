@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../modal/Modal';
@@ -18,6 +18,7 @@ import './Nav.css';
 
 function Nav() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const { getCurrentThemeData, cycleTheme } = useTheme();
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -247,7 +248,7 @@ function Nav() {
             
             {accountDropdownOpen && (
               <div className="nav-account-chain">
-                {user && (
+                {user && location.pathname !== '/account' && (
                   <Link to="/account" className="nav-chain-item">
                     <div className="nav-chain-circle">
                       <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -259,7 +260,7 @@ function Nav() {
                   </Link>
                 )}
                 
-                {user && (
+                {user && location.pathname !== '/tests' && (
                   <Link to="/tests" className="nav-chain-item">
                     <div className="nav-chain-circle">
                       <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -269,6 +270,15 @@ function Nav() {
                       </svg>
                     </div>
                     <span className="nav-chain-label">Test History</span>
+                  </Link>
+                )}
+
+                {user && location.pathname !== '/security' && (
+                  <Link to="/security" className="nav-chain-item">
+                    <div className="nav-chain-circle">
+                      <ShieldCheckIcon className="nav-chain-icon" />
+                    </div>
+                    <span className="nav-chain-label">Security</span>
                   </Link>
                 )}
                 
