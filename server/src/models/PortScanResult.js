@@ -22,6 +22,17 @@ class PortScanResult {
     return data;
   }
 
+  // Find all port scan results for an assessment ID
+  static async findByPortRiskAssessmentId(assessmentId) {
+    const { data, error } = await supabaseAdmin
+      .from('port_scan_results')
+      .select('*')
+      .eq('port_risk_assessment_id', assessmentId)
+      .order('port_number');
+    if (error) throw error;
+    return data;
+  }
+
   // Find all port scan results for a test result ID
   static async findByTestResultId(testResultId) {
     const { data, error } = await supabaseAdmin
@@ -39,6 +50,18 @@ class PortScanResult {
       .from('port_scan_results')
       .select('*')
       .eq('test_result_id', testResultId)
+      .eq('port_state', 'open')
+      .order('port_number');
+    if (error) throw error;
+    return data;
+  }
+
+  // Find open ports for an assessment ID
+  static async findOpenPortsByPortRiskAssessmentId(assessmentId) {
+    const { data, error } = await supabaseAdmin
+      .from('port_scan_results')
+      .select('*')
+      .eq('port_risk_assessment_id', assessmentId)
       .eq('port_state', 'open')
       .order('port_number');
     if (error) throw error;

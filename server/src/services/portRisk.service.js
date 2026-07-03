@@ -510,6 +510,7 @@ Return ONLY the summary.
 
     // 4. Create port risk assessment
     const assessment = await PortRiskAssessment.create({
+      user_id: userId,
       test_result_id: testResultId,
       overall_risk_score: riskCalculation.score,
       security_status: riskCalculation.status,
@@ -528,6 +529,7 @@ Return ONLY the summary.
         kb => kb.port_number === r.port && kb.protocol === 'tcp'
       );
       return {
+        port_risk_assessment_id: assessment.id,
         test_result_id: testResultId,
         port_number: r.port,
         protocol: 'tcp',
@@ -587,21 +589,10 @@ Return ONLY the summary.
     const publicIp = customIp || await this.getPublicIp();
     if (!publicIp) throw new Error('Could not detect public IP address');
 
-    // 2. Create minimal test result for tracking
-    const testResult = await TestResult.create({
-      user_id: userId,
-      ip_address: publicIp,
-      // Add minimal required fields, leave others null
-      download_speed_mbps: null,
-      upload_speed_mbps: null,
-      ping_avg_ms: null,
-      network_health_score: null
-    });
-
-    // 3. Get user's previous assessments for comparison
+    // 2. Get user's previous assessments for comparison
     const previousAssessments = await PortRiskAssessment.findByUserId(userId);
 
-    return this.createAssessmentFromScan(userId, testResult.id, publicIp, scanStartedAt, previousAssessments);
+    return this.createAssessmentFromScan(userId, null, publicIp, scanStartedAt, previousAssessments);
   }
 }
 

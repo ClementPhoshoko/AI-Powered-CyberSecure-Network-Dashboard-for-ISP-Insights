@@ -27,7 +27,7 @@ class PortRiskAssessment {
 
     // Then get the related data separately
     const [scanResults, recommendations] = await Promise.all([
-      PortScanResult.findByTestResultId(assessment.test_result_id),
+      PortScanResult.findByPortRiskAssessmentId(assessment.id),
       SecurityRecommendation.findByPortRiskAssessmentId(id)
     ]);
 
@@ -51,7 +51,7 @@ class PortRiskAssessment {
 
     // Then get the related data separately
     const [scanResults, recommendations] = await Promise.all([
-      PortScanResult.findByTestResultId(testResultId),
+      PortScanResult.findByPortRiskAssessmentId(assessment.id),
       SecurityRecommendation.findByPortRiskAssessmentId(assessment.id)
     ]);
 
@@ -66,24 +66,17 @@ class PortRiskAssessment {
   static async findByUserId(userId) {
     const { data, error } = await supabaseAdmin
       .from('port_risk_assessments')
-      .select(`
-        *,
-        test_results (id, created_at, user_id)
-      `)
+      .select('*')
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
     
     if (error) throw error;
     
-    // Filter to only include assessments belonging to the user
-    const userAssessments = data.filter(assessment => 
-      assessment.test_results && assessment.test_results.user_id === userId
-    );
-
     // For each assessment, get the related data
     const assessmentsWithDetails = await Promise.all(
-      userAssessments.map(async (assessment) => {
+      data.map(async (assessment) => {
         const [scanResults, recommendations] = await Promise.all([
-          PortScanResult.findByTestResultId(assessment.test_result_id),
+          PortScanResult.findByPortRiskAssessmentId(assessment.id),
           SecurityRecommendation.findByPortRiskAssessmentId(assessment.id)
         ]);
         return {

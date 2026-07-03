@@ -73,6 +73,13 @@ const getPortRiskAssessment = async (req, res, next) => {
       });
     }
 
+    if (assessment.user_id !== userId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Unauthorized'
+      });
+    }
+
     res.status(200).json({
       status: 'success',
       data: assessment
@@ -95,6 +102,13 @@ const getPortRiskAssessmentByTestResult = async (req, res, next) => {
       return res.status(404).json({
         status: 'error',
         message: 'Port risk assessment not found for this test'
+      });
+    }
+
+    if (assessment.user_id !== userId) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Unauthorized'
       });
     }
 
