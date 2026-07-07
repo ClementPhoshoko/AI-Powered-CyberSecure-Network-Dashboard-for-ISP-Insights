@@ -33,7 +33,7 @@ function polarToCartesian(cx, cy, radius, angle) {
   }
 }
 
-function Scan({ className = '' }) {
+function Scan({ className = '', onStateChange, onRunScan }) {
   const [scanPhase, setScanPhase] = useState('idle')
   const [activePortIndex, setActivePortIndex] = useState(0)
   const [isPortTextUpdating, setIsPortTextUpdating] = useState(false)
@@ -46,6 +46,7 @@ function Scan({ className = '' }) {
   const completeTimerRef = useRef(null)
   const portTextTimerRef = useRef(null)
   const statusTextTimerRef = useRef(null)
+  const runRequestIdRef = useRef(0)
 
   const isAnimating = scanPhase === 'starting' || scanPhase === 'running'
 
@@ -171,8 +172,19 @@ function Scan({ className = '' }) {
 
   const activePort = portMarks[activePortIndex] ?? null
 
-  const handleToggleScan = () => {
+  useEffect(() => {
+    if (typeof onStateChange === 'function') {
+      onStateChange({
+        phase: scanPhase,
+        activePort,
+        isAnimating,
+      })
+    }
+  }, [activePort, isAnimating, onStateChange, scanPhase])
+
+  const handleToggleScan = async () => {
     if (isAnimating) {
+      runRequestIdRef.current += 1
       clearPhaseTimers()
       setScanPhase('idle')
       return
@@ -180,6 +192,29 @@ function Scan({ className = '' }) {
 
     clearPhaseTimers()
     setScanPhase('starting')
+
+    const requestId = runRequestIdRef.current + 1
+    runRequestIdRef.current = requestId
+
+    if (typeof onRunScan === 'function') {
+      startTimerRef.current = setTimeout(() => {
+        setScanPhase('running')
+      }, 900)
+
+      try {
+        await onRunScan()
+
+        if (runRequestIdRef.current === requestId) {
+          setScanPhase('complete')
+        }
+      } catch {
+        if (runRequestIdRef.current === requestId) {
+          setScanPhase('idle')
+        }
+      }
+
+      return
+    }
 
     startTimerRef.current = setTimeout(() => {
       setScanPhase('running')

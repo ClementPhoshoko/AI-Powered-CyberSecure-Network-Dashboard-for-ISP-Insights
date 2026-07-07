@@ -1,0 +1,26 @@
+.scan_error_state {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.scan_error_state-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+}
+
+.scan_error_state-text {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+}
+
+.scan_error_state-button {
+  margin-top: var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: pointer;
+}

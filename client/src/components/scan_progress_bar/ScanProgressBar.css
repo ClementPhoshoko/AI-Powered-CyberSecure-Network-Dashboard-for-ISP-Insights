@@ -1,0 +1,28 @@
+.scan_progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.scan_progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.scan_progress-track {
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--primary) 12%, var(--glass-bg));
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+}
+
+.scan_progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  transition: width var(--motion-normal) var(--ease-out);
+}

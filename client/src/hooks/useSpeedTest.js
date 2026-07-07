@@ -5,8 +5,8 @@ import {
   streamUploadTest,
   submitUploadResults
 } from '../services/speedService';
-import { runPingTest } from '../services/pingService';
-import { generateAISummary } from '../services/networkService';
+import { pingHealthCheck, runPingTest } from '../services/pingService';
+import { calculateNetworkScores as calculateNetworkScoresService, generateAISummary } from '../services/networkService';
 import api from '../services/api';
 import { getFriendlyErrorMessage } from '../services/errorUtils';
 
@@ -182,7 +182,7 @@ export function useSpeedTest() {
       const start = performance.now();
       try {
         abortControllerRef.current = new AbortController();
-        await api.get('/ping/health', { signal: abortControllerRef.current.signal }); // Simple health check for ping
+        await pingHealthCheck(abortControllerRef.current.signal);
         const end = performance.now();
         pings.push({
           sequence_number: i,
@@ -392,13 +392,11 @@ export function useSpeedTest() {
     setPhase(TEST_PHASES.CALCULATING);
     setProgress(90);
 
-    const response = await api.post('/network/score', {
-      test_result_id: testResultId
-    });
+    const response = await calculateNetworkScoresService(testResultId);
 
     if (isStoppedRef.current) return null;
     setProgress(100);
-    return response.data.data;
+    return response.data;
   }, []);
 
   const createAISummary = useCallback(async (testResultId) => {

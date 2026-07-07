@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
+  runPortRiskScan as runPortRiskScanService,
   runPortRiskAssessment as runPortRiskAssessmentService,
-  runStandalonePortRiskAssessment as runStandalonePortRiskAssessmentService,
   getPortRiskAssessment as getPortRiskAssessmentService,
   getPortRiskAssessmentByTestResult as getPortRiskAssessmentByTestResultService,
   getUserPortRiskAssessments as getUserPortRiskAssessmentsService,
@@ -79,7 +79,28 @@ export function usePortRisk(isAuthReady = true) {
     }
   }, []);
 
-  const runAssessment = useCallback(async (testResultId) => {
+  const runScan = useCallback(async (ipAddress) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await runPortRiskScanService(ipAddress);
+      if (response.data) {
+        setCurrentAssessment(response.data);
+        // Refresh assessments list
+        await fetchAssessments();
+      }
+      return response;
+    } catch (err) {
+      console.error('Failed to run standalone port risk scan:', err);
+      setError(getFriendlyErrorMessage(err));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchAssessments]);
+
+  const runAssessmentByTestResult = useCallback(async (testResultId) => {
     try {
       setLoading(true);
       setError(null);
@@ -92,28 +113,7 @@ export function usePortRisk(isAuthReady = true) {
       }
       return response;
     } catch (err) {
-      console.error('Failed to run port risk assessment:', err);
-      setError(getFriendlyErrorMessage(err));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchAssessments]);
-
-  const runStandaloneAssessment = useCallback(async (ipAddress) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await runStandalonePortRiskAssessmentService(ipAddress);
-      if (response.data) {
-        setCurrentAssessment(response.data);
-        // Refresh assessments list
-        await fetchAssessments();
-      }
-      return response;
-    } catch (err) {
-      console.error('Failed to run standalone port risk assessment:', err);
+      console.error('Failed to run port risk assessment by test result:', err);
       setError(getFriendlyErrorMessage(err));
       throw err;
     } finally {
@@ -149,17 +149,49 @@ export function usePortRisk(isAuthReady = true) {
     }
   }, [fetchAssessments, fetchKnowledgeBase, isAuthReady]);
 
+  const latestAssessment = useMemo(() => {
+    return currentAssessment || assessments?.[0] || null;
+  }, [assessments, currentAssessment]);
+
+  const groupedOpenPortsByRisk = useMemo(() => {
+    const groups = {
+      critical: [],
+      high: [],
+      medium: [],
+      low: [],
+      unknown: []
+    };
+
+    const scanResults = latestAssessment?.port_scan_results || [];
+    const openPorts = scanResults.filter((result) => result?.port_state === 'open');
+
+    for (const port of openPorts) {
+      const riskLevel = String(port?.risk_level || '').toLowerCase();
+      if (groups[riskLevel]) {
+        groups[riskLevel].push(port);
+      } else {
+        groups.unknown.push(port);
+      }
+    }
+
+    return groups;
+  }, [latestAssessment]);
+
   return {
     assessments,
     currentAssessment,
+    latestAssessment,
+    groupedOpenPortsByRisk,
     knowledgeBase,
     loading,
     error,
     refetch: fetchAssessments,
     fetchAssessment,
     fetchAssessmentByTestResult,
-    runAssessment,
-    runStandaloneAssessment,
+    runScan,
+    runAssessmentByTestResult,
+    runAssessment: runScan,
+    runStandaloneAssessment: runScan,
     fetchKnowledgeBase
   };
 }

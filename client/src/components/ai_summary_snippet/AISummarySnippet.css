@@ -1,0 +1,19 @@
+.ai_summary_snippet {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--glass-bg) 90%, var(--bg-primary));
+  padding: var(--space-4);
+}
+
+.ai_summary_snippet-title {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+}
+
+.ai_summary_snippet-text {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.65;
+}

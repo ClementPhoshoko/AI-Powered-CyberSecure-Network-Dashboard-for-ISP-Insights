@@ -1,0 +1,31 @@
+.scan_metric_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.scan_metric_grid-skeleton .scan_metric_tile {
+  min-height: 3.25rem;
+}
+
+.scan_metric_grid-skeleton .scan_metric_tile-icon.security-skeleton {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: var(--radius-full);
+}
+
+.scan_metric_grid-skeleton .scan_metric_tile-label.security-skeleton {
+  width: 6rem;
+  height: 0.7rem;
+}
+
+.scan_metric_grid-skeleton .scan_metric_tile-value.security-skeleton {
+  width: 4.5rem;
+  height: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .scan_metric_grid {
+    grid-template-columns: 1fr;
+  }
+}

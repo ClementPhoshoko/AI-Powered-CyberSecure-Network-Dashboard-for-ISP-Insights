@@ -1,0 +1,44 @@
+Scan Tab (current scan overview)
+
+ScanOverviewCard
+ScanPhaseStepper
+ScanProgressBar
+ScanMetricGrid
+ScanMetricTile
+NetworkScoreBadge
+PortRiskStatusChip
+AISummarySnippet
+RunScanActions
+ScanErrorState
+ScanEmptyState
+ScanLoadingSkeleton
+ScanHighlightsSection
+
+Insights Tab (history and trends from previous scans)
+
+ScanMetricGrid
+ScanMetricTile
+NetworkScoreBadge
+PortRiskStatusChip
+AISummarySnippet
+ScanEmptyState
+ScanLoadingSkeleton
+
+Recommendations Tab (actionable security guidance)
+
+TopRecommendationsList
+TopOpenPortsList
+PortRiskStatusChip
+ScanEmptyState
+ScanLoadingSkeleton
+ScanErrorState
+
+Shared/Base Components (used across tabs)
+
+ScanMetricTile
+ScanMetricGrid
+NetworkScoreBadge
+PortRiskStatusChip
+ScanErrorState
+ScanEmptyState
+ScanLoadingSkeleton

@@ -6,8 +6,14 @@ export const runPortRiskAssessment = async (testResultId) => {
 };
 
 export const runStandalonePortRiskAssessment = async (ipAddress) => {
-  const response = await api.post('/port-risk/standalone', { ip_address: ipAddress });
+  const payload = ipAddress ? { ip_address: ipAddress } : {};
+  const response = await api.post('/port-risk/standalone', payload);
   return response.data;
+};
+
+export const runPortRiskScan = async (ipAddress) => {
+  const response = await runStandalonePortRiskAssessment(ipAddress);
+  return response;
 };
 
 export const getPortRiskAssessment = async (id) => {

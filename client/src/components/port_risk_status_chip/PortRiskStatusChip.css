@@ -1,0 +1,62 @@
+.port_risk_status_chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  min-height: 3.25rem;
+}
+
+.port_risk_status_chip-icon {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.port_risk_status_chip-icon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.port_risk_status_chip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.port_risk_status_chip-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.port_risk_status_chip-value {
+  line-height: 1;
+  font-size: var(--text-lg);
+}
+
+.port_risk_status_chip-loading .port_risk_status_chip-label,
+.port_risk_status_chip-loading .port_risk_status_chip-value {
+  display: inline-block;
+  color: transparent;
+}
+
+.port_risk_status_chip-excellent,
+.port_risk_status_chip-good {
+  color: var(--success);
+}
+
+.port_risk_status_chip-moderate {
+  color: var(--warning);
+}
+
+.port_risk_status_chip-high,
+.port_risk_status_chip-critical {
+  color: var(--error);
+}

@@ -1,0 +1,28 @@
+.scan_overview-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+}
+
+.scan_overview-left,
+.scan_overview-right {
+  min-width: 0;
+}
+
+.scan_overview-bottom {
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding-top: var(--space-4);
+}
+
+@media (max-width: 940px) {
+  .scan_overview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .scan_overview-bottom {
+    padding-top: var(--space-3);
+  }
+}

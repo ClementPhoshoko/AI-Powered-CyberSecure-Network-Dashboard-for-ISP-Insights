@@ -1,0 +1,16 @@
+.scan_empty_state {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.scan_empty_state-title {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+}
+
+.scan_empty_state-text {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}

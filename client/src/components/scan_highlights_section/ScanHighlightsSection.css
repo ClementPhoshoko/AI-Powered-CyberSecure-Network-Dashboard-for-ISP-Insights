@@ -1,0 +1,6 @@
+.scan_highlights_section {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

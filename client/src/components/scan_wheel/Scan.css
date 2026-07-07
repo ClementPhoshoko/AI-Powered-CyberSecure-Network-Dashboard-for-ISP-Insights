@@ -23,7 +23,6 @@
   transform: translate(-50%, -50%) scale(0.05);
   transform-origin: center;
   border-radius: var(--radius-full);
-  border: calc(var(--space-1) / 4) solid transparent;
   pointer-events: none;
   z-index: 4;
   opacity: 0;
@@ -34,7 +33,6 @@
 }
 
 .scan_wheel-phase_starting::after {
-  border-color: var(--accent);
   animation: scan_wheel-start_ring 900ms var(--ease-out);
 }
 
@@ -43,7 +41,6 @@
 }
 
 .scan_wheel-phase_complete::after {
-  border-color: var(--success);
   animation: scan_wheel-complete_ring 1200ms var(--ease-out);
 }
 
@@ -275,19 +272,16 @@
   0% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.05);
-    box-shadow: 0 0 0 transparent;
   }
 
   40% {
     opacity: 0.75;
     transform: translate(-50%, -50%) scale(0.65);
-    box-shadow: 0 0 var(--space-4) var(--accent-glow);
   }
 
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.12);
-    box-shadow: 0 0 var(--space-8) transparent;
   }
 }
 
@@ -317,12 +311,10 @@
   30% {
     opacity: 0.85;
     transform: translate(-50%, -50%) scale(0.7);
-    box-shadow: 0 0 var(--space-5) var(--success-soft);
   }
 
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.08);
-    box-shadow: 0 0 var(--space-8) transparent;
   }
 }

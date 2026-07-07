@@ -1,0 +1,44 @@
+.scan_loading_skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.scan_loading_skeleton-block {
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--glass-bg) 92%, var(--bg-primary)) 0%,
+    color-mix(in srgb, var(--glass-bg-strong) 88%, var(--bg-primary)) 50%,
+    color-mix(in srgb, var(--glass-bg) 92%, var(--bg-primary)) 100%
+  );
+  background-size: 220% 100%;
+  animation: scan_skeleton-shimmer 1.2s linear infinite;
+}
+
+.scan_loading_skeleton-block-lg {
+  height: 76px;
+}
+
+.scan_loading_skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+@keyframes scan_skeleton-shimmer {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: -220% 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .scan_loading_skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+}

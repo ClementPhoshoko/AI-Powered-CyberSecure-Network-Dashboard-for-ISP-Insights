@@ -1,5 +1,10 @@
 import api from './api';
 
+export const pingHealthCheck = async (signal) => {
+  const response = await api.get('/ping/health', { signal });
+  return response.data;
+};
+
 export const runPingTest = async (pingData) => {
   const response = await api.post('/ping/tests', pingData);
   return response.data;
