@@ -64,6 +64,7 @@
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
   text-shadow: var(--shadow-sm);
+  transition: opacity 180ms var(--ease-out), filter 180ms var(--ease-out);
 }
 
 .speed-meter-unit {
@@ -77,6 +78,12 @@
   justify-content: center;
   gap: 0.5rem;
   min-height: 2rem;
+  transition: opacity 180ms var(--ease-out), filter 180ms var(--ease-out);
+}
+
+.speed-meter-text-updating {
+  opacity: 0.62;
+  filter: blur(0.7px);
 }
 
 .connecting-text {

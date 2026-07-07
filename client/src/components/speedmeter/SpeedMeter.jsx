@@ -95,7 +95,11 @@ const SpeedMeter = ({
   const [animatedValue, setAnimatedValue] = useState(clampedValue);
   const animatedValueRef = useRef(clampedValue);
   const [isConnecting, setIsConnecting] = useState(true);
+  const [isValueUpdating, setIsValueUpdating] = useState(false);
+  const [isUnitUpdating, setIsUnitUpdating] = useState(false);
   const previousTypeRef = useRef(type);
+  const valueUpdateTimerRef = useRef(null);
+  const unitUpdateTimerRef = useRef(null);
 
   const scaleStops = useMemo(() => buildScaleStops(min, max), [min, max]);
   const arcPath = useMemo(
@@ -149,6 +153,44 @@ const SpeedMeter = ({
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    setIsValueUpdating(true);
+
+    if (valueUpdateTimerRef.current) {
+      clearTimeout(valueUpdateTimerRef.current);
+    }
+
+    valueUpdateTimerRef.current = setTimeout(() => {
+      setIsValueUpdating(false);
+      valueUpdateTimerRef.current = null;
+    }, 180);
+
+    return () => {
+      if (valueUpdateTimerRef.current) {
+        clearTimeout(valueUpdateTimerRef.current);
+      }
+    };
+  }, [clampedValue]);
+
+  useEffect(() => {
+    setIsUnitUpdating(true);
+
+    if (unitUpdateTimerRef.current) {
+      clearTimeout(unitUpdateTimerRef.current);
+    }
+
+    unitUpdateTimerRef.current = setTimeout(() => {
+      setIsUnitUpdating(false);
+      unitUpdateTimerRef.current = null;
+    }, 180);
+
+    return () => {
+      if (unitUpdateTimerRef.current) {
+        clearTimeout(unitUpdateTimerRef.current);
+      }
+    };
+  }, [isConnecting, type, unit]);
 
   const animatedProgress = useMemo(
     () => valueToSegmentProgress(animatedValue, scaleStops),
@@ -288,8 +330,8 @@ const SpeedMeter = ({
         />
       </svg>
       <div className="speed-meter-center">
-        <div className="speed-meter-value">{animatedValue.toFixed(2)}</div>
-        <div className="speed-meter-unit">
+        <div className={`speed-meter-value ${isValueUpdating ? 'speed-meter-text-updating' : ''}`.trim()}>{animatedValue.toFixed(2)}</div>
+        <div className={`speed-meter-unit ${isUnitUpdating ? 'speed-meter-text-updating' : ''}`.trim()}>
           {isConnecting ? (
             <span className="connecting-text">Connecting</span>
           ) : (
