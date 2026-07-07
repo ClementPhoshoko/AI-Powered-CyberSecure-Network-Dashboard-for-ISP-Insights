@@ -1,0 +1,115 @@
+.insights_metrics_section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.insights_metrics_section-tile {
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 3rem;
+}
+
+.insights_metrics_section-icon {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+  line-height: 1;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--primary-glow) 16%, transparent);
+}
+
+.insights_metrics_section-icon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.insights_metrics_section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.insights_metrics_section-label {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.insights_metrics_section-value {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.insights_metrics_section-unit {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.insights_metrics_section-tile-risk .insights_metrics_section-value,
+.insights_metrics_section-tile-risk .insights_metrics_section-icon {
+  color: var(--warning);
+}
+
+.insights_metrics_section-skeleton {
+  display: inline-block;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--glass-bg) 92%, var(--bg-primary)) 0%,
+    color-mix(in srgb, var(--glass-bg-strong) 88%, var(--bg-primary)) 50%,
+    color-mix(in srgb, var(--glass-bg) 92%, var(--bg-primary)) 100%
+  );
+  background-size: 220% 100%;
+  animation: insights_metrics_section-shimmer 1.2s linear infinite;
+  color: transparent;
+}
+
+.insights_metrics_section-tile-skeleton .insights_metrics_section-icon.insights_metrics_section-skeleton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+}
+
+.insights_metrics_section-tile-skeleton .insights_metrics_section-label.insights_metrics_section-skeleton {
+  width: 6rem;
+  height: 0.7rem;
+}
+
+.insights_metrics_section-tile-skeleton .insights_metrics_section-value.insights_metrics_section-skeleton {
+  width: 4rem;
+  height: 0.9rem;
+}
+
+@keyframes insights_metrics_section-shimmer {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: -220% 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .insights_metrics_section {
+    grid-template-columns: 1fr;
+  }
+}

@@ -12,6 +12,8 @@ import ErrorModal from '../../components/error_modal/ErrorModal'
 import Loading from '../../components/loading/Loading'
 import { useAuth } from '../../context/AuthContext'
 import usePortRisk from '../../hooks/usePortRisk'
+import InsightsPanel from './insights_tab/InsightsPanel'
+import Knowledge from './knowledge_tab/Knowledge'
 import heroImage from '../../assets/hero/Collaborating_in_a_high-tech_workspace.png'
 import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png'
 import aiIcon from '../../assets/avatars/ai.png'
@@ -78,6 +80,7 @@ function Security() {
     assessments,
     latestAssessment,
     groupedOpenPortsByRisk,
+    knowledgeBase,
     loading: portRiskLoading,
     error: portRiskError,
     runScan,
@@ -423,13 +426,25 @@ function Security() {
           </section>
         )}
 
-        {activeTab !== 'scan' && (
-          <section className="security-placeholder-panel">
-            <h2 className="security-placeholder-title">{tabs.find((tab) => tab.id === activeTab)?.label} is coming next</h2>
-            <p className="security-placeholder-description">
-              This tab is intentionally reserved for the next design phase. Scan is fully active now.
-            </p>
-          </section>
+        {activeTab === 'insights' && (
+          <InsightsPanel
+            assessments={assessments || []}
+            latestAssessment={latestAssessment}
+            isLoading={portRiskLoading}
+            error={hasError}
+          />
+        )}
+
+        {activeTab === 'knowledge' && (
+          <Knowledge
+            latestAssessment={latestAssessment}
+            knowledgeBase={knowledgeBase || []}
+            topRecommendations={topRecommendations}
+            allPortRows={allPortRows}
+            isLoading={portRiskLoading}
+            error={hasError}
+            onRetry={refetch}
+          />
         )}
       </div>
       <ErrorModal

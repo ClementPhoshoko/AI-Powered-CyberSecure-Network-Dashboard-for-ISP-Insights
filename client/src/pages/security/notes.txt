@@ -24,8 +24,9 @@ AISummarySnippet
 ScanEmptyState
 ScanLoadingSkeleton
 
-Recommendations Tab (actionable security guidance)
+Knowledge Tab (actionable guidance and service reference)
 
+RecommendationsSummarySection
 TopRecommendationsList
 TopOpenPortsList
 PortRiskStatusChip

@@ -576,17 +576,6 @@
   }
 }
 
-.security-placeholder-panel {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--blur-md));
-  -webkit-backdrop-filter: blur(var(--blur-md));
-  padding: var(--space-6);
-  text-align: center;
-  box-shadow: var(--shadow-glass);
-}
-
 .security-error-state {
   display: flex;
   flex-direction: column;
@@ -614,7 +603,6 @@
   max-width: 520px;
 }
 
-.security-placeholder-title,
 .security-error-title {
   margin: 0;
   font-size: var(--text-base);
@@ -622,7 +610,6 @@
   color: var(--text-primary);
 }
 
-.security-placeholder-description,
 .security-error-description {
   margin: 0;
   max-width: 520px;

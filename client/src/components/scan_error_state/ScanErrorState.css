@@ -1,26 +1,56 @@
 .scan_error_state {
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--error) 35%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--error) 10%, transparent), transparent 65%),
+    var(--glass-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+}
+
+.scan_error_state-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
 .scan_error_state-title {
   margin: 0;
-  font-size: var(--text-lg);
   color: var(--text-primary);
+  font-size: var(--text-lg);
+  font-weight: 700;
 }
 
 .scan_error_state-text {
-  margin: var(--space-2) 0 0;
+  margin: 0;
   color: var(--text-secondary);
+  line-height: 1.6;
 }
 
-.scan_error_state-button {
-  margin-top: var(--space-3);
-  border: none;
+.scan_error_state-action {
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--error) 35%, transparent);
+  background: color-mix(in srgb, var(--error) 14%, transparent);
+  color: var(--text-primary);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-4);
-  background: transparent;
-  color: var(--text-primary);
   font-weight: 600;
   cursor: pointer;
+  transition: transform var(--motion-fast), background var(--motion-fast);
+}
+
+.scan_error_state-action:hover {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--error) 20%, transparent);
+}
+
+@media (max-width: 640px) {
+  .scan_error_state {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
