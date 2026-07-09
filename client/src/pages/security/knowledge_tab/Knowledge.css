@@ -6,7 +6,7 @@
 
 .knowledge_page-header,
 .knowledge_reference {
-	padding: var(--space-5);
+	padding: var(--space-5) 0 var(--space-5) 0;
 	border-radius: var(--radius-xl);
 }
 
@@ -74,17 +74,17 @@
 	background: color-mix(in srgb, var(--glass-bg-strong) 70%, transparent);
 }
 
-.knowledge_reference-card-critical {
+/* .knowledge_reference-card-critical {
 	border-color: color-mix(in srgb, var(--error) 45%, transparent);
-}
+} */
 
-.knowledge_reference-card-high {
+/* .knowledge_reference-card-high {
 	border-color: color-mix(in srgb, #fb923c 45%, transparent);
-}
+} */
 
-.knowledge_reference-card-medium {
+/* .knowledge_reference-card-medium {
 	border-color: color-mix(in srgb, var(--warning) 45%, transparent);
-}
+} */
 
 .knowledge_reference-card-head {
 	display: flex;
@@ -108,9 +108,9 @@
 }
 
 .knowledge_reference-risk {
-	padding: 6px 10px;
+	/* padding: 6px 10px; */
 	border-radius: 999px;
-	background: color-mix(in srgb, var(--primary) 12%, transparent);
+	/* background: color-mix(in srgb, var(--primary) 12%, transparent); */
 	color: var(--primary);
 	font-size: var(--text-xs);
 	font-weight: 700;
@@ -118,12 +118,12 @@
 }
 
 .knowledge_reference-risk-critical {
-	background: color-mix(in srgb, var(--error) 12%, transparent);
+	/* background: color-mix(in srgb, var(--error) 12%, transparent); */
 	color: var(--error);
 }
 
 .knowledge_reference-risk-high {
-	background: color-mix(in srgb, #fb923c 12%, transparent);
+	/* background: color-mix(in srgb, #fb923c 12%, transparent); */
 	color: #fb923c;
 }
 
@@ -148,21 +148,21 @@
 }
 
 .knowledge_reference-flag {
-	padding: 6px 10px;
+	/* padding: 6px 10px; */
 	border-radius: 999px;
-	background: color-mix(in srgb, var(--success) 12%, transparent);
+	/* background: color-mix(in srgb, var(--success) 12%, transparent); */
 	color: var(--success);
 	font-size: var(--text-xs);
 	font-weight: 700;
 }
 
 .knowledge_reference-flag-warning {
-	background: color-mix(in srgb, var(--warning) 12%, transparent);
+	/* background: color-mix(in srgb, var(--warning) 12%, transparent); */
 	color: var(--warning);
 }
 
 .knowledge_reference-flag-danger {
-	background: color-mix(in srgb, var(--error) 12%, transparent);
+	/* background: color-mix(in srgb, var(--error) 12%, transparent); */
 	color: var(--error);
 }
 

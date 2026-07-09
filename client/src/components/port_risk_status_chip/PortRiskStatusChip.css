@@ -19,8 +19,8 @@
 }
 
 .port_risk_status_chip-icon svg {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 100%;
+  height: 100%;
 }
 
 .port_risk_status_chip-content {

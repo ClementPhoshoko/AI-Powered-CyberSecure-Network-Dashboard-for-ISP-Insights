@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import RecommendationsSummarySection from '../../../components/recommendations_summary_section/RecommendationsSummarySection'
 import TopRecommendationsList from '../../../components/top_recommendations_list/TopRecommendationsList'
 import TopOpenPortsList from '../../../components/top_open_ports_list/TopOpenPortsList'
@@ -41,6 +42,7 @@ function Knowledge({
 	error = null,
 	onRetry,
 }) {
+	const [showReference, setShowReference] = useState(false)
 	const knowledgeHighlights = getKnowledgeHighlights(knowledgeBase)
 	const hasReferenceEntries = knowledgeHighlights.length > 0
 
@@ -88,14 +90,24 @@ function Knowledge({
 						<p className="knowledge_reference-eyebrow">Reference library</p>
 						<h3 className="knowledge_reference-title">High-attention service knowledge</h3>
 					</div>
-					{knowledgeBase.length > 0 ? (
-						<span className="knowledge_reference-count">{knowledgeBase.length} known services</span>
-					) : null}
+					<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+						{knowledgeBase.length > 0 ? (
+							<span className="knowledge_reference-count">{knowledgeBase.length} known services</span>
+						) : null}
+						<button
+							type="button"
+							className="security-full-scan-details-toggle"
+							onClick={() => setShowReference((prev) => !prev)}
+						>
+							{showReference ? 'Hide Details' : 'View Details'}
+						</button>
+					</div>
 				</div>
 
-				{hasReferenceEntries ? (
-					<div className="knowledge_reference-grid">
-						{knowledgeHighlights.map((entry) => {
+				{showReference ? (
+					hasReferenceEntries ? (
+						<div className="knowledge_reference-grid">
+							{knowledgeHighlights.map((entry) => {
 							const risk = String(entry?.risk_level || 'low').toLowerCase()
 							const itemKey = entry.id || `${entry?.port_number || 'port'}-${entry?.protocol || 'tcp'}`
 
@@ -137,7 +149,7 @@ function Knowledge({
 						title="No knowledge base entries available"
 						message="The port knowledge reference will appear here when the service catalog is available."
 					/>
-				)}
+				)) : null}
 			</section>
 		</section>
 	)
