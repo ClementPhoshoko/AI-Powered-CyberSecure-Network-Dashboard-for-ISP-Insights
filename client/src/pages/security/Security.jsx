@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Scan from '../../components/scan_wheel/Scan'
 import ScanOverviewCard from '../../components/scan_overview_card/ScanOverviewCard'
 import ScanPhaseStepper from '../../components/scan_phase_stepper/ScanPhaseStepper'
@@ -66,7 +67,14 @@ function normalizeRiskLevel(riskLevel) {
 
 function Security() {
   const { loading: authLoading } = useAuth()
-  const [activeTab, setActiveTab] = useState('scan')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const tabParam = searchParams.get('tab')
+  const activeTab = tabs.some((t) => t.id === tabParam) ? tabParam : 'scan'
+
+  const handleTabChange = (newTab) => {
+    setSearchParams({ tab: newTab })
+  }
+
   const [scanWheelState, setScanWheelState] = useState({
     phase: 'idle',
     activePort: null,
@@ -198,7 +206,7 @@ function Security() {
           <button
             key={tab.id}
             className={`security-tab ${activeTab === tab.id ? 'security-tab--active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
             type="button"
           >
             {tab.label}

@@ -1,5 +1,5 @@
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -436,7 +436,15 @@ function History() {
   const [expandedTestId, setExpandedTestId] = useState(null);
   const [sortColumn, setSortColumn] = useState('created_at');
   const [sortDirection, setSortDirection] = useState('desc');
-  const [activeTab, setActiveTab] = useState('trends');
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const tabParam = searchParams.get('tab');
+  const activeTab = ['trends', 'insights', 'history'].includes(tabParam) ? tabParam : 'trends';
+
+  const handleTabChange = (newTab) => {
+    setSearchParams({ tab: newTab });
+  };
+
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [progress, setProgress] = useState(0);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
@@ -777,19 +785,19 @@ function History() {
           <div className="history-tabs">
             <button 
               className={`history-tab ${activeTab === 'trends' ? 'history-tab--active' : ''}`}
-              onClick={() => setActiveTab('trends')}
+              onClick={() => handleTabChange('trends')}
             >
               Trends
             </button>
             <button 
               className={`history-tab ${activeTab === 'insights' ? 'history-tab--active' : ''}`}
-              onClick={() => setActiveTab('insights')}
+              onClick={() => handleTabChange('insights')}
             >
               Insights
             </button>
             <button 
               className={`history-tab ${activeTab === 'history' ? 'history-tab--active' : ''}`}
-              onClick={() => setActiveTab('history')}
+              onClick={() => handleTabChange('history')}
             >
               History
             </button>
