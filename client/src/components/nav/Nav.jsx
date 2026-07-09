@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../modal/Modal';
 import ErrorModal from '../error_modal/ErrorModal';
+import Loading from '../loading/Loading';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import {
   DevicePhoneMobileIcon,
@@ -24,6 +25,7 @@ function Nav() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
 
   const navItems = [
@@ -115,11 +117,21 @@ function Nav() {
 
   const handleLogout = async () => {
     setShowLogoutModal(false);
+    setIsLoggingOut(true);
+    // Navigate to home first (non-protected, non-auth) so Nav stays mounted
+    // and ProtectedRoute doesn't intercept with /auth-required
+    navigate("/");
     try {
-      await logout();
-      navigate("/");
+      // Run logout concurrently with a minimum delay so user sees the loading animation
+      await Promise.all([
+        logout(),
+        new Promise(resolve => setTimeout(resolve, 1500))
+      ]);
     } catch (err) {
       setErrorModal({ isOpen: true, message: err.message });
+    } finally {
+      setIsLoggingOut(false);
+      navigate("/login");
     }
   };
 
@@ -343,6 +355,12 @@ function Nav() {
           </div>
         </div>
       </div>
+      <Loading 
+        isLoading={isLoggingOut} 
+        message="Signing you out"
+        status="AkovoLabs Auth System v1.0"
+        indeterminate={true}
+      />
       <Modal
         isOpen={showLogoutModal}
         message="Are you sure you want to logout from your account?"

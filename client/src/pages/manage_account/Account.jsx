@@ -132,6 +132,7 @@ function Account() {
           isLoading={true}
           message="Loading profile"
           status="AkovoLabs Profile System v1.0"
+          indeterminate={true}
         />
       </div>
     );
@@ -222,6 +223,7 @@ function Account() {
         progress={progress}
         message="Updating profile"
         status="AkovoLabs Profile System v1.0"
+        indeterminate={true}
       />
       <div key={animationKey} className="account-form-container">
         <div className="account-header">

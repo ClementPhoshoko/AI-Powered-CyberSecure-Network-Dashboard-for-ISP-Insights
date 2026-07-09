@@ -797,9 +797,9 @@ function History() {
   const hasActiveFilters = Boolean(startDate || endDate);
   const hasAnyError = Boolean(allError || tableError);
   const shouldShowEmptyState = !allLoading && !hasAnyError && allHistory.length === 0;
-  const shouldShowTableSkeleton = activeTab === 'history' && !initialLoadComplete && (tableLoading || (allLoading && allHistory.length === 0));
-  const shouldShowInsightsSkeleton = activeTab === 'insights' && !initialLoadComplete && allLoading;
-  const shouldShowTrendsSkeleton = activeTab === 'trends' && !initialLoadComplete && allLoading;
+  const shouldShowTableSkeleton = activeTab === 'history' && tableLoading && (tableHistory || []).length === 0;
+  const shouldShowInsightsSkeleton = activeTab === 'insights' && allLoading && (allHistory || []).length === 0;
+  const shouldShowTrendsSkeleton = activeTab === 'trends' && allLoading && (allHistory || []).length === 0;
 
   const filteredTests = [...tableHistory].sort((a, b) => {
     let aVal = a[sortColumn];
@@ -838,12 +838,27 @@ function History() {
     URL.revokeObjectURL(url);
   };
 
+  const isInitialLoading = authLoading || ((allLoading || tableLoading) && (allHistory || []).length === 0);
+
+  if (isInitialLoading) {
+    return (
+      <div className="history-page">
+        <Loading
+          isLoading={true}
+          progress={progress}
+          message="Loading test history"
+          status="AkovoLabs Test History System v1.0"
+          indeterminate={true}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="history-page">
-      <Loading isLoading={!initialLoadComplete && (allLoading || tableLoading || authLoading)} progress={progress} message="Loading test history" status="AkovoLabs Test History System v1.0" />
       
       {/* Title Section */}
-      {(initialLoadComplete || !allLoading) && (
+      {((allHistory || []).length > 0 || !allLoading) && (
         <>
           <div className="history-title-section">
             <h1 className="history-title-section-title">Test History</h1>

@@ -59,6 +59,7 @@ function Login() {
         progress={progress}
         message="Signing you in"
         status="AkovoLabs Auth System v1.0"
+        indeterminate={true}
       />
       <form key={animationKey} className="auth-form" onSubmit={handleSubmit}>
         <h1 className="auth-form-title">Welcome back</h1>

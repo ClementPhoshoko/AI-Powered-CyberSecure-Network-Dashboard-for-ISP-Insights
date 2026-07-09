@@ -175,6 +175,7 @@ function Security() {
           isLoading={true}
           message="Loading security scan"
           status="AkovoLabs Security System v1.0"
+          indeterminate={true}
         />
       </div>
     )
