@@ -440,6 +440,7 @@ function Security() {
             latestAssessment={latestAssessment}
             isLoading={portRiskLoading}
             error={hasError}
+            onRetry={refetch}
           />
         )}
 

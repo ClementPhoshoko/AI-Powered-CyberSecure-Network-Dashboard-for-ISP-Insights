@@ -3,7 +3,7 @@ import RecommendationsSummarySection from '../../../components/recommendations_s
 import TopRecommendationsList from '../../../components/top_recommendations_list/TopRecommendationsList'
 import TopOpenPortsList from '../../../components/top_open_ports_list/TopOpenPortsList'
 import ScanEmptyState from '../../../components/scan_empty_state/ScanEmptyState'
-import ScanErrorState from '../../../components/scan_error_state/ScanErrorState'
+import notFoundAvatar from '../../../assets/avatars/not_found_avatar.png'
 import './Knowledge.css'
 
 const RISK_ORDER = {
@@ -48,11 +48,16 @@ function Knowledge({
 
 	if (error && !latestAssessment && !hasReferenceEntries) {
 		return (
-			<ScanErrorState
-				title="Knowledge center unavailable"
-				message={String(error)}
-				onAction={onRetry}
-			/>
+			<section className="security-error-state" aria-label="Security scan error">
+				<img src={notFoundAvatar} alt="Error occurred" className="security-error-avatar" />
+				<div className="security-error-copy">
+					<h2 className="security-error-title">Something went wrong</h2>
+					<p className="security-error-description">{error?.toString()}</p>
+				</div>
+				{typeof onRetry === 'function' && (
+					<button type="button" className="security-cta" onClick={onRetry}>Try Again</button>
+				)}
+			</section>
 		)
 	}
 

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import InsightsHistorySection from '../../../components/insights_history_section/InsightsHistorySection'
+import notFoundAvatar from '../../../assets/avatars/not_found_avatar.png'
 import './InsightsPanel.css'
 
-function InsightsPanel({ assessments = [], latestAssessment = null, isLoading = false, error = null }) {
+function InsightsPanel({ assessments = [], latestAssessment = null, isLoading = false, error = null, onRetry }) {
   const assessmentList = useMemo(() => {
     if (!Array.isArray(assessments)) {
       return []
@@ -40,6 +41,21 @@ function InsightsPanel({ assessments = [], latestAssessment = null, isLoading = 
 
     return assessmentList.find((item) => item?.id === selectedAssessmentId) || null
   }, [assessmentList, selectedAssessmentId])
+
+  if (error && !assessmentList.length) {
+    return (
+      <section className="security-error-state" aria-label="Security scan error">
+        <img src={notFoundAvatar} alt="Error occurred" className="security-error-avatar" />
+        <div className="security-error-copy">
+          <h2 className="security-error-title">Something went wrong</h2>
+          <p className="security-error-description">{error?.toString()}</p>
+        </div>
+        {typeof onRetry === 'function' && (
+          <button type="button" className="security-cta" onClick={onRetry}>Try Again</button>
+        )}
+      </section>
+    )
+  }
 
   return (
     <section className="insights_panel" aria-label="Security scan insights panel">
