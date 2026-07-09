@@ -19,3 +19,51 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+.time-series-tooltip {
+  min-width: 180px;
+  padding: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg-strong);
+  color: var(--text-primary);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  box-shadow: var(--shadow-glass);
+}
+
+.time-series-tooltip-label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.time-series-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.time-series-tooltip-series {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.time-series-tooltip-name {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.time-series-tooltip-value {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}

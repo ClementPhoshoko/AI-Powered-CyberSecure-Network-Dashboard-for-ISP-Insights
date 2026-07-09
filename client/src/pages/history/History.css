@@ -586,7 +586,7 @@
   padding: var(--space-3);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  background: rgba(10, 16, 28, 0.88);
+  background: var(--glass-bg-strong);
   color: var(--text-primary);
   backdrop-filter: var(--blur-md);
   -webkit-backdrop-filter: var(--blur-md);
@@ -599,7 +599,15 @@
   letter-spacing: 0.03em;
   margin-bottom: var(--space-3);
   padding-bottom: var(--space-2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.tooltip-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .history-chart-tooltip__rows {

@@ -386,6 +386,34 @@ function formatTooltipMetricValue(value, unit, digits = 1) {
   return unit ? `${formatted} ${unit}` : formatted;
 }
 
+const tooltipIcons = {
+  download: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--download)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    </svg>
+  ),
+  upload: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--upload)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+    </svg>
+  ),
+  ping: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--ping)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  jitter: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: '#f59e0b', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+    </svg>
+  ),
+  healthScore: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--primary)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+    </svg>
+  )
+};
+
 function HistoryChartTooltip({ active, payload, label, config = {} }) {
   if (!active || !payload?.length) {
     return null;
@@ -408,10 +436,12 @@ function HistoryChartTooltip({ active, payload, label, config = {} }) {
           return (
             <div key={entry.dataKey} className="history-chart-tooltip__row">
               <div className="history-chart-tooltip__series">
-                <span
-                  className="history-chart-tooltip__swatch"
-                  style={{ backgroundColor: entry.color || settings.color || 'var(--primary)' }}
-                />
+                {tooltipIcons[entry.dataKey] || (
+                  <span
+                    className="history-chart-tooltip__swatch"
+                    style={{ backgroundColor: entry.color || settings.color || 'var(--primary)' }}
+                  />
+                )}
                 <span className="history-chart-tooltip__name">
                   {settings.label || entry.name || entry.dataKey}
                 </span>
@@ -424,6 +454,58 @@ function HistoryChartTooltip({ active, payload, label, config = {} }) {
     </div>
   );
 }
+
+const radarIcons = {
+  Gaming: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--primary)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <rect x="2" y="6" width="20" height="12" rx="3" strokeWidth="2" />
+      <path d="M6 12h4M8 10v4M15 11h.01M18 13h.01" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  ),
+  Streaming: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--primary)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+    </svg>
+  ),
+  'Video Call': (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--primary)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+    </svg>
+  ),
+  Browsing: (
+    <svg className="tooltip-icon" style={{ width: 14, height: 14, fill: 'none', stroke: 'var(--primary)', strokeWidth: 2, marginRight: 6 }} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
+    </svg>
+  )
+};
+
+const ExperienceScoresTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+
+  const entry = payload[0];
+  const subjectName = entry?.payload?.subject || '';
+  const scoreValue = entry?.value;
+  const icon = radarIcons[subjectName] || null;
+
+  return (
+    <div className="history-chart-tooltip" style={{ minWidth: '160px' }}>
+      <div className="history-chart-tooltip__label" style={{ marginBottom: '6px', paddingBottom: '4px' }}>
+        Experience Score
+      </div>
+      <div className="history-chart-tooltip__row">
+        <div className="history-chart-tooltip__series">
+          {icon}
+          <span className="history-chart-tooltip__name" style={{ fontWeight: 500 }}>
+            {subjectName}
+          </span>
+        </div>
+        <span className="history-chart-tooltip__value" style={{ color: 'var(--primary)' }}>
+          {Math.round(scoreValue)}/100
+        </span>
+      </div>
+    </div>
+  );
+};
 
 function History() {
   const { loading: authLoading, user } = useAuth();
@@ -1090,13 +1172,7 @@ function History() {
                                   <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
                                   <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
                                   <Legend wrapperStyle={{ fontSize: 12 }} />
-                                  <Tooltip 
-                                    contentStyle={{
-                                      backgroundColor: 'var(--glass-bg)',
-                                      border: '1px solid var(--glass-border)',
-                                      borderRadius: 'var(--radius-md)'
-                                    }}
-                                  />
+                                  <Tooltip content={<ExperienceScoresTooltip />} />
                                 </RadarChart>
                               </ResponsiveContainer>
                             </div>
