@@ -38,8 +38,8 @@ function InsightsPanel({ assessments = [], latestAssessment = null, isLoading = 
       return null
     }
 
-    return assessmentList.find((item) => item?.id === selectedAssessmentId) || latestAssessment || assessmentList[0]
-  }, [assessmentList, latestAssessment, selectedAssessmentId])
+    return assessmentList.find((item) => item?.id === selectedAssessmentId) || null
+  }, [assessmentList, selectedAssessmentId])
 
   return (
     <section className="insights_panel" aria-label="Security scan insights panel">

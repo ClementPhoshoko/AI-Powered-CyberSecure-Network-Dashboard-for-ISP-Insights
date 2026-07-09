@@ -1,5 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ShieldCheckIcon,
+  ChartBarIcon,
+  ClockIcon,
+  ServerIcon,
+  CalculatorIcon,
+  LightBulbIcon,
+  ExclamationTriangleIcon,
+  HashtagIcon,
+  GlobeAltIcon,
+  LockClosedIcon,
+  FireIcon,
+} from '@heroicons/react/24/outline'
 import './InsightsHistorySection.css'
 
 const PAGE_SIZE = 5
@@ -57,6 +71,33 @@ function getOpenRiskBreakdown(portScanResults = []) {
   })
 
   return breakdown
+}
+
+// Icon mapping for different data types
+const iconMap = {
+  status: ShieldCheckIcon,
+  score: ChartBarIcon,
+  duration: ClockIcon,
+  ports: ServerIcon,
+  totalPorts: CalculatorIcon,
+  recommendations: LightBulbIcon,
+  riskBreakdown: FireIcon,
+  openPorts: GlobeAltIcon,
+  filteredPorts: LockClosedIcon,
+}
+
+function MetricCard({ icon: Icon, label, value, variant = 'default', className = '' }) {
+  return (
+    <article className={`insights_metric_card insights_metric_card--${variant} ${className}`.trim()}>
+      <div className="insights_metric_card-icon-wrapper">
+        <Icon className="insights_metric_card-icon" />
+      </div>
+      <div className="insights_metric_card-content">
+        <span className="insights_metric_card-label">{label}</span>
+        <span className="insights_metric_card-value">{value}</span>
+      </div>
+    </article>
+  )
 }
 
 function InsightsHistorySection({
@@ -118,7 +159,14 @@ function InsightsHistorySection({
   return (
     <section className="insights_history_section" aria-label="Recent scan trend snapshots">
       <h3 className="insights_history_section-title">Recent Scans</h3>
-      <ul className="insights_history_section-list">
+      {isLoading ? (
+        <div className="insights_history_section-skeleton-list" aria-busy="true" aria-label="Loading scans">
+          {Array.from({ length: PAGE_SIZE }).map((_, index) => (
+            <div key={`loading-${index}`} className="insights_history_section-skeleton-item" />
+          ))}
+        </div>
+      ) : (
+        <ul className="insights_history_section-list">
         {paginatedAssessments.map((entry, index) => {
           const entryKey = entry.id || `${entry.created_at || 'scan'}-${index}`
           const previewId = `insights-history-preview-${entryKey}`
@@ -154,46 +202,48 @@ function InsightsHistorySection({
               <section id={previewId} className="insights_history_section-preview" aria-label="Selected scan overall results">
                 <h4 className="insights_history_section-preview-title">Overall Results</h4>
                 <div className="insights_history_section-preview-grid">
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Security Status</span>
-                    <strong className={`insights_history_section-preview-value insights_history_section-preview-value-${normalizedStatus}`.trim()}>
-                      {formatStatusLabel(entry.security_status)}
-                    </strong>
-                  </article>
-
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Overall Score</span>
-                    <strong className="insights_history_section-preview-value">{Math.round(Number(entry.overall_risk_score) || 0)}</strong>
-                  </article>
-
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Duration</span>
-                    <strong className="insights_history_section-preview-value">{Number(entry.scan_duration_seconds || 0).toFixed(1)}s</strong>
-                  </article>
-
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Ports</span>
-                    <strong className="insights_history_section-preview-value">
-                      {entry.open_ports_count ?? 0} open, {entry.closed_ports_count ?? 0} closed, {entry.filtered_ports_count ?? 0} filtered
-                    </strong>
-                  </article>
-
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Total Ports Scanned</span>
-                    <strong className="insights_history_section-preview-value">{totalPortsScanned}</strong>
-                  </article>
-
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Recommendations</span>
-                    <strong className="insights_history_section-preview-value">{recommendationCount}</strong>
-                  </article>
-
-                  <article className="insights_history_section-preview-item">
-                    <span className="insights_history_section-preview-label">Open Risk Breakdown</span>
-                    <strong className="insights_history_section-preview-value">
-                      C:{openRiskBreakdown.critical} H:{openRiskBreakdown.high} M:{openRiskBreakdown.medium} L:{openRiskBreakdown.low}
-                    </strong>
-                  </article>
+                  <MetricCard
+                    icon={iconMap.status}
+                    label="Security Status"
+                    value={formatStatusLabel(entry.security_status)}
+                    variant={normalizedStatus}
+                  />
+                  <MetricCard
+                    icon={iconMap.score}
+                    label="Overall Score"
+                    value={Math.round(Number(entry.overall_risk_score) || 0)}
+                  />
+                  <MetricCard
+                    icon={iconMap.duration}
+                    label="Duration"
+                    value={`${Number(entry.scan_duration_seconds || 0).toFixed(1)}s`}
+                  />
+                  <MetricCard
+                    icon={iconMap.openPorts}
+                    label="Open Ports"
+                    value={entry.open_ports_count ?? 0}
+                  />
+                  <MetricCard
+                    icon={iconMap.filteredPorts}
+                    label="Filtered Ports"
+                    value={entry.filtered_ports_count ?? 0}
+                  />
+                  <MetricCard
+                    icon={iconMap.totalPorts}
+                    label="Total Ports Scanned"
+                    value={totalPortsScanned}
+                  />
+                  <MetricCard
+                    icon={iconMap.recommendations}
+                    label="Recommendations"
+                    value={recommendationCount}
+                  />
+                  <MetricCard
+                    icon={iconMap.riskBreakdown}
+                    label="Open Risk Breakdown"
+                    value={`C:${openRiskBreakdown.critical} H:${openRiskBreakdown.high} M:${openRiskBreakdown.medium} L:${openRiskBreakdown.low}`}
+                    variant={openRiskBreakdown.critical > 0 ? 'critical' : openRiskBreakdown.high > 0 ? 'high' : 'default'}
+                  />
                 </div>
 
                 <p className="insights_history_section-preview-summary">
@@ -205,7 +255,9 @@ function InsightsHistorySection({
           )
         })}
       </ul>
+      )}
 
+      {!isLoading && (
       <div className="insights_history_section-pagination-controls" aria-label="Recent scans pagination controls">
         <button
           type="button"
@@ -235,6 +287,7 @@ function InsightsHistorySection({
           </svg>
         </button>
       </div>
+      )}
     </section>
   )
 }
