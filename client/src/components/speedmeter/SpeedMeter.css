@@ -28,11 +28,12 @@
   height: auto;
   overflow: visible;
   display: block;
+  font-size: clamp(17px, 4vw + 6px, 22px);
 }
 
 .speed-meter-label {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 1em;
   fill: var(--text-muted);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -119,9 +120,9 @@
   opacity: 0.9;
 }
 
-@media (max-width: 480px) {
-  .speed-meter-label {
-    font-size: 11px !important;
+@media (max-width: 425px) {
+  .speed-meter-svg {
+    font-size: clamp(21px, 6.75vw, 24px);
   }
 
   .speed-meter-value {
@@ -130,5 +131,11 @@
 
   .speed-meter-unit {
     font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .speed-meter-svg {
+    font-size: 22px;
   }
 }
