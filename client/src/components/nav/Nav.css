@@ -736,9 +736,3 @@
     height: 48px;
   }
 }
-
-@media (max-width: 480px) {
-  .nav-logo-text {
-    display: none;
-  }
-}
