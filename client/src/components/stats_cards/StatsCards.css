@@ -1,16 +1,16 @@
 .stats-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  /* margin-bottom: var(--space-8); */
-  padding-top: var(--space-7);
+  gap: var(--space-3);
+  padding-top: var(--space-4);
   width: 100%;
   height: auto;
   align-self: flex-start;
+  container-type: inline-size;
 }
 
 .stats-note {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 4px;
   padding: var(--space-3);
@@ -45,21 +45,24 @@
 /* Speed Cards */
 .speed-cards {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  width: 100%;
 }
 
 .speed-card {
   background: transparent;
   border: none;
   border-radius: var(--radius-md);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-1);
   text-align: center;
   box-shadow: none;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-1);
+  min-width: 0;
 }
 
 .speed-card-icon {
@@ -77,7 +80,7 @@
 
 .value-number {
   font-family: var(--font-mono);
-  font-size: var(--text-xl);
+  font-size: clamp(1.125rem, 4.5vw, var(--text-xl));
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -95,83 +98,90 @@
   letter-spacing: 0.1em;
 }
 
-/* Latency Cards */
+/* Latency & Quality — mobile-first list */
 .latency-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--space-3);
-}
-
-.latency-card {
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.latency-card-icon {
-  flex-shrink: 0;
-  font-size: 1.25rem;
-}
-
-.latency-card-content {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.latency-card-label {
-  font-size: var(--text-xs);
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0;
-}
-
-.latency-card-value {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-
-/* Quality Cards */
+.latency-card,
 .quality-card {
   background: transparent;
   border: none;
-  border-radius: var(--radius-md);
-  padding: var(--space-2);
+  border-radius: 0;
+  padding: var(--space-3) var(--space-2);
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
 }
 
+.latency-card:last-child,
+.quality-card:last-child {
+  border-bottom: none;
+}
+
+.latency-card-icon,
 .quality-card-icon {
   flex-shrink: 0;
-  font-size: 1.25rem;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.latency-card-icon svg,
+.quality-card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.latency-card-content,
 .quality-card-content {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-width: 0;
+  padding-left: var(--space-1);
 }
 
+.latency-card-label,
 .quality-card-label {
+  flex: 1;
+  min-width: 0;
   font-size: var(--text-xs);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.latency-card-value {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-right: var(--space-3);
 }
 
 .quality-card-circles {
   display: flex;
-  gap: 3px;
+  gap: 4px;
   flex-shrink: 0;
-  margin: 4px 0px;
+  margin: 0 var(--space-3) 0 0;
 }
 
 .quality-card-circle {
@@ -262,4 +272,120 @@
   width: 80%;
   height: 18px;
   display: block;
+}
+
+/* Tablet and up — restore card grid layouts */
+@media (min-width: 641px) {
+  .stats-note {
+    display: flex;
+  }
+
+  .stats-container {
+    gap: var(--space-4);
+    padding-top: var(--space-7);
+  }
+
+  .speed-cards {
+    gap: var(--space-3);
+  }
+
+  .speed-card {
+    padding: var(--space-3);
+  }
+
+  .latency-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+    padding: 0;
+  }
+
+  .latency-card,
+  .quality-card {
+    border-bottom: none;
+    border-radius: var(--radius-md);
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .latency-card-content,
+  .quality-card-content {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 2px;
+    padding-left: 0;
+  }
+
+  .latency-card-label,
+  .quality-card-label {
+    flex: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .latency-card-value {
+    margin-right: 0;
+  }
+
+  .quality-card-circles {
+    margin: 4px 0;
+  }
+}
+
+/* Narrow column container — keep list layout even on wider viewports */
+@container (max-width: 420px) {
+  .speed-cards {
+    gap: var(--space-2);
+  }
+
+  .speed-card {
+    padding: var(--space-2) var(--space-1);
+  }
+
+  .latency-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0 var(--space-4);
+  }
+
+  .latency-card,
+  .quality-card {
+    border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+    border-radius: 0;
+    padding: var(--space-3) var(--space-2);
+    gap: var(--space-3);
+  }
+
+  .latency-card:last-child,
+  .quality-card:last-child {
+    border-bottom: none;
+  }
+
+  .latency-card-content,
+  .quality-card-content {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-left: var(--space-1);
+  }
+
+  .latency-card-label,
+  .quality-card-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .latency-card-value {
+    margin-right: var(--space-3);
+  }
+
+  .quality-card-circles {
+    margin: 0 var(--space-3) 0 0;
+  }
 }

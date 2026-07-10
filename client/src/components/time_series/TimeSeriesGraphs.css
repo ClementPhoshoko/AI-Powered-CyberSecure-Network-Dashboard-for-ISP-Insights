@@ -1,27 +1,49 @@
 .graphs-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
+  width: 100%;
+  container-type: inline-size;
 }
 
 .graph-card {
-  /* background: var(--glass-bg); */
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: var(--space-3) var(--space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+}
+
+.graph-card:last-child {
+  border-bottom: none;
 }
 
 .graph-title {
-  font-size: var(--text-sm);
-  color: var(--text-primary);
-  margin-bottom: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
+.graph-chart-wrapper {
+  width: 100%;
+  height: clamp(160px, 42vw, 200px);
+  min-height: 160px;
+}
+
+.graph-card .recharts-cartesian-axis-tick-value {
+  font-size: 10px;
+}
+
+.graph-card .recharts-cartesian-grid-horizontal line,
+.graph-card .recharts-cartesian-grid-vertical line {
+  stroke: color-mix(in srgb, var(--glass-border) 70%, transparent);
+}
+
 .time-series-tooltip {
-  min-width: 180px;
+  min-width: 160px;
   padding: var(--space-3);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
@@ -66,4 +88,69 @@
   font-weight: 600;
   text-align: right;
   white-space: nowrap;
+}
+
+@media (min-width: 641px) {
+  .graphs-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-4);
+  }
+
+  .graph-card {
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .graph-card:last-child {
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .graph-title {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .graph-chart-wrapper {
+    height: 200px;
+    min-height: 200px;
+  }
+
+  .graph-card .recharts-cartesian-axis-tick-value {
+    font-size: 12px;
+  }
+}
+
+@container (max-width: 420px) {
+  .graphs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .graph-card {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: var(--space-3) var(--space-2);
+    border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
+  }
+
+  .graph-card:last-child {
+    border-bottom: none;
+  }
+
+  .graph-title {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--space-2);
+  }
+
+  .graph-chart-wrapper {
+    height: clamp(160px, 42vw, 200px);
+    min-height: 160px;
+  }
 }

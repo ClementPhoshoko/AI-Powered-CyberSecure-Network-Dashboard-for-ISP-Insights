@@ -147,17 +147,17 @@ const StatsCards = ({ testResult, isLoading = false }) => {
   );
 
   const SkeletonLatencyCard = () => (
-    <div className="latency-card">
+    <li className="latency-card">
       <div className="skeleton latency-card-icon"></div>
       <div className="latency-card-content">
         <div className="skeleton latency-card-label"></div>
         <div className="skeleton latency-card-value"></div>
       </div>
-    </div>
+    </li>
   );
 
   const SkeletonQualityCard = () => (
-    <div className="quality-card">
+    <li className="quality-card">
       <div className="skeleton quality-card-icon"></div>
       <div className="quality-card-content">
         <div className="skeleton quality-card-label"></div>
@@ -167,12 +167,12 @@ const StatsCards = ({ testResult, isLoading = false }) => {
           ))}
         </div>
       </div>
-    </div>
+    </li>
   );
 
   if (isLoading) {
     return (
-      <div className="stats-container" style={{ paddingTop: 'var(--space-7)' }}>
+      <div className="stats-container">
         <div className="stats-note">
           <span className="stats-note-label">How Latency Is Measured</span>
           <span className="stats-note-text">
@@ -191,14 +191,14 @@ const StatsCards = ({ testResult, isLoading = false }) => {
         </div>
 
         {/* Latency & Quality Cards Skeletons */}
-        <div className="latency-cards">
+        <ul className="latency-cards" aria-label="Network metrics">
           {[0, 1, 2].map((i) => (
             <SkeletonLatencyCard key={`latency-${i}`} />
           ))}
           {[0, 1, 2, 3, 4].map((i) => (
             <SkeletonQualityCard key={`quality-${i}`} />
           ))}
-        </div>
+        </ul>
       </div>
     );
   }
@@ -238,10 +238,10 @@ const StatsCards = ({ testResult, isLoading = false }) => {
       </div>
 
       {/* Combined Latency & Quality Cards */}
-      <div className="latency-cards">
+      <ul className="latency-cards" aria-label="Network metrics">
         {/* Latency Cards */}
         {latencyCards.map((card, index) => (
-          <motion.div
+          <motion.li
             key={card.label}
             className="latency-card"
             initial={{ opacity: 0, y: 10 }}
@@ -257,12 +257,12 @@ const StatsCards = ({ testResult, isLoading = false }) => {
                 {card.value?.toFixed(2) || '0.00'} {card.unit}
               </div>
             </div>
-          </motion.div>
+          </motion.li>
         ))}
 
         {/* Quality Cards */}
         {qualityCards.map((card, index) => (
-          <motion.div
+          <motion.li
             key={card.label}
             className="quality-card"
             initial={{ opacity: 0, y: 10 }}
@@ -274,7 +274,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
             </div>
             <div className="quality-card-content">
               <div className="quality-card-label">{card.label}</div>
-              <div className="quality-card-circles">
+              <div className="quality-card-circles" aria-label={`${card.label} score: ${card.value || 0} out of 100`}>
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={i}
@@ -286,9 +286,9 @@ const StatsCards = ({ testResult, isLoading = false }) => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </motion.li>
         ))}
-      </div>
+      </ul>
 
 
     </div>

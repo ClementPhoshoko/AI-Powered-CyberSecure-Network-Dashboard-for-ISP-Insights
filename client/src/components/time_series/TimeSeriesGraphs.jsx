@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { motion } from 'framer-motion';
 import './TimeSeriesGraphs.css';
+
+const MOBILE_QUERY = '(max-width: 640px)';
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_QUERY);
+    const handleChange = (event) => setIsMobile(event.matches);
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return isMobile;
+};
 
 const TimeSeriesChartTooltip = ({ active, payload, label, type }) => {
   if (!active || !payload?.length) return null;
@@ -59,6 +77,7 @@ const TimeSeriesChartTooltip = ({ active, payload, label, type }) => {
 };
 
 const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
+  const isMobile = useIsMobile();
   const measurementContext = testResult?.measurement_context || {};
   const latencyChartTitle = measurementContext.latency_label || 'HTTP probe latency';
   const defaultColors = {
@@ -68,17 +87,17 @@ const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
   };
   const colors = { ...defaultColors, ...chartColors };
   const downloadData = (testResult?.download_measurements || []).map((m, i) => ({
-    name: `Test ${i + 1} (${m.file_size_mb}MB)`,
+    name: isMobile ? `T${i + 1}` : `Test ${i + 1} (${m.file_size_mb}MB)`,
     speed: m.download_speed_mbps
   }));
 
   const uploadData = (testResult?.upload_measurements || []).map((m, i) => ({
-    name: `Test ${i + 1} (${m.file_size_mb ?? m.size_mb}MB)`,
+    name: isMobile ? `T${i + 1}` : `Test ${i + 1} (${m.file_size_mb ?? m.size_mb}MB)`,
     speed: m.upload_speed_mbps
   }));
 
   const pingData = (testResult?.ping_measurements || []).map((m) => ({
-    name: `Probe ${Number(m.sequence_number) + 1}`,
+    name: isMobile ? `P${Number(m.sequence_number) + 1}` : `Probe ${Number(m.sequence_number) + 1}`,
     latency: m.latency_ms
   }));
 
@@ -100,40 +119,56 @@ const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
         transition={{ duration: 0.5, delay: 0.8 }}
       >
         <h3 className="graph-title">{title}</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <ChartComponent data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
-            <XAxis
-              dataKey="name"
-              stroke="var(--text-muted)"
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis
-              stroke="var(--text-muted)"
-              tick={{ fontSize: 12 }}
-              label={{ value: yLabel, angle: -90, position: 'insideLeft', style: { fill: 'var(--text-muted)' } }}
-            />
-            <Tooltip content={<TimeSeriesChartTooltip type={type} />} />
-            {ChartComponent === AreaChart ? (
-              <Area
-                type="monotone"
-                dataKey="speed"
-                stroke={stroke}
-                fillOpacity={0.3}
-                fill={fill}
+        <div className="graph-chart-wrapper">
+          <ResponsiveContainer width="100%" height="100%">
+            <ChartComponent data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
+              <XAxis
+                dataKey="name"
+                stroke="var(--text-muted)"
+                tick={{ fontSize: isMobile ? 10 : 12 }}
+                angle={isMobile ? -35 : 0}
+                textAnchor={isMobile ? 'end' : 'middle'}
+                height={isMobile ? 52 : 30}
+                interval={isMobile ? 'preserveStartEnd' : 0}
               />
-            ) : (
-              <Line
-                type="monotone"
-                dataKey="latency"
-                stroke={stroke}
-                strokeWidth={2}
-                dot={{ fill: stroke, r: 4 }}
-                activeDot={{ r: 6 }}
+              <YAxis
+                stroke="var(--text-muted)"
+                tick={{ fontSize: isMobile ? 10 : 12 }}
+                width={isMobile ? 34 : 48}
+                label={
+                  isMobile
+                    ? undefined
+                    : {
+                        value: yLabel,
+                        angle: -90,
+                        position: 'insideLeft',
+                        style: { fill: 'var(--text-muted)', fontSize: 11 }
+                      }
+                }
               />
-            )}
-          </ChartComponent>
-        </ResponsiveContainer>
+              <Tooltip content={<TimeSeriesChartTooltip type={type} />} />
+              {ChartComponent === AreaChart ? (
+                <Area
+                  type="monotone"
+                  dataKey="speed"
+                  stroke={stroke}
+                  fillOpacity={0.3}
+                  fill={fill}
+                />
+              ) : (
+                <Line
+                  type="monotone"
+                  dataKey="latency"
+                  stroke={stroke}
+                  strokeWidth={2}
+                  dot={{ fill: stroke, r: isMobile ? 3 : 4 }}
+                  activeDot={{ r: isMobile ? 5 : 6 }}
+                />
+              )}
+            </ChartComponent>
+          </ResponsiveContainer>
+        </div>
       </motion.div>
     );
   };
