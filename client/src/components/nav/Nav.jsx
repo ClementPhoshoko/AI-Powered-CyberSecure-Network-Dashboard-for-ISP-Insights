@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -13,7 +13,10 @@ import {
   SparklesIcon,
   NewspaperIcon,
   ArrowDownTrayIcon,
-  RocketLaunchIcon
+  RocketLaunchIcon,
+  Bars3Icon,
+  XMarkIcon,
+  HomeIcon
 } from '@heroicons/react/24/solid';
 import './Nav.css';
 
@@ -26,11 +29,51 @@ function Nav() {
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const drawerRef = useRef(null);
+
+  const closeMobileMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setMobileMenuOpen(false);
+    }, 300);
+  };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (drawerRef.current && !drawerRef.current.contains(event.target)) {
+        closeMobileMenu();
+      }
+    };
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  // Close menu when route changes
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      closeMobileMenu();
+    }
+  }, [location.pathname]);
 
   const navItems = [
     {
       name: 'about',
       label: 'About',
+      href: '/about',
+      icon: <ShieldCheckIcon />,
+      description: 'Learn about our mission',
       items: [
         { 
           label: 'Our Company', 
@@ -55,6 +98,9 @@ function Nav() {
     {
       name: 'services',
       label: 'Services',
+      href: '/services',
+      icon: <RocketLaunchIcon />,
+      description: 'Speed & Network Tools',
       items: [
         { 
           label: 'Speed Testing', 
@@ -85,6 +131,9 @@ function Nav() {
     {
       name: 'download',
       label: 'Download',
+      href: '/download',
+      icon: <ArrowDownTrayIcon />,
+      description: 'Mobile Applications',
       items: [
         { 
           label: 'iOS App', 
@@ -103,6 +152,9 @@ function Nav() {
     {
       name: 'news',
       label: 'News',
+      href: '/news',
+      icon: <NewspaperIcon />,
+      description: 'Updates & Press',
       items: [
         { 
           label: 'Updates & Press', 
@@ -116,6 +168,7 @@ function Nav() {
 
   const handleLogout = async () => {
     setShowLogoutModal(false);
+    closeMobileMenu();
     setIsLoggingOut(true);
     // Navigate to home first (non-protected, non-auth) so Nav stays mounted
     // and ProtectedRoute doesn't intercept with /auth-required
@@ -149,6 +202,10 @@ function Nav() {
     }
   };
 
+  const isActiveRoute = (href) => {
+    return location.pathname === href || (href !== '/' && location.pathname.startsWith(href));
+  };
+
   return (
     <nav className="nav-container">
       <div className="nav-content">
@@ -160,8 +217,8 @@ function Nav() {
           </Link>
         </div>
 
-        {/* Right Side: Navigation Items & Account */}
-        <div className="nav-right">
+        {/* Desktop Navigation */}
+        <div className="nav-right nav-desktop">
           <div className="nav-items">
             {navItems.map((item) => (
               <div
@@ -173,44 +230,16 @@ function Nav() {
                 }}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                {item.name === 'about' ? (
-                  <Link to="/about" className="nav-item-button">
-                    {item.label}
+                <Link to={item.href} className="nav-item-button">
+                  {item.label}
+                  {item.items && (
                     <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
-                  </Link>
-                ) : item.name === 'services' ? (
-                  <Link to="/services" className="nav-item-button">
-                    {item.label}
-                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </Link>
-                ) : item.name === 'download' ? (
-                  <Link to="/download" className="nav-item-button">
-                    {item.label}
-                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </Link>
-                ) : item.name === 'news' ? (
-                  <Link to="/news" className="nav-item-button">
-                    {item.label}
-                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </Link>
-                ) : (
-                  <button className="nav-item-button">
-                    {item.label}
-                    <svg className="nav-item-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                )}
+                  )}
+                </Link>
                 
-                {activeDropdown === item.name && (
+                {item.items && activeDropdown === item.name && (
                   <div className="nav-dropdown">
                     {item.items.map((dropdownItem, idx) => (
                       <React.Fragment key={idx}>
@@ -298,25 +327,25 @@ function Nav() {
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
                   onClick={cycleTheme}
                 >
-                    <div className="nav-chain-circle">
-                      <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="5" />
-                        <line x1="12" y1="1" x2="12" y2="3" />
-                        <line x1="12" y1="21" x2="12" y2="23" />
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                        <line x1="1" y1="12" x2="3" y2="12" />
-                        <line x1="21" y1="12" x2="23" y2="12" />
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                      </svg>
-                    </div>
-                    <div className="nav-theme-wrapper">
-                      <span className="nav-chain-label">Change Theme</span>
-                      <span className="nav-theme-label">{getCurrentThemeData().name}</span>
-                    </div>
-                  </button>
-                
+                  <div className="nav-chain-circle">
+                    <svg className="nav-chain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="5" />
+                      <line x1="12" y1="1" x2="12" y2="3" />
+                      <line x1="12" y1="21" x2="12" y2="23" />
+                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                      <line x1="1" y1="12" x2="3" y2="12" />
+                      <line x1="21" y1="12" x2="23" y2="12" />
+                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                  </div>
+                  <div className="nav-theme-wrapper">
+                    <span className="nav-chain-label">Change Theme</span>
+                    <span className="nav-theme-label">{getCurrentThemeData().name}</span>
+                  </div>
+                </button>
+              
                 {!user && (
                   <Link to="/login" className="nav-chain-item">
                     <div className="nav-chain-circle">
@@ -353,7 +382,117 @@ function Nav() {
             )}
           </div>
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <button
+          className="nav-mobile-toggle"
+          onClick={() => mobileMenuOpen ? closeMobileMenu() : setMobileMenuOpen(true)}
+          aria-label="Toggle navigation"
+        >
+          {mobileMenuOpen ? (
+            <XMarkIcon className="nav-toggle-icon" />
+          ) : (
+            <Bars3Icon className="nav-toggle-icon" />
+          )}
+        </button>
       </div>
+
+      {/* Mobile Drawer Overlay */}
+      {(mobileMenuOpen || isClosing) && (
+        <div className={`nav-drawer-overlay ${isClosing ? 'nav-drawer-overlay-closing' : ''}`} onClick={() => closeMobileMenu()} />
+      )}
+
+      {/* Mobile Drawer */}
+      {(mobileMenuOpen || isClosing) && (
+        <div className={`nav-drawer ${isClosing ? 'nav-drawer-closing' : ''}`} ref={drawerRef}>
+          <div className="nav-drawer-header">
+            <Link to="/" className="nav-logo" onClick={() => closeMobileMenu()}>
+              <img src={loginLogo} alt="AkovoLabs Logo" className="nav-logo-icon" />
+              <span className="nav-logo-text">AkovoLabs</span>
+            </Link>
+          </div>
+          
+          <div className="nav-drawer-content">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`nav-drawer-item ${isActiveRoute(item.href) ? 'nav-drawer-item-active' : ''}`}
+                onClick={() => closeMobileMenu()}
+              >
+                <div className="nav-drawer-item-icon">{item.icon}</div>
+                <div className="nav-drawer-item-text">
+                  <span className="nav-drawer-item-label">{item.label}</span>
+                  <span className="nav-drawer-item-desc">{item.description}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          
+          <div className="nav-drawer-footer">
+            <button
+              className="nav-drawer-footer-btn"
+              onClick={cycleTheme}
+            >
+              <div className="nav-drawer-footer-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+              </div>
+              <div className="nav-drawer-footer-text">
+                <span className="nav-drawer-footer-label">Theme</span>
+                <span className="nav-drawer-footer-desc">{getCurrentThemeData().name}</span>
+              </div>
+            </button>
+            
+            {!user && (
+              <Link
+                to="/login"
+                className="nav-drawer-footer-btn"
+                onClick={() => closeMobileMenu()}
+              >
+                <div className="nav-drawer-footer-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
+                </div>
+                <div className="nav-drawer-footer-text">
+                  <span className="nav-drawer-footer-label">Login</span>
+                </div>
+              </Link>
+            )}
+            
+            {user && (
+              <button
+                className="nav-drawer-footer-btn nav-drawer-footer-btn-danger"
+                onClick={() => setShowLogoutModal(true)}
+              >
+                <div className="nav-drawer-footer-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                </div>
+                <div className="nav-drawer-footer-text">
+                  <span className="nav-drawer-footer-label">Logout</span>
+                </div>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <Loading 
         isLoading={isLoggingOut} 
         message="Signing you out"
