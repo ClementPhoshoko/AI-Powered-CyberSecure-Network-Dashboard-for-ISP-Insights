@@ -83,17 +83,32 @@
   animation: navItemFadeIn 0.5s var(--ease-out) backwards;
 }
 
-.nav-item:nth-child(1) { animation-delay: 100ms; }
-.nav-item:nth-child(2) { animation-delay: 150ms; }
-.nav-item:nth-child(3) { animation-delay: 200ms; }
-.nav-item:nth-child(4) { animation-delay: 250ms; }
-.nav-item:nth-child(5) { animation-delay: 300ms; }
+.nav-item:nth-child(1) {
+  animation-delay: 100ms;
+}
+
+.nav-item:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.nav-item:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+.nav-item:nth-child(4) {
+  animation-delay: 250ms;
+}
+
+.nav-item:nth-child(5) {
+  animation-delay: 300ms;
+}
 
 @keyframes navItemFadeIn {
   0% {
     opacity: 0;
     transform: translateY(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -482,6 +497,7 @@
   0% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -522,6 +538,7 @@
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -557,15 +574,29 @@
   animation: navItemFadeIn 0.5s var(--ease-out) backwards;
 }
 
-.nav-drawer-item:nth-child(1) { animation-delay: 100ms; }
-.nav-drawer-item:nth-child(2) { animation-delay: 150ms; }
-.nav-drawer-item:nth-child(3) { animation-delay: 200ms; }
-.nav-drawer-item:nth-child(4) { animation-delay: 250ms; }
-.nav-drawer-item:nth-child(5) { animation-delay: 300ms; }
+.nav-drawer-item:nth-child(1) {
+  animation-delay: 100ms;
+}
+
+.nav-drawer-item:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.nav-drawer-item:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+.nav-drawer-item:nth-child(4) {
+  animation-delay: 250ms;
+}
+
+.nav-drawer-item:nth-child(5) {
+  animation-delay: 300ms;
+}
 
 .nav-drawer-item:hover,
 .nav-drawer-item.nav-drawer-item-active {
-  background: var(--glass-bg-strong);
+  /* background: var(--glass-bg-strong); */
   color: var(--primary);
 }
 
@@ -640,9 +671,17 @@
   animation: navItemFadeIn 0.5s var(--ease-out) backwards;
 }
 
-.nav-drawer-footer-btn:nth-child(1) { animation-delay: 300ms; }
-.nav-drawer-footer-btn:nth-child(2) { animation-delay: 350ms; }
-.nav-drawer-footer-btn:nth-child(3) { animation-delay: 400ms; }
+.nav-drawer-footer-btn:nth-child(1) {
+  animation-delay: 300ms;
+}
+
+.nav-drawer-footer-btn:nth-child(2) {
+  animation-delay: 350ms;
+}
+
+.nav-drawer-footer-btn:nth-child(3) {
+  animation-delay: 400ms;
+}
 
 .nav-drawer-footer-btn:hover {
   background: var(--glass-bg-strong);

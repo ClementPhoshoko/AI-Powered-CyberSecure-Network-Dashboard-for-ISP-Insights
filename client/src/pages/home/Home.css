@@ -15,7 +15,7 @@
 .home-title {
   grid-column: 1 / -1;
   text-align: center;
-  font-size: var(--text-2xl);
+  font-size: clamp(1.25rem, 5vw, 2.5rem);
   font-weight: 600;
   color: var(--primary);
   margin-bottom: var(--space-4);
@@ -32,6 +32,7 @@
   height: 100%;
   padding: 0 var(--space-4);
   box-sizing: border-box;
+  container-type: inline-size;
 }
 
 .home-col--center {
@@ -44,7 +45,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: clamp(250px, 60vw, 400px);
 }
 
 .speedmeter-container {
@@ -84,7 +85,7 @@
 .logo-overlay-icon {
   width: 100%;
   height: auto;
-  max-width: 500px;
+  max-width: clamp(150px, 60vw, 500px);
   object-fit: contain;
 }
 
@@ -92,8 +93,10 @@
   background: var(--glass-bg);
   color: var(--text-primary);
   border: none;
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
+  padding: var(--space-3) var(--space-6);
+  min-height: 40px;
+  justify-content: center;
+  font-size: clamp(var(--text-sm), 3vw, var(--text-base));
   font-weight: 600;
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -107,17 +110,57 @@
 }
 
 @keyframes professionalVibrateCycle {
-  0%, 37.5%, 100% {
+
+  0%,
+  37.5%,
+  100% {
     transform: scale(1);
     box-shadow: 0 4px 12px var(--primary-glow);
   }
+
   /* 3-second vibrate + grow phase (0% to 37.5% of 8s cycle) */
-  1%, 3%, 5%, 7%, 9%, 11%, 13%, 15%, 17%, 19%, 21%, 23%, 25%, 27%, 29%, 31%, 33%, 35% {
+  1%,
+  3%,
+  5%,
+  7%,
+  9%,
+  11%,
+  13%,
+  15%,
+  17%,
+  19%,
+  21%,
+  23%,
+  25%,
+  27%,
+  29%,
+  31%,
+  33%,
+  35% {
     transform: scale(1.02);
   }
-  2%, 4%, 6%, 8%, 10%, 12%, 14%, 16%, 18%, 20%, 22%, 24%, 26%, 28%, 30%, 32%, 34%, 36% {
+
+  2%,
+  4%,
+  6%,
+  8%,
+  10%,
+  12%,
+  14%,
+  16%,
+  18%,
+  20%,
+  22%,
+  24%,
+  26%,
+  28%,
+  30%,
+  32%,
+  34%,
+  36% {
     transform: scale(0.98);
   }
+
   37.4% {
     transform: scale(1.05);
     box-shadow: 0 8px 24px var(--primary-glow);
@@ -221,7 +264,7 @@
   color: var(--text-secondary);
 }
 
-.speaker-text + .speaker-text {
+.speaker-text+.speaker-text {
   margin-top: var(--space-2);
 }
 
@@ -262,7 +305,7 @@
   line-height: 1.6;
 }
 
-.ai-summary-text + .ai-summary-text {
+.ai-summary-text+.ai-summary-text {
   margin-top: var(--space-2);
 }
 
@@ -278,6 +321,7 @@
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -341,6 +385,15 @@
 }
 
 @media (max-width: 640px) {
+  .graph-advisory {
+    display: none;
+  }
+
+  .begin-test-btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+
   .home-container,
   .graphs-section {
     padding-left: var(--space-4);
@@ -354,8 +407,7 @@
   }
 
   .speaker-avatar {
-    width: 72px;
-    height: 72px;
+    display: none;
   }
 
   .speaker-card,
