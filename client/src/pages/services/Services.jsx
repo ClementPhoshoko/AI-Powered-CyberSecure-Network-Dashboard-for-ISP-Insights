@@ -4,7 +4,6 @@ import './Services.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import speedTestPreview2 from '../../assets/avatars/speedtest_preview_image_2.png';
 import logo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
-import comingSoon from '../../assets/avatars/coming_soon_features_design.png';
 
 const Services = () => {
   const location = useLocation();
@@ -78,7 +77,7 @@ const Services = () => {
               <div className="services_service_content">
                 <h3 className="services_service_title">Network Analysis</h3>
                 <p className="services_service_description">
-                  Deep network diagnostics, packet analysis, and performance monitoring. Identify bottlenecks, latency issues, and network anomalies automatically. Gain comprehensive visibility into your network topology, traffic patterns, and device performance with intuitive dashboards and detailed logs.
+                  Deep network diagnostics, analytics, and performance monitoring. Identify bottlenecks, latency issues, and network anomalies automatically. Gain comprehensive visibility into your network performance with intuitive dashboards and detailed logs.
                 </p>
                 <div className="services_service_features">
                   <span className="services_feature_tag">Diagnostics</span>
@@ -88,40 +87,38 @@ const Services = () => {
               </div>
             </div>
             
-            {/* Security Service - Coming Soon */}
-            <div id="security" className="services_service_card services_coming_soon">
+            {/* Security Service */}
+            <div id="security" className="services_service_card">
               <div className="services_service_image_container">
-                <img src={comingSoon} alt="Security Coming Soon" className="services_service_image"/>
-                <div className="services_coming_soon_badge">Coming Soon</div>
+                <img src={speedTestPreview1} alt="Security" className="services_service_image"/>
               </div>
               <div className="services_service_content">
                 <h3 className="services_service_title">Security</h3>
                 <p className="services_service_description">
-                  Advanced threat detection, vulnerability scanning, and security monitoring to keep your network safe from attacks and intrusions. Detect and respond to potential threats in real-time, identify security vulnerabilities before they're exploited, and maintain comprehensive audit logs for compliance and troubleshooting purposes.
+                  Advanced port scanning, vulnerability detection, and risk assessment to keep your network safe from attacks and intrusions. Detect open ports, assess security risks, and get actionable recommendations to secure your network.
                 </p>
                 <div className="services_service_features">
-                  <span className="services_feature_tag">Threat Detection</span>
-                  <span className="services_feature_tag">Vulnerability Scan</span>
-                  <span className="services_feature_tag">Monitoring</span>
+                  <span className="services_feature_tag">Port Scanning</span>
+                  <span className="services_feature_tag">Risk Assessment</span>
+                  <span className="services_feature_tag">Recommendations</span>
                 </div>
               </div>
             </div>
             
-            {/* AI Insights Service - Coming Soon */}
-            <div id="ai-insights" className="services_service_card services_coming_soon">
+            {/* AI Insights Service */}
+            <div id="ai-insights" className="services_service_card">
               <div className="services_service_image_container">
-                <img src={comingSoon} alt="AI Insights Coming Soon" className="services_service_image"/>
-                <div className="services_coming_soon_badge">Coming Soon</div>
+                <img src={speedTestPreview2} alt="AI Insights" className="services_service_image"/>
               </div>
               <div className="services_service_content">
                 <h3 className="services_service_title">AI Insights</h3>
                 <p className="services_service_description">
-                  Machine learning powered insights, predictive analytics, and intelligent recommendations to optimize your network performance automatically. Leverage advanced algorithms to forecast future network conditions, identify optimization opportunities, and automate routine maintenance tasks for maximum efficiency.
+                  AI-powered insights, scoring, and intelligent recommendations to optimize your network performance automatically. Leverage advanced algorithms to get tailored advice and network health scores for gaming, streaming, and more.
                 </p>
                 <div className="services_service_features">
-                  <span className="services_feature_tag">Predictive</span>
+                  <span className="services_feature_tag">AI Summaries</span>
+                  <span className="services_feature_tag">Network Scoring</span>
                   <span className="services_feature_tag">Recommendations</span>
-                  <span className="services_feature_tag">Optimization</span>
                 </div>
               </div>
             </div>
