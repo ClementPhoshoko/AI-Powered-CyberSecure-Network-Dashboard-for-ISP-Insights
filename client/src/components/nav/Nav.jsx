@@ -20,12 +20,11 @@ import './Nav.css';
 function Nav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoggingOut, setIsLoggingOut } = useAuth();
   const { getCurrentThemeData, cycleTheme } = useTheme();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
 
   const navItems = [

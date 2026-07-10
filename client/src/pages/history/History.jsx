@@ -1313,10 +1313,6 @@ function History() {
                           <ul className="coming-soon-list">
                             <li className="coming-soon-item">
                               <span className="coming-soon-bullet"></span>
-                              Port Risk Detection
-                            </li>
-                            <li className="coming-soon-item">
-                              <span className="coming-soon-bullet"></span>
                               Public Wi-Fi Security Analysis
                             </li>
                             <li className="coming-soon-item">

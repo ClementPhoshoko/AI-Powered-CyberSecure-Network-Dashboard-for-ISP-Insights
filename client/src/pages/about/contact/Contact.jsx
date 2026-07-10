@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Contact.css';
 
 const Contact = () => {
@@ -9,11 +9,40 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const subjectOptions = [
+    { value: '', label: 'Select a topic' },
+    { value: 'general', label: 'General Inquiry' },
+    { value: 'sales', label: 'Sales' },
+    { value: 'support', label: 'Support' },
+    { value: 'partnership', label: 'Partnership' }
+  ];
+
+  const selectedSubject = subjectOptions.find(opt => opt.value === formData.subject) || subjectOptions[0];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleSubjectSelect = (option) => {
+    setFormData(prev => ({ ...prev, subject: option.value }));
+    setIsDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -95,14 +124,15 @@ const Contact = () => {
             <div className="contact-field-group">
               <div className="contact-form-field">
                 <label className="contact-form-label">Subject / Topic</label>
-                <div className="contact-form-input-wrapper">
+                <div className="contact-form-input-wrapper" ref={dropdownRef}>
                   <svg className="contact-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
+                  {/* Hidden native select for form submission */}
                   <select
                     id="subject"
                     name="subject"
-                    className="contact-form-input"
+                    className="contact-form-input contact-form-input-hidden"
                     value={formData.subject}
                     onChange={handleChange}
                   >
@@ -112,6 +142,33 @@ const Contact = () => {
                     <option value="support">Support</option>
                     <option value="partnership">Partnership</option>
                   </select>
+                  {/* Custom dropdown trigger */}
+                  <div
+                    className="contact-custom-dropdown-trigger"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <span className="contact-custom-dropdown-selected">{selectedSubject.label}</span>
+                    <svg className={`contact-custom-dropdown-chevron ${isDropdownOpen ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                  {/* Custom dropdown menu */}
+                  {isDropdownOpen && (
+                    <div className="contact-custom-dropdown-menu">
+                      {subjectOptions.map((opt) => (
+                        <div
+                          key={opt.value}
+                          className={`contact-custom-dropdown-item ${formData.subject === opt.value ? 'selected' : ''}`}
+                          onClick={() => handleSubjectSelect(opt)}
+                        >
+                          <svg className="contact-custom-dropdown-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                          </svg>
+                          <span>{opt.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

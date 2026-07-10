@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -39,6 +40,8 @@ export const AuthProvider = ({ children }) => {
     session,
     loading,
     logout,
+    isLoggingOut,
+    setIsLoggingOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

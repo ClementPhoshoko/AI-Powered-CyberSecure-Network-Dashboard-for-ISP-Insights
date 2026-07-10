@@ -11,7 +11,7 @@ import successAvatar2 from '../../assets/avatars/success_avatar_2.png';
 import './Account.css';
 
 function Account() {
-  const { user, logout, loading: authLoading } = useAuth();
+  const { user, logout, loading: authLoading, setIsLoggingOut } = useAuth();
   const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useProfile(!authLoading && !!user);
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -101,11 +101,22 @@ function Account() {
   };
 
   const handleSignOutConfirm = async () => {
+    setShowSignOutConfirm(false);
+    setIsLoggingOut(true);
+    // Navigate to home first (non-protected, non-auth) so Nav stays mounted
+    // and ProtectedRoute doesn't intercept with /auth-required
+    navigate("/");
     try {
-      await logout();
-      navigate('/');
+      // Run logout concurrently with a minimum delay so user sees the loading animation
+      await Promise.all([
+        logout(),
+        new Promise(resolve => setTimeout(resolve, 1500))
+      ]);
     } catch (err) {
       setErrorModal({ isOpen: true, message: err.message });
+    } finally {
+      setIsLoggingOut(false);
+      navigate("/login");
     }
   };
 
