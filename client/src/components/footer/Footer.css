@@ -1,6 +1,6 @@
 /* =========================================================
    FOOTER COMPONENT
-   Clean & Smooth Glassmorphism with Auth Form Styles
+   Mobile-first responsive layout with container queries
    ========================================================= */
 
 .footer-container {
@@ -10,21 +10,25 @@
   backdrop-filter: var(--blur-lg);
   -webkit-backdrop-filter: var(--blur-lg);
   border-top: 1px solid var(--glass-border);
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-4);
   margin-top: auto;
+  width: 100%;
+  min-width: 0;
+  container-type: inline-size;
+  container-name: footer;
 }
 
 .footer-content {
   max-width: var(--container-xl);
   margin: 0 auto;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-8);
-  flex-wrap: wrap;
-  padding-bottom: var(--space-6);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--glass-border);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
+  min-width: 0;
 }
 
 /* =========================================================
@@ -34,27 +38,30 @@
 .footer-left {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  flex: 1;
-  min-width: 280px;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
 }
 
 .footer-logo {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .footer-logo-icon {
-  width: 88px;
-  height: 88px;
+  width: clamp(3rem, 14vw, 5.5rem);
+  height: clamp(3rem, 14vw, 5.5rem);
+  flex-shrink: 0;
   object-fit: contain;
   border-radius: var(--radius-md);
 }
 
 .footer-logo-text {
-  font-size: var(--text-2xl);
+  font-size: clamp(var(--text-lg), 4vw, var(--text-2xl));
   font-weight: 800;
+  line-height: 1.2;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -62,47 +69,50 @@
 }
 
 .footer-tagline {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
   margin: 0;
   font-weight: 600;
+  line-height: 1.4;
 }
 
 .footer-description {
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
-  line-height: 1.6;
-  max-width: 400px;
+  line-height: 1.4;
+  max-width: 100%;
 }
 
 /* =========================================================
-   RIGHT: SUBSCRIBE (Matches Auth Form Styles)
+   RIGHT: SUBSCRIBE
    ========================================================= */
 
 .footer-subscribe {
   display: flex;
-  flex-direction: row;
-  gap: var(--space-6);
-  flex: 0 0 auto;
-  align-items: flex-start;
-  align-self: center;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+  align-self: stretch;
 }
 
 .footer-form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .footer-form-label {
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 .footer-form-note {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
   line-height: 1.4;
@@ -110,16 +120,17 @@
 
 .footer-form-wrapper {
   display: flex;
-  gap: var(--space-3);
   flex-wrap: wrap;
+  gap: var(--space-2);
   align-items: center;
 }
 
-
-
 .footer-form-button {
-  display: inline-block;
-  padding: var(--space-2) 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target-min);
+  padding: var(--touch-target-padding) var(--space-2);
   font-size: var(--text-sm);
   font-weight: 600;
   background: transparent;
@@ -156,7 +167,7 @@
 }
 
 .footer-success-message {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--success);
   margin: 0;
   margin-top: var(--space-1);
@@ -167,28 +178,29 @@
 .footer-apps-section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 .footer-apps-text {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   margin: 0;
-  font-weight: 500;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .footer-apps-subtitle {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
-  margin-top: -var(--space-2);
   line-height: 1.4;
 }
 
 .footer-apps-links {
   display: flex;
-  gap: var(--space-3);
   flex-wrap: wrap;
+  gap: var(--space-2);
   align-items: center;
 }
 
@@ -198,8 +210,11 @@
 }
 
 .footer-apps-link {
-  display: inline-block;
-  padding: var(--space-2) 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target-min);
+  padding: var(--touch-target-padding) var(--space-2);
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--primary);
@@ -225,33 +240,108 @@
   max-width: var(--container-xl);
   margin: 0 auto;
   text-align: center;
+  min-width: 0;
 }
 
 .footer-copyright {
   font-size: var(--text-xs);
   color: var(--text-muted);
   margin: 0;
+  line-height: 1.5;
 }
 
 /* =========================================================
-   RESPONSIVE
+   CONTAINER QUERIES — adapt to available footer width
    ========================================================= */
 
-@media (max-width: 768px) {
-  .footer-container {
-    padding: var(--space-6) var(--space-4);
-  }
-  
-  .footer-content {
-    flex-direction: column;
+@container footer (min-width: 480px) {
+  .footer-subscribe {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
     gap: var(--space-6);
   }
-  
-  .footer-subscribe {
-    min-width: 100%;
+
+  .footer-form-field,
+  .footer-apps-section {
+    flex: 1 1 14rem;
+    min-width: min(100%, 14rem);
   }
-  
-  .footer-form-wrapper {
+}
+
+@container footer (min-width: 720px) {
+  .footer-content {
     flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-bottom: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+
+  .footer-left {
+    flex: 1 1 16rem;
+    gap: var(--space-3);
+  }
+
+  .footer-logo {
+    gap: var(--space-3);
+  }
+
+  .footer-description {
+    max-width: 25rem;
+  }
+
+  .footer-subscribe {
+    flex: 0 1 auto;
+    width: auto;
+    align-self: center;
+  }
+}
+
+/* =========================================================
+   VIEWPORT BREAKPOINTS — spacing & typography scale-up
+   ========================================================= */
+
+@media (min-width: 640px) {
+  .footer-container {
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .footer-content {
+    gap: var(--space-6);
+  }
+
+  .footer-left {
+    gap: var(--space-3);
+  }
+
+  .footer-subscribe {
+    gap: var(--space-6);
+  }
+
+  .footer-apps-section {
+    gap: var(--space-3);
+  }
+
+  .footer-form-field {
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-container {
+    padding: var(--space-3) var(--space-6);
+  }
+
+  .footer-content {
+    gap: var(--space-8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-form-button,
+  .footer-apps-link {
+    transition: none;
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -32,6 +32,77 @@ function Nav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const drawerRef = useRef(null);
+  const drawerContentRef = useRef(null);
+  const drawerScrollbarTrackRef = useRef(null);
+  const [drawerScrollbar, setDrawerScrollbar] = useState({
+    thumbHeight: 0,
+    thumbTop: 0,
+    scrollable: false,
+  });
+
+  const updateDrawerScrollbar = useCallback(() => {
+    const scrollEl = drawerContentRef.current;
+    const trackEl = drawerScrollbarTrackRef.current;
+    if (!scrollEl || !trackEl) return;
+
+    const { scrollHeight, clientHeight, scrollTop } = scrollEl;
+    const trackHeight = trackEl.clientHeight;
+    const scrollable = scrollHeight > clientHeight + 1;
+
+    if (!scrollable) {
+      setDrawerScrollbar({
+        thumbHeight: trackHeight,
+        thumbTop: 0,
+        scrollable: false,
+      });
+      return;
+    }
+
+    const minThumbHeight = 48;
+    const thumbHeight = Math.max(minThumbHeight, (clientHeight / scrollHeight) * trackHeight);
+    const maxThumbTop = trackHeight - thumbHeight;
+    const scrollRatio = scrollTop / (scrollHeight - clientHeight);
+    const thumbTop = scrollRatio * maxThumbTop;
+
+    setDrawerScrollbar({
+      thumbHeight,
+      thumbTop,
+      scrollable: true,
+    });
+  }, []);
+
+  const handleDrawerScrollbarThumbPointerDown = (event) => {
+    event.preventDefault();
+
+    const scrollEl = drawerContentRef.current;
+    const trackEl = drawerScrollbarTrackRef.current;
+    if (!scrollEl || !trackEl) return;
+
+    const trackHeight = trackEl.clientHeight;
+    const { scrollHeight, clientHeight, scrollTop } = scrollEl;
+    if (scrollHeight <= clientHeight + 1) return;
+
+    const minThumbHeight = 48;
+    const thumbHeight = Math.max(minThumbHeight, (clientHeight / scrollHeight) * trackHeight);
+    const maxThumbTop = trackHeight - thumbHeight;
+    const maxScrollTop = scrollHeight - clientHeight;
+    const startY = event.clientY;
+    const startScrollTop = scrollTop;
+
+    const handlePointerMove = (moveEvent) => {
+      const deltaY = moveEvent.clientY - startY;
+      const scrollDelta = maxThumbTop > 0 ? (deltaY / maxThumbTop) * maxScrollTop : 0;
+      scrollEl.scrollTop = startScrollTop + scrollDelta;
+    };
+
+    const handlePointerUp = () => {
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+    };
+
+    document.addEventListener('pointermove', handlePointerMove);
+    document.addEventListener('pointerup', handlePointerUp);
+  };
 
   const closeMobileMenu = () => {
     setIsClosing(true);
@@ -66,6 +137,25 @@ function Nav() {
       closeMobileMenu();
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen && !isClosing) return undefined;
+
+    const scrollEl = drawerContentRef.current;
+    if (!scrollEl) return undefined;
+
+    const frameId = requestAnimationFrame(updateDrawerScrollbar);
+
+    scrollEl.addEventListener('scroll', updateDrawerScrollbar, { passive: true });
+    const resizeObserver = new ResizeObserver(updateDrawerScrollbar);
+    resizeObserver.observe(scrollEl);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      scrollEl.removeEventListener('scroll', updateDrawerScrollbar);
+      resizeObserver.disconnect();
+    };
+  }, [mobileMenuOpen, isClosing, user, location.pathname, updateDrawerScrollbar]);
 
   const navItems = [
     {
@@ -205,6 +295,38 @@ function Nav() {
   const isActiveRoute = (href) => {
     return location.pathname === href || (href !== '/' && location.pathname.startsWith(href));
   };
+
+  const mobileAccountLinks = user ? [
+    location.pathname !== '/account' && {
+      to: '/account',
+      label: 'Manage Account',
+      description: 'Profile & settings',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+    },
+    location.pathname !== '/tests' && {
+      to: '/tests',
+      label: 'Test History',
+      description: 'View past speed tests',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
+        </svg>
+      ),
+    },
+    location.pathname !== '/security' && {
+      to: '/security',
+      label: 'Security',
+      description: 'Account security',
+      icon: <ShieldCheckIcon />,
+    },
+  ].filter(Boolean) : [];
 
   return (
     <nav className="nav-container">
@@ -410,23 +532,84 @@ function Nav() {
               <img src={loginLogo} alt="AkovoLabs Logo" className="nav-logo-icon" />
               <span className="nav-logo-text">AkovoLabs</span>
             </Link>
+
+            <div className="nav-account nav-account--drawer">
+              <div className="nav-avatar" aria-hidden="true">
+                {user ? (
+                  <div className="nav-avatar-initial">
+                    {user.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                ) : (
+                  <svg className="nav-avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                )}
+              </div>
+            </div>
           </div>
           
           <div className="nav-drawer-content">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={`nav-drawer-item ${isActiveRoute(item.href) ? 'nav-drawer-item-active' : ''}`}
-                onClick={() => closeMobileMenu()}
-              >
-                <div className="nav-drawer-item-icon">{item.icon}</div>
-                <div className="nav-drawer-item-text">
-                  <span className="nav-drawer-item-label">{item.label}</span>
-                  <span className="nav-drawer-item-desc">{item.description}</span>
+            <div
+              className="nav-drawer-content-scroll"
+              ref={drawerContentRef}
+              onScroll={updateDrawerScrollbar}
+            >
+              {mobileAccountLinks.length > 0 && (
+                <div className="nav-drawer-account-links">
+                  {mobileAccountLinks.map((link) => (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      className={`nav-drawer-item ${isActiveRoute(link.to) ? 'nav-drawer-item-active' : ''}`}
+                      onClick={() => closeMobileMenu()}
+                    >
+                      <div className="nav-drawer-item-icon">{link.icon}</div>
+                      <div className="nav-drawer-item-text">
+                        <span className="nav-drawer-item-label">{link.label}</span>
+                        <span className="nav-drawer-item-desc">{link.description}</span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              </Link>
-            ))}
+              )}
+
+              {mobileAccountLinks.length > 0 && (
+                <div className="nav-drawer-divider" aria-hidden="true" />
+              )}
+
+              <div className="nav-drawer-nav-links">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`nav-drawer-item ${isActiveRoute(item.href) ? 'nav-drawer-item-active' : ''}`}
+                    onClick={() => closeMobileMenu()}
+                  >
+                    <div className="nav-drawer-item-icon">{item.icon}</div>
+                    <div className="nav-drawer-item-text">
+                      <span className="nav-drawer-item-label">{item.label}</span>
+                      <span className="nav-drawer-item-desc">{item.description}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className="nav-drawer-scrollbar"
+              ref={drawerScrollbarTrackRef}
+              aria-hidden="true"
+            >
+              <div
+                className={`nav-drawer-scrollbar-thumb ${drawerScrollbar.scrollable ? '' : 'nav-drawer-scrollbar-thumb-idle'}`}
+                style={{
+                  height: `${drawerScrollbar.thumbHeight}px`,
+                  transform: `translateY(${drawerScrollbar.thumbTop}px)`,
+                }}
+                onPointerDown={handleDrawerScrollbarThumbPointerDown}
+              />
+            </div>
           </div>
           
           <div className="nav-drawer-footer">

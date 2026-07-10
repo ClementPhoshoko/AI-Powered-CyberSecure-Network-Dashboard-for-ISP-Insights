@@ -1,73 +1,79 @@
 .footer-skeleton {
   display: flex;
-  flex-direction: row;
-  gap: var(--space-6);
-  flex: 0 0 auto;
-  align-items: flex-start;
-  align-self: center;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+  align-self: stretch;
 }
 
 .footer-skeleton-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
+  width: 100%;
 }
 
 .footer-skeleton-apps {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
+  width: 100%;
 }
 
 .footer-skeleton-line {
   background: var(--glass-bg-soft);
   border-radius: var(--radius-sm);
-  animation: skeleton-pulse 2s ease-in-out infinite;
+  animation: footer-skeleton-pulse 2s ease-in-out infinite;
+  max-width: 100%;
 }
 
 .footer-skeleton-label {
-  width: 200px;
-  height: 16px;
+  width: min(12.5rem, 100%);
+  height: 1rem;
 }
 
 .footer-skeleton-note {
-  width: 220px;
-  height: 14px;
+  width: min(13.75rem, 100%);
+  height: 0.875rem;
 }
 
 .footer-skeleton-button {
-  width: 80px;
-  height: 20px;
+  width: min(5rem, 40%);
+  height: var(--touch-target-min);
 }
 
 .footer-skeleton-apps-text {
-  width: 140px;
-  height: 16px;
+  width: min(8.75rem, 70%);
+  height: 1rem;
 }
 
 .footer-skeleton-apps-subtitle {
-  width: 180px;
-  height: 14px;
+  width: min(11.25rem, 85%);
+  height: 0.875rem;
 }
 
 .footer-skeleton-apps-links {
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: wrap;
+  gap: var(--space-2);
   align-items: center;
 }
 
 .footer-skeleton-link {
-  width: 60px;
-  height: 20px;
+  width: min(3.75rem, 28%);
+  height: var(--touch-target-min);
 }
 
 .footer-skeleton-divider {
-  width: 8px;
-  height: 16px;
+  width: 0.5rem;
+  height: 1rem;
   opacity: 0.5;
 }
 
-@keyframes skeleton-pulse {
+@keyframes footer-skeleton-pulse {
   0%, 100% {
     opacity: 0.4;
   }
@@ -76,10 +82,36 @@
   }
 }
 
-@media (max-width: 768px) {
+@container footer (min-width: 480px) {
   .footer-skeleton {
-    min-width: 100%;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
     gap: var(--space-6);
+  }
+
+  .footer-skeleton-form,
+  .footer-skeleton-apps {
+    flex: 1 1 14rem;
+    min-width: min(100%, 14rem);
+    gap: var(--space-3);
+  }
+}
+
+@media (min-width: 640px) {
+  .footer-skeleton {
+    gap: var(--space-6);
+  }
+
+  .footer-skeleton-form,
+  .footer-skeleton-apps {
+    gap: var(--space-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-skeleton-line {
+    animation: none;
+    opacity: 0.6;
   }
 }
