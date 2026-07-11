@@ -138,9 +138,9 @@
   transition: transform 0.5s ease;
 }
 
-.news_post:hover .news_post_image {
-  /* transform: scale(1.05); */
-}
+/* .news_post:hover .news_post_image {
+  transform: scale(1.05);
+} */
 
 .news_post_content {
   padding: var(--space-3);
@@ -203,6 +203,7 @@
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -210,11 +211,13 @@
 .news_post_large .news_post_description {
   font-size: var(--text-sm);
   -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .news_post_small .news_post_description {
   font-size: 11px;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 /* Pagination Styles */
