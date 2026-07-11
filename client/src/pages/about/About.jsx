@@ -87,9 +87,6 @@ const About = () => {
             </div>
             
             <div className="about_cta_container">
-              <button className="about_cta_primary" onClick={goToServices}>
-                Learn More
-              </button>
               <a href="#contact-us" className="about_cta_secondary" onClick={scrollToContact}>
                 Contact Us
                 <svg className="about_cta_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -124,14 +121,9 @@ const About = () => {
             </div>
             
             <div className="about_story_quote">
-              <div className="about_quote_card">
-                <svg className="about_quote_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                </svg>
-                <p className="about_quote_text">
-                  "Smart technology, lightning-fast speed, and actionable insights because connectivity should work for you, not against you. We believe in making complex network data simple, intuitive, and empowering for everyone."
-                </p>
-              </div>
+              <p className="about_quote_text">
+                "Smart technology, lightning-fast speed, and actionable insights because connectivity should work for you, not against you. We believe in making complex network data simple, intuitive, and empowering for everyone."
+              </p>
             </div>
           </div>
         </section>
@@ -139,28 +131,42 @@ const About = () => {
         {/* Team Section */}
         <section id="the-team" className="about_team_section">
           <h2 className="about_section_title">The Team</h2>
-          <div className="about_team_grid">
-            <div className="about_team_member">
-              <Bubble position="left">
-                "Every great product starts with solving a real problem. I build AI-driven, automated, and scalable solutions with modern glass-inspired interfaces."
-              </Bubble>
+          <ul className="about_team_grid">
+            <li className="about_team_member">
+              <div className="about_team_quote_wrapper">
+                <Bubble position="left">
+                  "Every great product starts with solving a real problem. I build AI-driven, automated, and scalable solutions with modern glass-inspired interfaces."
+                </Bubble>
+                <p className="about_mobile_quote">
+                  "Every great product starts with solving a real problem. I build AI-driven, automated, and scalable solutions with modern glass-inspired interfaces."
+                </p>
+              </div>
               <div className="about_member_photo">
                 <img src={fullStackDev} alt="Clement Phoshoko" />
               </div>
-              <h3 className="about_member_name">Clement Phoshoko</h3>
-              <p className="about_member_role">Full-Stack Product Engineer</p>
-            </div>
-            <div className="about_team_member">
-              <Bubble position="right">
-                "Imagine seeing every connection, every metric, and every anomaly in one place. That's the power of intelligent network analytics."
-              </Bubble>
+              <div className="about_member_info">
+                <h3 className="about_member_name">Clement Phoshoko</h3>
+                <p className="about_member_role">Full-Stack Product Engineer</p>
+              </div>
+            </li>
+            <li className="about_team_member">
+              <div className="about_team_quote_wrapper">
+                <Bubble position="right">
+                  "Imagine seeing every connection, every metric, and every anomaly in one place. That's the power of intelligent network analytics."
+                </Bubble>
+                <p className="about_mobile_quote">
+                  "Imagine seeing every connection, every metric, and every anomaly in one place. That's the power of intelligent network analytics."
+                </p>
+              </div>
               <div className="about_member_photo">
                 <img src={networkEngineer} alt="Tsumbedzo Matloga" />
               </div>
-              <h3 className="about_member_name">Tsumbedzo Matloga</h3>
-              <p className="about_member_role">Network Software Engineer</p>
-            </div>
-          </div>
+              <div className="about_member_info">
+                 <h3 className="about_member_name">Tsumbedzo Matloga</h3>
+                 <p className="about_member_role">Network Software Engineer</p>
+               </div>
+            </li>
+          </ul>
         </section>
 
         {/* Contact Section */}

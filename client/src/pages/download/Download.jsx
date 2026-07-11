@@ -25,8 +25,8 @@ const Download = () => {
     },
     {
       icon: <GlobeAltIcon />,
-      title: 'Works Everywhere',
-      subtitle: 'WiFi, 4G, 5G & more'
+      title: 'Network Security Scan',
+      subtitle: 'Port risk detection built-in tools'
     }
   ];
 
@@ -34,8 +34,8 @@ const Download = () => {
     <div className="download_page">
       <div className="download_container">
         <section className="download_hero">
-          {/* Left Column */}
-          <div className="download_hero_left">
+          {/* Top Section - Logo and Mockup */}
+          <div className="download_visual_header">
             <div className="download_logo_container">
               <img 
                 src={loginLogo} 
@@ -44,6 +44,17 @@ const Download = () => {
               />
             </div>
             
+            <div className="download_image_container">
+              <img 
+                src={mobileMockup} 
+                alt="Futuristic Speed Test UI" 
+                className="download_mockup_image" 
+              />
+            </div>
+          </div>
+          
+          {/* Content Section */}
+          <div className="download_content_section">
             <h1 className="download_headline">
               AkovoLabs Speedtest
             </h1>
@@ -69,17 +80,7 @@ const Download = () => {
                 </div>
               ))}
             </div>
-          </div>
-          
-          {/* Right Column */}
-          <div className="download_hero_right">
-            <div className="download_image_container">
-              <img 
-                src={mobileMockup} 
-                alt="Futuristic Speed Test UI" 
-                className="download_mockup_image" 
-              />
-            </div>
+
             <div className="download_app_badges">
               <a 
                 href="https://play.google.com/store" 
@@ -106,6 +107,7 @@ const Download = () => {
                 />
               </a>
             </div>
+
             <p className="download_advisory">
               Join our beta testing program for early access! Your data and speed test information is protected with end-to-end encryption. We never share your personal information without your consent.
             </p>

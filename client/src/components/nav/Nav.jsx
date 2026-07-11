@@ -223,7 +223,7 @@ function Nav() {
       label: 'Download',
       href: '/download',
       icon: <ArrowDownTrayIcon />,
-      description: 'Mobile Applications',
+      description: 'For both iOS and Android',
       items: [
         { 
           label: 'iOS App', 

@@ -80,6 +80,9 @@ const News = () => {
   };
 
   const handlePostClick = (postId, index) => {
+    // Disable click interaction for mobile designs (< 768px)
+    if (window.innerWidth < 768) return;
+
     if (index === 0) {
       // Clicked the large post, undock
       setDockedPostId(null);

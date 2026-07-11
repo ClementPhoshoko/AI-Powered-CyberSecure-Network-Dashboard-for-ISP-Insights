@@ -18,23 +18,43 @@
 .services_container {
   max-width: var(--container-xl);
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
+  padding: var(--space-6) var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .services_container {
+    padding: var(--space-8) var(--space-6);
+  }
 }
 
 /* Hero Section */
 .services_hero {
-  display: grid;
-  grid-template-columns: 45% 55%;
-  gap: var(--space-8);
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
   padding-bottom: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .services_hero {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: var(--space-8);
+    align-items: start;
+  }
 }
 
 .services_hero_left {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-4);
   animation: slideInLeft 0.8s ease-out;
+}
+
+@media (min-width: 768px) {
+  .services_hero_left {
+    gap: var(--space-6);
+  }
 }
 
 @keyframes slideInLeft {
@@ -43,7 +63,7 @@
 }
 
 .services_headline {
-  font-size: var(--text-3xl);
+  font-size: var(--fluid-h1);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -67,10 +87,16 @@
 }
 
 .services_hero_right {
-  animation: slideInRight 0.8s ease-out 0.2s both;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .services_hero_right {
+    display: flex;
+    animation: slideInRight 0.8s ease-out 0.2s both;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 }
 
 @keyframes slideInRight {
@@ -108,7 +134,7 @@
 }
 
 .services_section_title {
-  font-size: var(--text-2xl);
+  font-size: var(--fluid-h2);
   font-weight: 700;
   margin: 0 0 var(--space-6);
   color: var(--text-primary);
@@ -177,10 +203,16 @@
 }
 
 .services_service_title {
-  font-size: var(--text-lg);
+  font-size: var(--text-xs);
   font-weight: 700;
   margin: 0;
   color: var(--text-primary);
+}
+
+@media (min-width: 768px) {
+  .services_service_title {
+    font-size: var(--text-lg);
+  }
 }
 
 .services_service_description {
@@ -241,7 +273,11 @@
   }
   
   .services_headline {
-    font-size: var(--text-2xl);
+    font-size: clamp(1.25rem, 5vw, 2.5rem);
+  }
+
+  .services_section_title {
+    font-size: clamp(1.25rem, 5vw, 2.5rem);
   }
   
   .services_service_image {

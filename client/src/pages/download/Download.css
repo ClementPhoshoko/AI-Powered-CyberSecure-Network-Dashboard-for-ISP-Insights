@@ -24,25 +24,48 @@
 .download_container {
   max-width: var(--container-xl);
   margin: 0 auto;
-  padding: 0 var(--space-6) var(--space-8) var(--space-6);
+  padding: var(--space-2) var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .download_container {
+    padding: var(--space-2) var(--space-4);
+  }
 }
 
 /* Hero Section */
 .download_hero {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  /* gap: var(--space-8); */
-  align-items: center;
-  padding-bottom: var(--space-4);
-}
-
-.download_hero_left {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  animation: slideInLeft 0.8s ease-out;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-1);
+  width: 100%;
+}
+
+.download_visual_header {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .download_visual_header {
+    flex-direction: row;
+    gap: var(--space-8);
+  }
+}
+
+.download_content_section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
 }
 
 @keyframes slideInLeft {
@@ -54,38 +77,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-4);
-}
-
-.download_logo {
-  width: 320px;
-  height: 320px;
-  object-fit: contain;
-}
-
-.download_subtitle {
-  font-size: var(--text-lg);
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: var(--space-5);
-  letter-spacing: -0.02em;
-  background: var(--primary-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin-bottom: 0;
+  animation: slideInLeft 0.8s ease-out;
 }
 
 .download_headline {
-  font-size: var(--text-2xl);
+  font-size: clamp(1rem, 3.5vw, 1.8rem);
   font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 var(--space-6);
+  line-height: 1.1;
+  margin: 0 0 var(--space-1);
   text-align: center;
   letter-spacing: -0.02em;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.download_subtitle {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.02em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (min-width: 768px) {
+  .download_subtitle {
+    font-size: var(--text-md);
+  }
+}
+
+.download_logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+@media (min-width: 768px) {
+  .download_logo {
+    width: 180px;
+    height: 180px;
+  }
 }
 
 /* Feature Grid */
@@ -95,6 +132,20 @@
   margin-top: 0;
   width: 100%;
   max-width: 400px;
+}
+
+@media (min-width: 768px) {
+  .download_features {
+    grid-template-columns: 1fr 1fr;
+    max-width: 800px;
+    gap: var(--space-4) var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .download_features {
+    gap: var(--space-6) var(--space-8);
+  }
 }
 
 .download_feature {
@@ -112,18 +163,33 @@
 }
 
 .download_feature_icon {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+@media (min-width: 768px) {
+  .download_feature_icon {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+  }
+}
+
 .download_feature_icon svg {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   color: var(--primary);
+}
+
+@media (min-width: 768px) {
+  .download_feature_icon svg {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .download_feature_content {
@@ -142,10 +208,16 @@
 }
 
 .download_feature_title {
-  font-size: var(--text-lg);
+  font-size: var(--text-xs);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+}
+
+@media (min-width: 768px) {
+  .download_feature_title {
+    font-size: var(--text-md);
+  }
 }
 
 .download_feature_subtitle {
@@ -155,13 +227,10 @@
   margin: 0;
 }
 
-/* Right Side - Image */
-.download_hero_right {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  animation: slideInRight 0.8s ease-out 0.2s both;
+@media (min-width: 768px) {
+  .download_feature_subtitle {
+    font-size: 12px;
+  }
 }
 
 @keyframes slideInRight {
@@ -169,6 +238,7 @@
   to { opacity: 1; transform: translateX(0); }
 }
 
+/* Right Side - Image Container */
 .download_image_container {
   width: 100%;
   max-width: 450px;
@@ -176,6 +246,13 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  animation: slideInRight 0.8s ease-out 0.2s both;
+}
+
+@media (max-width: 640px) {
+  .download_image_container {
+    display: none;
+  }
 }
 
 .download_image_container::after {
@@ -194,7 +271,7 @@
 .download_mockup_image {
   width: 100%;
   height: auto;
-  max-height: 600px;
+  max-height: 180px;
   object-fit: contain;
   display: block;
   background: transparent;
@@ -202,12 +279,30 @@
   border: none;
 }
 
+@media (min-width: 768px) {
+  .download_mockup_image {
+    max-height: 200px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .download_mockup_image {
+    max-height: 250px;
+  }
+}
+
+/* Visibility Rules */
+@media (min-width: 426px) and (max-width: 768px) {
+  .download_logo_container {
+    display: none;
+  }
+}
+
 /* App Store Badges */
 .download_app_badges {
-  display: flex;
   flex-direction: row;
   gap: var(--space-4);
-  margin-top: var(--space-4);
+  margin-top: var(--space-6);
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -249,17 +344,7 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .download_hero {
-    grid-template-columns: 1fr;
     gap: var(--space-6);
-  }
-  
-  .download_hero_right {
-    order: -1;
-  }
-  
-  .download_mockup_image {
-    max-height: none;
-    height: auto;
   }
 }
 
@@ -270,24 +355,26 @@
   }
   
   .download_headline {
-    font-size: var(--text-2xl);
-  }
-  
-  .download_logo {
-    width: 200px;
-    height: 200px;
+    font-size: clamp(1.25rem, 5vw, 2.5rem);
   }
 
+  .download_image_container {
+    display: none;
+  }
+  
   .download_app_badges {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: var(--space-1);
+    transform: scale(1.4);
+    transform-origin: center;
+    margin: var(--space-4) 0;
   }
 
   .download_app_badge_link {
-    height: 90px;
-  }
-
-  .download_app_badge {
-    height: 100%;
-    width: 100%;
+    height: 60px;
+    flex: 0 1 auto;
+    min-width: 120px;
   }
 }
