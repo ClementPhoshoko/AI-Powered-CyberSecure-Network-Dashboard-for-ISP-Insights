@@ -596,20 +596,22 @@ function Nav() {
               </div>
             </div>
 
-            <div
-              className="nav-drawer-scrollbar"
-              ref={drawerScrollbarTrackRef}
-              aria-hidden="true"
-            >
+            {user && (
               <div
-                className={`nav-drawer-scrollbar-thumb ${drawerScrollbar.scrollable ? '' : 'nav-drawer-scrollbar-thumb-idle'}`}
-                style={{
-                  height: `${drawerScrollbar.thumbHeight}px`,
-                  transform: `translateY(${drawerScrollbar.thumbTop}px)`,
-                }}
-                onPointerDown={handleDrawerScrollbarThumbPointerDown}
-              />
-            </div>
+                className="nav-drawer-scrollbar"
+                ref={drawerScrollbarTrackRef}
+                aria-hidden="true"
+              >
+                <div
+                  className={`nav-drawer-scrollbar-thumb ${drawerScrollbar.scrollable ? '' : 'nav-drawer-scrollbar-thumb-idle'}`}
+                  style={{
+                    height: `${drawerScrollbar.thumbHeight}px`,
+                    transform: `translateY(${drawerScrollbar.thumbTop}px)`,
+                  }}
+                  onPointerDown={handleDrawerScrollbarThumbPointerDown}
+                />
+              </div>
+            )}
           </div>
           
           <div className="nav-drawer-footer">
