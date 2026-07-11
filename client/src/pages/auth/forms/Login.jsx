@@ -65,13 +65,15 @@ function Login() {
         <h1 className="auth-form-title">Welcome back</h1>
 
         <div className="auth-form-field">
-          <label className="auth-form-label">Email</label>
+          <label className="auth-form-label" htmlFor="email-input">Email</label>
           <div className="auth-form-input-wrapper">
             <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
               <polyline points="22,6 12,13 2,6" />
             </svg>
             <input 
+              id="email-input"
+              name="email"
               type="email" 
               className="auth-form-input" 
               placeholder="Enter your email" 
@@ -84,13 +86,15 @@ function Login() {
         </div>
         
         <div className="auth-form-field">
-          <label className="auth-form-label">Password</label>
+          <label className="auth-form-label" htmlFor="password-input">Password</label>
           <div className="auth-form-input-wrapper">
             <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
             <input 
+              id="password-input"
+              name="password"
               type="password" 
               className="auth-form-input" 
               placeholder="Enter your password" 
@@ -103,8 +107,13 @@ function Login() {
         </div>
         
         <div className="auth-form-options">
-          <label className="auth-form-checkbox-label">
-            <input type="checkbox" className="auth-form-checkbox" />
+          <label className="auth-form-checkbox-label" htmlFor="remember-checkbox">
+            <input 
+              id="remember-checkbox"
+              name="remember"
+              type="checkbox" 
+              className="auth-form-checkbox" 
+            />
             Remember me
           </label>
           <a href="#" className="auth-form-forgot">Forgot password?</a>

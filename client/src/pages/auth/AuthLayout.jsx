@@ -19,6 +19,10 @@ function AuthLayout({ activeTab = 'login', children }) {
       </div>
       <div className="auth-card">
         <div className="auth-header">
+          <div className="auth-mobile-logo">
+            <img src={loginLogo} alt="AkovoLabs Logo" className="auth-mobile-logo-icon" />
+            <span className="auth-mobile-logo-text">AkovoLabs</span>
+          </div>
           <div className="auth-tabs">
             <button 
               className={`auth-tab ${activeTab === 'login' ? 'auth-tab--active' : ''}`}
@@ -40,7 +44,7 @@ function AuthLayout({ activeTab = 'login', children }) {
           <div className="auth-form-column">
             {children}
             <p className="auth-advisory-text">
-              By creating or using an AkovoLabs account, you agree to our Terms & Conditions and Privacy Policy.
+              By creating or using an AkovoLabs account, you agree to our <a href="#" className="auth-link" onClick={(e) => { e.preventDefault(); setActiveModal('terms'); }}>Terms & Conditions</a> and <a href="#" className="auth-link" onClick={(e) => { e.preventDefault(); setActiveModal('privacy'); }}>Privacy Policy</a>.
             </p>
           </div>
           
@@ -53,9 +57,6 @@ function AuthLayout({ activeTab = 'login', children }) {
                 <span className="auth-logo-text">AkovoLabs</span>
               </div>
               <p className="auth-tagline">Real-time AI-Powered Speedtest Analytics & Network Security Insights for ISPs</p>
-              <p className="auth-info-text">
-                View <a href="#" className="auth-link" onClick={(e) => { e.preventDefault(); setActiveModal('terms'); }}>Terms & Conditions</a> and <a href="#" className="auth-link" onClick={(e) => { e.preventDefault(); setActiveModal('privacy'); }}>Privacy Policy</a>
-              </p>
             </div>
           </div>
         </div>

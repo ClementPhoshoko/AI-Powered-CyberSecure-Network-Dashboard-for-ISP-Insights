@@ -140,3 +140,52 @@
   text-align: center;
   margin-bottom: var(--space-2);
 }
+
+@media (max-width: 480px) {
+  .auth-form {
+    gap: var(--space-3);
+    padding: 0 var(--space-4);
+  }
+
+  .auth-form-title {
+    font-size: var(--text-lg);
+    text-align: center;
+    margin-bottom: var(--space-2);
+  }
+
+  .auth-form-input {
+    padding: var(--space-2) var(--space-2) var(--space-2) calc(var(--space-3) + 20px);
+    font-size: var(--text-xs);
+  }
+
+  .auth-form-icon {
+    left: var(--space-2);
+    width: 16px;
+    height: 16px;
+  }
+
+  .auth-form-label {
+    font-size: var(--text-xs);
+  }
+
+  .auth-form-options {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .auth-form-forgot {
+    align-self: auto;
+    font-size: var(--text-xs);
+  }
+
+  .auth-form-checkbox-label {
+    font-size: var(--text-xs);
+  }
+
+  .auth-form-button {
+    padding: var(--space-2);
+    font-size: var(--text-xs);
+  }
+}
+
