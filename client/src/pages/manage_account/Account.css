@@ -18,6 +18,7 @@
     opacity: 0;
     filter: blur(10px);
   }
+
   to {
     opacity: 1;
     filter: blur(0);
@@ -65,6 +66,7 @@
     opacity: 0;
     filter: blur(10px);
   }
+
   to {
     opacity: 1;
     filter: blur(0);
@@ -224,8 +226,8 @@
 }
 
 .account-field-btn-save {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: none;
+  border: none;
   color: var(--primary);
 }
 
@@ -235,8 +237,8 @@
 }
 
 .account-field-btn-edit {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: none;
+  border: none;
   color: var(--primary);
 }
 
@@ -266,9 +268,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -391,21 +396,125 @@
 }
 
 @media (max-width: 640px) {
+  .account-page {
+    padding: var(--space-4) var(--space-3);
+  }
+
   .account-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-3);
-  }
-  
-  .account-sign-out-btn {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
+    gap: var(--space-2);
   }
-  
+
+  .account-sign-out-btn {
+    width: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-size: var(--text-xs);
+  }
+
+  .account-sign-out-btn:hover {
+    background: transparent;
+    box-shadow: none;
+    text-decoration: underline;
+  }
+
   .account-field-row {
     grid-template-columns: 1fr;
+    gap: var(--space-2);
   }
-  
+
   .account-success-links {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .account-success-link {
+    flex: 1;
+    max-width: 160px;
+    padding: var(--space-2);
+  }
+}
+
+@media (max-width: 480px) {
+  .account-page {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .account-form-container {
+    padding: 0 var(--space-4);
+  }
+
+  .account-title {
+    font-size: var(--text-md);
+    text-align: left;
+  }
+
+  .account-section {
+    margin-bottom: 0;
+  }
+
+  .account-section-title {
+    font-size: var(--text-sm);
+  }
+
+  .account-divider {
+    margin: var(--space-4) 0;
+    height: 2px;
+    background: var(--border-dark);
+    opacity: 0.6;
+  }
+
+  .account-form-label {
+    font-size: var(--text-xs);
+  }
+
+  .account-form-input,
+  .account-readonly-value {
+    padding: var(--space-2) var(--space-2) var(--space-2) calc(var(--space-3) + 20px);
+    font-size: var(--text-xs);
+  }
+
+  .account-form-icon {
+    left: var(--space-2);
+    width: 16px;
+    height: 16px;
+  }
+
+  .account-field-btn {
+    padding: var(--space-2);
+    font-size: var(--text-xs);
+  }
+
+  .account-success-view {
+    padding: 0 var(--space-4);
+  }
+
+  .account-success-avatar,
+  .account-error-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .account-success-title,
+  .account-error-title {
+    font-size: var(--text-lg);
+  }
+
+  .account-success-text,
+  .account-error-text,
+  .account-error-subtext {
+    font-size: var(--text-xs);
+  }
+
+  .account-success-link,
+  .account-error-link {
+    padding: var(--space-2);
+    font-size: var(--text-xs);
   }
 }

@@ -172,3 +172,27 @@
   50% { transform: scale(1.4); opacity: 0.6; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+@media (max-width: 480px) {
+  .gl-loading-overlay {
+    padding: 1rem;
+  }
+
+  .gl-loading-card {
+    padding: 1.25rem 1rem;
+    gap: 1rem;
+  }
+
+  .gl-loading-message {
+    font-size: 10px;
+  }
+
+  .gl-loading-percent {
+    font-size: 10px;
+  }
+
+  .gl-loading-bar-container {
+    height: 8px;
+  }
+}
+

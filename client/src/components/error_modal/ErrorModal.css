@@ -128,3 +128,43 @@
   font-weight: 500;
   flex: 1;
 }
+
+@media (max-width: 480px) {
+  .er-modal-overlay {
+    padding: 1rem;
+  }
+
+  .er-modal-card {
+    padding: 1.25rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .er-modal-close-btn {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .er-modal-close-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .er-modal-content {
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    align-items: center;
+  }
+
+  .er-modal-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .er-modal-message {
+    font-size: var(--text-sm);
+    line-height: 1.4;
+  }
+}
+
