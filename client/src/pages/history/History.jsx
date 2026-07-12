@@ -13,6 +13,40 @@ import ErrorModal from '../../components/error_modal/ErrorModal';
 import Loading from '../../components/loading/Loading';
 import './History.css';
 
+function useIsMobile(breakpoint = 768) {
+  const mqlRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < breakpoint
+  );
+
+  useEffect(() => {
+    mqlRef.current = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const handler = (e) => setIsMobile(e.matches);
+
+    mqlRef.current.addEventListener('change', handler);
+    return () => mqlRef.current?.removeEventListener('change', handler);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+function useIsTablet(breakpoint = 1024) {
+  const mqlRef = useRef(null);
+  const [isTablet, setIsTablet] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth < breakpoint
+  );
+
+  useEffect(() => {
+    mqlRef.current = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const handler = (e) => setIsTablet(e.matches);
+
+    mqlRef.current.addEventListener('change', handler);
+    return () => mqlRef.current?.removeEventListener('change', handler);
+  }, [breakpoint]);
+
+  return isTablet;
+}
+
 const proTips = [
   "For the most accurate results, close background apps and use a wired connection when testing. This helps reduce interference from other applications and provides a more reliable measurement of your network performance.",
 
@@ -509,6 +543,8 @@ const ExperienceScoresTooltip = ({ active, payload }) => {
 
 function History() {
   const { loading: authLoading, user } = useAuth();
+  const isMobile = useIsMobile(768);
+  const isTablet = useIsTablet(1024);
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
   const [startDate, setStartDate] = useState(null);
@@ -664,29 +700,35 @@ function History() {
       }))
   ), [allHistory]);
 
+  const visibleChartData = useMemo(() => {
+    if (isMobile) return chartData.slice(-20);
+    if (isTablet) return chartData.slice(-40);
+    return chartData;
+  }, [chartData, isMobile, isTablet]);
+
   const speedDownloadAxis = useMemo(
-    () => getSmartAxis(chartData.map((point) => point.download), { fallbackMax: 20 }),
-    [chartData]
+    () => getSmartAxis(visibleChartData.map((point) => point.download), { fallbackMax: 20 }),
+    [visibleChartData]
   );
 
   const speedUploadAxis = useMemo(
-    () => getSmartAxis(chartData.map((point) => point.upload), { fallbackMax: 10 }),
-    [chartData]
+    () => getSmartAxis(visibleChartData.map((point) => point.upload), { fallbackMax: 10 }),
+    [visibleChartData]
   );
 
   const latencyAxis = useMemo(
-    () => getSmartAxis(chartData.flatMap((point) => [point.ping, point.jitter]), { fallbackMax: 50 }),
-    [chartData]
+    () => getSmartAxis(visibleChartData.flatMap((point) => [point.ping, point.jitter]), { fallbackMax: 50 }),
+    [visibleChartData]
   );
 
   const chartDateTickFormatter = useMemo(
-    () => getChartDateFormatter(chartData.map((point) => point.createdAt)),
-    [chartData]
+    () => getChartDateFormatter(visibleChartData.map((point) => point.createdAt)),
+    [visibleChartData]
   );
 
   const chartXTicks = useMemo(
-    () => getChartTicks(chartData),
-    [chartData]
+    () => getChartTicks(visibleChartData, isMobile ? 5 : 6),
+    [visibleChartData, isMobile]
   );
 
   const speedTooltipConfig = useMemo(() => ({
@@ -705,9 +747,9 @@ function History() {
 
   // Get first and last dates in chartData
   const getDateRange = () => {
-    if (chartData.length === 0) return null;
-    const firstDate = formatDate(chartData[0].createdAt);
-    const lastDate = formatDate(chartData[chartData.length - 1].createdAt);
+    if (visibleChartData.length === 0) return null;
+    const firstDate = formatDate(visibleChartData[0].createdAt);
+    const lastDate = formatDate(visibleChartData[visibleChartData.length - 1].createdAt);
     return { firstDate, lastDate };
   };
 
@@ -839,6 +881,9 @@ function History() {
   };
 
   const isInitialLoading = authLoading || ((allLoading || tableLoading) && (allHistory || []).length === 0);
+
+  const chartHeight = isMobile ? 200 : 280;
+  const radarHeight = isMobile ? 220 : 300;
 
   if (isInitialLoading) {
     return (
@@ -1007,13 +1052,13 @@ function History() {
                         {/* Graph 1: Speed Trends */}
                         <div className="graph-card">
                           <h3 className="graph-title">Speed Trends</h3>
-                          <ResponsiveContainer width="100%" height={280}>
-                            <LineChart data={chartData}>
+                          <ResponsiveContainer width="100%" height={chartHeight}>
+                            <LineChart data={visibleChartData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
                               <XAxis 
                                 dataKey="createdAt" 
                                 stroke="var(--text-muted)" 
-                                tick={{ fontSize: 11 }} 
+                                tick={{ fontSize: isMobile ? 9 : 11 }} 
                                 ticks={chartXTicks}
                                 tickFormatter={chartDateTickFormatter}
                                 minTickGap={24}
@@ -1022,8 +1067,8 @@ function History() {
                               <YAxis 
                                 yAxisId="download"
                                 stroke="var(--text-muted)" 
-                                tick={{ fontSize: 11 }} 
-                                width={52}
+                                tick={{ fontSize: isMobile ? 9 : 11 }} 
+                                width={isMobile ? 40 : 52}
                                 domain={speedDownloadAxis.domain}
                                 ticks={speedDownloadAxis.ticks}
                                 tickFormatter={formatAxisTick}
@@ -1032,8 +1077,8 @@ function History() {
                                 yAxisId="upload"
                                 orientation="right"
                                 stroke="var(--text-muted)"
-                                tick={{ fontSize: 11 }}
-                                width={52}
+                                tick={{ fontSize: isMobile ? 9 : 11 }}
+                                width={isMobile ? 40 : 52}
                                 domain={speedUploadAxis.domain}
                                 ticks={speedUploadAxis.ticks}
                                 tickFormatter={formatAxisTick}
@@ -1041,14 +1086,14 @@ function History() {
                               <Tooltip 
                                 content={<HistoryChartTooltip config={speedTooltipConfig} />}
                               />
-                              <Legend wrapperStyle={{ fontSize: 12 }} />
+                              <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
                               <Line
                                 yAxisId="download"
                                 type="monotone"
                                 dataKey="download"
                                 stroke="var(--download)"
                                 strokeWidth={2}
-                                dot={{ r: 3 }}
+                                dot={{ r: isMobile ? 2 : 3 }}
                                 name="Download (Mbps)"
                               />
                               <Line
@@ -1057,7 +1102,7 @@ function History() {
                                 dataKey="upload"
                                 stroke="var(--upload)"
                                 strokeWidth={2}
-                                dot={{ r: 3 }}
+                                dot={{ r: isMobile ? 2 : 3 }}
                                 strokeDasharray="5 5"
                                 name="Upload (Mbps)"
                               />
@@ -1076,13 +1121,13 @@ function History() {
                         {/* Graph 2: Latency Quality */}
                         <div className="graph-card">
                           <h3 className="graph-title">Latency Quality</h3>
-                          <ResponsiveContainer width="100%" height={280}>
-                            <LineChart data={chartData}>
+                          <ResponsiveContainer width="100%" height={chartHeight}>
+                            <LineChart data={visibleChartData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
                               <XAxis 
                                 dataKey="createdAt" 
                                 stroke="var(--text-muted)" 
-                                tick={{ fontSize: 11 }} 
+                                tick={{ fontSize: isMobile ? 9 : 11 }} 
                                 ticks={chartXTicks}
                                 tickFormatter={chartDateTickFormatter}
                                 minTickGap={24}
@@ -1090,8 +1135,8 @@ function History() {
                               />
                               <YAxis 
                                 stroke="var(--text-muted)" 
-                                tick={{ fontSize: 11 }} 
-                                width={52}
+                                tick={{ fontSize: isMobile ? 9 : 11 }} 
+                                width={isMobile ? 40 : 52}
                                 domain={latencyAxis.domain}
                                 ticks={latencyAxis.ticks}
                                 tickFormatter={formatAxisTick}
@@ -1099,13 +1144,13 @@ function History() {
                               <Tooltip 
                                 content={<HistoryChartTooltip config={latencyTooltipConfig} />}
                               />
-                              <Legend wrapperStyle={{ fontSize: 12 }} />
+                              <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
                               <Line
                                 type="monotone"
                                 dataKey="ping"
                                 stroke="var(--ping)"
                                 strokeWidth={2}
-                                dot={{ r: 3 }}
+                                dot={{ r: isMobile ? 2 : 3 }}
                                 name="Ping (ms)"
                               />
                               <Line
@@ -1113,7 +1158,7 @@ function History() {
                                 dataKey="jitter"
                                 stroke="#f59e0b"
                                 strokeWidth={2}
-                                dot={{ r: 3 }}
+                                dot={{ r: isMobile ? 2 : 3 }}
                                 strokeDasharray="5 5"
                                 name="Jitter (ms)"
                               />
@@ -1132,8 +1177,8 @@ function History() {
                         {/* Graph 3: Network Health Score */}
                         <div className="graph-card">
                           <h3 className="graph-title">Network Health Score</h3>
-                          <ResponsiveContainer width="100%" height={280}>
-                            <AreaChart data={chartData}>
+                          <ResponsiveContainer width="100%" height={chartHeight}>
+                            <AreaChart data={visibleChartData}>
                               <defs>
                                 <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
                                   <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3}/>
@@ -1144,7 +1189,7 @@ function History() {
                               <XAxis 
                                 dataKey="createdAt" 
                                 stroke="var(--text-muted)" 
-                                tick={{ fontSize: 11 }} 
+                                tick={{ fontSize: isMobile ? 9 : 11 }} 
                                 ticks={chartXTicks}
                                 tickFormatter={chartDateTickFormatter}
                                 minTickGap={24}
@@ -1152,7 +1197,8 @@ function History() {
                               />
                               <YAxis 
                                 stroke="var(--text-muted)" 
-                                tick={{ fontSize: 11 }} 
+                                tick={{ fontSize: isMobile ? 9 : 11 }} 
+                                width={isMobile ? 40 : 52}
                                 domain={[0, 100]}
                               />
                               <Tooltip 
@@ -1180,13 +1226,13 @@ function History() {
                           <h3 className="graph-title">Experience Scores</h3>
                           <div className="experience-scores-container">
                             <div className="radar-chart-wrapper">
-                              <ResponsiveContainer width="100%" height={300}>
+                              <ResponsiveContainer width="100%" height={radarHeight}>
                                 <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                                   <PolarGrid stroke="var(--glass-border)" />
-                                  <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: 12 }} />
+                                  <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: isMobile ? 10 : 12 }} />
                                   <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
                                   <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
-                                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                                  <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
                                   <Tooltip content={<ExperienceScoresTooltip />} />
                                 </RadarChart>
                               </ResponsiveContainer>
@@ -1448,206 +1494,299 @@ function History() {
                       />
                     ) : tableHistory.length > 0 ? (
                       <>
-                        <div className="test-table-container glass-card">
-                          <table className="test-table">
-                            <thead>
-                              <tr>
-                                <th></th>
-                                <th onClick={() => {
-                                  setSortColumn('created_at');
-                                  setSortDirection(sortColumn === 'created_at' && sortDirection === 'desc' ? 'asc' : 'desc');
-                                }}>
-                                  Date {sortColumn === 'created_at' && (sortDirection === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th onClick={() => {
-                                  setSortColumn('download_speed_mbps');
-                                  setSortDirection(sortColumn === 'download_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
-                                }}>
-                                  Download {sortColumn === 'download_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th onClick={() => {
-                                  setSortColumn('upload_speed_mbps');
-                                  setSortDirection(sortColumn === 'upload_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
-                                }}>
-                                  Upload {sortColumn === 'upload_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th onClick={() => {
-                                  setSortColumn('ping_avg_ms');
-                                  setSortDirection(sortColumn === 'ping_avg_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
-                                }}>
-                                  Ping {sortColumn === 'ping_avg_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th onClick={() => {
-                                  setSortColumn('jitter_ms');
-                                  setSortDirection(sortColumn === 'jitter_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
-                                }}>
-                                  Jitter {sortColumn === 'jitter_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th onClick={() => {
-                                  setSortColumn('network_health_score');
-                                  setSortDirection(sortColumn === 'network_health_score' && sortDirection === 'desc' ? 'asc' : 'desc');
-                                }}>
-                                  Health {sortColumn === 'network_health_score' && (sortDirection === 'asc' ? '↑' : '↓')}
-                                </th>
-                                <th>ISP</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {filteredTests.map((test) => (
-                                <Fragment key={test.id}>
-                                  <tr 
-                                    onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)} 
-                                    className="test-table-row"
-                                  >
-                                    <td className="test-table-cell--toggle">
-                                      <svg 
-                                        viewBox="0 0 24 24" 
-                                        fill="none" 
-                                        stroke="currentColor" 
-                                        strokeWidth="2"
-                                        className={`test-table-toggle-icon ${expandedTestId === test.id ? 'test-table-toggle-icon--expanded' : ''}`}
-                                      >
-                                        <polyline points="9 18 15 12 9 6" />
-                                      </svg>
-                                    </td>
-                                    <td>{formatDate(test.created_at)}</td>
-                                    <td>{test.download_speed_mbps?.toFixed(1) || 0} Mbps</td>
-                                    <td>{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</td>
-                                    <td>{test.ping_avg_ms?.toFixed(1) || 0} ms</td>
-                                    <td>{test.jitter_ms?.toFixed(1) || 0} ms</td>
-                                    <td>
-                                      <span style={{ color: getScoreColor(test.network_health_score) }}>
-                                        {test.network_health_score?.toFixed(0) || 0}
-                                      </span>
-                                    </td>
-                                    <td>{test.isp_name || 'N/A'}</td>
-                                  </tr>
-                                  {expandedTestId === test.id && (
-                                    <tr className="test-table-row--expanded">
-                                      <td colSpan={8} className="test-table-cell--expanded">
-                                        <div className="test-details-container">
-                                          <div className="test-details-wrapper">
-                                            <div className="test-details-section test-details-section--two-col">
-                                              <h4 className="test-details-section-title">Performance</h4>
-                                              <div className="test-details-grid">
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Download Speed</span>
-                                                  <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Upload Speed</span>
-                                                  <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Ping (Avg)</span>
-                                                  <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Ping (Min)</span>
-                                                  <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Ping (Max)</span>
-                                                  <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Jitter</span>
-                                                  <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Packet Loss</span>
-                                                  <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
-                                                </div>
-                                              </div>
-                                            </div>
-
-                                            <div className="test-details-section test-details-section--two-col">
-                                              <h4 className="test-details-section-title">Experience Scores</h4>
-                                              <div className="test-details-grid">
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Network Health</span>
-                                                  <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
-                                                    {test.network_health_score?.toFixed(0) || 0}
-                                                  </span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Gaming</span>
-                                                  <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
-                                                    {test.gaming_score?.toFixed(0) || 0}
-                                                  </span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Streaming</span>
-                                                  <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
-                                                    {test.streaming_score?.toFixed(0) || 0}
-                                                  </span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Video Call</span>
-                                                  <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
-                                                    {test.video_call_score?.toFixed(0) || 0}
-                                                  </span>
-                                                </div>
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Browsing</span>
-                                                  <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
-                                                    {test.browsing_score?.toFixed(0) || 0}
-                                                  </span>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-
-                                          {test.ai_summary && (
-                                            <div className="test-details-section">
-                                              <h4 className="test-details-section-title">
-                                                <img 
-                                                  src={aiIcon} 
-                                                  alt="AI" 
-                                                  className="test-details-section-icon"
-                                                />
-                                                AI Analysis
-                                              </h4>
-                                              <div className="test-details-ai-summary">
-                                                <p>{test.ai_summary}</p>
-                                              </div>
-                                            </div>
-                                          )}
-
-                                          <div className="test-details-section">
-                                            <h4 className="test-details-section-title">Environment</h4>
-                                            <div className="test-details-grid">
-                                              <div className="test-details-item">
-                                                <span className="test-details-label">Date & Time</span>
-                                                <span className="test-details-value">{formatDate(test.created_at)}</span>
-                                              </div>
-                                              <div className="test-details-item">
-                                                <span className="test-details-label">ISP</span>
-                                                <span className="test-details-value">{test.isp_name || 'N/A'}</span>
-                                              </div>
-                                              {test.country && (
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Country</span>
-                                                  <span className="test-details-value">{test.country}</span>
-                                                </div>
-                                              )}
-                                              {test.probe_method && (
-                                                <div className="test-details-item">
-                                                  <span className="test-details-label">Probe Method</span>
-                                                  <span className="test-details-value">{test.probe_method}</span>
-                                                </div>
-                                              )}
-                                            </div>
-                                          </div>
-                                        </div>
+                        {isMobile ? (
+                          <div className="test-cards-mobile">
+                            {filteredTests.map((test) => (
+                              <div
+                                key={test.id}
+                                className={`test-card-mobile glass-card ${expandedTestId === test.id ? 'test-card-mobile--expanded' : ''}`}
+                                onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)}
+                              >
+                                <div className="test-card-mobile__header">
+                                  <span className="test-card-mobile__date">{formatDate(test.created_at)}</span>
+                                  <span className="test-card-mobile__health" style={{ color: getScoreColor(test.network_health_score) }}>
+                                    {test.network_health_score?.toFixed(0) || 0}
+                                  </span>
+                                </div>
+                                <div className="test-card-mobile__metrics">
+                                  <div className="test-card-mobile__metric">
+                                    <span className="test-card-mobile__metric-label">↓</span>
+                                    <span className="test-card-mobile__metric-value">{test.download_speed_mbps?.toFixed(1) || 0} <small>Mbps</small></span>
+                                  </div>
+                                  <div className="test-card-mobile__metric">
+                                    <span className="test-card-mobile__metric-label">↑</span>
+                                    <span className="test-card-mobile__metric-value">{test.upload_speed_mbps?.toFixed(1) || 0} <small>Mbps</small></span>
+                                  </div>
+                                  <div className="test-card-mobile__metric">
+                                    <span className="test-card-mobile__metric-label">Ping</span>
+                                    <span className="test-card-mobile__metric-value">{test.ping_avg_ms?.toFixed(1) || 0} <small>ms</small></span>
+                                  </div>
+                                  <div className="test-card-mobile__metric">
+                                    <span className="test-card-mobile__metric-label">ISP</span>
+                                    <span className="test-card-mobile__metric-value test-card-mobile__metric-value--isp">{test.isp_name || 'N/A'}</span>
+                                  </div>
+                                </div>
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  className={`test-card-mobile__chevron ${expandedTestId === test.id ? 'test-card-mobile__chevron--expanded' : ''}`}
+                                >
+                                  <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                                {expandedTestId === test.id && (
+                                  <div className="test-card-mobile__details">
+                                    <div className="test-card-mobile__detail-grid">
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Ping (Min)</span>
+                                        <span className="test-card-mobile__detail-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Ping (Max)</span>
+                                        <span className="test-card-mobile__detail-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Jitter</span>
+                                        <span className="test-card-mobile__detail-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Packet Loss</span>
+                                        <span className="test-card-mobile__detail-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Gaming</span>
+                                        <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.gaming_score) }}>{test.gaming_score?.toFixed(0) || 0}</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Streaming</span>
+                                        <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.streaming_score) }}>{test.streaming_score?.toFixed(0) || 0}</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Video Call</span>
+                                        <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.video_call_score) }}>{test.video_call_score?.toFixed(0) || 0}</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Browsing</span>
+                                        <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.browsing_score) }}>{test.browsing_score?.toFixed(0) || 0}</span>
+                                      </div>
+                                    </div>
+                                    {test.ai_summary && (
+                                      <div className="test-card-mobile__ai">
+                                        <h5 className="test-card-mobile__ai-title">
+                                          <img src={aiIcon} alt="AI" className="test-card-mobile__ai-icon" />
+                                          AI Analysis
+                                        </h5>
+                                        <p className="test-card-mobile__ai-text">{test.ai_summary}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="test-table-container glass-card">
+                            <table className="test-table">
+                              <thead>
+                                <tr>
+                                  <th></th>
+                                  <th onClick={() => {
+                                    setSortColumn('created_at');
+                                    setSortDirection(sortColumn === 'created_at' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                  }}>
+                                    Date {sortColumn === 'created_at' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                  </th>
+                                  <th onClick={() => {
+                                    setSortColumn('download_speed_mbps');
+                                    setSortDirection(sortColumn === 'download_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                  }}>
+                                    Download {sortColumn === 'download_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                  </th>
+                                  <th onClick={() => {
+                                    setSortColumn('upload_speed_mbps');
+                                    setSortDirection(sortColumn === 'upload_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                  }}>
+                                    Upload {sortColumn === 'upload_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                  </th>
+                                  <th onClick={() => {
+                                    setSortColumn('ping_avg_ms');
+                                    setSortDirection(sortColumn === 'ping_avg_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                  }}>
+                                    Ping {sortColumn === 'ping_avg_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                  </th>
+                                  <th onClick={() => {
+                                    setSortColumn('jitter_ms');
+                                    setSortDirection(sortColumn === 'jitter_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                  }}>
+                                    Jitter {sortColumn === 'jitter_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                  </th>
+                                  <th onClick={() => {
+                                    setSortColumn('network_health_score');
+                                    setSortDirection(sortColumn === 'network_health_score' && sortDirection === 'desc' ? 'asc' : 'desc');
+                                  }}>
+                                    Health {sortColumn === 'network_health_score' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                  </th>
+                                  <th>ISP</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {filteredTests.map((test) => (
+                                  <Fragment key={test.id}>
+                                    <tr 
+                                      onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)} 
+                                      className="test-table-row"
+                                    >
+                                      <td className="test-table-cell--toggle">
+                                        <svg 
+                                          viewBox="0 0 24 24" 
+                                          fill="none" 
+                                          stroke="currentColor" 
+                                          strokeWidth="2"
+                                          className={`test-table-toggle-icon ${expandedTestId === test.id ? 'test-table-toggle-icon--expanded' : ''}`}
+                                        >
+                                          <polyline points="9 18 15 12 9 6" />
+                                        </svg>
                                       </td>
+                                      <td>{formatDate(test.created_at)}</td>
+                                      <td>{test.download_speed_mbps?.toFixed(1) || 0} Mbps</td>
+                                      <td>{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</td>
+                                      <td>{test.ping_avg_ms?.toFixed(1) || 0} ms</td>
+                                      <td>{test.jitter_ms?.toFixed(1) || 0} ms</td>
+                                      <td>
+                                        <span style={{ color: getScoreColor(test.network_health_score) }}>
+                                          {test.network_health_score?.toFixed(0) || 0}
+                                        </span>
+                                      </td>
+                                      <td>{test.isp_name || 'N/A'}</td>
                                     </tr>
-                                  )}
-                                </Fragment>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
+                                    {expandedTestId === test.id && (
+                                      <tr className="test-table-row--expanded">
+                                        <td colSpan={8} className="test-table-cell--expanded">
+                                          <div className="test-details-container">
+                                            <div className="test-details-wrapper">
+                                              <div className="test-details-section test-details-section--two-col">
+                                                <h4 className="test-details-section-title">Performance</h4>
+                                                <div className="test-details-grid">
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Download Speed</span>
+                                                    <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Upload Speed</span>
+                                                    <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Ping (Avg)</span>
+                                                    <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Ping (Min)</span>
+                                                    <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Ping (Max)</span>
+                                                    <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Jitter</span>
+                                                    <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Packet Loss</span>
+                                                    <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                              <div className="test-details-section test-details-section--two-col">
+                                                <h4 className="test-details-section-title">Experience Scores</h4>
+                                                <div className="test-details-grid">
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Network Health</span>
+                                                    <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
+                                                      {test.network_health_score?.toFixed(0) || 0}
+                                                    </span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Gaming</span>
+                                                    <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
+                                                      {test.gaming_score?.toFixed(0) || 0}
+                                                    </span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Streaming</span>
+                                                    <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
+                                                      {test.streaming_score?.toFixed(0) || 0}
+                                                    </span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Video Call</span>
+                                                    <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
+                                                      {test.video_call_score?.toFixed(0) || 0}
+                                                    </span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Browsing</span>
+                                                    <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
+                                                      {test.browsing_score?.toFixed(0) || 0}
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+
+                                            {test.ai_summary && (
+                                              <div className="test-details-section">
+                                                <h4 className="test-details-section-title">
+                                                  <img 
+                                                    src={aiIcon} 
+                                                    alt="AI" 
+                                                    className="test-details-section-icon"
+                                                  />
+                                                  AI Analysis
+                                                </h4>
+                                                <div className="test-details-ai-summary">
+                                                  <p>{test.ai_summary}</p>
+                                                </div>
+                                              </div>
+                                            )}
+
+                                            <div className="test-details-section">
+                                              <h4 className="test-details-section-title">Environment</h4>
+                                              <div className="test-details-grid">
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">Date & Time</span>
+                                                  <span className="test-details-value">{formatDate(test.created_at)}</span>
+                                                </div>
+                                                <div className="test-details-item">
+                                                  <span className="test-details-label">ISP</span>
+                                                  <span className="test-details-value">{test.isp_name || 'N/A'}</span>
+                                                </div>
+                                                {test.country && (
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Country</span>
+                                                    <span className="test-details-value">{test.country}</span>
+                                                  </div>
+                                                )}
+                                                {test.probe_method && (
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Probe Method</span>
+                                                    <span className="test-details-value">{test.probe_method}</span>
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </Fragment>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
 
                         {/* Pagination Controls */}
                         <div className="pagination-controls glass-card">
