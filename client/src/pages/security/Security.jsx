@@ -306,6 +306,7 @@ function Security() {
                           <button
                             type="button"
                             className="security-full-scan-details-toggle"
+                            aria-expanded={showBottomTopRowDetails}
                             onClick={() => setShowBottomTopRowDetails((prev) => !prev)}
                           >
                             {showBottomTopRowDetails ? 'Hide Details' : 'View Details'}
@@ -391,6 +392,7 @@ function Security() {
                           <button
                             type="button"
                             className="security-full-scan-details-toggle"
+                            aria-expanded={showFullScanDetails}
                             onClick={() => setShowFullScanDetails((prev) => !prev)}
                           >
                             {showFullScanDetails ? 'Hide Details' : 'View Details'}

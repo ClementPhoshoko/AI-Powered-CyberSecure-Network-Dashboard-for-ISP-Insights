@@ -222,6 +222,10 @@
     width: min(100%, 21rem);
   }
 
+  .scan_wheel-label {
+    font-size: calc(var(--text-sm) * 1.05);
+  }
+
   .scan_wheel-value {
     letter-spacing: -0.02em;
   }

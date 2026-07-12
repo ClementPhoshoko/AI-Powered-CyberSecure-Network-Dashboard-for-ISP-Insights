@@ -62,3 +62,34 @@
 .scan_metric_tile-risk .scan_metric_tile-icon {
   color: var(--warning);
 }
+
+@media (max-width: 640px) {
+  .scan_metric_tile {
+    padding: var(--space-2);
+    gap: var(--space-2);
+    min-height: 3rem;
+  }
+
+  .scan_metric_tile-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .scan_metric_tile-icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .scan_metric_tile-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+  }
+
+  .scan_metric_tile-value {
+    font-size: var(--text-sm);
+  }
+
+  .scan_metric_tile-unit {
+    font-size: var(--text-xs);
+  }
+}

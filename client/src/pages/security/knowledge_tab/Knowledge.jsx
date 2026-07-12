@@ -95,7 +95,7 @@ function Knowledge({
 						<p className="knowledge_reference-eyebrow">Reference library</p>
 						<h3 className="knowledge_reference-title">High-attention service knowledge</h3>
 					</div>
-					<div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+					<div className="knowledge_reference-actions">
 						{knowledgeBase.length > 0 ? (
 							<span className="knowledge_reference-count">{knowledgeBase.length} known services</span>
 						) : null}

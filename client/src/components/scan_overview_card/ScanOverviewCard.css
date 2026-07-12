@@ -26,3 +26,14 @@
     padding-top: var(--space-3);
   }
 }
+
+@media (max-width: 640px) {
+  .scan_overview-card {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .scan_overview-bottom {
+    padding-top: var(--space-2);
+  }
+}

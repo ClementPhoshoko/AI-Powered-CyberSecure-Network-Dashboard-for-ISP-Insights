@@ -328,3 +328,79 @@
     height: 16px;
   }
 }
+
+@media (max-width: 640px) {
+  .insights_history_section-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .insights_history_section-date {
+    width: 100%;
+  }
+
+  .insights_history_section-chevron {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+  }
+
+  .insights_history_section-item {
+    position: relative;
+  }
+
+  .insights_history_section-metric {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+  }
+
+  .insights_history_section-pagination-controls {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+  }
+
+  .insights_history_section-pagination-btn {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    gap: var(--space-1);
+  }
+
+  .insights_history_section-pagination-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .insights_history_section-pagination-info {
+    font-size: var(--text-xs);
+    width: 100%;
+    text-align: center;
+  }
+
+  .insights_metric_card-icon-wrapper {
+    width: 28px;
+    height: 28px;
+  }
+
+  .insights_metric_card-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .insights_metric_card-label {
+    font-size: 0.625rem;
+  }
+
+  .insights_metric_card-value {
+    font-size: var(--text-xs);
+  }
+
+  .insights_metric_card {
+    gap: var(--space-2);
+    padding: var(--space-1);
+  }
+}

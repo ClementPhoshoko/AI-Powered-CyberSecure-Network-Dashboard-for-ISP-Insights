@@ -26,6 +26,7 @@
 
 @media (max-width: 640px) {
   .scan_metric_grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
   }
 }

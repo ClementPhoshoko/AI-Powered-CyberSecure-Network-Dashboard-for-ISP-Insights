@@ -23,7 +23,7 @@
 .recommendations_summary_section-title {
   margin: 0;
   color: var(--text-primary);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
 }
 
 .recommendations_summary_section-metrics {
@@ -82,5 +82,44 @@
 @media (max-width: 640px) {
   .recommendations_summary_section-head {
     flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .recommendations_summary_section-title {
+    font-size: var(--text-sm);
+  }
+
+  .recommendations_summary_section-metrics {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .recommendations_summary_section-metric {
+    padding: var(--space-2);
+  }
+
+  .recommendations_summary_section-label {
+    font-size: var(--text-xs);
+    margin-bottom: var(--space-1);
+  }
+
+  .recommendations_summary_section-value {
+    font-size: var(--text-sm);
+  }
+
+  .recommendations_summary_section-value-sm {
+    font-size: var(--text-xs);
+  }
+
+  .recommendations_summary_section-summary {
+    padding: var(--space-2);
+  }
+
+  .recommendations_summary_section-summary-label {
+    font-size: var(--text-xs);
+  }
+
+  .recommendations_summary_section-summary-text {
+    font-size: var(--text-xs);
   }
 }

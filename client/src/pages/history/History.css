@@ -1920,7 +1920,7 @@
   }
 
   .history-tab {
-    font-size: 11px;
+    font-size: var(--text-sm);
     padding: var(--space-2) var(--space-3);
   }
 

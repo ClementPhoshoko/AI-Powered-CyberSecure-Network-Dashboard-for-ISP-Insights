@@ -115,6 +115,8 @@
   }
 
   .top_open_ports_list-item {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
   }
 }

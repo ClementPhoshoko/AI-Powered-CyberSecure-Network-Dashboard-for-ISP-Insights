@@ -18,7 +18,7 @@
 
 .insights_panel-title {
   margin: 0;
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   color: var(--text-primary);
 }
 
@@ -27,4 +27,19 @@
   color: var(--text-secondary);
   font-size: var(--text-sm);
   line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .insights_panel {
+    padding: var(--space-1) 0;
+    gap: var(--space-3);
+  }
+
+  .insights_panel-head {
+    flex-direction: column;
+  }
+
+  .insights_panel-title {
+    font-size: var(--text-sm);
+  }
 }
