@@ -47,6 +47,23 @@ function useIsTablet(breakpoint = 1024) {
   return isTablet;
 }
 
+function useIsLargeScreen(breakpoint = 1280) {
+  const mqlRef = useRef(null);
+  const [isLarge, setIsLarge] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= breakpoint
+  );
+
+  useEffect(() => {
+    mqlRef.current = window.matchMedia(`(min-width: ${breakpoint}px)`);
+    const handler = (e) => setIsLarge(e.matches);
+
+    mqlRef.current.addEventListener('change', handler);
+    return () => mqlRef.current?.removeEventListener('change', handler);
+  }, [breakpoint]);
+
+  return isLarge;
+}
+
 const proTips = [
   "For the most accurate results, close background apps and use a wired connection when testing. This helps reduce interference from other applications and provides a more reliable measurement of your network performance.",
 
@@ -545,6 +562,7 @@ function History() {
   const { loading: authLoading, user } = useAuth();
   const isMobile = useIsMobile(768);
   const isTablet = useIsTablet(1024);
+  const isLargeScreen = useIsLargeScreen(1280);
   const [tableLimit] = useState(10);
   const [tableOffset, setTableOffset] = useState(0);
   const [startDate, setStartDate] = useState(null);
@@ -703,8 +721,9 @@ function History() {
   const visibleChartData = useMemo(() => {
     if (isMobile) return chartData.slice(-20);
     if (isTablet) return chartData.slice(-40);
-    return chartData;
-  }, [chartData, isMobile, isTablet]);
+    if (isLargeScreen) return chartData.slice(-100);
+    return chartData.slice(-50);
+  }, [chartData, isMobile, isTablet, isLargeScreen]);
 
   const speedDownloadAxis = useMemo(
     () => getSmartAxis(visibleChartData.map((point) => point.download), { fallbackMax: 20 }),
@@ -992,53 +1011,57 @@ function History() {
                     <div className="trends-header">
                       <h2 className="section-title">Performance Trends</h2>
                       <div className="date-filters">
-                        <label className="date-label-field">
-                          <span className="date-label">From</span>
-                          <DatePicker
-                            selected={tempStartDate}
-                            onChange={(date) => setTempStartDate(date)}
-                            className="date-input"
-                            placeholderText="Select start date"
-                            isClearable
-                            dateFormat="yyyy-MM-dd"
-                          />
-                        </label>
-                        <label className="date-label-field">
-                          <span className="date-label">To</span>
-                          <DatePicker
-                            selected={tempEndDate}
-                            onChange={(date) => setTempEndDate(date)}
-                            className="date-input"
-                            placeholderText="Select end date"
-                            isClearable
-                            dateFormat="yyyy-MM-dd"
-                          />
-                        </label>
-                        <button 
-                          className="apply-filters-btn"
-                          onClick={() => {
-                            setStartDate(tempStartDate);
-                            setEndDate(tempEndDate);
-                            setTableOffset(0);
-                          }}
-                        >
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="M21 21l-4.35-4.35" />
-                          </svg>
-                        </button>
-                        <button 
-                          className="clear-filters-btn"
-                          onClick={() => {
-                            setTempStartDate(null);
-                            setTempEndDate(null);
-                            setStartDate(null);
-                            setEndDate(null);
-                            setTableOffset(0);
-                          }}
-                        >
-                          Clear
-                        </button>
+                        <div className="date-filters-fields">
+                          <label className="date-label-field">
+                            <span className="date-label">From</span>
+                            <DatePicker
+                              selected={tempStartDate}
+                              onChange={(date) => setTempStartDate(date)}
+                              className="date-input"
+                              placeholderText="Select start date"
+                              isClearable
+                              dateFormat="yyyy-MM-dd"
+                            />
+                          </label>
+                          <label className="date-label-field">
+                            <span className="date-label">To</span>
+                            <DatePicker
+                              selected={tempEndDate}
+                              onChange={(date) => setTempEndDate(date)}
+                              className="date-input"
+                              placeholderText="Select end date"
+                              isClearable
+                              dateFormat="yyyy-MM-dd"
+                            />
+                          </label>
+                        </div>
+                        <div className="date-filters-actions">
+                          <button 
+                            className="apply-filters-btn"
+                            onClick={() => {
+                              setStartDate(tempStartDate);
+                              setEndDate(tempEndDate);
+                              setTableOffset(0);
+                            }}
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="11" cy="11" r="8" />
+                              <path d="M21 21l-4.35-4.35" />
+                            </svg>
+                          </button>
+                          <button 
+                            className="clear-filters-btn"
+                            onClick={() => {
+                              setTempStartDate(null);
+                              setTempEndDate(null);
+                              setStartDate(null);
+                              setEndDate(null);
+                              setTableOffset(0);
+                            }}
+                          >
+                            Clear
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -1432,61 +1455,64 @@ function History() {
                       <h2 className="section-title">Test History</h2>
                       <div className="test-table-right-section">
                         <div className="date-filters">
-                          <label className="date-label-field">
-                            <span className="date-label">From</span>
-                            <DatePicker
-                              selected={tempStartDate}
-                              onChange={(date) => setTempStartDate(date)}
-                              className="date-input"
-                              placeholderText="Select start date"
-                              isClearable
-                              dateFormat="yyyy-MM-dd"
-                            />
-                          </label>
-                          <label className="date-label-field">
-                            <span className="date-label">To</span>
-                            <DatePicker
-                              selected={tempEndDate}
-                              onChange={(date) => setTempEndDate(date)}
-                              className="date-input"
-                              placeholderText="Select end date"
-                              isClearable
-                              dateFormat="yyyy-MM-dd"
-                            />
-                          </label>
-                          <button 
-                            className="apply-filters-btn"
-                            onClick={() => {
-                              setStartDate(tempStartDate);
-                              setEndDate(tempEndDate);
-                              setTableOffset(0);
-                            }}
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="11" cy="11" r="8" />
-                              <path d="M21 21l-4.35-4.35" />
-                            </svg>
-                          </button>
-                          <button 
-                            className="clear-filters-btn"
-                            onClick={() => {
-                              setTempStartDate(null);
-                              setTempEndDate(null);
-                              setStartDate(null);
-                              setEndDate(null);
-                              setTableOffset(0);
-                            }}
-                          >
-                            Clear
-                          </button>
-                          <button onClick={exportToCSV} className="export-btn">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                              <polyline points="7 10 12 15 17 10" />
-                              <line x1="12" y1="15" x2="12" y2="3" />
-                            </svg>
-                            Export CSV
-                          </button>
+                          <div className="date-filters-fields">
+                            <label className="date-label-field">
+                              <span className="date-label">From</span>
+                              <DatePicker
+                                selected={tempStartDate}
+                                onChange={(date) => setTempStartDate(date)}
+                                className="date-input"
+                                placeholderText="Select start date"
+                                isClearable
+                                dateFormat="yyyy-MM-dd"
+                              />
+                            </label>
+                            <label className="date-label-field">
+                              <span className="date-label">To</span>
+                              <DatePicker
+                                selected={tempEndDate}
+                                onChange={(date) => setTempEndDate(date)}
+                                className="date-input"
+                                placeholderText="Select end date"
+                                isClearable
+                                dateFormat="yyyy-MM-dd"
+                              />
+                            </label>
+                          </div>
+                          <div className="date-filters-actions">
+                            <button 
+                              className="apply-filters-btn"
+                              onClick={() => {
+                                setStartDate(tempStartDate);
+                                setEndDate(tempEndDate);
+                                setTableOffset(0);
+                              }}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
+                              </svg>
+                            </button>
+                            <button 
+                              className="clear-filters-btn"
+                              onClick={() => {
+                                setTempStartDate(null);
+                                setTempEndDate(null);
+                                setStartDate(null);
+                                setEndDate(null);
+                                setTableOffset(0);
+                              }}
+                            >
+                              Clear
+                            </button>
+                            <button onClick={exportToCSV} className="export-btn">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

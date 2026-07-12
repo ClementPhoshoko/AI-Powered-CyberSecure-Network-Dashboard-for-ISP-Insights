@@ -344,7 +344,8 @@
 }
 
 .section-title {
-  font-size: var(--fluid-h2);
+  /* font-size: var(--fluid-h3); */
+  font-size: var(--text-xl);
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 0;
@@ -354,6 +355,18 @@
   display: flex;
   align-items: flex-end;
   gap: var(--space-3);
+}
+
+.date-filters-fields {
+  display: flex;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.date-filters-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
 }
 
 .date-filter-label {
@@ -373,7 +386,7 @@
 .date-label-field {
   display: flex;
   flex-direction: column;
-  /* gap: var(--space-1); */
+  gap: 0;
   align-items: flex-start;
   width: 100%;
 }
@@ -524,8 +537,10 @@
   gap: var(--space-2);
   padding: 0 var(--space-4);
   border-radius: var(--radius-md);
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
+  /* border: 1px solid var(--glass-border); */
+  border: none;
+  /* background: var(--glass-bg); */
+  background: none;
   color: var(--text-secondary);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -1375,6 +1390,10 @@
     text-align: left;
   }
 
+  .history-hero-image {
+    max-height: 180px;
+  }
+
   .history-tabs {
     padding: 0 var(--space-6);
   }
@@ -1519,10 +1538,6 @@
 
 /* --- Below 768px: tablet and below --- */
 @media (max-width: 768px) {
-  .history-hero {
-    display: none;
-  }
-
   .history-title-section {
     padding: var(--space-4) var(--space-4);
     text-align: left;
@@ -1581,11 +1596,16 @@
   }
 
   .date-filters {
-    flex-direction: row;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: stretch;
     gap: var(--space-2);
     width: 100%;
     flex-wrap: nowrap;
+  }
+
+  .date-filters-fields {
+    display: flex;
+    gap: var(--space-2);
   }
 
   .date-label-field {
@@ -1604,6 +1624,11 @@
     padding: var(--space-1) var(--space-2);
   }
 
+  .date-filters-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
   .apply-filters-btn {
     height: 36px;
     width: 36px;
@@ -1619,9 +1644,13 @@
 
   .export-btn {
     height: 36px;
-    padding: 0 var(--space-3);
-    font-size: var(--text-xs);
+    padding: 0 var(--space-2);
     flex-shrink: 0;
+  }
+
+  .export-btn svg {
+    width: 16px;
+    height: 16px;
   }
 
   .summary-grid {
@@ -1712,6 +1741,10 @@
 
 /* --- Below 640px: phones --- */
 @media (max-width: 640px) {
+  .history-hero {
+    display: none;
+  }
+
   .history-title-section-title {
     font-size: clamp(1.25rem, 5vw, 2.5rem);
   }
@@ -1842,6 +1875,27 @@
   .test-details-value {
     font-size: var(--text-sm);
     padding-left: var(--space-2);
+  }
+
+  .test-table-header .date-filters {
+    width: 100%;
+    min-width: unset;
+    flex-direction: column;
+  }
+
+  .export-btn {
+    height: 36px;
+    padding: 0 var(--space-2);
+    flex-shrink: 0;
+  }
+
+  .react-datepicker-popper {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .react-datepicker {
+    max-width: calc(100vw - 32px);
   }
 }
 
