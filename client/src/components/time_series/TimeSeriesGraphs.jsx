@@ -163,7 +163,7 @@ const TimeSeriesGraphs = ({ testResult, chartColors = {} }) => {
                   stroke={stroke}
                   strokeWidth={2}
                   dot={{ fill: stroke, r: isMobile ? 3 : 4 }}
-                  activeDot={{ r: isMobile ? 5 : 6 }}
+                  activeDot={{ r: isMobile ? 5 : 6, fill: stroke, stroke: '#fff', strokeWidth: 2 }}
                 />
               )}
             </ChartComponent>

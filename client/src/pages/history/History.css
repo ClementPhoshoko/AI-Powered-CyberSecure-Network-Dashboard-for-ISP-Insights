@@ -573,6 +573,16 @@
   box-shadow: var(--shadow-glass);
 }
 
+.graph-card .recharts-wrapper,
+.graph-card .recharts-surface,
+.graph-card .recharts-wrapper * {
+  outline: none !important;
+}
+
+.graph-card .recharts-active-dot circle {
+  outline: none !important;
+}
+
 .graph-title {
   font-size: var(--text-sm);
   font-weight: 600;

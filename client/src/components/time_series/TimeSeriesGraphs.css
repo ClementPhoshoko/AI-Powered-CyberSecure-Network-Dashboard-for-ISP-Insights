@@ -14,6 +14,16 @@
   border-bottom: 1px solid color-mix(in srgb, var(--glass-border) 55%, transparent);
 }
 
+.graph-card .recharts-wrapper,
+.graph-card .recharts-surface,
+.graph-card .recharts-wrapper * {
+  outline: none !important;
+}
+
+.graph-card .recharts-active-dot circle {
+  outline: none !important;
+}
+
 .graph-card:last-child {
   border-bottom: none;
 }

@@ -1094,6 +1094,7 @@ function History() {
                                 stroke="var(--download)"
                                 strokeWidth={2}
                                 dot={{ r: isMobile ? 2 : 3 }}
+                                activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--download)', stroke: '#fff', strokeWidth: 2 }}
                                 name="Download (Mbps)"
                               />
                               <Line
@@ -1103,6 +1104,7 @@ function History() {
                                 stroke="var(--upload)"
                                 strokeWidth={2}
                                 dot={{ r: isMobile ? 2 : 3 }}
+                                activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--upload)', stroke: '#fff', strokeWidth: 2 }}
                                 strokeDasharray="5 5"
                                 name="Upload (Mbps)"
                               />
@@ -1151,6 +1153,7 @@ function History() {
                                 stroke="var(--ping)"
                                 strokeWidth={2}
                                 dot={{ r: isMobile ? 2 : 3 }}
+                                activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--ping)', stroke: '#fff', strokeWidth: 2 }}
                                 name="Ping (ms)"
                               />
                               <Line
@@ -1159,6 +1162,7 @@ function History() {
                                 stroke="#f59e0b"
                                 strokeWidth={2}
                                 dot={{ r: isMobile ? 2 : 3 }}
+                                activeDot={{ r: isMobile ? 5 : 6, fill: '#f59e0b', stroke: '#fff', strokeWidth: 2 }}
                                 strokeDasharray="5 5"
                                 name="Jitter (ms)"
                               />
