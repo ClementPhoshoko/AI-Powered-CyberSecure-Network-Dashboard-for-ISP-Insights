@@ -65,7 +65,7 @@ export const ThemeProvider = ({ children }) => {
     if (saved && THEMES.find((t) => t.id === saved)) {
       return saved;
     }
-    return THEMES[0].id;
+    return THEMES[1].id;
   });
 
   // Persist theme to localStorage when it changes
