@@ -12,7 +12,6 @@ function Register() {
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -84,7 +83,7 @@ function Register() {
     register(email, password)
       .then(() => {
         setProgress(100);
-        setSuccess(true);
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
       })
       .catch((err) => {
         setErrorModal({ isOpen: true, message: err.message });
@@ -93,28 +92,6 @@ function Register() {
         setIsLoading(false);
       });
   };
-
-  if (success) {
-    return (
-      <div className="auth-form auth-form-success">
-        <h1 className="auth-form-title">Check your email</h1>
-        <p className="auth-form-success-message">
-          We've sent you a confirmation email. Please click the link to verify your account.
-        </p>
-        <button 
-          className="auth-form-button" 
-          onClick={() => navigate('/login')}
-        >
-          <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-            <polyline points="10 17 15 12 10 7" />
-            <line x1="15" y1="12" x2="3" y2="12" />
-          </svg>
-          Go to Login
-        </button>
-      </div>
-    );
-  }
 
   return (
     <>

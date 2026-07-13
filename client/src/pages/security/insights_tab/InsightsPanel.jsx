@@ -57,6 +57,23 @@ function InsightsPanel({ assessments = [], latestAssessment = null, isLoading = 
     )
   }
 
+  if (!isLoading && !error && !assessmentList.length) {
+    return (
+      <section className="insights_panel" aria-label="Security scan insights panel">
+        <div className="empty-state">
+          <img src={notFoundAvatar} alt="No scan results" className="empty-state-avatar" />
+          <div className="empty-state-copy">
+            <p className="empty-state-title">No security scan data available yet</p>
+            <p className="empty-state-description">
+              Run a security scan to start building your scan history and unlock trend insights over time.
+            </p>
+          </div>
+          <button type="button" className="link-btn">Run a Security Scan</button>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="insights_panel" aria-label="Security scan insights panel">
       <header className="insights_panel-head">

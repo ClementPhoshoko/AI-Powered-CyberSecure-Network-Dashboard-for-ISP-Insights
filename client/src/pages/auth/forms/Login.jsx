@@ -116,7 +116,7 @@ function Login() {
             />
             Remember me
           </label>
-          <a href="#" className="auth-form-forgot">Forgot password?</a>
+          <a href="#" className="auth-form-forgot" onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }}>Forgot password?</a>
         </div>
         
         <button type="submit" className="auth-form-button" disabled={isLoading}>

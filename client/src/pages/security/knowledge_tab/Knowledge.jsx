@@ -46,6 +46,8 @@ function Knowledge({
 	const knowledgeHighlights = getKnowledgeHighlights(knowledgeBase)
 	const hasReferenceEntries = knowledgeHighlights.length > 0
 
+	const hasNoData = !latestAssessment && !hasReferenceEntries && topRecommendations.length === 0 && allPortRows.length === 0
+
 	if (error && !latestAssessment && !hasReferenceEntries) {
 		return (
 			<section className="security-error-state" aria-label="Security scan error">
@@ -57,6 +59,23 @@ function Knowledge({
 				{typeof onRetry === 'function' && (
 					<button type="button" className="security-cta" onClick={onRetry}>Try Again</button>
 				)}
+			</section>
+		)
+	}
+
+	if (!isLoading && !error && hasNoData) {
+		return (
+			<section className="knowledge_page" aria-label="Security knowledge center">
+				<div className="empty-state">
+					<img src={notFoundAvatar} alt="No scan results" className="empty-state-avatar" />
+					<div className="empty-state-copy">
+						<p className="empty-state-title">No security scan data available yet</p>
+						<p className="empty-state-description">
+							Run a security scan to unlock AI-driven recommendations, port risk analysis, and a searchable knowledge base of common services and mitigation advice.
+						</p>
+					</div>
+					<button type="button" className="link-btn">Run a Security Scan</button>
+				</div>
 			</section>
 		)
 	}

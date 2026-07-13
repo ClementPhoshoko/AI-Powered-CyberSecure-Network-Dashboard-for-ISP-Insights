@@ -1,6 +1,24 @@
 import { supabase } from './supabase';
 import { getFriendlyErrorMessage as getGeneralFriendlyMessage } from './errorUtils';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const otpFetch = async (path, body) => {
+  const res = await fetch(`${API_URL}/api/otp${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    throw new Error(`Server returned ${res.status}. Expected JSON but got: ${text.slice(0, 200)}`);
+  }
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Request failed');
+  return data;
+};
+
 const getFriendlyAuthErrorMessage = (error) => {
   if (!error || !error.message) {
     return getGeneralFriendlyMessage(error);
@@ -101,4 +119,16 @@ export const updateEmail = async (email) => {
     throw friendlyError;
   }
   return data;
+};
+
+export const sendOtp = async (email, purpose) => {
+  return otpFetch('/send', { email, purpose });
+};
+
+export const verifyOtp = async (email, code, purpose) => {
+  return otpFetch('/verify', { email, code, purpose });
+};
+
+export const resetPassword = async (email, resetToken, newPassword) => {
+  return otpFetch('/reset-password', { email, resetToken, newPassword });
 };

@@ -4,6 +4,8 @@ import { AuthProvider } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
 import Login from './pages/auth/forms/Login'
 import Register from './pages/auth/forms/Register'
+import Forgot from './pages/auth/forms/Forgot'
+import Verify from './pages/auth/forms/Verify'
 import Home from './pages/home/Home'
 import History from './pages/history/History'
 import Security from './pages/security/Security'
@@ -21,7 +23,7 @@ import PublicRoute from './components/public_route/PublicRoute'
 
 function AppContent() {
   const location = useLocation();
-  const isAuthRoute = ['/login', '/signup'].includes(location.pathname);
+  const isAuthRoute = ['/login', '/signup', '/forgot-password', '/verify-email'].includes(location.pathname);
 
   return (
     <div className="app-shell">
@@ -81,6 +83,12 @@ function AppContent() {
             <PublicRoute>
               <AuthLayout activeTab="signup"><Register /></AuthLayout>
             </PublicRoute>
+          } />
+          <Route path="/forgot-password" element={
+            <AuthLayout activeTab="forgot"><Forgot /></AuthLayout>
+          } />
+          <Route path="/verify-email" element={
+            <AuthLayout activeTab="verify"><Verify /></AuthLayout>
           } />
           <Route path="/auth-required" element={<AuthRequired />} />
           <Route path="*" element={<NotFound />} />
