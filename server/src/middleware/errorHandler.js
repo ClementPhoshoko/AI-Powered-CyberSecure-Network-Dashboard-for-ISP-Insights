@@ -7,17 +7,21 @@ function errorHandler(err, req, res, next) {
 
   // Default error status and message
   let statusCode = err.statusCode || 500;
-  let message = err.message || 'Internal Server Error';
+  let message = 'Internal Server Error';
 
-  // Handle Zod validation errors
+  // Handle Zod validation errors — safe to show details
   if (err.name === 'ZodError') {
     statusCode = 400;
     message = 'Validation error: ' + err.issues.map(issue => `${issue.path.join('.')} - ${issue.message}`).join(', ');
   }
-  // Handle Supabase errors
+  // Handle Supabase errors — show generic message, log real one
   else if (err.code && err.message) {
     statusCode = 400;
-    message = err.message;
+    message = 'Request failed. Please check your input and try again.';
+  }
+  // All other errors — never leak internals
+  else if (err.message) {
+    message = 'Internal Server Error';
   }
 
   res.status(statusCode).json({

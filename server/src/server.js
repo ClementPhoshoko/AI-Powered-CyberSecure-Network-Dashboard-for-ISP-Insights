@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 require('dotenv').config({
@@ -37,35 +38,53 @@ function shouldCompress(req, res) {
 // Trust proxy headers (for X-Forwarded-For to get real client IP)
 app.set('trust proxy', '127.0.0.1'); // Trust only localhost Nginx
 
-// Middleware: Smart security headers based on deployment type
-const USE_HTTPS = process.env.USE_HTTPS === 'true' || NODE_ENV === 'production-with-ssl';
+// Security headers — always active
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"]
+    }
+  }
+}));
 
-if (USE_HTTPS) {
-  // Full security for HTTPS deployment
-  app.use(helmet({
-    hsts: {
-      maxAge: 31536000,
-      includeSubDomains: true,
-      preload: true
-    },
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"]
-      }
-    },
-    xssFilter: true,
-    noSniff: true
-  }));
-} else {
-  // No helmet headers for plain HTTP to avoid Swagger UI issues
-  console.warn('⚠️ Running in HTTP-only mode - security headers disabled');
-}
-app.use(cors());
+// CORS — restrict to known origins
+const allowedOrigins = NODE_ENV === 'production'
+  ? (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean)
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(compression({ filter: shouldCompress })); // Compress responses except speed-test downloads
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined')); // Logging
+
+// Rate limiting — auth endpoints (brute-force protection)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,                   // 10 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { status: 'error', message: 'Too many attempts, try again later' },
+});
+
+// Rate limiting — global API (abuse protection)
+const globalLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,  // 1 minute
+  max: 100,                  // 100 requests per minute
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { status: 'error', message: 'Rate limit exceeded, slow down' },
+});
+
+app.use('/dev/auth', authLimiter);
+app.use('/api', globalLimiter);
 
 // Swagger Configuration
 const swaggerOptions = {
@@ -124,8 +143,7 @@ app.get('/api/health/db', async (req, res) => {
         if (error) {
             return res.status(500).json({
                 status: 'error',
-                message: 'Database connection failed',
-                error: error.message
+                message: 'Database connection failed'
             });
         }
         res.status(200).json({
@@ -135,8 +153,7 @@ app.get('/api/health/db', async (req, res) => {
     } catch (error) {
         res.status(500).json({
             status: 'error',
-            message: 'Server error',
-            error: error.message
+            message: 'Server error'
         });
     }
 });

@@ -22,7 +22,7 @@ async function devLogin(req, res, next) {
     if (error) {
       return res.status(401).json({
         status: 'error',
-        message: error.message
+        message: 'Invalid credentials'
       });
     }
 
