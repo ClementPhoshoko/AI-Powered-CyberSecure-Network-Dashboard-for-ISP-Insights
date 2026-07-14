@@ -24,6 +24,101 @@ function getOtpKey(email, purpose) {
   return `${email.toLowerCase()}:${purpose}`;
 }
 
+// ─── Register ────────────────────────────────────────────────────────
+// POST /api/otp/register
+// Body: { email, password }
+// Creates the user via the admin API with email_confirm=false so Supabase
+// does NOT send its own native confirmation email. We then send our own
+// branded verification link via EmailJS. Sign-in stays blocked (Supabase
+// "Enable email confirmations" must be ON) until the link is clicked.
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+async function registerUser(req, res, next) {
+  try {
+    const { email, password } = registerSchema.parse(req.body);
+    console.log(`[Register] Request: email=${email}`);
+
+    const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+    if (listError) {
+      console.error('[Register] listUsers error:', listError);
+      return res.status(500).json({ status: 'error', message: 'Unable to process request' });
+    }
+
+    const existing = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+    if (existing && existing.email_confirmed_at) {
+      return res.status(400).json({ status: 'error', message: 'An account with this email already exists.' });
+    }
+
+    let userId;
+    if (existing) {
+      // Unconfirmed account already exists — update password and resend link
+      const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(existing.id, { password });
+      if (updErr) {
+        console.error('[Register] update password error:', updErr);
+        return res.status(500).json({ status: 'error', message: 'Unable to create account. Please try again.' });
+      }
+      userId = existing.id;
+    } else {
+      // Create user WITHOUT triggering Supabase's native confirmation email
+      const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: false,
+      });
+      if (createErr) {
+        console.error('[Register] createUser error:', createErr);
+        const already = createErr.message?.toLowerCase().includes('already');
+        return res.status(already ? 400 : 500).json({
+          status: 'error',
+          message: already ? 'An account with this email already exists.' : 'Unable to create account. Please try again.',
+        });
+      }
+      userId = created.user.id;
+    }
+
+    // Generate + persist verify token (survives server restarts)
+    const verifyToken = crypto.randomBytes(32).toString('hex');
+    const { error: metaErr } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+      user_metadata: {
+        verify_token: verifyToken,
+        verify_token_expires: Date.now() + OTP_TTL_MS,
+      },
+    });
+    if (metaErr) {
+      console.error('[Register] Failed to store verify token:', metaErr);
+    }
+
+    const baseUrl = req.headers.origin || 'http://localhost:5173';
+    const verifyLinkUrl = `${baseUrl}/verify-email?token=${verifyToken}&email=${encodeURIComponent(email)}`;
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: otpSubject('verify'),
+        purpose: 'verify',
+        verifyLink: verifyLinkUrl,
+      });
+    } catch (emailErr) {
+      console.error('[Register] Email send failed:', emailErr.message);
+      return res.status(500).json({ status: 'error', message: 'Failed to send email. Please try again.' });
+    }
+
+    res.status(201).json({ status: 'success', message: 'Account created. Verification email sent.' });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Validation error: ' + error.issues.map(i => `${i.path.join('.')} - ${i.message}`).join(', '),
+      });
+    }
+    next(error);
+  }
+}
+
 // ─── Send OTP ────────────────────────────────────────────────────────
 // POST /api/otp/send
 // Body: { email, purpose }  purpose = "verify" | "reset"
@@ -35,14 +130,18 @@ const sendOtpSchema = z.object({
 async function sendOtp(req, res, next) {
   try {
     const { email, purpose } = sendOtpSchema.parse(req.body);
+    console.log(`[OTP] Request: purpose=${purpose}, email=${email}`);
 
     // For reset: user must exist. For verify: user must exist and be unconfirmed.
+    // listUsers returns { data: { users: AuthUser[], aud, nextPage, ... }, error }
     const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
     if (listError) {
+      console.error('[OTP] listUsers error:', listError);
       return res.status(500).json({ status: 'error', message: 'Unable to process request' });
     }
 
     const user = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+    console.log(`[OTP] User found:`, user ? `id=${user.id}, confirmed=${!!user.email_confirmed_at}` : 'no');
 
     if (purpose === 'reset' && !user) {
       // Don't reveal whether email exists — return success anyway
@@ -58,38 +157,63 @@ async function sendOtp(req, res, next) {
     }
 
     const code = generateOtp();
+    const verifyToken = purpose === 'verify' ? crypto.randomBytes(32).toString('hex') : null;
     const key = getOtpKey(email, purpose);
 
-    otpStore.set(key, {
+    const storeEntry = {
       code,
       purpose,
       userId: user?.id || null,
       expiresAt: Date.now() + OTP_TTL_MS,
       attempts: 0,
-    });
+    };
+
+    if (verifyToken) {
+      storeEntry.verifyToken = verifyToken;
+    }
+
+    otpStore.set(key, storeEntry);
 
     console.log(`[OTP] ${purpose} code for ${email}: ${code}`);
 
+    // Build email params
+    const emailParams = {
+      to: email,
+      subject: otpSubject(purpose),
+      purpose,
+    };
+
+    if (purpose === 'verify' && verifyToken) {
+      const baseUrl = req.headers.origin || 'http://localhost:5173';
+      emailParams.verifyLink = `${baseUrl}/verify-email?token=${verifyToken}&email=${encodeURIComponent(email)}`;
+
+      // Persist verify token in Supabase so it survives server restarts
+      const { error: metaErr } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+        user_metadata: {
+          verify_token: verifyToken,
+          verify_token_expires: Date.now() + OTP_TTL_MS,
+        },
+      });
+      if (metaErr) {
+        console.error('[OTP] Failed to store verify token:', metaErr);
+      }
+    } else {
+      emailParams.otpCode = code;
+    }
+
     // Send email server-side via EmailJS
     try {
-      await sendEmail({
-        to: email,
-        subject: otpSubject(purpose),
-        otpCode: code,
-        purpose,
-      });
+      await sendEmail(emailParams);
     } catch (emailErr) {
       console.error('[OTP] Email send failed:', emailErr.message);
-      if (process.env.NODE_ENV === 'production' || emailErr.message.includes('non-browser')) {
-        return res.status(500).json({ status: 'error', message: emailErr.message });
-      }
+      return res.status(500).json({ status: 'error', message: 'Failed to send email. Please try again.' });
     }
 
     res.status(200).json({
       status: 'success',
       message: purpose === 'reset'
         ? 'If an account exists, an OTP has been sent.'
-        : 'OTP sent successfully',
+        : 'Verification email sent',
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -243,4 +367,70 @@ async function resetPassword(req, res, next) {
   }
 }
 
-module.exports = { sendOtp, verifyOtp, resetPassword };
+// ─── Verify Link ──────────────────────────────────────────────────────
+// GET /api/otp/verify-link?token=xxx&email=yyy
+const verifyLinkSchema = z.object({
+  token: z.string().min(1),
+  email: z.string().email(),
+});
+
+async function verifyLink(req, res, next) {
+  try {
+    const { token, email } = verifyLinkSchema.parse(req.query);
+
+    // Look up the user directly in Supabase (token is persisted in user_metadata,
+    // so this survives server restarts unlike the in-memory store)
+    const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+    if (listError) {
+      console.error('[OTP] verifyLink listUsers error:', listError);
+      return res.status(500).json({ status: 'error', message: 'Unable to process request' });
+    }
+
+    const user = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+
+    if (!user) {
+      return res.status(400).json({ status: 'error', message: 'Invalid or expired verification link.' });
+    }
+
+    if (user.email_confirmed_at) {
+      return res.status(400).json({ status: 'error', message: 'This email is already verified. You can sign in.' });
+    }
+
+    const storedToken = user.user_metadata?.verify_token;
+    const storedExpires = user.user_metadata?.verify_token_expires;
+
+    if (!storedToken || storedToken !== token) {
+      return res.status(400).json({ status: 'error', message: 'Invalid verification link.' });
+    }
+
+    if (Date.now() > (storedExpires || 0)) {
+      return res.status(400).json({ status: 'error', message: 'Verification link has expired. Please sign up again.' });
+    }
+
+    // Confirm email in Supabase
+    const { error: confirmError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+      email_confirm: true,
+      user_metadata: { verify_token: null, verify_token_expires: null },
+    });
+
+    if (confirmError) {
+      console.error('[OTP] Failed to confirm email via link:', confirmError);
+      return res.status(500).json({ status: 'error', message: 'Failed to verify email. Please try again.' });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Email verified successfully',
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid verification link.',
+      });
+    }
+    next(error);
+  }
+}
+
+module.exports = { registerUser, sendOtp, verifyOtp, resetPassword, verifyLink };

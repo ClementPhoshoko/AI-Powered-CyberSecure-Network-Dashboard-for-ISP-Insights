@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { sendOtp, verifyOtp, resetPassword } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
+import successAvatar from '../../../assets/avatars/success_avatar_2.png';
 import './Forgot.css';
 
 const STEP_VARIANTS = {
@@ -346,10 +347,7 @@ function Forgot() {
               className="auth-form forgot-success"
             >
               <div className="forgot-success-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
+                <img src={successAvatar} alt="Success" />
               </div>
               <h1 className="auth-form-title">Password updated</h1>
               <p className="forgot-subtitle">Your password has been reset successfully. You can now sign in with your new password.</p>

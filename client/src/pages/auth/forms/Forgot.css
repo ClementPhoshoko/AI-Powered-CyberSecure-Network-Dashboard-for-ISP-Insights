@@ -42,19 +42,13 @@
 }
 
 .forgot-success-icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  background: rgba(var(--color-success-rgb), 0.1);
-  border: 2px solid rgba(var(--color-success-rgb), 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 6rem;
+  height: 6rem;
   margin: 0 auto var(--space-4);
 }
 
-.forgot-success-icon svg {
-  width: 1.75rem;
-  height: 1.75rem;
-  color: var(--color-success);
+.forgot-success-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }

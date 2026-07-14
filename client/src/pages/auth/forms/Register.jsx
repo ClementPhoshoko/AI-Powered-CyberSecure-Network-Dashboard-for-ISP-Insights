@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { register } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
+import successAvatar from '../../../assets/avatars/success_avatar_2.png';
 import './Register.css';
 
 function Register() {
@@ -16,6 +17,7 @@ function Register() {
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [animationKey, setAnimationKey] = useState(Date.now());
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,7 +54,7 @@ function Register() {
       return 'Password must contain at least one number';
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
-      return 'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>)';
+      return 'Password must contain at least one special character (!@#$%^&*(),.?":{|}<>)';
     }
     return null;
   };
@@ -80,18 +82,52 @@ function Register() {
     setIsLoading(true);
     setProgress(0);
 
-    register(email, password)
-      .then(() => {
-        setProgress(100);
-        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
-      })
-      .catch((err) => {
-        setErrorModal({ isOpen: true, message: err.message });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    try {
+      // Backend creates the user (no native Supabase email) and sends the
+      // EmailJS verification link in one step.
+      await register(email, password);
+      setProgress(100);
+      setRegisteredEmail(email);
+    } catch (err) {
+      setErrorModal({ isOpen: true, message: err.message });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (registeredEmail) {
+    return (
+      <>
+        <div className="auth-form" key={animationKey}>
+          <div className="auth-success-icon-wrapper">
+            <div className="auth-success-icon">
+              <img src={successAvatar} alt="Success" />
+            </div>
+          </div>
+          <h1 className="auth-form-title">Check your email</h1>
+          <p className="auth-success-text">
+            We sent a verification link to <strong>{registeredEmail}</strong>. Click the link to activate your account.
+          </p>
+          <p className="auth-success-hint">
+            If you don't see the email, check your spam folder or try signing up again.
+          </p>
+          <button className="auth-form-button" onClick={() => navigate('/login')}>
+            <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <polyline points="10 17 15 12 10 7" />
+              <line x1="15" y1="12" x2="3" y2="12" />
+            </svg>
+            Go to Login
+          </button>
+        </div>
+        <ErrorModal
+          isOpen={errorModal.isOpen}
+          message={errorModal.message}
+          onClose={() => setErrorModal({ isOpen: false, message: '' })}
+        />
+      </>
+    );
+  }
 
   return (
     <>

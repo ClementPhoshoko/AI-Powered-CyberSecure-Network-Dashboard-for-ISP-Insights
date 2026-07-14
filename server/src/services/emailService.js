@@ -1,33 +1,37 @@
 const EMAILJS_API = 'https://api.emailjs.com/api/v1.0/email/send';
 
 const SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
-const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
+const TEMPLATE_VERIFY_ID = process.env.EMAILJS_TEMPLATE_VERIFY_ID;
+const TEMPLATE_RESET_ID = process.env.EMAILJS_TEMPLATE_RESET_ID;
 const PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
 const PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
 
-async function sendEmail({ to, subject, otpCode, purpose }) {
-  if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-    console.warn('[EmailJS] Missing env vars — email not sent. OTP:', otpCode);
+async function sendEmail({ to, subject, otpCode, purpose, verifyLink }) {
+  const templateId = purpose === 'verify' ? TEMPLATE_VERIFY_ID : TEMPLATE_RESET_ID;
+
+  if (!SERVICE_ID || !templateId || !PUBLIC_KEY) {
+    console.warn('[EmailJS] Missing env vars — email not sent.', purpose === 'verify' ? 'Link:' : 'OTP:', otpCode || verifyLink);
     return { ok: false, skipped: true };
   }
-
-  const message = purpose === 'verify'
-    ? 'Thanks for signing up. Use the code below to verify your email address.'
-    : 'We received a request to reset your password. Use the code below to proceed.';
 
   const templateParams = {
     email: to,
     to_email: to,
     subject,
-    message,
-    otp_code: otpCode,
-    purpose,
     from_name: 'AkovoLabs',
   };
 
+  if (purpose === 'verify' && verifyLink) {
+    templateParams.verify_link = verifyLink;
+    templateParams.message = 'Thanks for signing up. Click the link below to verify your email address.';
+  } else {
+    templateParams.otp_code = otpCode;
+    templateParams.message = 'We received a request to reset your password. Use the code below to proceed.';
+  }
+
   const payload = {
     service_id: SERVICE_ID,
-    template_id: TEMPLATE_ID,
+    template_id: templateId,
     user_id: PUBLIC_KEY,
     template_params: templateParams,
   };

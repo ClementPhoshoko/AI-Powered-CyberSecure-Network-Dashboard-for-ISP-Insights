@@ -1,0 +1,81 @@
+-- later plan for allowing admin to delete all users
+--                         signed user to empty their account data,
+--                         admin to delete all user accounts plus their data
+
+QL plan (per option) — assumes “reset app state”
+⚠️ Irreversible / destructive: these operations remove data. Only run as an admin reset action.
+
+Step 0 (common to all options): truncate app tables in public
+Use your loop/truncate approach (recommended: only public, and cascade):
+
+SQL Query
+
+
+
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN
+    SELECT tablename
+    FROM pg_tables
+    WHERE schemaname = 'public'
+  LOOP
+    EXECUTE format(
+      'TRUNCATE TABLE public.%I RESTART IDENTITY CASCADE;',
+      r.tablename
+    );
+  END LOOP;
+END $$;
+
+Step 1 (common to all options): clear Storage objects (NOT SQL)
+Do not do DELETE FROM storage.objects; (can leave orphaned objects).
+
+Plan instead:
+
+Use the Storage API to delete objects by bucket/object path
+Delete across all buckets (or the specific buckets your app uses)
+(You can wrap this in an Edge Function / backend admin action.)
+
+Option A — “Empty all users (irreversible): delete every user account (and their auth records)”
+Truncate public (SQL block above)
+Delete Storage objects (Storage API)
+Delete auth users (Admin Auth API / service-role context)
+SQL plan: no safe direct SQL equivalent for “delete all auth users” recommended by Supabase
+In your backend, call Admin Auth endpoints to delete users (service role / admin privileges)
+Verify:
+public tables empty
+Storage empty
+auth.users count is 0
+Option B — “Empty users with their data (keep user accounts)”
+Truncate public (SQL block above)
+Delete Storage objects (Storage API)
+Do not touch auth.users
+Verify:
+auth.users still present
+public empty
+Storage empty
+(If you have some data you want to preserve, you’d exclude those tables from the truncate loop.)
+
+Option C — “Empty all their data (keep auth + identity)”
+This is effectively the same as Option B in typical Supabase apps:
+
+Truncate public (SQL block above)
+Delete Storage objects (Storage API)
+Do not touch auth.users (auth + identity preserved)
+Verify:
+auth.users still present
+public empty
+Storage empty
+Backend/UI integration note (so your admin choice maps cleanly)
+Implement one reset job with a parameter:
+mode = "empty_all_users" | "empty_users_data" | "empty_all_user_data"
+Always run:
+TRUNCATE public.* ... CASCADE
+Storage deletion via API
+Only run auth-user deletion when mode = "empty_all_users" (via Admin Auth API, not SQL).*
+If you tell me your schema/table naming conventions (or if you have any non-public tables you want preserved), I can adjust the truncate logic accordingly (e.g., whitelist/blacklist tables).
+
+
+
+Supabase AI may not always produce correct answers. Double check respon

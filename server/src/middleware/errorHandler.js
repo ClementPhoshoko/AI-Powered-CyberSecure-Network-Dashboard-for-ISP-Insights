@@ -14,14 +14,29 @@ function errorHandler(err, req, res, next) {
     statusCode = 400;
     message = 'Validation error: ' + err.issues.map(issue => `${issue.path.join('.')} - ${issue.message}`).join(', ');
   }
-  // Handle Supabase errors — show generic message, log real one
-  else if (err.code && err.message) {
+  // Handle body-parser / syntax errors
+  else if (err.type === 'entity.parse.failed') {
     statusCode = 400;
-    message = 'Request failed. Please check your input and try again.';
+    message = 'Invalid request format. Please check your input.';
   }
-  // All other errors — never leak internals
+  // Handle rate limit errors
+  else if (err.status === 429 || err.statusCode === 429) {
+    statusCode = 429;
+    message = 'Too many requests. Please try again later.';
+  }
+  // Handle specific known errors
   else if (err.message) {
-    message = 'Internal Server Error';
+    const msg = err.message.toLowerCase();
+
+    if (msg.includes('econnrefused') || msg.includes('network') || msg.includes('fetch')) {
+      message = 'Unable to connect to the server. Please try again later.';
+    } else if (msg.includes('timeout')) {
+      message = 'Request timed out. Please try again.';
+    } else if (err.statusCode && err.statusCode >= 400 && err.statusCode < 500) {
+      message = err.message;
+    } else {
+      message = 'Internal Server Error';
+    }
   }
 
   res.status(statusCode).json({

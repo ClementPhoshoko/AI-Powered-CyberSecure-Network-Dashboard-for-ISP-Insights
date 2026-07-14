@@ -4,19 +4,99 @@ import { getFriendlyErrorMessage as getGeneralFriendlyMessage } from './errorUti
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const otpFetch = async (path, body) => {
-  const res = await fetch(`${API_URL}/api/otp${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(`${API_URL}/api/otp${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    if (err.name === 'TypeError' && err.message.includes('fetch')) {
+      throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+    }
+    throw new Error('Something went wrong. Please try again.');
+  }
+
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     const text = await res.text();
-    throw new Error(`Server returned ${res.status}. Expected JSON but got: ${text.slice(0, 200)}`);
+    throw new Error('Something went wrong on our end. Please try again later.');
   }
+
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Request failed');
   return data;
+};
+
+const getFriendlyOtpErrorMessage = (error) => {
+  if (!error || !error.message) {
+    return 'Something went wrong. Please try again.';
+  }
+
+  const msg = error.message.toLowerCase();
+
+  if (msg.includes('network') || msg.includes('fetch') || msg.includes('connection')) {
+    return 'Unable to connect to the server. Please check your internet connection and try again.';
+  }
+
+  if (msg.includes('too many') || msg.includes('rate limit')) {
+    return 'Too many attempts. Please wait a few minutes and try again.';
+  }
+
+  if (msg.includes('internal server error')) {
+    return 'Something went wrong on our end. Please try again later.';
+  }
+
+  if (msg.includes('failed to send email')) {
+    return 'We couldn\'t send the email. Please try again or check your email address.';
+  }
+
+  if (msg.includes('no account found')) {
+    return 'No account found with this email address.';
+  }
+
+  if (msg.includes('already verified')) {
+    return 'This email is already verified. You can sign in directly.';
+  }
+
+  if (msg.includes('no otp found') || msg.includes('request a new one')) {
+    return 'No verification code found. Please request a new one.';
+  }
+
+  if (msg.includes('expired')) {
+    return 'Your code has expired. Please request a new one.';
+  }
+
+  if (msg.includes('too many attempts')) {
+    return 'Too many incorrect attempts. Please request a new code.';
+  }
+
+  if (msg.includes('invalid code')) {
+    return 'Incorrect code. Please check and try again.';
+  }
+
+  if (msg.includes('invalid or expired verification link')) {
+    return 'This verification link has expired or is invalid. Please sign up again.';
+  }
+
+  if (msg.includes('invalid reset session') || msg.includes('start over')) {
+    return 'Your session has expired. Please start the password reset process again.';
+  }
+
+  if (msg.includes('invalid reset token')) {
+    return 'Invalid reset link. Please start the password reset process again.';
+  }
+
+  if (msg.includes('user not found')) {
+    return 'No account found with this email address.';
+  }
+
+  if (msg.includes('validation error')) {
+    return error.message;
+  }
+
+  return error.message;
 };
 
 const getFriendlyAuthErrorMessage = (error) => {
@@ -64,19 +144,11 @@ export const login = async (email, password) => {
 };
 
 export const register = async (email, password) => {
-  const { data, error } = await supabase.auth.signUp({ 
-    email, 
-    password,
-    options: {
-      redirectTo: window.location.origin
-    }
-  });
-  if (error) {
-    const friendlyError = new Error(getFriendlyAuthErrorMessage(error));
-    friendlyError.originalError = error;
-    throw friendlyError;
+  try {
+    return await otpFetch('/register', { email, password });
+  } catch (err) {
+    throw new Error(getFriendlyOtpErrorMessage(err));
   }
-  return data;
 };
 
 export const logout = async () => {
@@ -122,13 +194,25 @@ export const updateEmail = async (email) => {
 };
 
 export const sendOtp = async (email, purpose) => {
-  return otpFetch('/send', { email, purpose });
+  try {
+    return await otpFetch('/send', { email, purpose });
+  } catch (err) {
+    throw new Error(getFriendlyOtpErrorMessage(err));
+  }
 };
 
 export const verifyOtp = async (email, code, purpose) => {
-  return otpFetch('/verify', { email, code, purpose });
+  try {
+    return await otpFetch('/verify', { email, code, purpose });
+  } catch (err) {
+    throw new Error(getFriendlyOtpErrorMessage(err));
+  }
 };
 
 export const resetPassword = async (email, resetToken, newPassword) => {
-  return otpFetch('/reset-password', { email, resetToken, newPassword });
+  try {
+    return await otpFetch('/reset-password', { email, resetToken, newPassword });
+  } catch (err) {
+    throw new Error(getFriendlyOtpErrorMessage(err));
+  }
 };
