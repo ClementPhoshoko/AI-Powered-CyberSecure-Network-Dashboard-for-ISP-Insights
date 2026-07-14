@@ -1,0 +1,34 @@
+.turnstile-akovolabs-recapture_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: var(--space-3, 0.75rem) 0;
+  min-height: 65px;
+  animation: turnstile-akovolabs-recapture_fade var(--motion-normal, 220ms) var(--ease-out, ease-out);
+}
+
+.turnstile-akovolabs-recapture_widget {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-sm, 0.5rem);
+}
+
+@keyframes turnstile-akovolabs-recapture_fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .turnstile-akovolabs-recapture_wrapper {
+    margin: var(--space-2, 0.5rem) 0;
+  }
+}

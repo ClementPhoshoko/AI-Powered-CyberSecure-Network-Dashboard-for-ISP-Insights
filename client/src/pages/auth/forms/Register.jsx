@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { register } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
+import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
+import { useTurnstile } from '../../../hooks/useTurnstile';
 import successAvatar from '../../../assets/avatars/success_avatar_2.png';
 import './Register.css';
 
@@ -18,6 +20,15 @@ function Register() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [animationKey, setAnimationKey] = useState(Date.now());
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const {
+    token: captchaToken,
+    widgetRef: captchaRef,
+    enabled: captchaEnabled,
+    handleVerify: onCaptchaVerify,
+    handleExpire: onCaptchaExpire,
+    handleError: onCaptchaError,
+    reset: resetCaptcha,
+  } = useTurnstile();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,17 +90,23 @@ function Register() {
       return;
     }
 
+    if (captchaEnabled && !captchaToken) {
+      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      return;
+    }
+
     setIsLoading(true);
     setProgress(0);
 
     try {
       // Backend creates the user (no native Supabase email) and sends the
       // EmailJS verification link in one step.
-      await register(email, password);
+      await register(email, password, captchaToken);
       setProgress(100);
       setRegisteredEmail(email);
     } catch (err) {
       setErrorModal({ isOpen: true, message: err.message });
+      resetCaptcha();
     } finally {
       setIsLoading(false);
     }
@@ -242,7 +259,14 @@ function Register() {
           </label>
         </div>
         
-        <button type="submit" className="auth-form-button" disabled={isLoading || !agreeToTerms}>
+        <TurnstileWidget
+          ref={captchaRef}
+          onVerify={onCaptchaVerify}
+          onExpire={onCaptchaExpire}
+          onError={onCaptchaError}
+        />
+
+        <button type="submit" className="auth-form-button" disabled={isLoading || !agreeToTerms || (captchaEnabled && !captchaToken)}>
           <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 5v14M5 12h14" />
           </svg>

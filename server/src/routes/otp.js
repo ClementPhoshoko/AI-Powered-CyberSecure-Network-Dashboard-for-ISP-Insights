@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { registerUser, sendOtp, verifyOtp, resetPassword, verifyLink } = require('../controllers/otpController');
+const verifyTurnstile = require('../middleware/verifyTurnstile');
 const rateLimit = require('express-rate-limit');
 
 const otpLimiter = rateLimit({
@@ -35,7 +36,7 @@ const otpLimiter = rateLimit({
  *       201:
  *         description: Account created, verification email sent
  */
-router.post('/register', otpLimiter, registerUser);
+router.post('/register', otpLimiter, verifyTurnstile, registerUser);
 
 /**
  * @swagger
@@ -61,7 +62,7 @@ router.post('/register', otpLimiter, registerUser);
  *       200:
  *         description: OTP sent
  */
-router.post('/send', otpLimiter, sendOtp);
+router.post('/send', otpLimiter, verifyTurnstile, sendOtp);
 
 /**
  * @swagger

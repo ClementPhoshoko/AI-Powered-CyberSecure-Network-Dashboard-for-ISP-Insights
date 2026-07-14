@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../../services/authService';
+import { verifyCaptcha } from '../../../services/captchaService';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
+import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
+import { useTurnstile } from '../../../hooks/useTurnstile';
 import './Login.css';
 
 function Login() {
@@ -12,6 +15,15 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [animationKey, setAnimationKey] = useState(Date.now());
+  const {
+    token: captchaToken,
+    widgetRef: captchaRef,
+    enabled: captchaEnabled,
+    handleVerify: onCaptchaVerify,
+    handleExpire: onCaptchaExpire,
+    handleError: onCaptchaError,
+    reset: resetCaptcha,
+  } = useTurnstile();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,20 +48,28 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (captchaEnabled && !captchaToken) {
+      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      return;
+    }
+
     setIsLoading(true);
     setProgress(0);
 
-    login(email, password)
-      .then(() => {
-        setProgress(100);
-        navigate('/');
-      })
-      .catch((err) => {
-        setErrorModal({ isOpen: true, message: err.message });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    try {
+      if (captchaEnabled) {
+        await verifyCaptcha(captchaToken);
+      }
+      await login(email, password);
+      setProgress(100);
+      navigate('/');
+    } catch (err) {
+      setErrorModal({ isOpen: true, message: err.message });
+      resetCaptcha();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -119,7 +139,14 @@ function Login() {
           <a href="#" className="auth-form-forgot" onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }}>Forgot password?</a>
         </div>
         
-        <button type="submit" className="auth-form-button" disabled={isLoading}>
+        <TurnstileWidget
+          ref={captchaRef}
+          onVerify={onCaptchaVerify}
+          onExpire={onCaptchaExpire}
+          onError={onCaptchaError}
+        />
+
+        <button type="submit" className="auth-form-button" disabled={isLoading || (captchaEnabled && !captchaToken)}>
           <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
             <polyline points="10 17 15 12 10 7" />

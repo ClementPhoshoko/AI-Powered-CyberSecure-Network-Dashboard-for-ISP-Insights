@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
+import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
+import { useTurnstile } from '../../../hooks/useTurnstile';
+import { verifyCaptcha } from '../../../services/captchaService';
 import successAvatar2 from '../../../assets/avatars/success_avatar_2.png';
 import './Contact.css';
 
@@ -20,6 +23,15 @@ const Contact = () => {
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [animationKey, setAnimationKey] = useState(Date.now());
+  const {
+    token: captchaToken,
+    widgetRef: captchaRef,
+    enabled: captchaEnabled,
+    handleVerify: onCaptchaVerify,
+    handleExpire: onCaptchaExpire,
+    handleError: onCaptchaError,
+    reset: resetCaptcha,
+  } = useTurnstile();
   const dropdownRef = useRef(null);
 
   const subjectOptions = [
@@ -102,16 +114,25 @@ const Contact = () => {
     
     if (!validateForm()) return;
 
+    if (captchaEnabled && !captchaToken) {
+      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
+      if (captchaEnabled) {
+        await verifyCaptcha(captchaToken);
+      }
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       setProgress(100);
       setShowSuccess(true);
       setAnimationKey(Date.now());
     } catch (err) {
-      setErrorModal({ isOpen: true, message: 'Failed to send message. Please try again later.' });
+      setErrorModal({ isOpen: true, message: err.message || 'Failed to send message. Please try again later.' });
+      resetCaptcha();
     } finally {
       setIsSubmitting(false);
     }
@@ -295,11 +316,18 @@ const Contact = () => {
             </div>
           </div>
 
+          <TurnstileWidget
+            ref={captchaRef}
+            onVerify={onCaptchaVerify}
+            onExpire={onCaptchaExpire}
+            onError={onCaptchaError}
+          />
+
           <div className="contact-field-actions">
             <button
               type="submit"
               className="contact-submit-btn"
-              disabled={isSubmitting}
+              disabled={isSubmitting || (captchaEnabled && !captchaToken)}
             >
               Send Message
             </button>

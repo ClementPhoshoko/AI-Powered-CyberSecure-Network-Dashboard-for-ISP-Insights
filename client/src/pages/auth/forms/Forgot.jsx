@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { sendOtp, verifyOtp, resetPassword } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
+import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
+import { useTurnstile } from '../../../hooks/useTurnstile';
 import successAvatar from '../../../assets/avatars/success_avatar_2.png';
 import './Forgot.css';
 
@@ -84,6 +86,24 @@ function Forgot() {
   const [progress, setProgress] = useState(0);
   const [resendTimer, setResendTimer] = useState(0);
   const [animationKey, setAnimationKey] = useState(Date.now());
+  const {
+    token: sendCaptchaToken,
+    widgetRef: sendCaptchaRef,
+    enabled: sendCaptchaEnabled,
+    handleVerify: onSendCaptchaVerify,
+    handleExpire: onSendCaptchaExpire,
+    handleError: onSendCaptchaError,
+    reset: resetSendCaptcha,
+  } = useTurnstile();
+  const {
+    token: resendCaptchaToken,
+    widgetRef: resendCaptchaRef,
+    enabled: resendCaptchaEnabled,
+    handleVerify: onResendCaptchaVerify,
+    handleExpire: onResendCaptchaExpire,
+    handleError: onResendCaptchaError,
+    reset: resetResendCaptcha,
+  } = useTurnstile();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -114,15 +134,20 @@ function Forgot() {
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
+    if (sendCaptchaEnabled && !sendCaptchaToken) {
+      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      return;
+    }
     setIsLoading(true);
     setProgress(0);
     try {
-      const result = await sendOtp(email, 'reset');
+      const result = await sendOtp(email, 'reset', sendCaptchaToken);
       setProgress(100);
       setResendTimer(60);
       setStep('otp');
     } catch (err) {
       setErrorModal({ isOpen: true, message: err.message });
+      resetSendCaptcha();
     } finally {
       setIsLoading(false);
     }
@@ -169,13 +194,18 @@ function Forgot() {
 
   const handleResend = async () => {
     if (resendTimer > 0) return;
+    if (resendCaptchaEnabled && !resendCaptchaToken) {
+      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      return;
+    }
     setIsLoading(true);
     try {
-      await sendOtp(email, 'reset');
+      await sendOtp(email, 'reset', resendCaptchaToken);
       setResendTimer(60);
     } catch (err) {
       setErrorModal({ isOpen: true, message: err.message });
     } finally {
+      resetResendCaptcha();
       setIsLoading(false);
     }
   };
@@ -225,7 +255,14 @@ function Forgot() {
                 </div>
               </div>
 
-              <button type="submit" className="auth-form-button" disabled={isLoading}>
+              <TurnstileWidget
+                ref={sendCaptchaRef}
+                onVerify={onSendCaptchaVerify}
+                onExpire={onSendCaptchaExpire}
+                onError={onSendCaptchaError}
+              />
+
+              <button type="submit" className="auth-form-button" disabled={isLoading || (sendCaptchaEnabled && !sendCaptchaToken)}>
                 <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
@@ -262,11 +299,20 @@ function Forgot() {
                 {isLoading ? 'Verifying...' : 'Verify'}
               </button>
 
+              {resendTimer <= 0 && (
+                <TurnstileWidget
+                  ref={resendCaptchaRef}
+                  onVerify={onResendCaptchaVerify}
+                  onExpire={onResendCaptchaExpire}
+                  onError={onResendCaptchaError}
+                />
+              )}
+
               <button
                 type="button"
                 className="forgot-resend"
                 onClick={handleResend}
-                disabled={resendTimer > 0 || isLoading}
+                disabled={resendTimer > 0 || isLoading || (resendCaptchaEnabled && !resendCaptchaToken)}
               >
                 {resendTimer > 0 ? `Resend code in ${resendTimer}s` : 'Resend code'}
               </button>

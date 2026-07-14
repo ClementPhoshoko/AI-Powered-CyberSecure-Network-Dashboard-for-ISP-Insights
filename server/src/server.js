@@ -20,6 +20,7 @@ const analyticsRouter = require('./routes/analytics');
 const systemMetricsRouter = require('./routes/systemMetrics');
 const portRiskRouter = require('./routes/portRisk');
 const otpRouter = require('./routes/otp');
+const turnstileRouter = require('./routes/turnstile');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -173,6 +174,7 @@ app.use('/api/analytics', analyticsRouter);
 app.use('/api/system', systemMetricsRouter);
 app.use('/api/port-risk', portRiskRouter);
 app.use('/api/otp', otpRouter);
+app.use('/api/turnstile', turnstileRouter);
 
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);

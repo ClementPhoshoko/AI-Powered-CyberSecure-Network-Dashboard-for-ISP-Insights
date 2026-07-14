@@ -44,6 +44,10 @@ const getFriendlyOtpErrorMessage = (error) => {
     return 'Too many attempts. Please wait a few minutes and try again.';
   }
 
+  if (msg.includes('captcha')) {
+    return 'Captcha verification failed. Please complete the challenge and try again.';
+  }
+
   if (msg.includes('internal server error')) {
     return 'Something went wrong on our end. Please try again later.';
   }
@@ -143,9 +147,9 @@ export const login = async (email, password) => {
   return data;
 };
 
-export const register = async (email, password) => {
+export const register = async (email, password, turnstileToken) => {
   try {
-    return await otpFetch('/register', { email, password });
+    return await otpFetch('/register', { email, password, turnstileToken });
   } catch (err) {
     throw new Error(getFriendlyOtpErrorMessage(err));
   }
@@ -193,9 +197,9 @@ export const updateEmail = async (email) => {
   return data;
 };
 
-export const sendOtp = async (email, purpose) => {
+export const sendOtp = async (email, purpose, turnstileToken) => {
   try {
-    return await otpFetch('/send', { email, purpose });
+    return await otpFetch('/send', { email, purpose, turnstileToken });
   } catch (err) {
     throw new Error(getFriendlyOtpErrorMessage(err));
   }
