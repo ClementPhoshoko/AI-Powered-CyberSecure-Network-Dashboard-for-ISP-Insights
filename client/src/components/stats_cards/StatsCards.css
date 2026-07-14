@@ -202,6 +202,23 @@
   transition: background-color 0.8s ease-out;
 }
 
+.stability-indicator {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin: 0 var(--space-2) 0 0;
+}
+
+.stability-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
 /* Skeleton Loading */
 .skeleton {
   background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
@@ -355,6 +372,10 @@
   }
 
   .quality-card-circles {
+    margin: 4px 0 0 0;
+  }
+
+  .stability-indicator {
     margin: 4px 0 0 0;
   }
 }

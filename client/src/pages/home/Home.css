@@ -435,6 +435,13 @@
     width: 100%;
     max-width: none;
   }
+
+  .ai-summary-section,
+  .ai-summary-section.is-loading {
+    width: calc(100% - 2 * var(--space-3));
+    margin-left: var(--space-3);
+    margin-right: var(--space-3);
+  }
 }
 
 /* Tablet and up — consistent stats-note-style card for AI summary */

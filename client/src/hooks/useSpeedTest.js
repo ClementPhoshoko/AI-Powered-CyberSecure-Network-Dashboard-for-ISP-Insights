@@ -34,6 +34,8 @@ const DOWNLOAD_STABILITY_THRESHOLD = 0.12;
 const UPLOAD_STABILITY_THRESHOLD = 0.15;
 const DOWNLOAD_STABLE_AFTER_SECONDS = 3;
 const UPLOAD_STABLE_AFTER_SECONDS = 2.5;
+// If max-pass-speed is more than this × min-pass-speed, flag unstable
+const STABILITY_RATIO_THRESHOLD = 2.5;
 const DEFAULT_MEASUREMENT_CONTEXT = {
   probe_method: 'http-health',
   probe_method_label: 'HTTP health endpoint probe',
@@ -166,8 +168,6 @@ export function useSpeedTest() {
     setPhase(TEST_PHASES.PING);
     setProgress(20);
 
-    const pings = [];
-    const startTotal = performance.now();
     let probeTarget = '/ping/health';
     if (api.defaults.baseURL) {
       try {
@@ -177,30 +177,35 @@ export function useSpeedTest() {
       }
     }
 
-    for (let i = 0; i < PING_COUNT; i++) {
-      if (isStoppedRef.current) return null;
+    // Fire all pings concurrently — 1×RTT instead of 10×RTT, same accuracy
+    const startTotal = performance.now();
+    let completedCount = 0;
+
+    const pingPromises = Array.from({ length: PING_COUNT }, async (_, i) => {
       const start = performance.now();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15_000);
       try {
-        abortControllerRef.current = new AbortController();
-        await pingHealthCheck(abortControllerRef.current.signal);
-        const end = performance.now();
-        pings.push({
-          sequence_number: i,
-          latency_ms: Math.max(1, end - start),
-          success: true,
-          failure_reason: null
-        });
+        await pingHealthCheck(controller.signal);
+        clearTimeout(timeoutId);
+        const latency = Math.max(1, performance.now() - start);
+        completedCount++;
+        setProgress(20 + (completedCount / PING_COUNT) * 10);
+        return { sequence_number: i, latency_ms: latency, success: true, failure_reason: null };
       } catch (err) {
-        if (err.name === 'AbortError') throw err;
-        pings.push({
-          sequence_number: i,
-          latency_ms: null,
-          success: false,
-          failure_reason: err?.code || err?.name || 'request_failed'
-        });
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          completedCount++;
+          setProgress(20 + (completedCount / PING_COUNT) * 10);
+          return { sequence_number: i, latency_ms: null, success: false, failure_reason: 'timeout' };
+        }
+        completedCount++;
+        setProgress(20 + (completedCount / PING_COUNT) * 10);
+        return { sequence_number: i, latency_ms: null, success: false, failure_reason: err?.code || err?.name || 'request_failed' };
       }
-      setProgress(20 + ((i + 1) / PING_COUNT) * 10);
-    }
+    });
+
+    const pings = await Promise.all(pingPromises);
 
     if (isStoppedRef.current) return null;
     const totalDuration = (performance.now() - startTotal) / 1000;
@@ -228,6 +233,9 @@ export function useSpeedTest() {
     const phaseStart = performance.now();
     let lastSpeedMbps = 0;
     let lastError = null;
+    let maxSpeed = 0;
+    let minSpeed = Infinity;
+    let bestMeasurement = null;
 
     for (let i = 0; i < DOWNLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
@@ -236,33 +244,49 @@ export function useSpeedTest() {
           ? DOWNLOAD_SIZES[0]
           : chooseAdaptiveDownloadSize(lastSpeedMbps);
       const start = performance.now();
-      
+
+      // Collect per-chunk speed samples for steady-state averaging
+      const speedSamples = [];
+
       try {
         abortControllerRef.current = new AbortController();
-        
-        // Track progress in real-time
-        const onDownloadProgress = (speedMbps, fileProgress) => {
-          setCurrentSpeed(speedMbps);
-          // Calculate overall progress (30% to 60% for download phase)
+        const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
+
+        const onDownloadProgress = (_smoothMbps, instantMbps, fileProgress) => {
+          speedSamples.push(instantMbps);
+          setCurrentSpeed(_smoothMbps);
           const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_MAX_ATTEMPTS) * 30;
           setProgress(phaseProgress);
         };
-        
+
         await streamDownloadTest(sizeMb, abortControllerRef.current.signal, onDownloadProgress);
-        const end = performance.now();
-        const durationSeconds = (end - start) / 1000;
-        const speedMbps = (sizeMb * 8) / durationSeconds;
+        clearTimeout(timeoutId);
+
+        const durationSeconds = (performance.now() - start) / 1000;
+
+        // Use steady-state speed (average of second half of samples) instead of
+        // total-bytes/total-time, which is pulled down by TCP slow-start at the
+        // beginning of each pass.
+        const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
+        const steadySpeed = steadySamples.length > 1
+          ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
+          : (sizeMb * 8) / durationSeconds;
 
         const measurement = {
           file_size_mb: sizeMb,
-          download_speed_mbps: speedMbps,
+          download_speed_mbps: steadySpeed,
           test_duration_seconds: durationSeconds
         };
 
         measurements.push(measurement);
-        finalResult = measurement;
-        lastSpeedMbps = speedMbps;
-        setCurrentSpeed(speedMbps);
+        if (!bestMeasurement || steadySpeed > maxSpeed) {
+          maxSpeed = steadySpeed;
+          bestMeasurement = measurement;
+        }
+        if (steadySpeed < minSpeed) minSpeed = steadySpeed;
+        finalResult = bestMeasurement;
+        lastSpeedMbps = steadySpeed;
+        setCurrentSpeed(steadySpeed);
         setProgress(30 + ((i + 1) / DOWNLOAD_MAX_ATTEMPTS) * 30);
 
         const elapsedSeconds = (performance.now() - phaseStart) / 1000;
@@ -298,7 +322,10 @@ export function useSpeedTest() {
       });
     }
 
-    return { measurements, finalResult };
+    const wasUnstable = minSpeed < Infinity && maxSpeed > 0
+      && (maxSpeed / minSpeed) > STABILITY_RATIO_THRESHOLD;
+
+    return { measurements, finalResult, wasUnstable };
   }, []);
 
   const runUploadTest = useCallback(async (testResultId) => {
@@ -312,6 +339,9 @@ export function useSpeedTest() {
     let finalResult = null;
     const phaseStart = performance.now();
     let lastError = null;
+    let maxSpeed = 0;
+    let minSpeed = Infinity;
+    let bestMeasurement = null;
 
     for (let i = 0; i < UPLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
@@ -320,35 +350,57 @@ export function useSpeedTest() {
           ? UPLOAD_SIZES[0]
           : chooseAdaptiveUploadSize(finalUploadSpeed);
       const sizeBytes = sizeMb * 1024 * 1024;
-      const data = new Blob([new ArrayBuffer(sizeBytes)]);
+
+      // Build upload data in chunks instead of one large ArrayBuffer
+      const CHUNK_SIZE = 256 * 1024; // 256 KB
+      const chunks = [];
+      let remaining = sizeBytes;
+      while (remaining > 0) {
+        const size = Math.min(CHUNK_SIZE, remaining);
+        chunks.push(new Blob([new Uint8Array(size)]));
+        remaining -= size;
+      }
+      const data = new Blob(chunks);
+
+      const speedSamples = [];
       const start = performance.now();
 
       try {
         abortControllerRef.current = new AbortController();
-        
-        // Track progress in real-time
-        const onUploadProgress = (speedMbps, fileProgress) => {
-          setCurrentSpeed(speedMbps);
-          // Calculate overall progress (60% to 85% for upload phase)
+        const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
+
+        const onUploadProgress = (_smoothMbps, instantMbps, fileProgress) => {
+          speedSamples.push(instantMbps);
+          setCurrentSpeed(_smoothMbps);
           const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_MAX_ATTEMPTS) * 25;
           setProgress(phaseProgress);
         };
-        
+
         await streamUploadTest(sizeMb, data, abortControllerRef.current.signal, onUploadProgress);
-        const end = performance.now();
-        const durationSeconds = (end - start) / 1000;
-        const speedMbps = (sizeMb * 8) / durationSeconds;
+        clearTimeout(timeoutId);
+
+        const durationSeconds = (performance.now() - start) / 1000;
+
+        const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
+        const steadySpeed = steadySamples.length > 1
+          ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
+          : (sizeMb * 8) / durationSeconds;
 
         const measurement = {
           size_mb: sizeMb,
           duration_seconds: durationSeconds,
-          upload_speed_mbps: speedMbps
+          upload_speed_mbps: steadySpeed
         };
 
         measurements.push(measurement);
-        finalResult = measurement;
-        finalUploadSpeed = speedMbps;
-        setCurrentSpeed(speedMbps);
+        if (!bestMeasurement || steadySpeed > maxSpeed) {
+          maxSpeed = steadySpeed;
+          bestMeasurement = measurement;
+        }
+        if (steadySpeed < minSpeed) minSpeed = steadySpeed;
+        finalResult = bestMeasurement;
+        finalUploadSpeed = steadySpeed;
+        setCurrentSpeed(steadySpeed);
         setProgress(60 + ((i + 1) / UPLOAD_MAX_ATTEMPTS) * 25);
 
         const elapsedSeconds = (performance.now() - phaseStart) / 1000;
@@ -380,11 +432,14 @@ export function useSpeedTest() {
       await submitUploadResults({
         test_result_id: testResultId,
         measurements,
-        final_upload_speed_mbps: finalUploadSpeed
+        final_upload_speed_mbps: maxSpeed
       });
     }
 
-    return { measurements, finalResult, finalUploadSpeed };
+    const wasUnstable = minSpeed < Infinity && maxSpeed > 0
+      && (maxSpeed / minSpeed) > STABILITY_RATIO_THRESHOLD;
+
+    return { measurements, finalResult, wasUnstable };
   }, []);
 
   const calculateNetworkScores = useCallback(async (testResultId) => {
@@ -460,7 +515,8 @@ export function useSpeedTest() {
         ai_summary: '', // Start with empty, will update later
         download_measurements: downloadData.measurements || [],
         upload_measurements: uploadData.measurements || [],
-        ping_measurements: pingData.ping_measurements || []
+        ping_measurements: pingData.ping_measurements || [],
+        was_unstable: downloadData.wasUnstable || uploadData.wasUnstable || false
       };
 
       // Show results immediately!

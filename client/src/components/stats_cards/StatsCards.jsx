@@ -135,6 +135,17 @@ const StatsCards = ({ testResult, isLoading = false }) => {
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
         </svg>
       )
+    },
+    {
+      type: 'stability',
+      label: 'CONNECTION STABILITY',
+      wasUnstable: testResult?.was_unstable,
+      color: testResult?.was_unstable ? '#F59E0B' : '#10B981',
+      icon: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      )
     }
   ];
 
@@ -195,7 +206,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
           {[0, 1, 2].map((i) => (
             <SkeletonLatencyCard key={`latency-${i}`} />
           ))}
-          {[0, 1, 2, 3, 4].map((i) => (
+          {[0, 1, 2, 3, 4, 5].map((i) => (
             <SkeletonQualityCard key={`quality-${i}`} />
           ))}
         </ul>
@@ -276,17 +287,28 @@ const StatsCards = ({ testResult, isLoading = false }) => {
             </div>
             <div className="quality-card-content">
               <div className="quality-card-label">{card.label}</div>
-              <div className="quality-card-circles" aria-label={`${card.label} score: ${card.value || 0} out of 100`}>
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="quality-card-circle"
-                    style={{
-                      backgroundColor: i < Math.round((card.value || 0) / 25) ? card.color : 'var(--glass-bg-soft)',
-                    }}
-                  />
-                ))}
-              </div>
+              {card.type === 'stability' ? (
+                <div className="stability-indicator">
+                  <span
+                    className="stability-badge"
+                    style={{ color: card.color, borderColor: card.color }}
+                  >
+                    {card.wasUnstable ? '⚠ Unstable' : '✓ Stable'}
+                  </span>
+                </div>
+              ) : (
+                <div className="quality-card-circles" aria-label={`${card.label} score: ${card.value || 0} out of 100`}>
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="quality-card-circle"
+                      style={{
+                        backgroundColor: i < Math.round((card.value || 0) / 25) ? card.color : 'var(--glass-bg-soft)',
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </motion.li>
         ))}
