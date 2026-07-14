@@ -478,6 +478,11 @@ function HistoryChartTooltip({ active, payload, label, config = {} }) {
   return (
     <div className="history-chart-tooltip">
       <div className="history-chart-tooltip__label">{formatTooltipDate(label)}</div>
+      {payload[0]?.payload?.was_unstable && (
+        <div className="history-chart-tooltip__row history-chart-tooltip__row--unstable">
+          <span className="history-chart-tooltip__unstable-badge">⚠ Unstable Connection</span>
+        </div>
+      )}
       <div className="history-chart-tooltip__rows">
         {visibleRows.map((entry) => {
           const settings = config[entry.dataKey] || {};
@@ -560,6 +565,21 @@ const ExperienceScoresTooltip = ({ active, payload }) => {
 
 function History() {
   const { loading: authLoading, user } = useAuth();
+
+  const renderUnstableDot = (strokeColor) => (props) => {
+    const { cx, cy, payload } = props;
+    if (cx == null || cy == null) return null;
+    const isUnstable = payload?.was_unstable;
+    return (
+      <circle
+        cx={cx} cy={cy}
+        r={isUnstable ? 5 : 2.5}
+        fill={isUnstable ? '#F59E0B' : strokeColor}
+        stroke={isUnstable ? 'var(--glass-bg)' : 'none'}
+        strokeWidth={isUnstable ? 2 : 0}
+      />
+    );
+  };
   const isMobile = useIsMobile(768);
   const isTablet = useIsTablet(1024);
   const isLargeScreen = useIsLargeScreen(1280);
@@ -714,7 +734,8 @@ function History() {
         gamingScore: test.gaming_score || 0,
         streamingScore: test.streaming_score || 0,
         videoCallScore: test.video_call_score || 0,
-        browsingScore: test.browsing_score || 0
+        browsingScore: test.browsing_score || 0,
+        was_unstable: test.was_unstable || false
       }))
   ), [allHistory]);
 
@@ -851,6 +872,20 @@ function History() {
       message: `Your best test achieved a health score of ${summary?.bestTest?.network_health_score?.toFixed(0)}!`
     });
 
+    const unstableCount = allHistory.filter(t => t.was_unstable).length;
+    if (unstableCount > 0) {
+      insights.push({
+        type: 'warning',
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        ),
+        title: 'Connection Instability Detected',
+        message: `${unstableCount} of your ${allHistory.length} test${allHistory.length === 1 ? '' : 's'} showed speed fluctuation between passes, indicating an erratic connection.`
+      });
+    }
+
     return insights;
   };
 
@@ -878,7 +913,7 @@ function History() {
   });
 
   const exportToCSV = () => {
-    const headers = ['Date', 'Download (Mbps)', 'Upload (Mbps)', 'Ping (ms)', 'Jitter (ms)', 'Health Score', 'ISP'];
+    const headers = ['Date', 'Download (Mbps)', 'Upload (Mbps)', 'Ping (ms)', 'Jitter (ms)', 'Health Score', 'ISP', 'Unstable'];
     const rows = allHistory.map(test => [
       formatDate(test.created_at),
       test.download_speed_mbps?.toFixed(1) || 0,
@@ -886,7 +921,8 @@ function History() {
       test.ping_avg_ms?.toFixed(1) || 0,
       test.jitter_ms?.toFixed(1) || 0,
       test.network_health_score?.toFixed(0) || 0,
-      test.isp_name || 'N/A'
+      test.isp_name || 'N/A',
+      test.was_unstable ? 'Yes' : 'No'
     ]);
 
     const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -1116,7 +1152,7 @@ function History() {
                                 dataKey="download"
                                 stroke="var(--download)"
                                 strokeWidth={2}
-                                dot={{ r: isMobile ? 2 : 3 }}
+                                dot={renderUnstableDot('var(--download)')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--download)', stroke: '#fff', strokeWidth: 2 }}
                                 name="Download (Mbps)"
                               />
@@ -1126,7 +1162,7 @@ function History() {
                                 dataKey="upload"
                                 stroke="var(--upload)"
                                 strokeWidth={2}
-                                dot={{ r: isMobile ? 2 : 3 }}
+                                dot={renderUnstableDot('var(--upload)')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--upload)', stroke: '#fff', strokeWidth: 2 }}
                                 strokeDasharray="5 5"
                                 name="Upload (Mbps)"
@@ -1135,6 +1171,10 @@ function History() {
                           </ResponsiveContainer>
                           <p className="graph-date-range">
                             Speed axes auto-scale independently for download and upload so smaller trends remain readable.
+                          </p>
+                          <p className="graph-legend">
+                            <span className="graph-legend__dot graph-legend__dot--unstable" />
+                            Amber dots mark tests where connection speed fluctuated significantly between passes.
                           </p>
                           {dateRange && (
                             <p className="graph-date-range">
@@ -1175,7 +1215,7 @@ function History() {
                                 dataKey="ping"
                                 stroke="var(--ping)"
                                 strokeWidth={2}
-                                dot={{ r: isMobile ? 2 : 3 }}
+                                dot={renderUnstableDot('var(--ping)')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--ping)', stroke: '#fff', strokeWidth: 2 }}
                                 name="Ping (ms)"
                               />
@@ -1184,7 +1224,7 @@ function History() {
                                 dataKey="jitter"
                                 stroke="#f59e0b"
                                 strokeWidth={2}
-                                dot={{ r: isMobile ? 2 : 3 }}
+                                dot={renderUnstableDot('#f59e0b')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: '#f59e0b', stroke: '#fff', strokeWidth: 2 }}
                                 strokeDasharray="5 5"
                                 name="Jitter (ms)"
@@ -1533,7 +1573,12 @@ function History() {
                                 onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)}
                               >
                                 <div className="test-card-mobile__header">
-                                  <span className="test-card-mobile__date">{formatDate(test.created_at)}</span>
+                                  <span className="test-card-mobile__date">
+                                    {test.was_unstable && (
+                                      <span className="stability-dot stability-dot--unstable" title="Unstable connection">⚠</span>
+                                    )}
+                                    {formatDate(test.created_at)}
+                                  </span>
                                   <span className="test-card-mobile__health" style={{ color: getScoreColor(test.network_health_score) }}>
                                     {test.network_health_score?.toFixed(0) || 0}
                                   </span>
@@ -1583,6 +1628,12 @@ function History() {
                                       <div className="test-card-mobile__detail-item">
                                         <span className="test-card-mobile__detail-label">Packet Loss</span>
                                         <span className="test-card-mobile__detail-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                      </div>
+                                      <div className="test-card-mobile__detail-item">
+                                        <span className="test-card-mobile__detail-label">Stability</span>
+                                        <span className="test-card-mobile__detail-value" style={{ color: test.was_unstable ? '#F59E0B' : '#10B981' }}>
+                                          {test.was_unstable ? '⚠ Unstable' : '✓ Stable'}
+                                        </span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
                                         <span className="test-card-mobile__detail-label">Gaming</span>
@@ -1678,7 +1729,12 @@ function History() {
                                           <polyline points="9 18 15 12 9 6" />
                                         </svg>
                                       </td>
-                                      <td>{formatDate(test.created_at)}</td>
+                                      <td>
+                                        {test.was_unstable && (
+                                          <span className="stability-dot stability-dot--unstable" title="Unstable connection">⚠</span>
+                                        )}
+                                        {formatDate(test.created_at)}
+                                      </td>
                                       <td>{test.download_speed_mbps?.toFixed(1) || 0} Mbps</td>
                                       <td>{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</td>
                                       <td>{test.ping_avg_ms?.toFixed(1) || 0} ms</td>
@@ -1725,6 +1781,12 @@ function History() {
                                                   <div className="test-details-item">
                                                     <span className="test-details-label">Packet Loss</span>
                                                     <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
+                                                  </div>
+                                                  <div className="test-details-item">
+                                                    <span className="test-details-label">Connection Stability</span>
+                                                    <span className="test-details-value" style={{ color: test.was_unstable ? '#F59E0B' : '#10B981' }}>
+                                                      {test.was_unstable ? '⚠ Unstable' : '✓ Stable'}
+                                                    </span>
                                                   </div>
                                                 </div>
                                               </div>

@@ -62,7 +62,8 @@ const multipleUploadResultsSchema = z.object({
       upload_speed_mbps: z.number().positive()
     })
   ).min(1),
-  final_upload_speed_mbps: z.number().positive()
+  final_upload_speed_mbps: z.number().positive(),
+  was_unstable: z.boolean().optional()
 });
 
 // @desc    Stream binary data for download test
@@ -158,7 +159,8 @@ const submitUploadResults = async (req, res, next) => {
       userId,
       validatedData.test_result_id,
       validatedData.final_upload_speed_mbps,
-      validatedData.measurements
+      validatedData.measurements,
+      validatedData.was_unstable || false
     );
 
     res.status(200).json({

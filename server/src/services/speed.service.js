@@ -87,7 +87,7 @@ class SpeedService {
   }
 
   // Submit upload results (final + all individual measurements)
-  static async submitUploadResults(userId, testResultId, finalUploadSpeedMbps, allMeasurements) {
+  static async submitUploadResults(userId, testResultId, finalUploadSpeedMbps, allMeasurements, wasUnstable = false) {
     // First verify user owns the test result
     const testResult = await TestResult.findById(testResultId);
     if (!testResult) {
@@ -104,7 +104,8 @@ class SpeedService {
     const updatedTestResult = await TestResult.update(testResultId, {
       upload_speed_mbps: finalUploadSpeedMbps,
       upload_test_size_mb: finalMeasurement.size_mb,
-      upload_test_duration_seconds: finalMeasurement.duration_seconds
+      upload_test_duration_seconds: finalMeasurement.duration_seconds,
+      was_unstable: wasUnstable
     });
 
     // Prepare measurements for insertion

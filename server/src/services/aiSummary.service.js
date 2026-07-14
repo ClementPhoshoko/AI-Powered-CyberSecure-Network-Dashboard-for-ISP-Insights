@@ -20,7 +20,9 @@ class AiSummaryService {
 
     // Generate actionable advice
     let advice = '';
-    if (quality === 'excellent' || quality === 'good') {
+    if (metrics.was_unstable) {
+      advice = ' Your connection showed noticeable speed fluctuation, which can cause lag spikes in games and dropouts in video calls. If this keeps happening, try restarting your router or moving closer to it.';
+    } else if (quality === 'excellent' || quality === 'good') {
       advice = ' For the best experience, try to keep other devices from downloading large files while you game or stream.';
     } else {
       advice = ' Consider moving closer to your router or checking for Wi-Fi interference. If issues persist, you might want to restart your router.';
@@ -64,6 +66,8 @@ RULES:
 - Describe latency or responsiveness simply as responsiveness or delay.
 - Keep the wording user-friendly and product-facing.
 - If a metric is 'N/A', ignore it naturally. Do not say 'N/A' in the text.
+- If instability_flag is true, briefly mention the connection seemed erratic and advise the user to check their router placement or restart it.
+- If the connection was stable, you can note that as a positive.
 
 METRICS AND SCORES:
 - Download speed: ${metrics.download_speed_mbps || 'N/A'} Mbps
@@ -76,6 +80,7 @@ METRICS AND SCORES:
 - Streaming score: ${metrics.streaming_score || 0}/100
 - Video call score: ${metrics.video_call_score || 0}/100
 - Browsing score: ${metrics.browsing_score || 0}/100
+- instability_flag: ${metrics.was_unstable}
 
 Please return ONLY the summary text, no extra formatting, no quote marks, and no JSON.
 `.trim();
@@ -108,7 +113,8 @@ Please return ONLY the summary text, no extra formatting, no quote marks, and no
       gaming_score: testResult.gaming_score,
       streaming_score: testResult.streaming_score,
       video_call_score: testResult.video_call_score,
-      browsing_score: testResult.browsing_score
+      browsing_score: testResult.browsing_score,
+      was_unstable: testResult.was_unstable || false
     };
 
     let summary;

@@ -328,7 +328,7 @@ export function useSpeedTest() {
     return { measurements, finalResult, wasUnstable };
   }, []);
 
-  const runUploadTest = useCallback(async (testResultId) => {
+  const runUploadTest = useCallback(async (testResultId, downloadWasUnstable = false) => {
     if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.UPLOAD);
     setCurrentSpeed(0);
@@ -428,16 +428,18 @@ export function useSpeedTest() {
     if (measurements.length === 0 || !finalResult) {
       throw lastError || new Error('Upload test failed before a valid measurement could be captured.');
     }
+
+    const wasUnstable = downloadWasUnstable || (minSpeed < Infinity && maxSpeed > 0
+      && (maxSpeed / minSpeed) > STABILITY_RATIO_THRESHOLD);
+
     if (measurements.length > 0) {
       await submitUploadResults({
         test_result_id: testResultId,
         measurements,
-        final_upload_speed_mbps: maxSpeed
+        final_upload_speed_mbps: maxSpeed,
+        was_unstable: wasUnstable
       });
     }
-
-    const wasUnstable = minSpeed < Infinity && maxSpeed > 0
-      && (maxSpeed / minSpeed) > STABILITY_RATIO_THRESHOLD;
 
     return { measurements, finalResult, wasUnstable };
   }, []);
@@ -478,7 +480,7 @@ export function useSpeedTest() {
       if (isStoppedRef.current || !downloadData) return null;
 
       // 3. Run upload test
-      const uploadData = await runUploadTest(testResultId);
+      const uploadData = await runUploadTest(testResultId, downloadData.wasUnstable);
       if (isStoppedRef.current || !uploadData) return null;
 
       // 4. Calculate network scores
