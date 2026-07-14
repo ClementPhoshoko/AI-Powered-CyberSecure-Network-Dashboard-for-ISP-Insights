@@ -1,34 +1,122 @@
+/*
+ * NOTE: The captcha itself renders inside a cross-origin Cloudflare <iframe>.
+ * Its internal elements (checkbox, "Verify you are human" label, 65px height)
+ * CANNOT be styled from here — same-origin policy blocks it. The only lever is
+ * scaling the whole widget proportionally via --turnstile-scale below.
+ */
+
 .turnstile-akovolabs-recapture_wrapper {
+  /* Overall size lever (1 = native). Lower it to shrink the whole widget
+     proportionally; note values <1 can look slightly blurry. */
+  --turnstile-scale: 0.92;
+
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: var(--space-3, 0.75rem) 0;
-  min-height: 65px;
-  animation: turnstile-akovolabs-recapture_fade var(--motion-normal, 220ms) var(--ease-out, ease-out);
+  margin: calc(var(--space-3, 0.75rem) / 2) 0;
+  /* Reserve the widget's final (scaled) height up-front so it never pops in and
+     pushes the form down — this eliminates the layout shift (CLS). */
+  min-height: calc(66px * var(--turnstile-scale));
+  overflow: hidden;
 }
 
 .turnstile-akovolabs-recapture_widget {
   display: flex;
   justify-content: center;
-  max-width: 100%;
-  overflow: hidden;
+  /* Scale-to-fit: pre-stretch the width by 1/scale so that after scaling it
+     spans exactly 100% of the wrapper. With a left-centre origin this fills the
+     row edge-to-edge (staying centred) instead of overflowing to the right —
+     which is what happens when a fixed-min-width iframe is only transform-
+     scaled. Cloudflare enforces a 300px min-width, so this is required to fit
+     the widget on very narrow screens. */
+  width: calc(100% / var(--turnstile-scale));
+  max-width: calc(100% / var(--turnstile-scale));
+  transform-origin: center center;
   border-radius: var(--radius-sm, 0.5rem);
+  /* Start slightly smaller + transparent, then ease to full size once the
+     Cloudflare iframe has mounted (smooth open instead of a pop-in). */
+  opacity: 0;
+  transform: scale(calc(var(--turnstile-scale) * 0.96));
+  transition:
+    opacity var(--motion-slow, 400ms) var(--ease-out, ease-out),
+    transform var(--motion-slow, 400ms) var(--ease-out, ease-out);
 }
 
-@keyframes turnstile-akovolabs-recapture_fade {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
+.turnstile-akovolabs-recapture_widget.is-ready {
+  opacity: 1;
+  transform: scale(var(--turnstile-scale));
+}
+
+/* Let the flexible-size iframe fill the wrapper width to match inputs/buttons */
+.turnstile-akovolabs-recapture_widget iframe {
+  width: 100% !important;
+}
+
+/* Skeleton shown in the reserved space while the iframe loads */
+.turnstile-akovolabs-recapture_placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.turnstile-akovolabs-recapture_placeholder-shimmer {
+  width: min(160px, 70%);
+  height: calc(20px * var(--turnstile-scale));
+  border-radius: var(--radius-full, 999px);
+  background: linear-gradient(
+    90deg,
+    var(--surface-2, rgba(128, 128, 128, 0.12)) 25%,
+    var(--surface-3, rgba(128, 128, 128, 0.22)) 37%,
+    var(--surface-2, rgba(128, 128, 128, 0.12)) 63%
+  );
+  background-size: 400% 100%;
+  animation: turnstile-akovolabs-recapture_shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes turnstile-akovolabs-recapture_shimmer {
+  0% {
+    background-position: 100% 0;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  100% {
+    background-position: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turnstile-akovolabs-recapture_widget {
+    transition: opacity 120ms linear;
+    transform: scale(var(--turnstile-scale));
+  }
+  .turnstile-akovolabs-recapture_placeholder-shimmer {
+    animation: none;
   }
 }
 
 @media (max-width: 640px) {
   .turnstile-akovolabs-recapture_wrapper {
-    margin: var(--space-2, 0.5rem) 0;
+    margin: calc(var(--space-2, 0.5rem) / 2) 0;
+  }
+}
+
+/*
+ * Responsiveness: the flexible widget has a 300px min-width enforced by
+ * Cloudflare. On narrow viewports the form container drops below 300px, so we
+ * progressively scale the whole widget down to fit instead of overflowing.
+ */
+@media (max-width: 360px) {
+  .turnstile-akovolabs-recapture_wrapper {
+    --turnstile-scale: 0.86;
+  }
+}
+
+@media (max-width: 330px) {
+  .turnstile-akovolabs-recapture_wrapper {
+    --turnstile-scale: 0.78;
+    margin-right: -27px;
   }
 }

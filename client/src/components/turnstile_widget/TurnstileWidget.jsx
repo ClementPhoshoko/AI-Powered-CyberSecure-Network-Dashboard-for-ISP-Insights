@@ -1,4 +1,6 @@
-import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useTheme } from '../../context/ThemeContext';
+import { resolveTurnstileTheme } from './turnstileTheme';
 import './TurnstileWidget.css';
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '';
@@ -18,17 +20,21 @@ const isTurnstileEnabled = Boolean(TURNSTILE_SITE_KEY);
  * - onVerify(token): called when a token is issued
  * - onExpire(): called when the token expires
  * - onError(): called on challenge error
- * - theme: 'auto' | 'light' | 'dark' (default 'auto')
+ * - theme: 'auto' | 'light' | 'dark' — overrides the ThemeContext-derived theme
+ * - size: 'flexible' | 'normal' | 'compact' (default 'flexible', full-width)
  * - action: optional string label for analytics
  *
  * Ref API: { reset(), getResponse() }
  */
 const TurnstileWidget = forwardRef(function TurnstileWidget(
-  { onVerify, onExpire, onError, theme = 'auto', action, className = '' },
+  { onVerify, onExpire, onError, theme, size = 'flexible', action, className = '' },
   ref
 ) {
+  const { currentTheme } = useTheme();
+  const resolvedTheme = theme || resolveTurnstileTheme(currentTheme);
   const containerRef = useRef(null);
   const widgetIdRef = useRef(null);
+  const [isReady, setIsReady] = useState(false);
 
   useImperativeHandle(ref, () => ({
     reset: () => {
@@ -53,17 +59,24 @@ const TurnstileWidget = forwardRef(function TurnstileWidget(
 
     let cancelled = false;
     let pollId;
+    let rafId;
 
     const renderWidget = () => {
       if (cancelled || !containerRef.current || widgetIdRef.current !== null) return;
       if (!window.turnstile) return;
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: TURNSTILE_SITE_KEY,
-        theme,
+        theme: resolvedTheme,
+        size,
         action,
         callback: (token) => onVerify?.(token),
         'expired-callback': () => onExpire?.(),
         'error-callback': () => onError?.(),
+      });
+      // The iframe is injected right after render(); reveal it on the next
+      // frame so it fades in smoothly instead of popping in.
+      rafId = requestAnimationFrame(() => {
+        if (!cancelled) setIsReady(true);
       });
     };
 
@@ -82,6 +95,8 @@ const TurnstileWidget = forwardRef(function TurnstileWidget(
     return () => {
       cancelled = true;
       if (pollId) clearInterval(pollId);
+      if (rafId) cancelAnimationFrame(rafId);
+      setIsReady(false);
       if (widgetIdRef.current !== null && window.turnstile) {
         try {
           window.turnstile.remove(widgetIdRef.current);
@@ -92,13 +107,23 @@ const TurnstileWidget = forwardRef(function TurnstileWidget(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, action]);
+  }, [resolvedTheme, size, action]);
 
   if (!isTurnstileEnabled) return null;
 
   return (
-    <div className={`turnstile-akovolabs-recapture_wrapper ${className}`.trim()}>
-      <div ref={containerRef} className="turnstile-akovolabs-recapture_widget" />
+    <div
+      className={`turnstile-akovolabs-recapture_wrapper ${isReady ? 'is-ready' : ''} ${className}`.trim()}
+    >
+      <div
+        ref={containerRef}
+        className={`turnstile-akovolabs-recapture_widget ${isReady ? 'is-ready' : ''}`}
+      />
+      {!isReady && (
+        <div className="turnstile-akovolabs-recapture_placeholder" aria-hidden="true">
+          <span className="turnstile-akovolabs-recapture_placeholder-shimmer" />
+        </div>
+      )}
     </div>
   );
 });
