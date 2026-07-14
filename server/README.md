@@ -10,11 +10,16 @@ A Node.js and Express backend API for the AI-Powered AkovoLabs Speedtest, provid
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [API Endpoints](#api-endpoints)
+  - [Auth & Email Verification Endpoints](#auth--email-verification-endpoints)
   - [Ping Endpoints](#ping-endpoints)
   - [Speed Endpoints](#speed-endpoints)
   - [Network Scoring Endpoints](#network-scoring-endpoints)
   - [Analytics Endpoints](#analytics-endpoints)
   - [Port Risk Detection Endpoints](#port-risk-detection-endpoints)
+  - [Profile Endpoints](#profile-endpoints)
+  - [Subscriber Endpoints](#subscriber-endpoints)
+  - [System Metrics Endpoints](#system-metrics-endpoints)
+- [Email Verification & Auth Flow](#email-verification--auth-flow)
 - [AI Summary Fallback System](#ai-summary-fallback-system)
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -34,7 +39,9 @@ This is the backend API for the AI-Powered AkovoLabs Speedtest. It provides:
 - AI-powered network performance summaries
 - Advanced analytics and anomaly detection
 - Network health scoring for various use cases
-- Secure authentication via Supabase
+- Port risk detection and security analysis
+- Secure authentication via Supabase, with EmailJS-driven email verification and OTP password reset
+- Newsletter subscriber management and public system metrics
 
 ## Architecture Overview
 
@@ -68,8 +75,11 @@ Supabase Database
   - Historical scan comparison
 - **AI-Powered Insights**: Google Gemini API integration for intelligent summaries (with rule-based fallback)
 - **Analytics Engine**: Time-series data and anomaly detection
+- **Email Verification & Auth**: Server-side account creation via the Supabase Admin API (no duplicate native email), branded EmailJS verification links, and OTP-based password reset
+- **Newsletter Subscribers**: Subscribe, update, and unsubscribe management
+- **System Metrics**: Public statistics (user count, countries, uptime, founded year)
 - **API Documentation**: Interactive Swagger/OpenAPI documentation
-- **Security**: Helmet for security headers, CORS configuration, JWT validation
+- **Security**: Helmet security headers with CSP, restricted CORS, JWT validation, and per-route + global rate limiting
 
 ## Tech Stack
 
@@ -79,8 +89,10 @@ Supabase Database
 - **PostgreSQL**: Relational database
 - **Swagger/OpenAPI**: API documentation
 - **Google Gemini AI**: AI-powered insights
+- **EmailJS REST API**: Server-side transactional email delivery (verification links & OTP codes)
 - **Zod**: Data validation
 - **Winston**: Logging
+- **express-rate-limit**: Brute-force and abuse protection
 - **Nodemon**: Development auto-reload
 
 ## Project Structure
@@ -95,11 +107,17 @@ server/
 │   │   ├── analytics.controller.js
 │   │   ├── devAuthController.js
 │   │   ├── networkScoringController.js
+│   │   ├── otpController.js          # Register, send/verify OTP, reset, verify-link
 │   │   ├── pingController.js
 │   │   ├── portRiskController.js
 │   │   ├── profileController.js
-│   │   └── speedController.js
-│   ├── docs/         # SQL schemas, setup guides, ER diagrams
+│   │   ├── speedController.js
+│   │   ├── subscriberController.js
+│   │   └── systemMetricsController.js
+│   ├── docs/         # SQL schemas, setup guides, ER diagrams, migrations
+│   │   ├── migrations/
+│   │   ├── deletion_stepsAndPlan.txt
+│   │   ├── empty_db_schema.sql
 │   │   ├── phase_one_schema.md
 │   │   ├── phase_one_schema.sql
 │   │   └── testing_guide.md
@@ -123,20 +141,26 @@ server/
 │   │   ├── analytics.js
 │   │   ├── devAuth.js
 │   │   ├── network.js
+│   │   ├── otp.js                    # Auth & email verification routes
 │   │   ├── ping.js
 │   │   ├── portRisk.js
 │   │   ├── profiles.js
-│   │   └── speed.js
+│   │   ├── speed.js
+│   │   ├── subscribers.js
+│   │   └── systemMetrics.js
 │   ├── services/    # Business logic
 │   │   ├── aiSummary.service.js
 │   │   ├── analytics.service.js
+│   │   ├── emailService.js           # EmailJS server-side delivery
 │   │   ├── networkScoring.service.js
 │   │   ├── network_scoring.md
 │   │   ├── ping.service.js
 │   │   ├── ping_formulas.md
 │   │   ├── portRisk.service.js
 │   │   ├── speed.service.js
-│   │   └── speed_notes.md
+│   │   ├── speed_notes.md
+│   │   ├── template_reset.html       # Password reset email template (OTP)
+│   │   └── template_verify.html      # Verification email template (link)
 │   ├── utils/        # Helper functions
 │   │   ├── networkMetrics.js
 │   │   └── testResultPresentation.js
@@ -145,12 +169,24 @@ server/
 ├── .gitignore
 ├── package.json
 ├── README.md
-├── Research.md
+├── Speedtest_Research.md
 ├── Port_Risk_Research.md
 └── SETUP.md
 ```
 
 ## API Endpoints
+
+> Most data endpoints require a Supabase JWT in the `Authorization: Bearer <token>` header. Auth/OTP, system metrics, and the port knowledge base are public. Auth endpoints are rate limited (10 requests / 15 min).
+
+### Auth & Email Verification Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/otp/register | Create a new user via the Supabase Admin API (no native Supabase email) and send an EmailJS verification link |
+| POST | /api/otp/send | Send an OTP/link (`purpose`: `verify` or `reset`) via EmailJS |
+| POST | /api/otp/verify | Verify a 6-digit OTP code (returns a reset token when `purpose` is `reset`) |
+| POST | /api/otp/reset-password | Reset the password using a verified reset token |
+| GET | /api/otp/verify-link | Confirm an email from a clickable verification link (`?token=&email=`) |
 
 ### Ping Endpoints
 
@@ -197,6 +233,43 @@ server/
 | GET | /api/port-risk/assessments | Get all port risk assessments for the current user |
 | GET | /api/port-risk/knowledge-base | Get the port knowledge base (public) |
 
+### Profile Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/profile | Get the current user's profile |
+| PUT | /api/profile | Update the current user's profile (username, first/last name) |
+
+### Subscriber Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/subscriber | Get the current user's newsletter subscription |
+| POST | /api/subscriber | Subscribe the current user |
+| PUT | /api/subscriber | Update the current user's subscription |
+| DELETE | /api/subscriber | Unsubscribe the current user |
+
+### System Metrics Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | /api/system/metrics | Get public system metrics (users, countries, uptime, founded year) |
+| POST | /api/system/metrics/refresh | Refresh metrics from the database and return updated values |
+
+> A health check is also available at `GET /` and a database connectivity check at `GET /api/health/db`. In development mode only, `POST /dev/auth/login` issues a JWT for testing.
+
+## Email Verification & Auth Flow
+
+Account verification is handled entirely through EmailJS while Supabase Auth remains the source of truth. This avoids duplicate emails and keeps sign-in blocked until an account is verified:
+
+1. **Register** — `POST /api/otp/register` creates the user via the Supabase Admin API with `email_confirm: false`. Because the account is created server-side, Supabase does **not** send its own native confirmation email.
+2. **Send link** — a signed verification token is stored on the user and a branded verification link is emailed via EmailJS (`template_verify.html`).
+3. **Blocked sign-in** — while unconfirmed, Supabase rejects login with "Email not confirmed" (requires "Enable email confirmations" to remain ON in the Supabase dashboard).
+4. **Confirm** — clicking the link hits `GET /api/otp/verify-link`, which validates the token and confirms the email via the Admin API. Already-verified links are treated as success.
+5. **Password reset** — `POST /api/otp/send` with `purpose: reset` emails a 6-digit OTP (`template_reset.html`); `POST /api/otp/verify` validates it and returns a short-lived reset token used by `POST /api/otp/reset-password`.
+
+If EmailJS environment variables are missing, the service logs the intended email and skips sending (non-fatal in development).
+
 ## AI Summary Fallback System
 
 The AI summary endpoint includes a robust fallback system to ensure 100% uptime:
@@ -226,12 +299,40 @@ The rule-based system uses network_health_score to categorize connection quality
 
 ## Environment Configuration
 
-1. Copy the environment example file:
+1. Copy the environment example file into `server/src/`:
    ```bash
-   cp .env.example .env
+   cp .env.example src/.env
    ```
 
-2. Edit the `.env` file in `server/src/` and fill in your configuration
+2. Edit the `.env` file in `server/src/` and fill in your configuration:
+
+   ```env
+   # Server
+   PORT=5000
+   NODE_ENV=development
+   USE_HTTPS=false
+
+   # Supabase
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+   # AI (optional — falls back to rule-based summaries if unset)
+   GEMINI_API_KEY=your_gemini_api_key
+
+   # OTP / CORS
+   OTP_SECRET=your_otp_hmac_secret
+   ALLOWED_ORIGINS=http://localhost:5173
+
+   # EmailJS (server-side email delivery)
+   EMAILJS_SERVICE_ID=your_emailjs_service_id
+   EMAILJS_TEMPLATE_VERIFY_ID=your_verify_template_id
+   EMAILJS_TEMPLATE_RESET_ID=your_reset_template_id
+   EMAILJS_PUBLIC_KEY=your_emailjs_public_key
+   EMAILJS_PRIVATE_KEY=your_emailjs_private_key
+   ```
+
+   > EmailJS requires "API access from non-browser environments" to be enabled in your EmailJS dashboard (Account → Security) for server-side sending to work. Keep Supabase "Enable email confirmations" ON so unverified accounts cannot sign in.
 
 ## Database Setup
 
@@ -278,6 +379,9 @@ Once the server is running, you can access the interactive Swagger documentation
 - **swagger-ui-express**: Serves auto-generated swagger-ui generated API docs from express
 - **swagger-jsdoc**: Generates swagger specifications from JSDoc comments in your code
 - **@google/generative-ai**: Google Gemini AI API integration
+- **express-rate-limit**: Rate limiting for auth and global API abuse protection
+- **node-fetch**: HTTP client used for EmailJS delivery and outbound requests
+- **pg**: PostgreSQL client
 - **zod**: TypeScript-first schema declaration and validation
 - **winston**: Logging library
 - **simple-statistics**: Statistical functions
