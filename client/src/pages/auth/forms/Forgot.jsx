@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { sendOtp, verifyOtp, resetPassword } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
@@ -75,6 +76,7 @@ function OtpInput({ length = 6, onComplete, disabled }) {
 }
 
 function Forgot() {
+  const { t } = useTranslation();
   const [step, setStep] = useState('email');
   const [email, setEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
@@ -135,7 +137,7 @@ function Forgot() {
   const handleSendOtp = async (e) => {
     e.preventDefault();
     if (sendCaptchaEnabled && !sendCaptchaToken) {
-      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      setErrorModal({ isOpen: true, message: t('errors:CAPTCHA_REQUIRED') });
       return;
     }
     setIsLoading(true);
@@ -172,11 +174,11 @@ function Forgot() {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      setErrorModal({ isOpen: true, message: 'Passwords do not match' });
+      setErrorModal({ isOpen: true, message: t('auth.register.validation.passwordMismatch') });
       return;
     }
     if (newPassword.length < 8) {
-      setErrorModal({ isOpen: true, message: 'Password must be at least 8 characters' });
+      setErrorModal({ isOpen: true, message: t('auth.register.validation.minChars') });
       return;
     }
     setIsLoading(true);
@@ -195,7 +197,7 @@ function Forgot() {
   const handleResend = async () => {
     if (resendTimer > 0) return;
     if (resendCaptchaEnabled && !resendCaptchaToken) {
-      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      setErrorModal({ isOpen: true, message: t('errors:CAPTCHA_REQUIRED') });
       return;
     }
     setIsLoading(true);
@@ -215,8 +217,8 @@ function Forgot() {
       <Loading
         isLoading={isLoading}
         progress={progress}
-        message={step === 'email' ? 'Sending verification code' : step === 'otp' ? 'Verifying code' : step === 'password' ? 'Resetting password' : ''}
-        status="AkovoLabs Auth System v1.0"
+        message={step === 'email' ? t('auth.forgot.sendingCode') : step === 'otp' ? t('auth.forgot.verifyingCode') : step === 'password' ? t('auth.forgot.resettingPassword') : ''}
+        status={t('nav.authSystemStatus')}
         indeterminate={true}
       />
       <div className="forgot-container" key={animationKey}>
@@ -232,11 +234,11 @@ function Forgot() {
               className="auth-form"
               onSubmit={handleSendOtp}
             >
-              <h1 className="auth-form-title">Reset your password</h1>
-              <p className="forgot-subtitle">Enter the email you signed up with and we'll send you a verification code.</p>
+              <h1 className="auth-form-title">{t('auth.forgot.resetPassword')}</h1>
+              <p className="forgot-subtitle">{t('auth.forgot.emailStepSubtitle')}</p>
 
               <div className="auth-form-field">
-                <label className="auth-form-label" htmlFor="forgot-email">Email</label>
+                <label className="auth-form-label" htmlFor="forgot-email">{t('auth.forgot.emailLabel')}</label>
                 <div className="auth-form-input-wrapper">
                   <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -246,7 +248,7 @@ function Forgot() {
                     id="forgot-email"
                     type="email"
                     className="auth-form-input"
-                    placeholder="Enter your email"
+                    placeholder={t('auth.forgot.emailPlaceholder')}
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     autoComplete="email"
@@ -267,7 +269,7 @@ function Forgot() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>
-                {isLoading ? 'Sending...' : 'Send OTP'}
+                {isLoading ? t('auth.forgot.sending') : t('auth.forgot.sendOtp')}
               </button>
             </motion.form>
           )}
@@ -282,8 +284,8 @@ function Forgot() {
               transition={{ duration: 0.3 }}
               className="auth-form"
             >
-              <h1 className="auth-form-title">Enter verification code</h1>
-              <p className="forgot-subtitle">We sent a 6-digit code to <strong>{email}</strong></p>
+              <h1 className="auth-form-title">{t('auth.forgot.enterCode')}</h1>
+              <p className="forgot-subtitle">{t('auth.forgot.otpStepSubtitle', { email })}</p>
 
               <OtpInput length={6} onComplete={setOtpCode} disabled={isLoading} />
 
@@ -296,7 +298,7 @@ function Forgot() {
                 <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                {isLoading ? 'Verifying...' : 'Verify'}
+                {isLoading ? t('auth.forgot.verifying') : t('auth.forgot.verify')}
               </button>
 
               {resendTimer <= 0 && (
@@ -314,7 +316,7 @@ function Forgot() {
                 onClick={handleResend}
                 disabled={resendTimer > 0 || isLoading || (resendCaptchaEnabled && !resendCaptchaToken)}
               >
-                {resendTimer > 0 ? `Resend code in ${resendTimer}s` : 'Resend code'}
+                {resendTimer > 0 ? t('auth.forgot.resendIn', { seconds: resendTimer }) : t('auth.forgot.resendCode')}
               </button>
             </motion.div>
           )}
@@ -330,11 +332,11 @@ function Forgot() {
               className="auth-form"
               onSubmit={handleResetPassword}
             >
-              <h1 className="auth-form-title">Create new password</h1>
-              <p className="forgot-subtitle">Your new password must be at least 8 characters long.</p>
+              <h1 className="auth-form-title">{t('auth.forgot.createPassword')}</h1>
+              <p className="forgot-subtitle">{t('auth.forgot.passwordStepSubtitle')}</p>
 
               <div className="auth-form-field">
-                <label className="auth-form-label" htmlFor="new-password">New password</label>
+                <label className="auth-form-label" htmlFor="new-password">{t('auth.forgot.newPasswordLabel')}</label>
                 <div className="auth-form-input-wrapper">
                   <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -344,7 +346,7 @@ function Forgot() {
                     id="new-password"
                     type="password"
                     className="auth-form-input"
-                    placeholder="Enter new password"
+                    placeholder={t('auth.forgot.newPasswordPlaceholder')}
                     value={newPassword}
                     onChange={e => setNewPassword(e.target.value)}
                     autoComplete="new-password"
@@ -354,7 +356,7 @@ function Forgot() {
               </div>
 
               <div className="auth-form-field">
-                <label className="auth-form-label" htmlFor="confirm-new-password">Confirm password</label>
+                <label className="auth-form-label" htmlFor="confirm-new-password">{t('auth.forgot.confirmPasswordLabel')}</label>
                 <div className="auth-form-input-wrapper">
                   <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -364,7 +366,7 @@ function Forgot() {
                     id="confirm-new-password"
                     type="password"
                     className="auth-form-input"
-                    placeholder="Confirm new password"
+                    placeholder={t('auth.forgot.confirmPasswordPlaceholder')}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
@@ -377,7 +379,7 @@ function Forgot() {
                 <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                {isLoading ? 'Resetting...' : 'Reset password'}
+                {isLoading ? t('auth.forgot.resetting') : t('auth.forgot.resetPasswordBtn')}
               </button>
             </motion.form>
           )}
@@ -393,17 +395,17 @@ function Forgot() {
               className="auth-form forgot-success"
             >
               <div className="forgot-success-icon">
-                <img src={successAvatar} alt="Success" />
+                <img src={successAvatar} alt={t('imageAlt.success')} />
               </div>
-              <h1 className="auth-form-title">Password updated</h1>
-              <p className="forgot-subtitle">Your password has been reset successfully. You can now sign in with your new password.</p>
+              <h1 className="auth-form-title">{t('auth.forgot.passwordUpdated')}</h1>
+              <p className="forgot-subtitle">{t('auth.forgot.successSubtitle')}</p>
               <button className="auth-form-button" onClick={() => navigate('/login')}>
                 <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                   <polyline points="10 17 15 12 10 7" />
                   <line x1="15" y1="12" x2="3" y2="12" />
                 </svg>
-                Go to Login
+                {t('auth.forgot.goToLogin')}
               </button>
             </motion.div>
           )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../hooks/useProfile';
@@ -9,6 +10,7 @@ import FooterSkeleton from './FooterSkeleton';
 import './Footer.css';
 
 function Footer() {
+  const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const { profile } = useProfile(!authLoading && !!user);
   const { subscriber, loading: subLoading, subscribe, unsubscribe } = useSubscriber(!authLoading && !!user);
@@ -77,20 +79,20 @@ function Footer() {
       <Loading 
         isLoading={isProcessing} 
         progress={progress}
-        message={subscriber ? 'Updating subscription' : 'Subscribing to newsletter'}
-        status="AkovoLabs Newsletter System v1.0"
+        message={subscriber ? t('footer.updating') : t('footer.subscribing')}
+        status={t('footer.newsletterStatus')}
       />
       <footer className="footer-container">
         <div className="footer-content">
           {/* Left Section */}
           <div className="footer-left">
             <div className="footer-logo">
-              <img src={loginLogo} alt="AkovoLabs Logo" className="footer-logo-icon" />
-              <span className="footer-logo-text">AkovoLabs</span>
+              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="footer-logo-icon" />
+              <span className="footer-logo-text">{t('app.name')}</span>
             </div>
-            <p className="footer-tagline">AI-Powered Network Analytics Dashboard</p>
+            <p className="footer-tagline">{t('footer.tagline')}</p>
             <p className="footer-description">
-              Empowering ISPs with intelligent insights, real-time monitoring, and enterprise-grade security
+              {t('app.description')}
             </p>
           </div>
 
@@ -102,9 +104,9 @@ function Footer() {
               {user && (
                 <div className="footer-form-field">
                   <label className="footer-form-label">
-                    Get the latest news and feature announcements
+                    {t('footer.newsletter')}
                   </label>
-                  <p className="footer-form-note">We promise not to spam your inbox. Unsubscribe at any time.</p>
+                  <p className="footer-form-note">{t('footer.newsletterNote')}</p>
                   <div className="footer-form-wrapper">
                     <button 
                       type="button" 
@@ -112,18 +114,18 @@ function Footer() {
                       onClick={subscriber ? handleUnsubscribe : handleSubscribe}
                       disabled={isProcessing || (!subscriber && !user?.email)}
                     >
-                      {isProcessing ? (subscriber ? 'Unsubscribing...' : 'Subscribing...') : (subscriber ? 'Unsubscribe' : 'Subscribe')}
+                      {isProcessing ? (subscriber ? t('footer.unsubscribing') : t('footer.subscribing')) : (subscriber ? t('footer.unsubscribe') : t('footer.subscribe'))}
                     </button>
                   </div>
                 </div>
               )}
               <div className="footer-apps-section">
-                <p className="footer-apps-text">Also available on Mobile</p>
-                <p className="footer-apps-subtitle">Download our app for Android and iOS</p>
+                <p className="footer-apps-text">{t('footer.mobileApp')}</p>
+                <p className="footer-apps-subtitle">{t('footer.mobileAppDesc')}</p>
                 <div className="footer-apps-links">
-                  <Link to="/download/android" className="footer-apps-link">Android</Link>
+                  <Link to="/download/android" className="footer-apps-link">{t('footer.android')}</Link>
                   <span className="footer-apps-divider">|</span>
-                  <Link to="/download/ios" className="footer-apps-link">iOS</Link>
+                  <Link to="/download/ios" className="footer-apps-link">{t('footer.ios')}</Link>
                 </div>
               </div>
             </div>
@@ -133,7 +135,7 @@ function Footer() {
         {/* Bottom Section */}
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © 2026 AkovoLabs. All rights reserved.
+            {t('app.copyright')}
           </p>
         </div>
       </footer>

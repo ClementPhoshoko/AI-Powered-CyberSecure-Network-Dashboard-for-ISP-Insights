@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "AkovoLabs",
+    "tagline": "AI-aangedrewe Netwerk-analise-paneelbord",
+    "description": "Bemagtig ISPs met intelligente insigte, intydse monitering en ondernemingsvlak-sekuriteit",
+    "copyright": "© 2026 AkovoLabs. Alle regte voorbehou.",
+    "version": "Stelselweergawe 1.0.0 © 2026 AkovoLabs. Alle regte voorbehou."
+  },
+  "nav": {
+    "home": "Tuis",
+    "about": "Oor ons",
+    "aboutDesc": "Leer oor ons missie",
+    "aboutDropdown": {
+      "ourCompany": "Ons Maatskappy",
+      "team": "Span",
+      "contactUs": "Kontak Ons",
+      "ourCompanyDesc": "Leer oor ons missie",
+      "teamDesc": "Ontmoet ons kundiges",
+      "contactUsDesc": "Kom in kontak met ons"
+    },
+    "services": "Dienste",
+    "servicesDesc": "Spoed en Netwerk Gereedskap",
+    "servicesDropdown": {
+      "speedTesting": "Spoedtoets",
+      "networkAnalytics": "Netwerk-analise",
+      "security": "Sekuriteit",
+      "aiInsights": "AI-insigte",
+      "speedTestingDesc": "Meet jou verbinding",
+      "networkAnalyticsDesc": "Diep netwerk insigte",
+      "securityDesc": "Beskerm jou netwerk",
+      "aiInsightsDesc": "Intelligente aanbevelings"
+    },
+    "download": "Laai af",
+    "downloadDesc": "Vir beide iOS en Android",
+    "downloadDropdown": {
+      "iosApp": "iOS-toepassing",
+      "androidApp": "Android-toepassing",
+      "iosDesc": "Laai af vir iPhone en iPad",
+      "androidDesc": "Laai af vir Android-toestelle",
+      "forBoth": "Vir beide iOS en Android"
+    },
+    "news": "Nuus",
+    "newsDesc": "Opdaterings en Pers",
+    "newsDropdown": {
+      "updatesPress": "Opdaterings en Pers",
+      "desc": "Laaste nuus, opdaterings en pers"
+    },
+    "accountDropdown": {
+      "manageAccount": "Bestuur Rekening",
+      "testHistory": "Toetsgeskiedenis",
+      "security": "Sekuriteit",
+      "changeTheme": "Verander Tema",
+      "login": "Teken in",
+      "logout": "Teken uit"
+    },
+    "mobileDrawer": {
+      "manageAccount": "Bestuur Rekening",
+      "manageAccountDesc": "Profiel en instellings",
+      "testHistory": "Toetsgeskiedenis",
+      "testHistoryDesc": "Bekyk vorige toetse",
+      "security": "Sekuriteit",
+      "securityDesc": "Rekening sekuriteit",
+      "theme": "Tema",
+      "language": "Taal",
+      "login": "Teken in",
+      "logout": "Teken uit"
+    },
+    "toggleNavigation": "Skakel navigasie",
+    "signingOut": "Besig om uit te teken",
+    "authSystemStatus": "AkovoLabs Auth Stelsel v1.0",
+    "logoutModalMessage": "Is jy seker jy wil uit jou rekening teken?"
+  },
+  "modal": {
+    "cancel": "Kanselleer",
+    "proceed": "Gaan voort"
+  },
+  "footer": {
+    "tagline": "AI-aangedrewe Netwerk-analise-paneelbord",
+    "newsletter": "Ontvang die nuutste nuus en kenmerkaankondigings",
+    "newsletterNote": "Ons belowe om nie jou inkassie te spam nie. Kanselleer te eniger tyd.",
+    "subscribe": "Teken in",
+    "subscribing": "Besig om in te teken...",
+    "unsubscribe": "Ontteken",
+    "unsubscribing": "Besig om te ontteken...",
+    "mobileApp": "Ook beskikbaar op selfoon",
+    "mobileAppDesc": "Laai ons toepassing af vir Android en iOS",
+    "android": "Android",
+    "ios": "iOS",
+    "updating": "Besig om intekening op te dateer",
+    "newsletterStatus": "AkovoLabs Nuusbrief Stelsel v1.0"
+  },
+  "auth": {
+    "layout": {
+      "login": "Teken in",
+      "signUp": "Registreer",
+      "backToLogin": "Terug na Teken in",
+      "backToSignUp": "Terug na Registreer",
+      "tagline": "Intydse AI-aangedrewe spoedtoets-analise en netwerksekuriteit-insigte vir ISPs",
+      "agreement": "Deur 'n AkovoLabs-rekening te skep of te gebruik, stem jy in tot ons **Terme en Voorwaardes** en **Privaatheidsbeleid**.",
+      "termsTitle": "Terme en Voorwaardes",
+      "privacyTitle": "Privaatheidsbeleid"
+    },
+    "login": {
+      "heading": "Welkom terug",
+      "emailLabel": "E-pos",
+      "emailPlaceholder": "Voer jou e-pos in",
+      "passwordLabel": "Wagwoord",
+      "passwordPlaceholder": "Voer jou wagwoord in",
+      "rememberMe": "Onthou my",
+      "forgotPassword": "Wagwoord vergeet?",
+      "signIn": "Teken in",
+      "signingIn": "Besig om in te teken...",
+      "captchaError": "Voltooi asseblief die captcha-verifikasie."
+    },
+    "register": {
+      "heading": "Skep rekening",
+      "checkEmail": "Kyk jou e-pos",
+      "emailLabel": "E-pos",
+      "emailPlaceholder": "Voer jou e-pos in",
+      "passwordLabel": "Wagwoord",
+      "passwordPlaceholder": "Voer jou wagwoord in",
+      "confirmPasswordLabel": "Bevestig wagwoord",
+      "confirmPasswordPlaceholder": "Bevestig jou wagwoord",
+      "agreeDesktop": "Ek stem in tot die Terme en Voorwaardes en Privaatheidsbeleid",
+      "agreeMobile": "Ek stem in tot die T&V en Privaatheidsbeleid",
+      "passwordRequirements": {
+        "minChars": "Minstens 8 karakters",
+        "uppercase": "Een hoofletter",
+        "lowercase": "Een kleinletter",
+        "number": "Een nommer",
+        "special": "Een spesiale karakter"
+      },
+      "signUp": "Registreer",
+      "signingUp": "Besig om te registreer...",
+      "goToLogin": "Gaan na Teken in",
+      "successMessage": "Ons het 'n verifikasie skakel gestuur na **{{email}}**. Klik die skakel om jou rekening te aktiveer.",
+      "spamNote": "As jy nie die e-pos sien nie, kyk jou spam-lêer of probeer weer registreer.",
+      "validation": {
+        "minChars": "Wagwoord moet ten minste 8 karakters lank wees",
+        "uppercase": "Wagwoord moet ten minste een hoofletter bevat",
+        "lowercase": "Wagwoord moet ten minste een kleinletter bevat",
+        "number": "Wagwoord moet ten minste een nommer bevat",
+        "special": "Wagwoord moet ten minste een spesiale karakter bevat (!@#$%^&*(),.?\":{|}<>)",
+        "passwordMismatch": "Wagwoorde stem nie ooreen nie",
+        "agreeTerms": "Jy moet instem tot die Terme en Voorwaardes en Privaatheidsbeleid om 'n rekening te skep."
+      }
+    },
+    "forgot": {
+      "resetPassword": "Herstel wagwoord",
+      "enterCode": "Voer verifikasiekode in",
+      "createPassword": "Skep nuwe wagwoord",
+      "passwordUpdated": "Wagwoord opgedateer",
+      "emailStepSubtitle": "Voer die e-pos in waarmee jy geregistreer het en ons sal jou 'n verifikasiekode stuur.",
+      "otpStepSubtitle": "Ons het 'n 6-syfer kode gestuur na **{{email}}**",
+      "passwordStepSubtitle": "Jou nuwe wagwoord moet ten minste 8 karakters lank wees.",
+      "successSubtitle": "Jou wagwoord is suksesvol herstel. Jy kan nou met jou nuwe wagwoord inteken.",
+      "emailLabel": "E-pos",
+      "emailPlaceholder": "Voer jou e-pos in",
+      "newPasswordLabel": "Nuwe wagwoord",
+      "newPasswordPlaceholder": "Voer nuwe wagwoord in",
+      "confirmPasswordLabel": "Bevestig wagwoord",
+      "confirmPasswordPlaceholder": "Bevestig nuwe wagwoord",
+      "sendOtp": "Stuur OTP",
+      "sending": "Besig om te stuur...",
+      "verify": "Verifieer",
+      "verifying": "Besig om te verifieer...",
+      "resetPasswordBtn": "Herstel wagwoord",
+      "resetting": "Besig om te herstel...",
+      "goToLogin": "Gaan na Teken in",
+      "resendCode": "Herstuur kode",
+      "resendIn": "Herstuur kode oor {{seconds}}s",
+      "sendingCode": "Stuur verifikasiekode",
+      "verifyingCode": "Verifieer kode",
+      "resettingPassword": "Herstel wagwoord"
+    },
+    "verify": {
+      "emailVerified": "E-pos geverifieer",
+      "verificationFailed": "Verifikasie misluk",
+      "successMessage": "Jou e-pos is suksesvol geverifieer. Jy kan nou by jou rekening inteken.",
+      "goToLogin": "Gaan na Teken in",
+      "errorMessage": "Die verifikasieskakel is ongeldig of het verval. Registreer asseblief weer.",
+      "backToSignUp": "Terug na Registreer",
+      "connectionError": "Kan nie met die bediener verbind nie. Gaan jou internetverbinding na.",
+      "serverError": "Iets het verkeerd geloop. Probeer later weer.",
+      "invalidLink": "Ongeldige verifikasieskakel.",
+      "verifyingEmail": "Verifieer jou e-pos"
+    },
+    "logoutModal": {
+      "message": "Is jy seker jy wil uit jou rekening teken?",
+      "cancel": "Kanselleer",
+      "proceed": "Gaan voort"
+    }
+  },
+  "home": {
+    "hero": {
+      "heading": "AI-aangedrewe Netwerkspoedtoets",
+      "advisoryHeading": "Verstaan Jou Spoedtoets",
+      "aiSummaryHeading": "AI-aangedrewe Opsomming",
+      "howToUse": "Hoe Om Hierdie Toets Te Gebruik",
+      "howToUseHeading": "Toets jou huidige netwerkspoed"
+    },
+    "speedTest": {
+      "beginTest": "Begin Toets",
+      "stopTest": "Stop Toets",
+      "runAgain": "Weer hardloop"
+    },
+    "phases": {
+      "initializing": "Initialiseer...",
+      "appLatency": "Toets App Latency...",
+      "download": "Toets Af Laai...",
+      "upload": "Toets Oplaai...",
+      "derivedScores": "Bereken Afgeleide Tellings..."
+    },
+    "advisory": {
+      "downloadOverTime": "**Aflaaispoed Oor Tyd:** Toon konsekwentheid van verbinding",
+      "uploadOverTime": "**Oplaaispoed Oor Tyd:** Meet oplaaiwerkverrigting",
+      "appLatency": "**App Latency:** Volg hoe vinnig jou toestel hierdie diens tydens die toets bereik"
+    },
+    "aiSummaryPlaceholder": "Jou spoedtoets opsomming sal hier verskyn nadat die stelsel die resultate geïnterpreteer het.",
+    "howToUseCards": {
+      "currentDevice": "Jy kan 'n spoedtoets vanaf jou huidige toestel en verbinding uitvoer. As jy op huis Wi-Fi is, weerspieël die resultate jou werklike ervaring.",
+      "deviceToServer": "Dit meet toestel-tot-bediener werkverrigting, nie 'n diep inspeksie van jou router of Wi-Fi besonderhede nie.",
+      "signedIn": "Noudat jy aangemeld is, moenie vergeet om jou toetsgrafieke en geskiedenis hieronder te check nie!",
+      "signedOut": "**Meld aan** of **Registreer** om meer gedetailleerde insigte oor jou netwerkwerkverrigting te kry!"
+    },
+    "signInModal": {
+      "message": "Meld aan om gedetailleerde insigte uit jou spoedtoets resultate te kry. Wil jy na die aanmeldbladsy gaan?",
+      "cancel": "Kanselleer",
+      "proceed": "Gaan voort"
+    }
+  },
+  "services": {
+    "heroHeading1": "Ons Dienste",
+    "heroHeading2": "Aangedryf deur AI",
+    "heroDesc": "Van vinnige spoedtoetse tot gevorderde sekuriteitskandering en AI-aangedrewe analise, ons bied omvattende netwerkoplossings vir tuisgebruikers, klein besighede en ISPs.",
+    "sectionTitle": "Wat Ons Bied",
+    "cards": {
+      "speedtest": {
+        "title": "Spoedtoets",
+        "description": "Vinnige spoedtoets met intydse maatstawwe, historiese data en pragtige visualisasies. Meet aflaai, oplaai, ping en jitter met akkuraatheid.",
+        "tags": ["Intyds", "Histories", "Visualisasie"]
+      },
+      "networkAnalysis": {
+        "title": "Netwerk-analise",
+        "description": "Diep netwerkdiagnostiek, analise en werkverrigtingmonitering. Identifiseer knelpunte en netwerkanomalieë outomaties.",
+        "tags": ["Diagnostiek", "Monitering", "Anomalie-opsporing"]
+      },
+      "security": {
+        "title": "Sekuriteit",
+        "description": "Gevorderde poortskandering, kwesbaarheidopsporing en risikobepaling om jou netwerk veilig te hou teen aanvalle en indringings.",
+        "tags": ["Poortskandering", "Risikobepaling", "Aanbevelings"]
+      },
+      "aiInsights": {
+        "title": "AI-insigte",
+        "description": "AI-aangedrewe insigte, telling en intelligente aanbevelings om jou netwerkwerkverrigting outomaties te optimeer.",
+        "tags": ["AI-opsommings", "Netwerktelling", "Aanbevelings"]
+      }
+    }
+  },
+  "download": {
+    "headline": "AkovoLabs Speedtest",
+    "subtitle": "Vinnig. Akkuraat. Slim.",
+    "features": [
+      { "title": "Akkurate Spoedtoets", "desc": "Toets aflaai, oplaai en ping" },
+      { "title": "Intydse Resultate", "desc": "Onmiddellike en presiese metings" },
+      { "title": "Netwerk-analise", "desc": "Monitor jou verbindingskwaliteit" },
+      { "title": "Netwerk Sekuriteitskan", "desc": "Poort risiko opsporing ingebou" }
+    ],
+    "betaAdvisory": "Sluit aan by ons beta-toetsprogram vir vroeë toegang! Jou data word beskerm met end-tot-end enkripsie."
+  },
+  "news": {
+    "heroHeadline1": "Laaste Nuus en",
+    "heroHeadline2": "Opdaterings",
+    "subtitle": "Bly op hoogte van die nuutste ontwikkelings, kenmerkvrystellings en verbeterings aan ons platform.",
+    "previous": "Vorige",
+    "next": "Volgende"
+  },
+  "about": {
+    "heroHeadline1": "Bou die Toekoms",
+    "heroHeadline2": "van Konnektiwiteit",
+    "heroDesc": "Ons bou die toekoms van internetspoedtoetsing en netwerkanalise. AkovoLabs Speedtest gee ISPs en gebruikers ongekende insigte in netwerkprestasie, sekuriteit en betroubaarheid.",
+    "stats": {
+      "users": "Gebruikers",
+      "countries": "Lande",
+      "uptime": "Optyd",
+      "offline": "Vanlyn",
+      "founded": "Gestig"
+    },
+    "cta": "Kontak Ons",
+    "ourStory": "Ons Storie",
+    "storyParagraph1": "By AkovoLabs glo ons tegnologie moet die lewe eenvoudiger maak. Daarom het ons AkovoLabs Speedtest gebou, 'n netwerktoetsplatform wat beide kragtig en intuïtief is.",
+    "storyParagraph2": "Ons missie is om netwerkbestuur toeganklik te maak vir almal. Of jy nou 'n tuisgebruiker is of 'n ISP wat duisende kliënte bestuur, AkovoLabs Speedtest gee jou die insigte wat jy nodig het.",
+    "storyParagraph3": "Met intydse monitering, intelligente anomalie-opsporing en pragtige visualisasies maak ons netwerkbestuur eenvoudig en kragtig.",
+    "quote": "Slim tegnologie, vinnige spoed en bruikbare insigte omdat konnektiwiteit vir jou moet werk, nie teen jou nie.",
+    "team": "Die Span",
+    "teamMember1": {
+      "name": "Clement Phoshoko",
+      "role": "Vol-stapel Produk Ingenieur",
+      "quote": "Elke groot produk begin met die oplossing van 'n regte probleem. Ek bou AI-gedrewe, outomatiese oplossings met moderne glas-geïnspireerde koppelvlakke."
+    },
+    "teamMember2": {
+      "name": "Tsumbedzo Matloga",
+      "role": "Netwerk Sagteware Ingenieur",
+      "quote": "Stel jou voor om elke verbinding, maatstaf en anomalie op een plek te sien. Dit is die krag van intelligente netwerkanalise."
+    },
+    "contact": "Kontak Ons"
+  },
+  "contact": {
+    "fullName": "Volle naam",
+    "fullNamePlaceholder": "Voer jou volle naam in",
+    "businessEmail": "Besigheid e-pos",
+    "emailPlaceholder": "jou@maatskappy.com",
+    "companyName": "Maatskappynaam",
+    "companyPlaceholder": "Jou maatskappy (opsioneel)",
+    "subject": "Onderwerp",
+    "subjectDefault": "Kies 'n onderwerp",
+    "subjectOptions": ["Kies 'n onderwerp", "Algemene navraag", "Verkope", "Ondersteuning", "Vennootskap"],
+    "message": "Boodskap",
+    "messagePlaceholder": "Hoe kan ons jou besigheid help?",
+    "sendMessage": "Stuur boodskap",
+    "successHeading": "Boodskap gestuur!",
+    "successMessage": "Dankie dat jy AkovoLabs gekontak het. Ons span sal jou navraag hersien en binnekort terugkom.",
+    "newBtn": "Nuut",
+    "homeBtn": "Tuis",
+    "sendingMessage": "Stuur boodskap",
+    "crmStatus": "AkovoLabs CRM Stelsel v1.0",
+    "failedMessage": "Kon nie boodskap stuur nie. Probeer later weer.",
+    "validation": {
+      "fullNameRequired": "Volle naam is nodig",
+      "emailRequired": "E-pos is nodig",
+      "emailInvalid": "Ongeldige e-pos formaat",
+      "subjectRequired": "Kies asseblief 'n onderwerp",
+      "messageRequired": "Boodskap is nodig",
+      "messageMinLength": "Boodskap moet ten minste 10 karakters wees"
+    }
+  },
+  "history": {
+    "title": "Toetsgeskiedenis",
+    "subtitle": "Hersien jou vorige spoedtoetse, volg prestasietendense en kry insigte oor jou netwerksgesondheid.",
+    "proTip": "Pro Wenk!",
+    "tabs": {
+      "trends": "Neigings",
+      "insights": "Insigte",
+      "history": "Geskiedenis"
+    },
+    "metrics": {
+      "totalTests": "Totale Toetse",
+      "avgDownload": "Gem. Aflaai",
+      "avgUpload": "Gem. Oplaai",
+      "avgPing": "Gem. Ping",
+      "avgHealthScore": "Gem. Gesondheidstelling"
+    },
+    "performanceTrends": {
+      "title": "Prestasietendense",
+      "speedTrends": "Spoedneigings",
+      "latencyQuality": "Latency Kwaliteit",
+      "networkHealthScore": "Netwerk Gesondheidstelling",
+      "experienceScores": "Ervaringstellings",
+      "from": "Van",
+      "to": "Tot",
+      "selectStartDate": "Kies begindatum",
+      "selectEndDate": "Kies einddatum",
+      "clear": "Maak skoon",
+      "speedAutoScaleNote": "Spoodasse skaal outomaties vir aflaai en oplaai sodat kleiner tendense leesbaar bly.",
+      "amberDotNote": "Amberkolletjies merk toetse waar verbindingspoed aansienlik tussen passasies gewissel het.",
+      "showingResults": "Wys resultate van {{firstDate}} tot {{lastDate}}",
+      "latencyAutoScaleNote": "Latencywaardes pas outomaties by die sigbare ping- en jitter-reeks aan."
+    },
+    "chartLegend": {
+      "download": "Aflaai (Mbps)",
+      "upload": "Oplaai (Mbps)",
+      "ping": "Ping (ms)",
+      "jitter": "Jitter (ms)",
+      "healthScore": "Gesondheidstelling",
+      "bestTest": "Beste Toets"
+    },
+    "scoreBar": {
+      "excellent": "Uitstekend (80-100)",
+      "good": "Goed (60-79)",
+      "poor": "Swak (0-59)"
+    },
+    "insights": {
+      "title": "AI-insigte",
+      "speedOverview": "Spoed Oorsig",
+      "excellentLatency": "Uitstekende Latency",
+      "moderateLatency": "Matige Latency",
+      "highLatency": "Hoë Latency",
+      "bestPerformance": "Beste Prestasie",
+      "connectionInstability": "Verbindingsonstabiliteit Opgespoor",
+      "avgSpeedMessage": "Jou gemiddelde aflaaispoed is {{download}} Mbps en oplaaispoed is {{upload}} Mbps.",
+      "pingLowMessage": "Jou ping is konsekwent laag, ideaal vir speletjies en video-oproepe!",
+      "pingModerateMessage": "Jou ping is aanvaarbaar, maar kan beter wees vir intydse toepassings.",
+      "pingHighMessage": "Jou ping is redelik hoog, oorweeg dit om jou netwerkverbinding na te gaan.",
+      "bestTestMessage": "Jou beste toets het 'n gesondheidstelling van {{score}} behaal!",
+      "instabilityMessage": "{{count}} van jou {{total}} toets(s) het spoedskommelings getoon, wat 'n onbestendige verbinding aandui.",
+      "instabilityMessage_plural": "{{count}} van jou {{total}} toetse het spoedskommelings getoon, wat 'n onbestendige verbinding aandui.",
+      "comingSoon": "Binnekoms - Gevorderde Netwerk Analise",
+      "publicWifi": "Openbare Wi-Fi Sekuriteitsanalise",
+      "anomalyDetection": "Netwerkverkeer Anomalie Opsporing",
+      "ispBenchmarking": "ISP Prestasievergelyking",
+      "deviceHealth": "Toestelvlak Netwerksgesondheidskontroles"
+    },
+    "table": {
+      "title": "Toetsgeskiedenis",
+      "date": "Datum",
+      "download": "Aflaai",
+      "upload": "Oplaai",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "health": "Gesondheid",
+      "isp": "ISP",
+      "sortAsc": "↑",
+      "sortDesc": "↓"
+    },
+    "mobileCard": {
+      "download": "↓",
+      "upload": "↑",
+      "downloadUnit": "Mbps",
+      "uploadUnit": "Mbps",
+      "ping": "Ping",
+      "isp": "ISP"
+    },
+    "expandedDetails": {
+      "performance": "Prestasie",
+      "experienceScores": "Ervaringstellings",
+      "environment": "Omgewing",
+      "aiAnalysis": "AI-analise",
+      "downloadSpeed": "Aflaaispoed",
+      "uploadSpeed": "Oplaaispoed",
+      "pingAvg": "Ping (Gem.)",
+      "pingMin": "Ping (Min.)",
+      "pingMax": "Ping (Maks.)",
+      "jitter": "Jitter",
+      "packetLoss": "Pakkieverlies",
+      "connectionStability": "Verbindingstabiliteit",
+      "networkHealth": "Netwerk Gesondheid",
+      "gaming": "Speletjies",
+      "streaming": "Stroom",
+      "videoCall": "Video-oproep",
+      "browsing": "Blaai",
+      "dateTime": "Datum en Tyd",
+      "isp": "ISP",
+      "country": "Land",
+      "probeMethod": "Sonde Metode",
+      "stable": "✓ Stabiel",
+      "unstable": "⚠ Onstabiel"
+    },
+    "empty": {
+      "withFiltersTitle": "Geen spoedtoetse het ooreengestem met die filters wat jy toegepas het nie.",
+      "withFiltersMessage": "Probeer die datumreeks verbreed of filters skoonmaak om meer resultate te sien.",
+      "withoutFiltersTitle": "Geen spoedtoetsgeskiedenis is nog beskikbaar nie.",
+      "withoutFiltersMessage": "Hardloop 'n spoedtoets om jou geskiedenis te begin bou en tendensinsigte te ontsluit.",
+      "goToSpeedTest": "Gaan na Spoedtoets"
+    },
+    "error": {
+      "title": "Iets het verkeerd geloop",
+      "tryAgain": "Probeer weer"
+    },
+    "csv": {
+      "filename": "toets-geskiedenis.csv",
+      "yes": "Ja",
+      "no": "Nee",
+      "na": "N/V"
+    },
+    "pagination": {
+      "previous": "Vorige",
+      "next": "Volgende",
+      "showing": "Wys {{start}}-{{end}} van {{total}}"
+    },
+    "unstableTooltip": "⚠ Onstabiele Verbinding",
+    "chartTooltip": {
+      "download": "Aflaai",
+      "upload": "Oplaai",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "healthScore": "Gesondheidstelling",
+      "experienceScore": "Ervaringstelling",
+      "mbps": "{{value}} Mbps",
+      "ms": "{{value}} ms",
+      "outOf100": "{{value}}/100"
+    }
+  },
+  "statsCards": {
+    "download": "Aflaai",
+    "upload": "Oplaai",
+    "appLatency": "App Latency",
+    "latencyVariation": "Latency Variasie",
+    "failedRequests": "Mislukte Versoeke",
+    "networkHealth": "NETWERK GESONDHEID",
+    "gaming": "SPELETJIES",
+    "streaming": "STROOM",
+    "videoCalls": "VIDEO-OPROEPE",
+    "browsing": "BLAAI",
+    "connectionStability": "VERBINDINGSTABILITEIT",
+    "stable": "✓ Stabiel",
+    "unstable": "⚠ Onstabiel",
+    "latencyNote": "Hoe Latency Gemeet Word",
+    "latencyNoteDesc": "Vinnige toepassingsversoeke word na hierdie diens gestuur om responsiwiteit van jou huidige toestel en netwerk te skat.",
+    "latencyNoteDesc2": "Dit is nuttig vir werklike blaai-ervaring, maar is nie dieselfde as klassieke ICMP-ping nie.",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    },
+    "ariaLabel": "Netwerk maatstawwe",
+    "scoreAria": "{{label}}-telling: {{value}} uit 100"
+  },
+  "account": {
+    "title": "Bestuur jou profiel",
+    "personalInfo": {
+      "title": "Persoonlike Inligting",
+      "username": "Gebruikersnaam",
+      "firstName": "Voornaam",
+      "lastName": "Van",
+      "usernamePlaceholder": "Voer jou gebruikersnaam in",
+      "firstNamePlaceholder": "Voornaam",
+      "lastNamePlaceholder": "Van",
+      "notSet": "Nie gestel nie",
+      "edit": "Wysig",
+      "cancel": "Kanselleer",
+      "save": "Stoor"
+    },
+    "email": {
+      "title": "E-pos",
+      "emailAddress": "E-posadres",
+      "placeholder": "Voer jou e-pos in",
+      "edit": "Wysig",
+      "cancel": "Kanselleer",
+      "save": "Stoor"
+    },
+    "signOut": "Teken uit",
+    "links": {
+      "runSpeedtest": "Hardloop Spoedtoets",
+      "scanPort": "Skandeer Poort"
+    },
+    "success": {
+      "profileUpdated": "Profiel Opgedateer!",
+      "profileMessage": "Jou persoonlike inligting is suksesvol opgedateer.",
+      "checkInbox": "Kyk jou inkassie!",
+      "emailMessage": "Ons het 'n verifikasie-e-pos na jou nuwe adres gestuur."
+    },
+    "error": {
+      "title": "Oeps!",
+      "message": "Ons kon nie jou profiel laai nie"
+    },
+    "modals": {
+      "savePersonalInfo": "Is jy seker jy wil jou persoonlike inligting stoor?",
+      "updateEmail": "Is jy seker jy wil jou e-posadres opdateer? Jy sal jou nuwe e-pos moet verifieer.",
+      "signOut": "Is jy seker jy wil uit jou rekening teken?",
+      "cancel": "Kanselleer",
+      "save": "Stoor",
+      "signOutBtn": "Teken Uit"
+    }
+  },
+  "security": {
+    "title": "Poort Risiko Sekuriteit",
+    "subtitle": "Monitor blootgestelde dienste, voer aktiewe skanderings uit en hou netwerkaanvaloppervlak onder beheer.",
+    "proTip": "Pro Wenk!",
+    "tabs": {
+      "scan": "Skandeer",
+      "insights": "Insigte",
+      "knowledge": "Kennis"
+    },
+    "scanOverview": "Huidige Skandeer Oorsig",
+    "wheelProgress": "Wiel Skandeer Vordering",
+    "howItWorks": "Hierdie skandering kontroleer algemene dienspoorte en klassifiseer hulle as oop, toe of gefiltreer, en lei dan 'n risiko-postuur af.",
+    "howItWorks2": "Gebruik dit as 'n praktiese blootstellingsbasis en verifieer hoërisiko-bevindings teen vuurmuur reëls en dienseienaarskap.",
+    "aiSummary": "AI-aangedrewe Opsomming",
+    "aiSummaryPlaceholder": "Jou sekuriteitsopsomming sal hier verskyn nadat 'n skandering voltooi en ontleed is.",
+    "emptyState": {
+      "title": "Nog geen evaluering nie",
+      "message": "Gebruik die skanderingswiel om 'n skandering te hardloop. Jou oorsigmaatstawwe sal hier verskyn."
+    },
+    "metrics": {
+      "openPorts": "Oop Poorte",
+      "closedPorts": "Toe Poorte",
+      "filteredPorts": "Gefiltreerde Poorte",
+      "duration": "Duur"
+    },
+    "sections": {
+      "riskGroups": "Risikogroepe en Top Aanbevelings",
+      "scannedResults": "Geskan Resultate volgens Risiko",
+      "topRecommendations": "Top Aanbevelings",
+      "fullDetails": "Volle Skandeer Besonderhede",
+      "viewDetails": "Sien besonderhede",
+      "hideDetails": "Versteek besonderhede"
+    },
+    "riskLevels": {
+      "critical": "Krities",
+      "high": "Hoog",
+      "moderate": "Matig",
+      "low": "Laag",
+      "unknown": "Onbekend"
+    },
+    "table": {
+      "port": "Poort",
+      "state": "Toestand",
+      "service": "Diens",
+      "risk": "Risiko"
+    },
+    "emptyPorts": "Geen oop poorte gevind in hierdie skandering nie.",
+    "emptyRecommendations": "Nog geen aanbevelings vir hierdie skandering nie.",
+    "emptyRiskGroup": "Geen oop poorte",
+    "statusChip": {
+      "label": "Sekuriteit",
+      "excellent": "Uitstekend",
+      "good": "Goed",
+      "moderate": "Matig",
+      "highRisk": "Hoë Risiko",
+      "critical": "Krities"
+    },
+    "insights": {
+      "title": "Skandeergeskiedenis en Tendense",
+      "subtitle": "Klik enige onlangse skandering om resultate te sien.",
+      "emptyTitle": "Geen sekuriteitskandering data beskikbaar nie",
+      "emptyMessage": "Hardloop 'n sekuriteitskandering om jou geskiedenis te begin bou.",
+      "runScan": "Hardloop 'n Sekuriteitskandering"
+    },
+    "knowledge": {
+      "eyebrow": "Kennis Sentrum",
+      "title": "Sekuriteitsaanbevelings en diensverwysing",
+      "description": "Hersien die nuutste AI-riglyne, inspekteer die mees blootgestelde dienste en hou 'n katalogus van algemene poorte.",
+      "libraryEyebrow": "Verwysingsbiblioteek",
+      "libraryTitle": "Hoë-aandag dienskennis",
+      "count": "{{count}} bekende dienste",
+      "viewDetails": "Sien besonderhede",
+      "hideDetails": "Versteek besonderhede",
+      "portEntry": "Poort {{number}} / {{protocol}}",
+      "noDescription": "Geen diensbeskrywing beskikbaar nie.",
+      "recommendation": "Aanbeveling: {{text}}",
+      "noRecommendation": "Geen aanbeveling beskikbaar nie.",
+      "flagCommon": "Algemeen",
+      "flagUnencrypted": "Ongenkripteer",
+      "flagExploitTarget": "Uitbuitingsteiken",
+      "knownExposure": "Bekende blootstelling: {{text}}",
+      "emptyTitle": "Geen kennisbasisinskrywings beskikbaar nie",
+      "emptyMessage": "Die poortkennisverwysing sal hier verskyn wanneer die dienskatalogus beskikbaar is."
+    }
+  },
+  "loading": {
+    "defaultMessage": "Initialiseer Stelsel",
+    "defaultStatus": "GL Web Stelsel v1.0",
+    "initializing": "Initialiseer Stelsel",
+    "systemStatus": "GL Web Stelsel v1.0",
+    "loadingHistory": "Laai toetsgeskiedenis",
+    "historySystem": "AkovoLabs Toetsgeskiedenis Stelsel v1.0",
+    "loadingSecurity": "Laai sekuriteitskandering",
+    "securitySystem": "AkovoLabs Sekuriteit Stelsel v1.0",
+    "loadingProfile": "Laai profiel",
+    "profileSystem": "AkovoLabs Profiel Stelsel v1.0",
+    "updatingProfile": "Dateer profiel op",
+    "profileSystemUpdating": "AkovoLabs Profiel Stelsel v1.0"
+  },
+  "scanEmptyState": {
+    "title": "Nog geen skanderingdata nie",
+    "message": "Begin jou eerste skandering om hierdie paneel te vul."
+  },
+  "ariaLabels": {
+    "toggleNav": "Skakel navigasie",
+    "networkMetrics": "Netwerk maatstawwe",
+    "scoreValue": "{{label}}-telling: {{value}} uit 100"
+  },
+  "imageAlt": {
+    "akovolabsLogo": "AkovoLabs-logo",
+    "aiIcon": "AI-ikoon",
+    "instructor": "Instrukteur",
+    "instructorAvatar": "Instrukteur-avatar",
+    "success": "Sukses",
+    "error": "Fout",
+    "noResults": "Geen resultate gevind nie",
+    "errorOccurred": "Fout het voorgekom",
+    "comingSoon": "Binnekoms",
+    "historyHero": "Toetsgeskiedenis held",
+    "securityGuide": "Sekuriteitsgids",
+    "securityHero": "Sekuriteitsoperasies held",
+    "noRiskGroups": "Geen risikogroepe gevind nie",
+    "noRecommendations": "Geen aanbevelings gevind nie",
+    "authRequired": "Magtiging vereis",
+    "pageNotFound": "Bladsy nie gevind nie",
+    "futureUI": "Futuristiese Spoedtoets UI",
+    "playStore": "Kry dit op Google Play",
+    "appStore": "Laai af op die App Store",
+    "fullStackDev": "Clement Phoshoko",
+    "networkEngineer": "Tsumbedzo Matloga",
+    "operatingSystems": "Bedryfstelsels",
+    "speedTest": "Spoedtoets",
+    "downloadHero": "Laai AkovoLabs Speedtest af",
+    "newsHero": "Laaste Nuus en Opdaterings",
+    "ai": "AI"
+  },
+  "authRequired": {
+    "title": "401 - Toegang geweier",
+    "message": "Oeps! Jy moet aangemeld wees om toegang tot hierdie bladsy te kry.",
+    "subtitle": "Teken asseblief in of skep 'n rekening om voort te gaan.",
+    "goToLogin": "Gaan na Teken in-bladsy"
+  },
+  "notFound": {
+    "title": "404 - Bladsy nie gevind nie",
+    "message": "Oeps! Die bladsy waarna jy soek bestaan nie.",
+    "subtitle": "Miskien is dit geskuif, verwyder, of jy het die URL verkeerd getik.",
+    "goHome": "Gaan na Tuisblad en hardloop 'n spoedtoets"
+  }
+}

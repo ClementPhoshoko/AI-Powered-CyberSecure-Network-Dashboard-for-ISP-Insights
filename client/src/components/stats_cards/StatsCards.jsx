@@ -1,16 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import './StatsCards.css';
 
 const StatsCards = ({ testResult, isLoading = false }) => {
+  const { t } = useTranslation();
   const measurementContext = testResult?.measurement_context || {};
-  const latencyLabel = 'App Latency';
-  const jitterLabel = 'Latency Variation';
-  const packetLossLabel = 'Failed Requests';
+  const latencyLabel = t('statsCards.appLatency');
+  const jitterLabel = t('statsCards.latencyVariation');
+  const packetLossLabel = t('statsCards.failedRequests');
 
   const speedCards = [
     {
-      label: 'Download',
+      label: t('statsCards.download'),
       value: testResult?.download_speed_mbps,
       unit: 'Mbps',
       color: 'var(--download)',
@@ -23,7 +25,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
       )
     },
     {
-      label: 'Upload',
+      label: t('statsCards.upload'),
       value: testResult?.upload_speed_mbps,
       unit: 'Mbps',
       color: 'var(--upload)',
@@ -81,7 +83,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
 
   const qualityCards = [
     { 
-      label: 'NETWORK HEALTH', 
+      label: t('statsCards.networkHealth'), 
       value: testResult?.network_health_score, 
       color: 'var(--primary)',
       icon: (
@@ -91,7 +93,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
       )
     },
     { 
-      label: 'GAMING', 
+      label: t('statsCards.gaming'), 
       value: testResult?.gaming_score, 
       color: '#F59E0B',
       icon: (
@@ -103,7 +105,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
       )
     },
     { 
-      label: 'STREAMING', 
+      label: t('statsCards.streaming'), 
       value: testResult?.streaming_score, 
       color: '#10B981',
       icon: (
@@ -114,7 +116,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
       )
     },
     { 
-      label: 'VIDEO CALLS', 
+      label: t('statsCards.videoCalls'), 
       value: testResult?.video_call_score, 
       color: '#3B82F6',
       icon: (
@@ -125,7 +127,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
       )
     },
     { 
-      label: 'BROWSING', 
+      label: t('statsCards.browsing'), 
       value: testResult?.browsing_score, 
       color: '#8B5CF6',
       icon: (
@@ -138,7 +140,7 @@ const StatsCards = ({ testResult, isLoading = false }) => {
     },
     {
       type: 'stability',
-      label: 'CONNECTION STABILITY',
+      label: t('statsCards.connectionStability'),
       wasUnstable: testResult?.was_unstable,
       color: testResult?.was_unstable ? '#F59E0B' : '#10B981',
       icon: (
@@ -185,12 +187,12 @@ const StatsCards = ({ testResult, isLoading = false }) => {
     return (
       <div className="stats-container">
         <div className="stats-note">
-          <span className="stats-note-label">How Latency Is Measured</span>
+          <span className="stats-note-label">{t('statsCards.howLatencyMeasured')}</span>
           <span className="stats-note-text">
-            Quick app requests are sent to this service to estimate responsiveness from your current device and network.
+            {t('statsCards.latencyNoteText')}
           </span>
           <span className="stats-note-subtle">
-            This is useful for real browsing-style performance, but it is not the same as classic ICMP ping.
+            {t('statsCards.latencyNoteSubtle')}
           </span>
         </div>
 
@@ -217,12 +219,12 @@ const StatsCards = ({ testResult, isLoading = false }) => {
   return (
     <div className="stats-container">
       <div className="stats-note">
-        <span className="stats-note-label">How Latency Is Measured</span>
+        <span className="stats-note-label">{t('statsCards.howLatencyMeasured')}</span>
         <span className="stats-note-text">
-          Quick app requests are sent to this service to estimate responsiveness from your current device and network.
+          {t('statsCards.latencyNoteText')}
         </span>
         <span className="stats-note-subtle">
-          This is useful for real browsing-style performance, but it is not the same as classic ICMP ping.
+          {t('statsCards.latencyNoteSubtle')}
         </span>
       </div>
 
@@ -293,11 +295,11 @@ const StatsCards = ({ testResult, isLoading = false }) => {
                     className="stability-badge"
                     style={{ color: card.color, borderColor: card.color }}
                   >
-                    {card.wasUnstable ? '⚠ Unstable' : '✓ Stable'}
+                    {card.wasUnstable ? t('statsCards.unstable') : t('statsCards.stable')}
                   </span>
                 </div>
               ) : (
-                <div className="quality-card-circles" aria-label={`${card.label} score: ${card.value || 0} out of 100`}>
+                <div className="quality-card-circles" aria-label={`${card.label}: ${card.value || 0}/100`}>
                   {[...Array(4)].map((_, i) => (
                     <div
                       key={i}

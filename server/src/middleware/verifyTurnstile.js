@@ -20,6 +20,7 @@ async function verifyTurnstile(req, res, next) {
       console.error('[Turnstile] TURNSTILE_SECRET_KEY not set — rejecting request (production)');
       return res.status(500).json({
         status: 'error',
+        code: 'SERVER_CONFIG_ERROR',
         message: 'Server configuration error. Please try again later.',
       });
     }
@@ -29,10 +30,11 @@ async function verifyTurnstile(req, res, next) {
 
   const token = req.body?.turnstileToken || req.body?.captchaToken;
   if (!token) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Captcha verification required. Please complete the challenge and try again.',
-    });
+      return res.status(400).json({
+        status: 'error',
+        code: 'CAPTCHA_REQUIRED',
+        message: 'Captcha verification required. Please complete the challenge and try again.',
+      });
   }
 
   try {
@@ -43,6 +45,7 @@ async function verifyTurnstile(req, res, next) {
       console.warn('[Turnstile] Verification failed:', result['error-codes']);
       return res.status(403).json({
         status: 'error',
+        code: 'CAPTCHA_FAILED',
         message: 'Captcha verification failed. Please try again.',
       });
     }
@@ -53,6 +56,7 @@ async function verifyTurnstile(req, res, next) {
     console.error('[Turnstile] Verification error:', error.message);
     return res.status(502).json({
       status: 'error',
+      code: 'CAPTCHA_UNAVAILABLE',
       message: 'Unable to verify captcha right now. Please try again.',
     });
   }

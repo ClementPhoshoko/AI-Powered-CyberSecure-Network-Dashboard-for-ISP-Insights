@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import Scan from '../../components/scan_wheel/Scan'
 import ScanOverviewCard from '../../components/scan_overview_card/ScanOverviewCard'
@@ -20,20 +21,6 @@ import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png'
 import aiIcon from '../../assets/avatars/ai.png'
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png'
 import './Security.css'
-
-const tabs = [
-  { id: 'scan', label: 'Scan' },
-  { id: 'insights', label: 'Insights' },
-  { id: 'knowledge', label: 'Knowledge' },
-]
-
-const proTips = [
-  'Run security scans on a fixed schedule, such as weekly or after major network changes, so newly exposed services are detected early and addressed before they become exploitable attack paths in production environments.',
-  'Open ports are not automatically unsafe, but undocumented or unnecessary open services often represent the highest operational risk because they expand the attack surface without clear ownership, monitoring, or hardening controls.',
-  'Compare each new scan result with previous baselines to quickly spot unusual exposure patterns after firewall updates, router reconfiguration, cloud migration, or policy drift that may unintentionally expose sensitive services.',
-  'Treat filtered ports as a verification signal rather than a final security conclusion, then validate that firewall rules, ACLs, and segmentation policies are intentionally blocking traffic from expected network zones and threat scenarios.',
-  'Map every scan finding to a responsible service owner and remediation deadline so fixes are prioritized effectively, tracked transparently, and closed with accountability instead of remaining as recurring unresolved vulnerabilities.',
-]
 
 const PHASE_PROGRESS = {
   idle: 0,
@@ -66,6 +53,19 @@ function normalizeRiskLevel(riskLevel) {
 }
 
 function Security() {
+  const { t } = useTranslation()
+  const tabs = [
+    { id: 'scan', label: t('security.tabScan') },
+    { id: 'insights', label: t('security.tabInsights') },
+    { id: 'knowledge', label: t('security.tabKnowledge') },
+  ]
+  const proTips = [
+    t('security.proTips.0'),
+    t('security.proTips.1'),
+    t('security.proTips.2'),
+    t('security.proTips.3'),
+    t('security.proTips.4'),
+  ]
   const { loading: authLoading } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const tabParam = searchParams.get('tab')
@@ -114,23 +114,23 @@ function Security() {
     return [
       {
         key: 'open-ports',
-        label: 'Open Ports',
+        label: t('security.metrics.openPorts'),
         value: latestAssessment.open_ports_count ?? 0,
         tone: 'risk',
       },
       {
         key: 'closed-ports',
-        label: 'Closed Ports',
+        label: t('security.metrics.closedPorts'),
         value: latestAssessment.closed_ports_count ?? 0,
       },
       {
         key: 'filtered-ports',
-        label: 'Filtered Ports',
+        label: t('security.metrics.filteredPorts'),
         value: latestAssessment.filtered_ports_count ?? 0,
       },
       {
         key: 'scan-duration',
-        label: 'Duration',
+        label: t('security.metrics.duration'),
         value: Number(latestAssessment.scan_duration_seconds || 0).toFixed(1),
         unit: 's',
       },
@@ -173,8 +173,8 @@ function Security() {
       <div className="security-page">
         <Loading
           isLoading={true}
-          message="Loading security scan"
-          status="AkovoLabs Security System v1.0"
+          message={t('loading.loadingSecurity')}
+          status={t('loading.securitySystem')}
           indeterminate={true}
         />
       </div>
@@ -184,22 +184,22 @@ function Security() {
   return (
     <div className="security-page">
       <div className="security-title-section">
-        <h1 className="security-title-section-title">Port Risk Security</h1>
+        <h1 className="security-title-section-title">{t('security.title')}</h1>
         <div className="security-subtitle-with-avatar">
-          <img src={womanAvatar} alt="Security guide" className="security-subtitle-avatar" />
+          <img src={womanAvatar} alt={t('imageAlt.securityGuide')} className="security-subtitle-avatar" />
           <div className="security-subtitle-text">
             <p className="security-title-section-subtitle">
-              Monitor exposed services, run active scans, and keep network attack surface under control.
+              {t('security.subtitle')}
             </p>
             <p className="security-pro-tip-text">
-              <span className="security-pro-tip-label">Pro Tip!</span> {randomTip}
+              <span className="security-pro-tip-label">{t('security.proTip')}</span> {randomTip}
             </p>
           </div>
         </div>
       </div>
 
       <section className="security-hero">
-        <img src={heroImage} alt="Security operations hero" className="security-hero-image" />
+        <img src={heroImage} alt={t('imageAlt.securityHero')} className="security-hero-image" />
       </section>
 
       <div className="security-tabs">
@@ -220,12 +220,12 @@ function Security() {
           <section className="scan-tab-panel">
             {hasError ? (
               <section className="security-error-state" aria-label="Security scan error">
-                <img src={notFoundAvatar} alt="Error occurred" className="security-error-avatar" />
+                <img src={notFoundAvatar} alt={t('imageAlt.errorOccurred')} className="security-error-avatar" />
                 <div className="security-error-copy">
-                  <h2 className="security-error-title">Something went wrong</h2>
+                  <h2 className="security-error-title">{t('security.errorTitle')}</h2>
                   <p className="security-error-description">{hasError?.toString()}</p>
                 </div>
-                <button type="button" className="security-cta" onClick={refetch}>Try Again</button>
+                <button type="button" className="security-cta" onClick={refetch}>{t('security.tryAgain')}</button>
               </section>
             ) : (
               <ScanOverviewCard
@@ -236,17 +236,17 @@ function Security() {
                 )}
                 right={(
                   <div className="security-scan-insights">
-                    <h2 className="security-scan-title">Current Scan Overview</h2>
+                    <h2 className="security-scan-title">{t('security.currentScanOverview')}</h2>
                     <ScanPhaseStepper phase={scanWheelState.phase} />
-                    <ScanProgressBar value={scanProgress} label="Wheel Scan Progress" />
+                    <ScanProgressBar value={scanProgress} label={t('security.wheelScanProgress')} />
 
                     <div className="security-stats-note">
-                      <span className="security-stats-note-label">How Port Scan Is Measured</span>
+                      <span className="security-stats-note-label">{t('security.howPortScanMeasured')}</span>
                       <span className="security-stats-note-text">
-                        This scan checks common service ports and classifies them as open, closed, or filtered, then derives a risk posture from known exposure patterns.
+                        {t('security.portScanNoteText')}
                       </span>
                       <span className="security-stats-note-subtle">
-                        Use this as a practical exposure baseline and verify high-risk findings against firewall rules, service ownership, and expected internet-facing behavior.
+                        {t('security.portScanNoteSubtle')}
                       </span>
                     </div>
 
@@ -268,22 +268,22 @@ function Security() {
 
                           <section className="security-ai-summary-section" aria-label="AI security summary">
                             <h3 className="security-ai-summary-title">
-                              <img src={aiIcon} alt="AI Icon" className="security-ai-summary-icon" />
-                              AI-Powered Summary
+                              <img src={aiIcon} alt={t('imageAlt.aiIcon')} className="security-ai-summary-icon" />
+                              {t('security.aiPoweredSummary')}
                             </h3>
                             {isScanRefreshing ? (
                               <p className="security-skeleton security-ai-summary-text" />
                             ) : (
                               <p className="security-ai-summary-text">
-                                {latestAssessment.ai_security_summary || 'Your security summary will appear here after a scan is completed and analyzed.'}
+                                {latestAssessment.ai_security_summary || t('security.summaryPlaceholder')}
                               </p>
                             )}
                           </section>
                         </>
                       ) : (
                         <ScanEmptyState
-                          title="No assessment snapshot yet"
-                          message="Use the scan wheel to run a scan, then your overview metrics and AI summary will appear here."
+                          title={t('security.noAssessmentTitle')}
+                          message={t('security.noAssessmentMessage')}
                         />
                       )}
                     </ScanHighlightsSection>
@@ -302,14 +302,14 @@ function Security() {
                         </>
                       ) : (
                         <div className="security-full-scan-details-head">
-                          <h3>Risk Groups and Top Recommendations</h3>
+                          <h3>{t('security.riskGroupsTitle')}</h3>
                           <button
                             type="button"
                             className="security-full-scan-details-toggle"
                             aria-expanded={showBottomTopRowDetails}
                             onClick={() => setShowBottomTopRowDetails((prev) => !prev)}
                           >
-                            {showBottomTopRowDetails ? 'Hide Details' : 'View Details'}
+                            {showBottomTopRowDetails ? t('security.hideDetails') : t('security.viewDetails')}
                           </button>
                         </div>
                       )}
@@ -317,7 +317,7 @@ function Security() {
                       {!isScanRefreshing && showBottomTopRowDetails ? (
                         <div className="security-bottom-top-row">
                           <section className="security-risk-groups" aria-label="Scanned results by risk level">
-                            <h3 className="security-risk-groups-title">Scanned Results by Risk</h3>
+                            <h3 className="security-risk-groups-title">{t('security.scannedResultsByRisk')}</h3>
                             {hasOpenRiskPorts ? (
                               <div className="security-risk-groups-grid">
                                 {RISK_LEVELS.map((risk) => {
@@ -332,13 +332,13 @@ function Security() {
                                         <ul className="security-risk-group-list">
                                           {ports.slice(0, 8).map((portResult) => (
                                             <li key={portResult.id || `${risk.key}-${portResult.port_number}`}>
-                                              Port {portResult.port_number}
+                                              {t('security.port')} {portResult.port_number}
                                               {portResult.service_name ? ` (${portResult.service_name})` : ''}
                                             </li>
                                           ))}
                                         </ul>
                                       ) : (
-                                        <p className="security-risk-group-empty">No open ports</p>
+                                        <p className="security-risk-group-empty">{t('security.noOpenPortsShort')}</p>
                                       )}
                                     </article>
                                   )
@@ -346,14 +346,14 @@ function Security() {
                               </div>
                             ) : (
                               <div className="security-bottom-empty">
-                                <img src={notFoundAvatar} alt="No risk groups found" className="security-bottom-empty-avatar" />
-                                <p className="security-bottom-empty-text">No open ports found in this scan.</p>
+                                <img src={notFoundAvatar} alt={t('imageAlt.noRiskGroups')} className="security-bottom-empty-avatar" />
+                                <p className="security-bottom-empty-text">{t('security.noOpenPortsFound')}</p>
                               </div>
                             )}
                           </section>
 
                           <section className="security-top-recommendations" aria-label="Top recommendations">
-                            <h3 className="security-top-recommendations-title">Top Recommendations</h3>
+                            <h3 className="security-top-recommendations-title">{t('security.topRecommendations')}</h3>
                             {topRecommendations.length > 0 ? (
                               <ul className="security-top-recommendations-list">
                                 {topRecommendations.map((recommendation) => (
@@ -371,8 +371,8 @@ function Security() {
                               </ul>
                             ) : (
                               <div className="security-bottom-empty">
-                                <img src={notFoundAvatar} alt="No recommendations found" className="security-bottom-empty-avatar" />
-                                <p className="security-top-recommendations-empty">No recommendations yet for this scan.</p>
+                                <img src={notFoundAvatar} alt={t('imageAlt.noRecommendations')} className="security-bottom-empty-avatar" />
+                                <p className="security-top-recommendations-empty">{t('security.noRecommendationsYet')}</p>
                               </div>
                             )}
                           </section>
@@ -388,14 +388,14 @@ function Security() {
                         </div>
                       ) : (
                         <div className="security-full-scan-details-head">
-                          <h3>Full Scan Details</h3>
+                          <h3>{t('security.fullScanDetails')}</h3>
                           <button
                             type="button"
                             className="security-full-scan-details-toggle"
                             aria-expanded={showFullScanDetails}
                             onClick={() => setShowFullScanDetails((prev) => !prev)}
                           >
-                            {showFullScanDetails ? 'Hide Details' : 'View Details'}
+                            {showFullScanDetails ? t('security.hideDetails') : t('security.viewDetails')}
                           </button>
                         </div>
                       )}
@@ -406,21 +406,21 @@ function Security() {
                           <table className="security-full-scan-details-table">
                             <thead>
                               <tr>
-                                <th>Port</th>
-                                <th>State</th>
-                                <th>Service</th>
-                                <th>Risk</th>
+                                <th>{t('security.port')}</th>
+                                <th>{t('security.state')}</th>
+                                <th>{t('security.service')}</th>
+                                <th>{t('security.risk')}</th>
                               </tr>
                             </thead>
                             <tbody>
                               {allPortRows.map((row) => (
                                 <tr key={row.id || `row-${row.port_number}-${row.port_state}`}>
                                   <td>{row.port_number}</td>
-                                  <td>{row.port_state || 'unknown'}</td>
-                                  <td>{row.service_name || 'Unknown'}</td>
+                                  <td>{row.port_state || t('security.unknown')}</td>
+                                  <td>{row.service_name || t('security.unknownService')}</td>
                                   <td>
                                     <span className={`security-risk-pill security-risk-pill-${normalizeRiskLevel(row.risk_level)}`.trim()}>
-                                      {row.risk_level || 'unknown'}
+                                      {row.risk_level || t('security.unknown')}
                                     </span>
                                   </td>
                                 </tr>

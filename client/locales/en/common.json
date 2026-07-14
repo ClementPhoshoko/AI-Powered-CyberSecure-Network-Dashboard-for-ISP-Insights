@@ -1,0 +1,913 @@
+{
+  "app": {
+    "name": "AkovoLabs",
+    "tagline": "AI-Powered Network Analytics Dashboard",
+    "description": "Empowering ISPs with intelligent insights, real-time monitoring, and enterprise-grade security",
+    "copyright": "© 2026 AkovoLabs. All rights reserved.",
+    "version": "System Version 1.0.0 © 2026 AkovoLabs. All rights reserved."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "aboutDesc": "Learn about our mission",
+    "aboutDropdown": {
+      "ourCompany": "Our Company",
+      "team": "Team",
+      "contactUs": "Contact Us",
+      "ourCompanyDesc": "Learn about our mission",
+      "teamDesc": "Meet our experts",
+      "contactUsDesc": "Get in touch with us"
+    },
+    "services": "Services",
+    "servicesDesc": "Speed & Network Tools",
+    "servicesDropdown": {
+      "speedTesting": "Speed Testing",
+      "networkAnalytics": "Network Analytics",
+      "security": "Security",
+      "aiInsights": "AI Insights",
+      "speedTestingDesc": "Measure your connection",
+      "networkAnalyticsDesc": "Deep network insights",
+      "securityDesc": "Protect your network",
+      "aiInsightsDesc": "Intelligent recommendations"
+    },
+    "download": "Download",
+    "downloadDesc": "For both iOS and Android",
+    "downloadDropdown": {
+      "iosApp": "iOS App",
+      "androidApp": "Android App",
+      "iosDesc": "Download for iPhone and iPad",
+      "androidDesc": "Download for Android devices",
+      "forBoth": "For both iOS and Android"
+    },
+    "news": "News",
+    "newsDesc": "Updates & Press",
+    "newsDropdown": {
+      "updatesPress": "Updates & Press",
+      "desc": "Latest news, updates, and press"
+    },
+    "accountDropdown": {
+      "manageAccount": "Manage Account",
+      "testHistory": "Test History",
+      "security": "Security",
+      "changeTheme": "Change Theme",
+      "login": "Login",
+      "logout": "Logout"
+    },
+    "mobileDrawer": {
+      "manageAccount": "Manage Account",
+      "manageAccountDesc": "Profile & settings",
+      "testHistory": "Test History",
+      "testHistoryDesc": "View past speed tests",
+      "security": "Security",
+      "securityDesc": "Account security",
+      "theme": "Theme",
+      "language": "Language",
+      "login": "Login",
+      "logout": "Logout"
+    },
+    "toggleNavigation": "Toggle navigation",
+    "signingOut": "Signing you out",
+    "authSystemStatus": "AkovoLabs Auth System v1.0",
+    "logoutModalMessage": "Are you sure you want to logout from your account?"
+  },
+  "modal": {
+    "cancel": "Cancel",
+    "proceed": "Proceed"
+  },
+  "footer": {
+    "tagline": "AI-Powered Network Analytics Dashboard",
+    "newsletter": "Get the latest news and feature announcements",
+    "newsletterNote": "We promise not to spam your inbox. Unsubscribe at any time.",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing...",
+    "unsubscribe": "Unsubscribe",
+    "unsubscribing": "Unsubscribing...",
+    "mobileApp": "Also available on Mobile",
+    "mobileAppDesc": "Download our app for Android and iOS",
+    "android": "Android",
+    "ios": "iOS",
+    "updating": "Updating subscription",
+    "newsletterStatus": "AkovoLabs Newsletter System v1.0"
+  },
+  "auth": {
+    "layout": {
+      "login": "Login",
+      "signUp": "Sign up",
+      "backToLogin": "Back to Login",
+      "backToSignUp": "Back to Sign up",
+      "tagline": "Real-time AI-Powered Speedtest Analytics & Network Security Insights for ISPs",
+      "agreement": "By creating or using an AkovoLabs account, you agree to our **Terms & Conditions** and **Privacy Policy**.",
+      "termsTitle": "Terms & Conditions",
+      "privacyTitle": "Privacy Policy"
+    },
+    "login": {
+      "heading": "Welcome back",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "captchaError": "Please complete the captcha verification."
+    },
+    "register": {
+      "heading": "Create account",
+      "checkEmail": "Check your email",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "agreeDesktop": "I agree to the Terms & Conditions and Privacy Policy",
+      "agreeMobile": "I agree to the Ts & Cs and Privacy Policy",
+      "passwordRequirements": {
+        "minChars": "At least 8 characters",
+        "uppercase": "One uppercase letter",
+        "lowercase": "One lowercase letter",
+        "number": "One number",
+        "special": "One special character"
+      },
+      "signUp": "Sign up",
+      "signingUp": "Signing up...",
+      "goToLogin": "Go to Login",
+      "successMessage": "We sent a verification link to **{{email}}**. Click the link to activate your account.",
+      "spamNote": "If you don't see the email, check your spam folder or try signing up again.",
+      "validation": {
+        "minChars": "Password must be at least 8 characters long",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "lowercase": "Password must contain at least one lowercase letter",
+        "number": "Password must contain at least one number",
+        "special": "Password must contain at least one special character (!@#$%^&*(),.?\":{|}<>)",
+        "passwordMismatch": "Passwords do not match",
+        "agreeTerms": "You must agree to the Terms & Conditions and Privacy Policy to create an account."
+      }
+    },
+    "forgot": {
+      "resetPassword": "Reset your password",
+      "enterCode": "Enter verification code",
+      "createPassword": "Create new password",
+      "passwordUpdated": "Password updated",
+      "emailStepSubtitle": "Enter the email you signed up with and we'll send you a verification code.",
+      "otpStepSubtitle": "We sent a 6-digit code to **{{email}}**",
+      "passwordStepSubtitle": "Your new password must be at least 8 characters long.",
+      "successSubtitle": "Your password has been reset successfully. You can now sign in with your new password.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Enter your email",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Confirm new password",
+      "sendOtp": "Send OTP",
+      "sending": "Sending...",
+      "verify": "Verify",
+      "verifying": "Verifying...",
+      "resetPasswordBtn": "Reset password",
+      "resetting": "Resetting...",
+      "goToLogin": "Go to Login",
+      "resendCode": "Resend code",
+      "resendIn": "Resend code in {{seconds}}s",
+      "sendingCode": "Sending verification code",
+      "verifyingCode": "Verifying code",
+      "resettingPassword": "Resetting password"
+    },
+    "verify": {
+      "emailVerified": "Email verified",
+      "verificationFailed": "Verification failed",
+      "successMessage": "Your email has been verified successfully. You can now sign in to your account.",
+      "goToLogin": "Go to Login",
+      "errorMessage": "The verification link is invalid or has expired. Please sign up again.",
+      "backToSignUp": "Back to Sign Up",
+      "connectionError": "Unable to connect to the server. Please check your internet connection and try again.",
+      "serverError": "Something went wrong on our end. Please try again later.",
+      "invalidLink": "Invalid verification link.",
+      "verifyingEmail": "Verifying your email"
+    },
+    "logoutModal": {
+      "message": "Are you sure you want to logout from your account?",
+      "cancel": "Cancel",
+      "proceed": "Proceed"
+    }
+  },
+  "home": {
+    "hero": {
+      "heading": "AI-Powered Network Speed Testing",
+      "advisoryHeading": "Understand Your Speedtest",
+      "aiSummaryHeading": "AI-Powered Summary",
+      "howToUse": "How To Use This Test",
+      "howToUseHeading": "Test your current network speed"
+    },
+    "speedTest": {
+      "beginTest": "Begin Test",
+      "stopTest": "Stop Test",
+      "runAgain": "Run Again"
+    },
+    "phases": {
+      "initializing": "Initializing...",
+      "appLatency": "Testing App Latency...",
+      "download": "Testing Download...",
+      "upload": "Testing Upload...",
+      "derivedScores": "Calculating Derived Scores..."
+    },
+    "advisory": {
+      "downloadOverTime": "**Download Speed Over Time:** Shows consistency of connection",
+      "uploadOverTime": "**Upload Speed Over Time:** Measures upload performance",
+      "appLatency": "**App Latency:** Tracks how quickly your device reaches this service during the test"
+    },
+    "aiSummaryPlaceholder": "Your speed test summary will appear here after the system interprets the results.",
+    "howToUseCards": {
+      "currentDevice": "You can run a speed test from your current device and connection. If you're on home Wi-Fi, the results reflect your real-world experience right now.",
+      "deviceToServer": "It measures device-to-server performance, not a deep inspection of your router, signal strength, or every internal Wi-Fi detail.",
+      "signedIn": "Now that you are signed in, don't forget to check your test graphs and history below!",
+      "signedOut": "**Sign in** or **Sign up** to get more detailed insights about your network performance!"
+    },
+    "signInModal": {
+      "message": "Sign in to get detailed insights from your speed test results. Would you like to proceed to the sign-in page?",
+      "cancel": "Cancel",
+      "proceed": "Proceed"
+    }
+  },
+  "history": {
+    "title": "Test History",
+    "subtitle": "Review your past speed tests, track performance trends, and gain insights into your network health.",
+    "proTip": "Pro Tip!",
+    "tabs": {
+      "trends": "Trends",
+      "insights": "Insights",
+      "history": "History"
+    },
+    "metrics": {
+      "totalTests": "Total Tests",
+      "avgDownload": "Avg Download",
+      "avgUpload": "Avg Upload",
+      "avgPing": "Avg Ping",
+      "avgHealthScore": "Avg Health Score"
+    },
+    "performanceTrends": {
+      "title": "Performance Trends",
+      "speedTrends": "Speed Trends",
+      "latencyQuality": "Latency Quality",
+      "networkHealthScore": "Network Health Score",
+      "experienceScores": "Experience Scores",
+      "from": "From",
+      "to": "To",
+      "selectStartDate": "Select start date",
+      "selectEndDate": "Select end date",
+      "clear": "Clear",
+      "speedAutoScaleNote": "Speed axes auto-scale independently for download and upload so smaller trends remain readable.",
+      "amberDotNote": "Amber dots mark tests where connection speed fluctuated significantly between passes.",
+      "showingResults": "Showing results from {{firstDate}} to {{lastDate}}",
+      "latencyAutoScaleNote": "Latency values auto-scale to the visible ping and jitter range."
+    },
+    "chartLegend": {
+      "download": "Download (Mbps)",
+      "upload": "Upload (Mbps)",
+      "ping": "Ping (ms)",
+      "jitter": "Jitter (ms)",
+      "healthScore": "Health Score",
+      "bestTest": "Best Test"
+    },
+    "scoreBar": {
+      "excellent": "Excellent (80-100)",
+      "good": "Good (60-79)",
+      "poor": "Poor (0-59)"
+    },
+    "insights": {
+      "title": "AI Insights",
+      "speedOverview": "Speed Overview",
+      "excellentLatency": "Excellent Latency",
+      "moderateLatency": "Moderate Latency",
+      "highLatency": "High Latency",
+      "bestPerformance": "Best Performance",
+      "connectionInstability": "Connection Instability Detected",
+      "avgSpeedMessage": "Your average download speed is {{download}} Mbps and upload is {{upload}} Mbps.",
+      "pingLowMessage": "Your ping is consistently low, great for gaming and video calls!",
+      "pingModerateMessage": "Your ping is acceptable, but could be better for real-time applications.",
+      "pingHighMessage": "Your ping is quite high, consider checking your network connection.",
+      "bestTestMessage": "Your best test achieved a health score of {{score}}!",
+      "instabilityMessage": "{{count}} of your {{total}} test(s) showed speed fluctuation between passes, indicating an erratic connection.",
+      "instabilityMessage_plural": "{{count}} of your {{total}} tests showed speed fluctuation between passes, indicating an erratic connection.",
+      "comingSoon": "Coming Soon - Advanced Network Analysis",
+      "publicWifi": "Public Wi-Fi Security Analysis",
+      "anomalyDetection": "Network Traffic Anomaly Detection",
+      "ispBenchmarking": "ISP Performance Benchmarking",
+      "deviceHealth": "Device-Level Network Health Checks"
+    },
+    "table": {
+      "title": "Test History",
+      "date": "Date",
+      "download": "Download",
+      "upload": "Upload",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "health": "Health",
+      "isp": "ISP",
+      "sortAsc": "↑",
+      "sortDesc": "↓"
+    },
+    "mobileCard": {
+      "download": "↓",
+      "upload": "↑",
+      "downloadUnit": "Mbps",
+      "uploadUnit": "Mbps",
+      "ping": "Ping",
+      "isp": "ISP"
+    },
+    "expandedDetails": {
+      "performance": "Performance",
+      "experienceScores": "Experience Scores",
+      "environment": "Environment",
+      "aiAnalysis": "AI Analysis",
+      "downloadSpeed": "Download Speed",
+      "uploadSpeed": "Upload Speed",
+      "pingAvg": "Ping (Avg)",
+      "pingMin": "Ping (Min)",
+      "pingMax": "Ping (Max)",
+      "jitter": "Jitter",
+      "packetLoss": "Packet Loss",
+      "connectionStability": "Connection Stability",
+      "networkHealth": "Network Health",
+      "gaming": "Gaming",
+      "streaming": "Streaming",
+      "videoCall": "Video Call",
+      "browsing": "Browsing",
+      "dateTime": "Date & Time",
+      "isp": "ISP",
+      "country": "Country",
+      "probeMethod": "Probe Method",
+      "stable": "✓ Stable",
+      "unstable": "⚠ Unstable"
+    },
+    "empty": {
+      "withFiltersTitle": "No speed tests matched the filters you applied.",
+      "withFiltersMessage": "Try widening the date range or clearing filters to see more results.",
+      "withoutFiltersTitle": "No speed test history is available yet.",
+      "withoutFiltersMessage": "Run a speed test to start building your history and unlock trend insights.",
+      "goToSpeedTest": "Go to Speed Test"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "tryAgain": "Try Again"
+    },
+    "csv": {
+      "filename": "test-history.csv",
+      "yes": "Yes",
+      "no": "No",
+      "na": "N/A"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing {{start}}-{{end}} of {{total}}"
+    },
+    "unstableTooltip": "⚠ Unstable Connection",
+    "chartTooltip": {
+      "download": "Download",
+      "upload": "Upload",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "healthScore": "Health Score",
+      "experienceScore": "Experience Score",
+      "mbps": "{{value}} Mbps",
+      "ms": "{{value}} ms",
+      "outOf100": "{{value}}/100"
+    }
+  },
+  "statsCards": {
+    "download": "Download",
+    "upload": "Upload",
+    "appLatency": "App Latency",
+    "latencyVariation": "Latency Variation",
+    "failedRequests": "Failed Requests",
+    "networkHealth": "NETWORK HEALTH",
+    "gaming": "GAMING",
+    "streaming": "STREAMING",
+    "videoCalls": "VIDEO CALLS",
+    "browsing": "BROWSING",
+    "connectionStability": "CONNECTION STABILITY",
+    "stable": "✓ Stable",
+    "unstable": "⚠ Unstable",
+    "latencyNote": "How Latency Is Measured",
+    "latencyNoteDesc": "Quick app requests are sent to this service to estimate responsiveness from your current device and network.",
+    "latencyNoteDesc2": "This is useful for real browsing-style performance, but it is not the same as classic ICMP ping.",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    },
+    "ariaLabel": "Network metrics",
+    "scoreAria": "{{label}} score: {{value}} out of 100"
+  },
+  "account": {
+    "title": "Manage your profile",
+    "personalInfo": {
+      "title": "Personal Information",
+      "username": "Username",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "usernamePlaceholder": "Enter your username",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "notSet": "Not set",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "email": {
+      "title": "Email",
+      "emailAddress": "Email Address",
+      "placeholder": "Enter your email",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "signOut": "Sign Out",
+    "links": {
+      "runSpeedtest": "Run Speedtest",
+      "scanPort": "Scan Port"
+    },
+    "success": {
+      "profileUpdated": "Profile Updated!",
+      "profileMessage": "Your personal information has been updated successfully.",
+      "checkInbox": "Check your inbox!",
+      "emailMessage": "We've sent a verification email to your new address. Please click the link to confirm your email change."
+    },
+    "error": {
+      "title": "Oops!",
+      "message": "We couldn't load your profile"
+    },
+    "modals": {
+      "savePersonalInfo": "Are you sure you want to save your personal information changes?",
+      "updateEmail": "Are you sure you want to update your email address? You'll need to verify your new email.",
+      "signOut": "Are you sure you want to sign out of your account?",
+      "cancel": "Cancel",
+      "save": "Save",
+      "signOutBtn": "Sign Out"
+    }
+  },
+  "security": {
+    "title": "Port Risk Security",
+    "subtitle": "Monitor exposed services, run active scans, and keep network attack surface under control.",
+    "proTip": "Pro Tip!",
+    "tabs": {
+      "scan": "Scan",
+      "insights": "Insights",
+      "knowledge": "Knowledge"
+    },
+    "scanOverview": "Current Scan Overview",
+    "wheelProgress": "Wheel Scan Progress",
+    "howItWorks": "This scan checks common service ports and classifies them as open, closed, or filtered, then derives a risk posture from known exposure patterns.",
+    "howItWorks2": "Use this as a practical exposure baseline and verify high-risk findings against firewall rules, service ownership, and expected internet-facing behavior.",
+    "aiSummary": "AI-Powered Summary",
+    "aiSummaryPlaceholder": "Your security summary will appear here after a scan is completed and analyzed.",
+    "emptyState": {
+      "title": "No assessment snapshot yet",
+      "message": "Use the scan wheel to run a scan, then your overview metrics and AI summary will appear here."
+    },
+    "metrics": {
+      "openPorts": "Open Ports",
+      "closedPorts": "Closed Ports",
+      "filteredPorts": "Filtered Ports",
+      "duration": "Duration"
+    },
+    "sections": {
+      "riskGroups": "Risk Groups and Top Recommendations",
+      "scannedResults": "Scanned Results by Risk",
+      "topRecommendations": "Top Recommendations",
+      "fullDetails": "Full Scan Details",
+      "viewDetails": "View Details",
+      "hideDetails": "Hide Details"
+    },
+    "riskLevels": {
+      "critical": "Critical",
+      "high": "High",
+      "moderate": "Moderate",
+      "low": "Low",
+      "unknown": "Unknown"
+    },
+    "table": {
+      "port": "Port",
+      "state": "State",
+      "service": "Service",
+      "risk": "Risk"
+    },
+    "emptyPorts": "No open ports found in this scan.",
+    "emptyRecommendations": "No recommendations yet for this scan.",
+    "emptyRiskGroup": "No open ports",
+    "statusChip": {
+      "label": "Security",
+      "excellent": "Excellent",
+      "good": "Good",
+      "moderate": "Moderate",
+      "highRisk": "High Risk",
+      "critical": "Critical"
+    },
+    "insights": {
+      "title": "Scan History and Trends",
+      "subtitle": "Click any recent scan below to preview its overall results inline.",
+      "emptyTitle": "No security scan data available yet",
+      "emptyMessage": "Run a security scan to start building your scan history and unlock trend insights over time.",
+      "runScan": "Run a Security Scan"
+    },
+    "knowledge": {
+      "eyebrow": "Knowledge Center",
+      "title": "Security recommendations and service reference",
+      "description": "Review the latest AI guidance, inspect the most exposed services from your scan, and keep a quick-reference catalog of common ports and mitigation advice.",
+      "libraryEyebrow": "Reference library",
+      "libraryTitle": "High-attention service knowledge",
+      "count": "{{count}} known services",
+      "viewDetails": "View Details",
+      "hideDetails": "Hide Details",
+      "portEntry": "Port {{number}} / {{protocol}}",
+      "noDescription": "No service description is available.",
+      "recommendation": "Recommendation: {{text}}",
+      "noRecommendation": "No recommendation is available.",
+      "flagCommon": "Common",
+      "flagUnencrypted": "Unencrypted",
+      "flagExploitTarget": "Exploit target",
+      "knownExposure": "Known exposure: {{text}}",
+      "emptyTitle": "No knowledge base entries available",
+      "emptyMessage": "The port knowledge reference will appear here when the service catalog is available."
+    }
+  },
+  "services": {
+    "heroHeading1": "Our Services",
+    "heroHeading2": "Powered by AI",
+    "heroDesc": "From lightning-fast speed testing to advanced security scanning and AI-powered analytics, we provide comprehensive network solutions for home users, small businesses, and ISPs alike. Our intelligent platform delivers real-time insights, anomaly detection, and actionable recommendations to keep your network performing at its best.",
+    "sectionTitle": "What We Offer",
+    "cards": {
+      "speedtest": {
+        "title": "Speedtest",
+        "description": "Lightning-fast speed testing with real-time metrics, historical data, and beautiful visualizations. Measure download, upload, ping, and jitter with precision. Track performance trends over time, compare results across different locations, and share detailed reports with your team or customers.",
+        "tags": ["Real-time", "Historical", "Visualization"]
+      },
+      "networkAnalysis": {
+        "title": "Network Analysis",
+        "description": "Deep network diagnostics, analytics, and performance monitoring. Identify bottlenecks, latency issues, and network anomalies automatically. Gain comprehensive visibility into your network performance with intuitive dashboards and detailed logs.",
+        "tags": ["Diagnostics", "Monitoring", "Anomaly Detection"]
+      },
+      "security": {
+        "title": "Security",
+        "description": "Advanced port scanning, vulnerability detection, and risk assessment to keep your network safe from attacks and intrusions. Detect open ports, assess security risks, and get actionable recommendations to secure your network.",
+        "tags": ["Port Scanning", "Risk Assessment", "Recommendations"]
+      },
+      "aiInsights": {
+        "title": "AI Insights",
+        "description": "AI-powered insights, scoring, and intelligent recommendations to optimize your network performance automatically. Leverage advanced algorithms to get tailored advice and network health scores for gaming, streaming, and more.",
+        "tags": ["AI Summaries", "Network Scoring", "Recommendations"]
+      }
+    }
+  },
+  "download": {
+    "headline": "AkovoLabs Speedtest",
+    "subtitle": "Fast. Accurate. Smart.",
+    "features": [
+      { "title": "Accurate Speed Test", "desc": "Test download, upload & ping" },
+      { "title": "Real-time Results", "desc": "Instant & precise measurements" },
+      { "title": "Network Analysis", "desc": "Monitor your connection quality" },
+      { "title": "Network Security Scan", "desc": "Port risk detection built-in tools" }
+    ],
+    "betaAdvisory": "Join our beta testing program for early access! Your data and speed test information is protected with end-to-end encryption. We never share your personal information without your consent."
+  },
+  "news": {
+    "heroHeadline1": "Latest News &",
+    "heroHeadline2": "Updates",
+    "subtitle": "Stay informed about the latest developments, feature releases, and improvements to our AI-powered network security platform.",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "about": {
+    "heroHeadline1": "Building the Future",
+    "heroHeadline2": "of Connectivity",
+    "heroDesc": "We're building the future of internet speed testing and network analytics. AkovoLabs Speedtest gives ISPs and users unprecedented insights into network performance, security, and reliability.",
+    "stats": {
+      "users": "Users",
+      "countries": "Countries",
+      "uptime": "Uptime",
+      "offline": "Offline",
+      "founded": "Founded"
+    },
+    "cta": "Contact Us",
+    "ourStory": "Our Story",
+    "storyParagraph1": "At AkovoLabs, we believe technology should simplify life instead of complicating it. That's why we set out to build AkovoLabs Speedtest, a network testing platform that's both powerful and intuitive.",
+    "storyParagraph2": "Our mission is to make network management accessible to everyone. Whether you're a home user curious about your connection or an ISP managing thousands of customers, AkovoLabs Speedtest gives you the insights you need.",
+    "storyParagraph3": "With real-time monitoring, intelligent anomaly detection, and beautiful visualizations, we're making network management simple, powerful, and accessible to all.",
+    "quote": "Smart technology, lightning-fast speed, and actionable insights because connectivity should work for you, not against you. We believe in making complex network data simple, intuitive, and empowering for everyone.",
+    "team": "The Team",
+    "teamMember1": {
+      "name": "Clement Phoshoko",
+      "role": "Full-Stack Product Engineer",
+      "quote": "Every great product starts with solving a real problem. I build AI-driven, automated, and scalable solutions with modern glass-inspired interfaces."
+    },
+    "teamMember2": {
+      "name": "Tsumbedzo Matloga",
+      "role": "Network Software Engineer",
+      "quote": "Imagine seeing every connection, every metric, and every anomaly in one place. That's the power of intelligent network analytics."
+    },
+    "contact": "Contact Us"
+  },
+  "contact": {
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "businessEmail": "Business Email",
+    "emailPlaceholder": "your@company.com",
+    "companyName": "Company Name",
+    "companyPlaceholder": "Your company (optional)",
+    "subject": "Subject / Topic",
+    "subjectDefault": "Select a topic",
+    "subjectOptions": ["Select a topic", "General Inquiry", "Sales", "Support", "Partnership"],
+    "message": "Message",
+    "messagePlaceholder": "How can we help your business?",
+    "sendMessage": "Send Message",
+    "successHeading": "Message Sent!",
+    "successMessage": "Thank you for reaching out to AkovoLabs. Our team will review your inquiry and get back to you shortly.",
+    "newBtn": "New",
+    "homeBtn": "Home",
+    "sendingMessage": "Sending message",
+    "crmStatus": "AkovoLabs CRM System v1.0",
+    "failedMessage": "Failed to send message. Please try again later.",
+    "validation": {
+      "fullNameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "subjectRequired": "Please select a topic",
+      "messageRequired": "Message is required",
+      "messageMinLength": "Message must be at least 10 characters"
+    }
+  },
+  "authRequired": {
+    "title": "401 - Access Denied",
+    "message": "Oops! You must be authenticated to access this page.",
+    "subtitle": "Please sign in or create an account to continue.",
+    "goToLogin": "Go to Login Page"
+  },
+  "notFound": {
+    "title": "404 - Page Not Found",
+    "message": "Oops! The page you're looking for doesn't exist.",
+    "subtitle": "Maybe it's been moved, deleted, or you mistyped the URL.",
+    "goHome": "Go to Homepage & Run a Speed Test"
+  },
+  "loading": {
+    "defaultMessage": "Initializing System",
+    "defaultStatus": "GL Web System v1.0"
+  },
+  "scanEmptyState": {
+    "title": "No scan data yet",
+    "message": "Start your first scan to populate this panel."
+  },
+  "ariaLabels": {
+    "toggleNav": "Toggle navigation",
+    "networkMetrics": "Network metrics",
+    "scoreValue": "{{label}} score: {{value}} out of 100"
+  },
+  "imageAlt": {
+    "akovolabsLogo": "AkovoLabs Logo",
+    "aiIcon": "AI Icon",
+    "instructor": "Instructor",
+    "instructorAvatar": "Instructor avatar",
+    "success": "Success",
+    "error": "Error",
+    "noResults": "No results found",
+    "errorOccurred": "Error occurred",
+    "comingSoon": "Coming Soon",
+    "historyHero": "Test History Hero",
+    "securityGuide": "Security guide",
+    "securityHero": "Security operations hero",
+    "noRiskGroups": "No risk groups found",
+    "noRecommendations": "No recommendations found",
+    "authRequired": "Authentication required",
+    "pageNotFound": "Page not found",
+    "futureUI": "Futuristic Speed Test UI",
+    "playStore": "Get it on Google Play",
+    "appStore": "Download on the App Store",
+    "fullStackDev": "Clement Phoshoko",
+    "networkEngineer": "Tsumbedzo Matloga",
+    "operatingSystems": "Operating Systems",
+    "speedTest": "Speed Test",
+    "downloadHero": "Download AkovoLabs Speedtest",
+    "newsHero": "Latest News & Updates",
+    "ai": "AI"
+  },
+  "loading": {
+    "initializing": "Initializing System",
+    "systemStatus": "GL Web System v1.0",
+    "loadingHistory": "Loading test history",
+    "historySystem": "AkovoLabs Test History System v1.0",
+    "loadingSecurity": "Loading security scan",
+    "securitySystem": "AkovoLabs Security System v1.0",
+    "loadingProfile": "Loading profile",
+    "profileSystem": "AkovoLabs Profile System v1.0",
+    "updatingProfile": "Updating profile",
+    "profileSystemUpdating": "AkovoLabs Profile System v1.0"
+  },
+  "statsCards": {
+    "download": "Download",
+    "upload": "Upload",
+    "appLatency": "App Latency",
+    "latencyVariation": "Latency Variation",
+    "failedRequests": "Failed Requests",
+    "networkHealth": "NETWORK HEALTH",
+    "gaming": "GAMING",
+    "streaming": "STREAMING",
+    "videoCalls": "VIDEO CALLS",
+    "browsing": "BROWSING",
+    "connectionStability": "CONNECTION STABILITY",
+    "unstable": "⚠ Unstable",
+    "stable": "✓ Stable",
+    "howLatencyMeasured": "How Latency Is Measured",
+    "latencyNoteText": "Quick app requests are sent to this service to estimate responsiveness from your current device and network.",
+    "latencyNoteSubtle": "This is useful for real browsing-style performance, but it is not the same as classic ICMP ping."
+  },
+  "account": {
+    "loadingProfile": "Loading profile",
+    "profileSystem": "AkovoLabs Profile System v1.0",
+    "errorTitle": "Oops!",
+    "errorText": "We couldn't load your profile",
+    "tryAgain": "Try Again",
+    "profileUpdated": "Profile Updated!",
+    "profileUpdatedText": "Your personal information has been updated successfully.",
+    "runSpeedtest": "Run Speedtest",
+    "scanPort": "Scan Port",
+    "checkInbox": "Check your inbox!",
+    "verificationSent": "We've sent a verification email to your new address. Please click the link to confirm your email change.",
+    "manageProfile": "Manage your profile",
+    "signOut": "Sign Out",
+    "personalInformation": "Personal Information",
+    "edit": "Edit",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "notSet": "Not set",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "First name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Last name",
+    "cancel": "Cancel",
+    "save": "Save",
+    "email": "Email",
+    "emailAddress": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "savePersonalInfoConfirm": "Are you sure you want to save your personal information changes?",
+    "saveEmailConfirm": "Are you sure you want to update your email address? You'll need to verify your new email.",
+    "signOutConfirm": "Are you sure you want to sign out of your account?",
+    "signOutConfirmLabel": "Sign Out",
+    "updatingProfile": "Updating profile",
+    "profileSystemUpdating": "AkovoLabs Profile System v1.0"
+  },
+  "security": {
+    "tabScan": "Scan",
+    "tabInsights": "Insights",
+    "tabKnowledge": "Knowledge",
+    "title": "Port Risk Security",
+    "subtitle": "Monitor exposed services, run active scans, and keep network attack surface under control.",
+    "proTip": "Pro Tip!",
+    "proTips": [
+      "Run security scans on a fixed schedule, such as weekly or after major network changes, so newly exposed services are detected early and addressed before they become exploitable attack paths in production environments.",
+      "Open ports are not automatically unsafe, but undocumented or unnecessary open services often represent the highest operational risk because they expand the attack surface without clear ownership, monitoring, or hardening controls.",
+      "Compare each new scan result with previous baselines to quickly spot unusual exposure patterns after firewall updates, router reconfiguration, cloud migration, or policy drift that may unintentionally expose sensitive services.",
+      "Treat filtered ports as a verification signal rather than a final security conclusion, then validate that firewall rules, ACLs, and segmentation policies are intentionally blocking traffic from expected network zones and threat scenarios.",
+      "Map every scan finding to a responsible service owner and remediation deadline so fixes are prioritized effectively, tracked transparently, and closed with accountability instead of remaining as recurring unresolved vulnerabilities."
+    ],
+    "errorTitle": "Something went wrong",
+    "errorDesc": "We encountered an error loading security data.",
+    "tryAgain": "Try Again",
+    "currentScanOverview": "Current Scan Overview",
+    "wheelScanProgress": "Wheel Scan Progress",
+    "howPortScanMeasured": "How Port Scan Is Measured",
+    "portScanNoteText": "This scan checks common service ports and classifies them as open, closed, or filtered, then derives a risk posture from known exposure patterns.",
+    "portScanNoteSubtle": "Use this as a practical exposure baseline and verify high-risk findings against firewall rules, service ownership, and expected internet-facing behavior.",
+    "aiPoweredSummary": "AI-Powered Summary",
+    "summaryPlaceholder": "Your security summary will appear here after a scan is completed and analyzed.",
+    "noAssessmentTitle": "No assessment snapshot yet",
+    "noAssessmentMessage": "Use the scan wheel to run a scan, then your overview metrics and AI summary will appear here.",
+    "riskGroupsTitle": "Risk Groups and Top Recommendations",
+    "viewDetails": "View Details",
+    "hideDetails": "Hide Details",
+    "scannedResultsByRisk": "Scanned Results by Risk",
+    "noOpenPortsShort": "No open ports",
+    "noOpenPortsFound": "No open ports found in this scan.",
+    "topRecommendations": "Top Recommendations",
+    "noRecommendationsYet": "No recommendations yet for this scan.",
+    "fullScanDetails": "Full Scan Details",
+    "port": "Port",
+    "state": "State",
+    "service": "Service",
+    "risk": "Risk",
+    "unknown": "unknown",
+    "unknownService": "Unknown",
+    "riskCritical": "Critical",
+    "riskHigh": "High",
+    "riskModerate": "Moderate",
+    "riskLow": "Low",
+    "riskUnknown": "Unknown",
+    "metrics": {
+      "openPorts": "Open Ports",
+      "closedPorts": "Closed Ports",
+      "filteredPorts": "Filtered Ports",
+      "duration": "Duration"
+    }
+  },
+  "history": {
+    "title": "Test History",
+    "subtitle": "Review your past speed tests, track performance trends, and gain insights into your network health.",
+    "proTipLabel": "Pro Tip!",
+    "tabTrends": "Trends",
+    "tabInsights": "Insights",
+    "tabHistory": "History",
+    "totalTests": "Total Tests",
+    "avgDownload": "Avg Download",
+    "avgUpload": "Avg Upload",
+    "avgPing": "Avg Ping",
+    "avgHealthScore": "Avg Health Score",
+    "performanceTrends": "Performance Trends",
+    "speedTrends": "Speed Trends",
+    "latencyQuality": "Latency Quality",
+    "networkHealthScore": "Network Health Score",
+    "experienceScores": "Experience Scores",
+    "speedAxesNote": "Speed axes auto-scale independently for download and upload so smaller trends remain readable.",
+    "unstableDotLegend": "Amber dots mark tests where connection speed fluctuated significantly between passes.",
+    "latencyAxesNote": "Latency values auto-scale to the visible ping and jitter range.",
+    "showingResults": "Showing results from {{first}} to {{last}}",
+    "from": "From",
+    "to": "To",
+    "selectStartDate": "Select start date",
+    "selectEndDate": "Select end date",
+    "clear": "Clear",
+    "date": "Date",
+    "download": "Download",
+    "upload": "Upload",
+    "ping": "Ping",
+    "jitter": "Jitter",
+    "health": "Health",
+    "isp": "ISP",
+    "na": "N/A",
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "Showing {{start}}-{{end}} of {{total}}",
+    "unstableConnection": "Unstable connection",
+    "unstable": "⚠ Unstable",
+    "stable": "✓ Stable",
+    "downloadShort": "↓",
+    "uploadShort": "↑",
+    "ms": "ms",
+    "mbps": "Mbps",
+    "percent": "%",
+    "yes": "Yes",
+    "no": "No",
+    "exportCsvFilename": "test-history.csv",
+    "exportCsvHeaders": ["Date", "Download (Mbps)", "Upload (Mbps)", "Ping (ms)", "Jitter (ms)", "Health Score", "ISP", "Unstable"],
+    "performanceTitle": "Performance",
+    "experienceScoresTitle": "Experience Scores",
+    "environmentTitle": "Environment",
+    "aiAnalysisTitle": "AI Analysis",
+    "downloadSpeed": "Download Speed",
+    "uploadSpeed": "Upload Speed",
+    "pingAvg": "Ping (Avg)",
+    "pingMin": "Ping (Min)",
+    "pingMax": "Ping (Max)",
+    "packetLoss": "Packet Loss",
+    "connectionStability": "Connection Stability",
+    "networkHealth": "Network Health",
+    "gaming": "Gaming",
+    "streaming": "Streaming",
+    "videoCall": "Video Call",
+    "browsing": "Browsing",
+    "dateTime": "Date & Time",
+    "country": "Country",
+    "probeMethod": "Probe Method",
+    "emptyTitleWithFilters": "No speed tests matched the filters you applied.",
+    "emptyTitleNoFilters": "No speed test history is available yet.",
+    "emptyDescWithFilters": "Try widening the date range or clearing filters to see more results.",
+    "emptyDescNoFilters": "Run a speed test to start building your history and unlock trend insights.",
+    "goToSpeedTest": "Go to Speed Test",
+    "errorTitle": "Something went wrong",
+    "tryAgain": "Try Again",
+    "excellent": "Excellent (80-100)",
+    "good": "Good (60-79)",
+    "poor": "Poor (0-59)",
+    "bestTest": "Best Test",
+    "experienceScore": "Experience Score",
+    "comingSoonTitle": "Coming Soon - Advanced Network Analysis",
+    "comingSoonItems": [
+      "Public Wi-Fi Security Analysis",
+      "Network Traffic Anomaly Detection",
+      "ISP Performance Benchmarking",
+      "Device-Level Network Health Checks"
+    ],
+    "aiInsights": {
+      "speedOverview": "Speed Overview",
+      "speedOverviewMessage": "Your average download speed is {{download}} Mbps and upload is {{upload}} Mbps.",
+      "excellentLatency": "Excellent Latency",
+      "excellentLatencyMessage": "Your ping is consistently low, great for gaming and video calls!",
+      "moderateLatency": "Moderate Latency",
+      "moderateLatencyMessage": "Your ping is acceptable, but could be better for real-time applications.",
+      "highLatency": "High Latency",
+      "highLatencyMessage": "Your ping is quite high, consider checking your network connection.",
+      "bestPerformance": "Best Performance",
+      "bestPerformanceMessage": "Your best test achieved a health score of {{score}}!",
+      "connectionInstability": "Connection Instability Detected",
+      "connectionInstabilityMessage": "{{count}} of your {{total}} test(s) showed speed fluctuation between passes, indicating an erratic connection."
+    }
+  }
+}

@@ -8,7 +8,7 @@ const turnstileLimiter = rateLimit({
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { status: 'error', message: 'Too many verification attempts. Please try again later.' },
+  message: { status: 'error', code: 'RATE_LIMIT_EXCEEDED', message: 'Too many verification attempts. Please try again later.' },
 });
 
 /**

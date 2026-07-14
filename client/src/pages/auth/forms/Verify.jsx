@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
@@ -15,6 +16,7 @@ const STEP_VARIANTS = {
 };
 
 function Verify() {
+  const { t } = useTranslation();
   const [step, setStep] = useState('verifying');
   const [email, setEmail] = useState('');
   const [errorModal, setErrorModal] = useState({ isOpen: false, message: '' });
@@ -36,7 +38,7 @@ function Verify() {
       setEmail(emailParam);
       verifyByLink(token, emailParam);
     } else {
-      setErrorModal({ isOpen: true, message: 'Invalid verification link.' });
+      setErrorModal({ isOpen: true, message: t('auth.verify.invalidLink') });
       setStep('error');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -63,12 +65,12 @@ function Verify() {
       try {
         res = await fetch(`${API_URL}/api/otp/verify-link?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`);
       } catch {
-        throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+        throw new Error(t('auth.verify.connectionError'));
       }
 
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
-        throw new Error('Something went wrong on our end. Please try again later.');
+        throw new Error(t('auth.verify.serverError'));
       }
 
       const data = await res.json();
@@ -79,7 +81,7 @@ function Verify() {
           setStep('success');
           return;
         }
-        throw new Error(data.message || 'Verification failed');
+        throw new Error(data.message || t('auth.verify.verificationFailed'));
       }
       setProgress(100);
       setStep('success');
@@ -96,8 +98,8 @@ function Verify() {
       <Loading
         isLoading={isLoading}
         progress={progress}
-        message="Verifying your email"
-        status="AkovoLabs Auth System v1.0"
+        message={t('auth.verify.verifyingEmail')}
+        status={t('nav.authSystemStatus')}
         indeterminate={true}
       />
       <div className="verify-container">
@@ -114,18 +116,18 @@ function Verify() {
             >
               <div className="verify-success-icon-wrapper">
                 <div className="verify-success-icon">
-                  <img src={successAvatar} alt="Success" />
+                  <img src={successAvatar} alt={t('imageAlt.success')} />
                 </div>
               </div>
-              <h1 className="auth-form-title">Email verified</h1>
-              <p className="verify-subtitle">Your email has been verified successfully. You can now sign in to your account.</p>
+              <h1 className="auth-form-title">{t('auth.verify.emailVerified')}</h1>
+              <p className="verify-subtitle">{t('auth.verify.successMessage')}</p>
               <button className="auth-form-button" onClick={() => navigate('/login')}>
                 <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                   <polyline points="10 17 15 12 10 7" />
                   <line x1="15" y1="12" x2="3" y2="12" />
                 </svg>
-                Go to Login
+                {t('auth.verify.goToLogin')}
               </button>
             </motion.div>
           )}
@@ -140,10 +142,10 @@ function Verify() {
               transition={{ duration: 0.3 }}
               className="auth-form"
             >
-              <h1 className="auth-form-title">Verification failed</h1>
-              <p className="verify-subtitle">The verification link is invalid or has expired. Please sign up again.</p>
+              <h1 className="auth-form-title">{t('auth.verify.verificationFailed')}</h1>
+              <p className="verify-subtitle">{t('auth.verify.errorMessage')}</p>
               <button className="auth-form-button" onClick={() => navigate('/signup')}>
-                Back to Sign Up
+                {t('auth.verify.backToSignUp')}
               </button>
             </motion.div>
           )}

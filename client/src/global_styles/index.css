@@ -11,4 +11,10 @@ body {
   background: var(--bg-gradient);
   color: var(--text-primary);
   min-height: 100vh;
+  transition: opacity 150ms ease, filter 150ms ease;
+}
+
+html[data-switching-lang] body {
+  opacity: 0.3;
+  filter: blur(1px);
 }

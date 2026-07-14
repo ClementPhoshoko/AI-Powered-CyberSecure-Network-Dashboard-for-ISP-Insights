@@ -9,7 +9,7 @@ const otpLimiter = rateLimit({
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { status: 'error', message: 'Too many OTP requests. Please try again later.' },
+  message: { status: 'error', code: 'RATE_LIMIT_EXCEEDED', message: 'Too many OTP requests. Please try again later.' },
 });
 
 /**

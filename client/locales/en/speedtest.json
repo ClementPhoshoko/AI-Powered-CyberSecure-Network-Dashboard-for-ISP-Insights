@@ -1,0 +1,60 @@
+{
+  "phases": {
+    "initializing": "Initializing...",
+    "appLatency": "Testing App Latency...",
+    "download": "Testing Download...",
+    "upload": "Testing Upload...",
+    "derivedScores": "Calculating Derived Scores..."
+  },
+  "buttons": {
+    "beginTest": "Begin Test",
+    "stopTest": "Stop Test",
+    "runAgain": "Run Again"
+  },
+  "hero": {
+    "heading": "AI-Powered Network Speed Testing"
+  },
+  "advisory": {
+    "heading": "Understand Your Speedtest",
+    "downloadOverTime": "**Download Speed Over Time:** Shows consistency of connection",
+    "uploadOverTime": "**Upload Speed Over Time:** Measures upload performance",
+    "appLatency": "**App Latency:** Tracks how quickly your device reaches this service during the test"
+  },
+  "aiSummary": {
+    "heading": "AI-Powered Summary",
+    "placeholder": "Your speed test summary will appear here after the system interprets the results."
+  },
+  "howToUse": {
+    "tag": "How To Use This Test",
+    "heading": "Test your current network speed",
+    "currentDevice": "You can run a speed test from your current device and connection. If you're on home Wi-Fi, the results reflect your real-world experience right now.",
+    "deviceToServer": "It measures device-to-server performance, not a deep inspection of your router, signal strength, or every internal Wi-Fi detail.",
+    "signedIn": "Now that you are signed in, don't forget to check your test graphs and history below!",
+    "signedOut": "**Sign in** or **Sign up** to get more detailed insights about your network performance!"
+  },
+  "results": {
+    "download": "Download",
+    "upload": "Upload",
+    "appLatency": "App Latency",
+    "latencyVariation": "Latency Variation",
+    "failedRequests": "Failed Requests",
+    "networkHealth": "NETWORK HEALTH",
+    "gaming": "GAMING",
+    "streaming": "STREAMING",
+    "videoCalls": "VIDEO CALLS",
+    "browsing": "BROWSING",
+    "connectionStability": "CONNECTION STABILITY",
+    "stable": "✓ Stable",
+    "unstable": "⚠ Unstable",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    }
+  },
+  "latencyNote": {
+    "title": "How Latency Is Measured",
+    "desc1": "Quick app requests are sent to this service to estimate responsiveness from your current device and network.",
+    "desc2": "This is useful for real browsing-style performance, but it is not the same as classic ICMP ping."
+  }
+}

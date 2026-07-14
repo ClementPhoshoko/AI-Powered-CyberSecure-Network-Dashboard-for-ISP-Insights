@@ -42,6 +42,7 @@ const subscribe = async (req, res, next) => {
     if (existingSubscriber) {
       return res.status(400).json({
         status: 'error',
+        code: 'SUBSCRIBER_ALREADY_EXISTS',
         message: 'Already subscribed'
       });
     }
@@ -75,6 +76,7 @@ const updateSubscription = async (req, res, next) => {
     if (!subscriber) {
       return res.status(404).json({
         status: 'error',
+        code: 'SUBSCRIBER_NOT_FOUND',
         message: 'Subscriber not found'
       });
     }
@@ -100,6 +102,7 @@ const unsubscribe = async (req, res, next) => {
     if (!subscriber) {
       return res.status(404).json({
         status: 'error',
+        code: 'SUBSCRIBER_NOT_FOUND',
         message: 'Subscriber not found'
       });
     }

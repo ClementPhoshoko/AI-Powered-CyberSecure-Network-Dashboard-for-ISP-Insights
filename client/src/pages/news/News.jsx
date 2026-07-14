@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import './News.css';
 import * as blogs from './blogs';
@@ -9,6 +10,7 @@ const News = () => {
   const [dockedPostId, setDockedPostId] = useState(null);
   const postsPerPage = 5; // 1 large + 4 small
   const location = useLocation();
+  const { t } = useTranslation();
 
   // Simulate loading state
   useEffect(() => {
@@ -136,11 +138,11 @@ const News = () => {
         <section className="news_hero">
           <div className="news_hero_left">
             <h1 className="news_headline">
-              Latest News &
-              <br/>Updates
+              {t('news.heroHeadline1')}
+              <br/>{t('news.heroHeadline2')}
             </h1>
             <p className="news_description">
-              Stay informed about the latest developments, feature releases, and improvements to our AI-powered network security platform.
+              {t('news.subtitle')}
             </p>
             <div className="news_divider"></div>
           </div>
@@ -185,7 +187,7 @@ const News = () => {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M15 18l-6-6 6-6" />
                 </svg>
-                Previous
+                {t('news.previous')}
               </button>
               
               <div className="news_pagination_numbers">
@@ -206,7 +208,7 @@ const News = () => {
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages || isLoading}
               >
-                Next
+                {t('news.next')}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 18l6-6-6-6" />
                 </svg>

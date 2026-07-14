@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "AkovoLabs",
+    "tagline": "Painel de Análise de Rede com IA",
+    "description": "Capacitando ISPs com insights inteligentes, monitoramento em tempo real e segurança de nível empresarial",
+    "copyright": "© 2026 AkovoLabs. Todos os direitos reservados.",
+    "version": "Versão do Sistema 1.0.0 © 2026 AkovoLabs. Todos os direitos reservados."
+  },
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "aboutDesc": "Conheça nossa missão",
+    "aboutDropdown": {
+      "ourCompany": "Nossa Empresa",
+      "team": "Equipe",
+      "contactUs": "Fale Conosco",
+      "ourCompanyDesc": "Conheça nossa missão",
+      "teamDesc": "Conheça nossos especialistas",
+      "contactUsDesc": "Entre em contato"
+    },
+    "services": "Serviços",
+    "servicesDesc": "Ferramentas de Velocidade e Rede",
+    "servicesDropdown": {
+      "speedTesting": "Teste de Velocidade",
+      "networkAnalytics": "Análise de Rede",
+      "security": "Segurança",
+      "aiInsights": "Insights de IA",
+      "speedTestingDesc": "Meça sua conexão",
+      "networkAnalyticsDesc": "Insights profundos de rede",
+      "securityDesc": "Proteja sua rede",
+      "aiInsightsDesc": "Recomendações inteligentes"
+    },
+    "download": "Baixar",
+    "downloadDesc": "Para iOS e Android",
+    "downloadDropdown": {
+      "iosApp": "App iOS",
+      "androidApp": "App Android",
+      "iosDesc": "Baixar para iPhone e iPad",
+      "androidDesc": "Baixar para dispositivos Android",
+      "forBoth": "Para iOS e Android"
+    },
+    "news": "Notícias",
+    "newsDesc": "Atualizações e Imprensa",
+    "newsDropdown": {
+      "updatesPress": "Atualizações e Imprensa",
+      "desc": "Últimas notícias, atualizações e imprensa"
+    },
+    "accountDropdown": {
+      "manageAccount": "Gerenciar Conta",
+      "testHistory": "Histórico de Testes",
+      "security": "Segurança",
+      "changeTheme": "Alterar Tema",
+      "login": "Entrar",
+      "logout": "Sair"
+    },
+    "mobileDrawer": {
+      "manageAccount": "Gerenciar Conta",
+      "manageAccountDesc": "Perfil e configurações",
+      "testHistory": "Histórico de Testes",
+      "testHistoryDesc": "Ver testes anteriores",
+      "security": "Segurança",
+      "securityDesc": "Segurança da conta",
+      "theme": "Tema",
+      "language": "Idioma",
+      "login": "Entrar",
+      "logout": "Sair"
+    },
+    "toggleNavigation": "Alternar navegação",
+    "signingOut": "Saindo da sua conta",
+    "authSystemStatus": "Sistema de Autenticação AkovoLabs v1.0",
+    "logoutModalMessage": "Tem certeza que deseja sair da sua conta?"
+  },
+  "modal": {
+    "cancel": "Cancelar",
+    "proceed": "Continuar"
+  },
+  "footer": {
+    "tagline": "Painel de Análise de Rede com IA",
+    "newsletter": "Receba as últimas notícias e novidades",
+    "newsletterNote": "Prometemos não encher sua caixa de entrada. Cancele a qualquer momento.",
+    "subscribe": "Inscrever-se",
+    "subscribing": "Inscrevendo...",
+    "unsubscribe": "Cancelar inscrição",
+    "unsubscribing": "Cancelando inscrição...",
+    "mobileApp": "Também disponível no celular",
+    "mobileAppDesc": "Baixe nosso app para Android e iOS",
+    "android": "Android",
+    "ios": "iOS",
+    "updating": "Atualizando inscrição",
+    "newsletterStatus": "Sistema de Newsletter AkovoLabs v1.0"
+  },
+  "auth": {
+    "layout": {
+      "login": "Entrar",
+      "signUp": "Cadastrar",
+      "backToLogin": "Voltar ao Login",
+      "backToSignUp": "Voltar ao Cadastro",
+      "tagline": "Análise de velocidade em tempo real com IA e insights de segurança de rede para ISPs",
+      "agreement": "Ao criar ou usar uma conta AkovoLabs, você concorda com nossos **Termos e Condições** e **Política de Privacidade**.",
+      "termsTitle": "Termos e Condições",
+      "privacyTitle": "Política de Privacidade"
+    },
+    "login": {
+      "heading": "Bem-vindo de volta",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Digite seu email",
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "Digite sua senha",
+      "rememberMe": "Lembrar de mim",
+      "forgotPassword": "Esqueceu a senha?",
+      "signIn": "Entrar",
+      "signingIn": "Entrando...",
+      "captchaError": "Por favor, complete a verificação captcha."
+    },
+    "register": {
+      "heading": "Criar conta",
+      "checkEmail": "Verifique seu email",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Digite seu email",
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "Digite sua senha",
+      "confirmPasswordLabel": "Confirmar senha",
+      "confirmPasswordPlaceholder": "Confirme sua senha",
+      "agreeDesktop": "Aceito os Termos e Condições e a Política de Privacidade",
+      "agreeMobile": "Aceito os Termos e Política de Privacidade",
+      "passwordRequirements": {
+        "minChars": "Pelo menos 8 caracteres",
+        "uppercase": "Uma letra maiúscula",
+        "lowercase": "Uma letra minúscula",
+        "number": "Um número",
+        "special": "Um caractere especial"
+      },
+      "signUp": "Cadastrar",
+      "signingUp": "Cadastrando...",
+      "goToLogin": "Ir para o Login",
+      "successMessage": "Enviamos um link de verificação para **{{email}}**. Clique no link para ativar sua conta.",
+      "spamNote": "Se não vir o email, verifique sua pasta de spam ou tente se cadastrar novamente.",
+      "validation": {
+        "minChars": "A senha deve ter pelo menos 8 caracteres",
+        "uppercase": "A senha deve conter pelo menos uma letra maiúscula",
+        "lowercase": "A senha deve conter pelo menos uma letra minúscula",
+        "number": "A senha deve conter pelo menos um número",
+        "special": "A senha deve conter pelo menos um caractere especial (!@#$%^&*(),.?\":{|}<>)",
+        "passwordMismatch": "As senhas não coincidem",
+        "agreeTerms": "Você deve aceitar os Termos e Condições e a Política de Privacidade para criar uma conta."
+      }
+    },
+    "forgot": {
+      "resetPassword": "Redefinir senha",
+      "enterCode": "Digite o código de verificação",
+      "createPassword": "Criar nova senha",
+      "passwordUpdated": "Senha atualizada",
+      "emailStepSubtitle": "Digite o email usado no cadastro e enviaremos um código de verificação.",
+      "otpStepSubtitle": "Enviamos um código de 6 dígitos para **{{email}}**",
+      "passwordStepSubtitle": "Sua nova senha deve ter pelo menos 8 caracteres.",
+      "successSubtitle": "Sua senha foi redefinida com sucesso. Agora você pode entrar com sua nova senha.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Digite seu email",
+      "newPasswordLabel": "Nova senha",
+      "newPasswordPlaceholder": "Digite a nova senha",
+      "confirmPasswordLabel": "Confirmar senha",
+      "confirmPasswordPlaceholder": "Confirme a nova senha",
+      "sendOtp": "Enviar código",
+      "sending": "Enviando...",
+      "verify": "Verificar",
+      "verifying": "Verificando...",
+      "resetPasswordBtn": "Redefinir senha",
+      "resetting": "Redefinindo...",
+      "goToLogin": "Ir para o Login",
+      "resendCode": "Reenviar código",
+      "resendIn": "Reenviar código em {{seconds}}s",
+      "sendingCode": "Enviando código de verificação",
+      "verifyingCode": "Verificando código",
+      "resettingPassword": "Redefinindo senha"
+    },
+    "verify": {
+      "emailVerified": "Email verificado",
+      "verificationFailed": "Falha na verificação",
+      "successMessage": "Seu email foi verificado com sucesso. Agora você pode entrar na sua conta.",
+      "goToLogin": "Ir para o Login",
+      "errorMessage": "O link de verificação é inválido ou expirou. Cadastre-se novamente.",
+      "backToSignUp": "Voltar ao Cadastro",
+      "connectionError": "Não foi possível conectar ao servidor. Verifique sua conexão de internet.",
+      "serverError": "Algo deu errado. Tente novamente mais tarde.",
+      "invalidLink": "Link de verificação inválido.",
+      "verifyingEmail": "Verificando seu email"
+    },
+    "logoutModal": {
+      "message": "Tem certeza que deseja sair da sua conta?",
+      "cancel": "Cancelar",
+      "proceed": "Continuar"
+    }
+  },
+  "home": {
+    "hero": {
+      "heading": "Teste de Velocidade de Rede com IA",
+      "advisoryHeading": "Entenda seu Teste de Velocidade",
+      "aiSummaryHeading": "Resumo com IA",
+      "howToUse": "Como Usar Este Teste",
+      "howToUseHeading": "Teste sua velocidade de rede atual"
+    },
+    "speedTest": {
+      "beginTest": "Iniciar Teste",
+      "stopTest": "Parar Teste",
+      "runAgain": "Testar Novamente"
+    },
+    "phases": {
+      "initializing": "Inicializando...",
+      "appLatency": "Testando Latência...",
+      "download": "Testando Download...",
+      "upload": "Testando Upload...",
+      "derivedScores": "Calculando Pontuações..."
+    },
+    "advisory": {
+      "downloadOverTime": "**Velocidade de Download ao Longo do Tempo:** Mostra a consistência da conexão",
+      "uploadOverTime": "**Velocidade de Upload ao Longo do Tempo:** Mede o desempenho de upload",
+      "appLatency": "**Latência do App:** Acompanha a rapidez com que seu dispositivo alcança este serviço durante o teste"
+    },
+    "aiSummaryPlaceholder": "Seu resumo do teste de velocidade aparecerá aqui após o sistema interpretar os resultados.",
+    "howToUseCards": {
+      "currentDevice": "Você pode executar um teste de velocidade do seu dispositivo e conexão atuais. Se estiver no Wi-Fi doméstico, os resultados refletem sua experiência real.",
+      "deviceToServer": "Ele mede o desempenho do dispositivo ao servidor, não uma inspeção profunda do roteador ou sinais Wi-Fi internos.",
+      "signedIn": "Agora que está logado, não esqueça de conferir seus gráficos e histórico de testes abaixo!",
+      "signedOut": "**Faça login** ou **Cadastre-se** para obter insights mais detalhados sobre sua rede!"
+    },
+    "signInModal": {
+      "message": "Faça login para obter insights detalhados dos seus resultados. Deseja ir para a página de login?",
+      "cancel": "Cancelar",
+      "proceed": "Continuar"
+    }
+  },
+  "services": {
+    "heroHeading1": "Nossos Serviços",
+    "heroHeading2": "Com IA",
+    "heroDesc": "De testes de velocidade ultrarrápidos a análises de segurança avançadas e análises com IA, fornecemos soluções completas de rede para usuários domésticos, pequenas empresas e ISPs.",
+    "sectionTitle": "O que Oferecemos",
+    "cards": {
+      "speedtest": {
+        "title": "Teste de Velocidade",
+        "description": "Testes de velocidade ultrarrápidos com métricas em tempo real, dados históricos e visualizações bonitas. Meça download, upload, ping e jitter com precisão.",
+        "tags": ["Tempo real", "Histórico", "Visualização"]
+      },
+      "networkAnalysis": {
+        "title": "Análise de Rede",
+        "description": "Diagnósticos profundos de rede, análises e monitoramento de desempenho. Identifique gargalos e anomalias automaticamente.",
+        "tags": ["Diagnósticos", "Monitoramento", "Detecção de anomalias"]
+      },
+      "security": {
+        "title": "Segurança",
+        "description": "Varredura avançada de portas, detecção de vulnerabilidades e avaliação de riscos para manter sua rede segura.",
+        "tags": ["Varredura de portas", "Avaliação de riscos", "Recomendações"]
+      },
+      "aiInsights": {
+        "title": "Insights de IA",
+        "description": "Insights com IA, pontuação e recomendações inteligentes para otimizar automaticamente o desempenho da sua rede.",
+        "tags": ["Resumos de IA", "Pontuação de rede", "Recomendações"]
+      }
+    }
+  },
+  "download": {
+    "headline": "AkovoLabs Speedtest",
+    "subtitle": "Rápido. Preciso. Inteligente.",
+    "features": [
+      { "title": "Teste de Velocidade Preciso", "desc": "Teste download, upload e ping" },
+      { "title": "Resultados em Tempo Real", "desc": "Medições instantâneas e precisas" },
+      { "title": "Análise de Rede", "desc": "Monitore sua qualidade de conexão" },
+      { "title": "Varredura de Segurança", "desc": "Detecção de risco de portas integrada" }
+    ],
+    "betaAdvisory": "Junte-se ao nosso programa beta para acesso antecipado! Seus dados são protegidos com criptografia de ponta a ponta."
+  },
+  "news": {
+    "heroHeadline1": "Últimas Notícias e",
+    "heroHeadline2": "Atualizações",
+    "subtitle": "Fique por dentro das novidades, lançamentos e melhorias da nossa plataforma.",
+    "previous": "Anterior",
+    "next": "Próximo"
+  },
+  "about": {
+    "heroHeadline1": "Construindo o Futuro",
+    "heroHeadline2": "da Conectividade",
+    "heroDesc": "Estamos construindo o futuro dos testes de velocidade e análises de rede. AkovoLabs Speedtest oferece insights sem precedentes sobre desempenho, segurança e confiabilidade.",
+    "stats": {
+      "users": "Usuários",
+      "countries": "Países",
+      "uptime": "Disponibilidade",
+      "offline": "Offline",
+      "founded": "Fundação"
+    },
+    "cta": "Fale Conosco",
+    "ourStory": "Nossa História",
+    "storyParagraph1": "Na AkovoLabs, acreditamos que a tecnologia deve simplificar a vida. Por isso criamos o AkovoLabs Speedtest, uma plataforma de teste de rede poderosa e intuitiva.",
+    "storyParagraph2": "Nossa missão é tornar o gerenciamento de rede acessível a todos. Seja você um usuário doméstico ou um ISP gerenciando milhares de clientes, o AkovoLabs Speedtest oferece os insights que você precisa.",
+    "storyParagraph3": "Com monitoramento em tempo real, detecção inteligente de anomalias e visualizações bonitas, estamos tornando o gerenciamento de rede simples e acessível.",
+    "quote": "Tecnologia inteligente, velocidade ultrarrápida e insights acionáveis porque a conectividade deve funcionar para você.",
+    "team": "A Equipe",
+    "teamMember1": {
+      "name": "Clement Phoshoko",
+      "role": "Engenheiro de Produto Full-Stack",
+      "quote": "Todo grande produto começa resolvendo um problema real. Crio soluções orientadas por IA com interfaces modernas."
+    },
+    "teamMember2": {
+      "name": "Tsumbedzo Matloga",
+      "role": "Engenheiro de Software de Rede",
+      "quote": "Imagine ver cada conexão, métrica e anomalia em um só lugar. Esse é o poder da análise inteligente de rede."
+    },
+    "contact": "Fale Conosco"
+  },
+  "contact": {
+    "fullName": "Nome completo",
+    "fullNamePlaceholder": "Digite seu nome completo",
+    "businessEmail": "Email corporativo",
+    "emailPlaceholder": "seu@empresa.com",
+    "companyName": "Nome da empresa",
+    "companyPlaceholder": "Sua empresa (opcional)",
+    "subject": "Assunto",
+    "subjectDefault": "Selecione um assunto",
+    "subjectOptions": ["Selecione um assunto", "Consulta geral", "Vendas", "Suporte", "Parceria"],
+    "message": "Mensagem",
+    "messagePlaceholder": "Como podemos ajudar sua empresa?",
+    "sendMessage": "Enviar mensagem",
+    "successHeading": "Mensagem enviada!",
+    "successMessage": "Obrigado por entrar em contato. Nossa equipe analisará e responderá em breve.",
+    "newBtn": "Novo",
+    "homeBtn": "Início",
+    "sendingMessage": "Enviando mensagem",
+    "crmStatus": "Sistema CRM AkovoLabs v1.0",
+    "failedMessage": "Falha ao enviar mensagem. Tente novamente.",
+    "validation": {
+      "fullNameRequired": "Nome completo é obrigatório",
+      "emailRequired": "Email é obrigatório",
+      "emailInvalid": "Formato de email inválido",
+      "subjectRequired": "Selecione um assunto",
+      "messageRequired": "Mensagem é obrigatória",
+      "messageMinLength": "A mensagem deve ter pelo menos 10 caracteres"
+    }
+  },
+  "history": {
+    "title": "Histórico de Testes",
+    "subtitle": "Revise seus testes de velocidade, acompanhe tendências e obtenha insights sobre sua rede.",
+    "proTip": "Dica!",
+    "tabs": {
+      "trends": "Tendências",
+      "insights": "Insights",
+      "history": "Histórico"
+    },
+    "metrics": {
+      "totalTests": "Total de Testes",
+      "avgDownload": "Méd. Download",
+      "avgUpload": "Méd. Upload",
+      "avgPing": "Méd. Ping",
+      "avgHealthScore": "Méd. Saúde"
+    },
+    "performanceTrends": {
+      "title": "Tendências de Desempenho",
+      "speedTrends": "Tendências de Velocidade",
+      "latencyQuality": "Qualidade de Latência",
+      "networkHealthScore": "Saúde da Rede",
+      "experienceScores": "Pontuações de Experiência",
+      "from": "De",
+      "to": "Até",
+      "selectStartDate": "Selecione a data inicial",
+      "selectEndDate": "Selecione a data final",
+      "clear": "Limpar",
+      "speedAutoScaleNote": "Os eixos de velocidade se ajustam automaticamente para download e upload para que pequenas tendências permaneçam legíveis.",
+      "amberDotNote": "Pontos âmbar marcam testes onde a velocidade oscilou significativamente entre as passagens.",
+      "showingResults": "Mostrando resultados de {{firstDate}} a {{lastDate}}",
+      "latencyAutoScaleNote": "Os valores de latência se ajustam automaticamente à faixa visível de ping e jitter."
+    },
+    "chartLegend": {
+      "download": "Download (Mbps)",
+      "upload": "Upload (Mbps)",
+      "ping": "Ping (ms)",
+      "jitter": "Jitter (ms)",
+      "healthScore": "Saúde",
+      "bestTest": "Melhor Teste"
+    },
+    "scoreBar": {
+      "excellent": "Excelente (80-100)",
+      "good": "Bom (60-79)",
+      "poor": "Ruim (0-59)"
+    },
+    "insights": {
+      "title": "Insights de IA",
+      "speedOverview": "Visão Geral da Velocidade",
+      "excellentLatency": "Latência Excelente",
+      "moderateLatency": "Latência Moderada",
+      "highLatency": "Latência Alta",
+      "bestPerformance": "Melhor Desempenho",
+      "connectionInstability": "Instabilidade Detectada",
+      "avgSpeedMessage": "Sua velocidade média de download é {{download}} Mbps e upload é {{upload}} Mbps.",
+      "pingLowMessage": "Seu ping está consistentemente baixo, ótimo para jogos e chamadas de vídeo!",
+      "pingModerateMessage": "Seu ping é aceitável, mas pode melhorar para aplicações em tempo real.",
+      "pingHighMessage": "Seu ping está alto, considere verificar sua conexão de rede.",
+      "bestTestMessage": "Seu melhor teste atingiu uma pontuação de saúde de {{score}}!",
+      "instabilityMessage": "{{count}} de {{total}} teste(s) mostrou flutuação de velocidade, indicando conexão errática.",
+      "instabilityMessage_plural": "{{count}} de {{total}} testes mostraram flutuação de velocidade, indicando conexão errática.",
+      "comingSoon": "Em Breve - Análise Avançada",
+      "publicWifi": "Análise de Segurança Wi-Fi Público",
+      "anomalyDetection": "Detecção de Anomalias de Tráfego",
+      "ispBenchmarking": "Comparativo de ISPs",
+      "deviceHealth": "Verificações de Saúde de Dispositivos"
+    },
+    "table": {
+      "title": "Histórico de Testes",
+      "date": "Data",
+      "download": "Download",
+      "upload": "Upload",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "health": "Saúde",
+      "isp": "ISP",
+      "sortAsc": "↑",
+      "sortDesc": "↓"
+    },
+    "mobileCard": {
+      "download": "↓",
+      "upload": "↑",
+      "downloadUnit": "Mbps",
+      "uploadUnit": "Mbps",
+      "ping": "Ping",
+      "isp": "ISP"
+    },
+    "expandedDetails": {
+      "performance": "Desempenho",
+      "experienceScores": "Pontuações",
+      "environment": "Ambiente",
+      "aiAnalysis": "Análise de IA",
+      "downloadSpeed": "Velocidade de Download",
+      "uploadSpeed": "Velocidade de Upload",
+      "pingAvg": "Ping (Méd.)",
+      "pingMin": "Ping (Mín.)",
+      "pingMax": "Ping (Máx.)",
+      "jitter": "Jitter",
+      "packetLoss": "Perda de Pacotes",
+      "connectionStability": "Estabilidade",
+      "networkHealth": "Saúde da Rede",
+      "gaming": "Jogos",
+      "streaming": "Streaming",
+      "videoCall": "Videochamada",
+      "browsing": "Navegação",
+      "dateTime": "Data e Hora",
+      "isp": "ISP",
+      "country": "País",
+      "probeMethod": "Método de Sonda",
+      "stable": "✓ Estável",
+      "unstable": "⚠ Instável"
+    },
+    "empty": {
+      "withFiltersTitle": "Nenhum teste correspondeu aos filtros aplicados.",
+      "withFiltersMessage": "Tente ampliar o período ou limpar os filtros.",
+      "withoutFiltersTitle": "Nenhum histórico de teste disponível ainda.",
+      "withoutFiltersMessage": "Execute um teste de velocidade para começar seu histórico.",
+      "goToSpeedTest": "Ir para Teste de Velocidade"
+    },
+    "error": {
+      "title": "Algo deu errado",
+      "tryAgain": "Tentar novamente"
+    },
+    "csv": {
+      "filename": "historico-testes.csv",
+      "yes": "Sim",
+      "no": "Não",
+      "na": "N/D"
+    },
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Próximo",
+      "showing": "Mostrando {{start}}-{{end}} de {{total}}"
+    },
+    "unstableTooltip": "⚠ Conexão Instável",
+    "chartTooltip": {
+      "download": "Download",
+      "upload": "Upload",
+      "ping": "Ping",
+      "jitter": "Jitter",
+      "healthScore": "Saúde",
+      "experienceScore": "Experiência",
+      "mbps": "{{value}} Mbps",
+      "ms": "{{value}} ms",
+      "outOf100": "{{value}}/100"
+    }
+  },
+  "statsCards": {
+    "download": "Download",
+    "upload": "Upload",
+    "appLatency": "Latência do App",
+    "latencyVariation": "Variação de Latência",
+    "failedRequests": "Requisições Falhas",
+    "networkHealth": "SAÚDE DA REDE",
+    "gaming": "JOGOS",
+    "streaming": "STREAMING",
+    "videoCalls": "VIDEOCHAMADAS",
+    "browsing": "NAVEGAÇÃO",
+    "connectionStability": "ESTABILIDADE",
+    "stable": "✓ Estável",
+    "unstable": "⚠ Instável",
+    "latencyNote": "Como a Latência é Medida",
+    "latencyNoteDesc": "Requisições rápidas são enviadas a este serviço para estimar a capacidade de resposta do seu dispositivo e rede atuais.",
+    "latencyNoteDesc2": "Isso é útil para desempenho real de navegação, mas não é o mesmo que ping ICMP clássico.",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    },
+    "ariaLabel": "Métricas de rede",
+    "scoreAria": "Pontuação {{label}}: {{value}} de 100"
+  },
+  "account": {
+    "title": "Gerenciar seu perfil",
+    "personalInfo": {
+      "title": "Informações Pessoais",
+      "username": "Nome de usuário",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "usernamePlaceholder": "Digite seu nome de usuário",
+      "firstNamePlaceholder": "Nome",
+      "lastNamePlaceholder": "Sobrenome",
+      "notSet": "Não definido",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "save": "Salvar"
+    },
+    "email": {
+      "title": "Email",
+      "emailAddress": "Endereço de Email",
+      "placeholder": "Digite seu email",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "save": "Salvar"
+    },
+    "signOut": "Sair",
+    "links": {
+      "runSpeedtest": "Executar Speedtest",
+      "scanPort": "Scanear Porta"
+    },
+    "success": {
+      "profileUpdated": "Perfil Atualizado!",
+      "profileMessage": "Suas informações foram atualizadas com sucesso.",
+      "checkInbox": "Verifique seu email!",
+      "emailMessage": "Enviamos um email de verificação para seu novo endereço."
+    },
+    "error": {
+      "title": "Ops!",
+      "message": "Não foi possível carregar seu perfil"
+    },
+    "modals": {
+      "savePersonalInfo": "Tem certeza que deseja salvar as alterações?",
+      "updateEmail": "Tem certeza que deseja atualizar seu email? Você precisará verificar o novo email.",
+      "signOut": "Tem certeza que deseja sair da sua conta?",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "signOutBtn": "Sair"
+    }
+  },
+  "security": {
+    "title": "Segurança de Portas",
+    "subtitle": "Monitore serviços expostos, execute varreduras ativas e mantenha a superfície de ataque sob controle.",
+    "proTip": "Dica!",
+    "tabs": {
+      "scan": "Varredura",
+      "insights": "Insights",
+      "knowledge": "Conhecimento"
+    },
+    "scanOverview": "Visão Geral da Varredura",
+    "wheelProgress": "Progresso da Varredura",
+    "howItWorks": "Esta varredura verifica portas comuns e as classifica como abertas, fechadas ou filtradas, derivando uma postura de risco.",
+    "howItWorks2": "Use como referência prática e verifique achados de alto risco com regras de firewall e propriedade de serviços.",
+    "aiSummary": "Resumo com IA",
+    "aiSummaryPlaceholder": "Seu resumo de segurança aparecerá após a conclusão da varredura.",
+    "emptyState": {
+      "title": "Nenhuma avaliação ainda",
+      "message": "Use a roda de varredura para executar uma varredura. Suas métricas aparecerão aqui."
+    },
+    "metrics": {
+      "openPorts": "Portas Abertas",
+      "closedPorts": "Portas Fechadas",
+      "filteredPorts": "Portas Filtradas",
+      "duration": "Duração"
+    },
+    "sections": {
+      "riskGroups": "Grupos de Risco e Recomendações",
+      "scannedResults": "Resultados por Risco",
+      "topRecommendations": "Principais Recomendações",
+      "fullDetails": "Detalhes Completos",
+      "viewDetails": "Ver detalhes",
+      "hideDetails": "Ocultar detalhes"
+    },
+    "riskLevels": {
+      "critical": "Crítico",
+      "high": "Alto",
+      "moderate": "Moderado",
+      "low": "Baixo",
+      "unknown": "Desconhecido"
+    },
+    "table": {
+      "port": "Porta",
+      "state": "Estado",
+      "service": "Serviço",
+      "risk": "Risco"
+    },
+    "emptyPorts": "Nenhuma porta aberta encontrada.",
+    "emptyRecommendations": "Nenhuma recomendação ainda.",
+    "emptyRiskGroup": "Nenhuma porta aberta",
+    "statusChip": {
+      "label": "Segurança",
+      "excellent": "Excelente",
+      "good": "Bom",
+      "moderate": "Moderado",
+      "highRisk": "Alto Risco",
+      "critical": "Crítico"
+    },
+    "insights": {
+      "title": "Histórico e Tendências",
+      "subtitle": "Clique em uma varredura para pré-visualizar os resultados.",
+      "emptyTitle": "Nenhum dado de varredura disponível",
+      "emptyMessage": "Execute uma varredura para começar seu histórico.",
+      "runScan": "Executar Varredura"
+    },
+    "knowledge": {
+      "eyebrow": "Central de Conhecimento",
+      "title": "Recomendações e referência de serviços",
+      "description": "Consulte as diretrizes de IA, inspecione serviços expostos e mantenha um catálogo de portas comuns.",
+      "libraryEyebrow": "Biblioteca de referência",
+      "libraryTitle": "Serviços de alta atenção",
+      "count": "{{count}} serviços conhecidos",
+      "viewDetails": "Ver detalhes",
+      "hideDetails": "Ocultar detalhes",
+      "portEntry": "Porta {{number}} / {{protocol}}",
+      "noDescription": "Nenhuma descrição disponível.",
+      "recommendation": "Recomendação: {{text}}",
+      "noRecommendation": "Nenhuma recomendação disponível.",
+      "flagCommon": "Comum",
+      "flagUnencrypted": "Não criptografado",
+      "flagExploitTarget": "Alvo de exploração",
+      "knownExposure": "Exposição conhecida: {{text}}",
+      "emptyTitle": "Nenhuma entrada disponível",
+      "emptyMessage": "A referência aparecerá quando o catálogo estiver disponível."
+    }
+  },
+  "loading": {
+    "defaultMessage": "Inicializando Sistema",
+    "defaultStatus": "Sistema GL Web v1.0",
+    "initializing": "Inicializando Sistema",
+    "systemStatus": "Sistema GL Web v1.0",
+    "loadingHistory": "Carregando histórico",
+    "historySystem": "Sistema AkovoLabs de Histórico v1.0",
+    "loadingSecurity": "Carregando varredura",
+    "securitySystem": "Sistema de Segurança AkovoLabs v1.0",
+    "loadingProfile": "Carregando perfil",
+    "profileSystem": "Sistema de Perfil AkovoLabs v1.0",
+    "updatingProfile": "Atualizando perfil",
+    "profileSystemUpdating": "Sistema de Perfil AkovoLabs v1.0"
+  },
+  "scanEmptyState": {
+    "title": "Nenhum dado de varredura",
+    "message": "Inicie sua primeira varredura para preencher este painel."
+  },
+  "ariaLabels": {
+    "toggleNav": "Alternar navegação",
+    "networkMetrics": "Métricas de rede",
+    "scoreValue": "Pontuação {{label}}: {{value}} de 100"
+  },
+  "imageAlt": {
+    "akovolabsLogo": "Logo AkovoLabs",
+    "aiIcon": "Ícone de IA",
+    "instructor": "Instrutor",
+    "instructorAvatar": "Avatar do instrutor",
+    "success": "Sucesso",
+    "error": "Erro",
+    "noResults": "Nenhum resultado",
+    "errorOccurred": "Erro ocorreu",
+    "comingSoon": "Em breve",
+    "historyHero": "Hero do Histórico",
+    "securityGuide": "Guia de segurança",
+    "securityHero": "Hero de segurança",
+    "noRiskGroups": "Nenhum grupo de risco",
+    "noRecommendations": "Nenhuma recomendação",
+    "authRequired": "Autenticação necessária",
+    "pageNotFound": "Página não encontrada",
+    "futureUI": "Interface futurista",
+    "playStore": "Disponível no Google Play",
+    "appStore": "Baixar na App Store",
+    "fullStackDev": "Clement Phoshoko",
+    "networkEngineer": "Tsumbedzo Matloga",
+    "operatingSystems": "Sistemas Operacionais",
+    "speedTest": "Teste de Velocidade",
+    "downloadHero": "Baixar AkovoLabs Speedtest",
+    "newsHero": "Últimas notícias",
+    "ai": "IA"
+  },
+  "authRequired": {
+    "title": "401 - Acesso negado",
+    "message": "Ops! Você precisa estar autenticado para acessar esta página.",
+    "subtitle": "Faça login ou crie uma conta para continuar.",
+    "goToLogin": "Ir para a página de Login"
+  },
+  "notFound": {
+    "title": "404 - Página não encontrada",
+    "message": "Ops! A página que você procura não existe.",
+    "subtitle": "Talvez ela tenha sido movida, excluída, ou você digitou a URL errada.",
+    "goHome": "Ir para o Início e executar um teste de velocidade"
+  }
+}

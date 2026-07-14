@@ -39,9 +39,17 @@ function errorHandler(err, req, res, next) {
     }
   }
 
+  let code = 'SERVER_ERROR';
+  if (statusCode === 400 && err.name === 'ZodError') code = 'VALIDATION_ERROR';
+  else if (statusCode === 429) code = 'RATE_LIMIT_EXCEEDED';
+  else if (message.includes('Unable to connect')) code = 'NETWORK_CONNECTION_ERROR';
+  else if (message.includes('timed out') || message.includes('timeout')) code = 'SERVER_TIMEOUT';
+  else if (message.includes('Invalid request format')) code = 'VALIDATION_INVALID_FORMAT';
+
   res.status(statusCode).json({
     status: 'error',
-    message: message
+    code,
+    message
   });
 }
 

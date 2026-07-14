@@ -11,6 +11,7 @@ async function validateSupabaseJWT(req, res, next) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         status: 'error',
+        code: 'AUTH_TOKEN_MISSING',
         message: 'Authorization header missing or invalid'
       });
     }
@@ -21,6 +22,7 @@ async function validateSupabaseJWT(req, res, next) {
     if (error || !user) {
       return res.status(401).json({
         status: 'error',
+        code: 'AUTH_TOKEN_INVALID',
         message: 'Invalid or expired token'
       });
     }
@@ -31,6 +33,7 @@ async function validateSupabaseJWT(req, res, next) {
   } catch (error) {
     res.status(500).json({
       status: 'error',
+      code: 'AUTH_ERROR',
       message: 'Authentication error',
       error: error.message
     });

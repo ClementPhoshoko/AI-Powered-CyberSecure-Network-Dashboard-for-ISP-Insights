@@ -1,4 +1,5 @@
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import DatePicker from 'react-datepicker';
@@ -238,35 +239,37 @@ function TableSkeleton({ showSummary = false }) {
 }
 
 function HistoryEmptyState({ hasActiveFilters }) {
+  const { t } = useTranslation();
   return (
     <div className="empty-state">
-      <img src={notFoundAvatar} alt="No results found" className="empty-state-avatar" />
+      <img src={notFoundAvatar} alt={t('imageAlt.noResults')} className="empty-state-avatar" />
       <div className="empty-state-copy">
         <p className="empty-state-title">
-          {hasActiveFilters ? 'No speed tests matched the filters you applied.' : 'No speed test history is available yet.'}
+          {hasActiveFilters ? t('history.emptyTitleWithFilters') : t('history.emptyTitleNoFilters')}
         </p>
         <p className="empty-state-description">
           {hasActiveFilters
-            ? 'Try widening the date range or clearing filters to see more results.'
-            : 'Run a speed test to start building your history and unlock trend insights.'}
+            ? t('history.emptyDescWithFilters')
+            : t('history.emptyDescNoFilters')}
         </p>
       </div>
-      <Link to="/" className="link-btn">Go to Speed Test</Link>
+      <Link to="/" className="link-btn">{t('history.goToSpeedTest')}</Link>
     </div>
   );
 }
 
 function HistoryErrorState({ error, onRetry }) {
+  const { t } = useTranslation();
   return (
     <div className="error-state">
-      <img src={notFoundAvatar} alt="Error occurred" className="error-state-avatar" />
+      <img src={notFoundAvatar} alt={t('imageAlt.errorOccurred')} className="error-state-avatar" />
       <div className="error-state-copy">
-        <p className="error-state-title">Something went wrong</p>
+        <p className="error-state-title">{t('history.errorTitle')}</p>
         <p className="error-state-description">
           {error}
         </p>
       </div>
-      <button onClick={onRetry} className="link-btn">Try Again</button>
+      <button onClick={onRetry} className="link-btn">{t('history.tryAgain')}</button>
     </div>
   );
 }
@@ -480,7 +483,7 @@ function HistoryChartTooltip({ active, payload, label, config = {} }) {
       <div className="history-chart-tooltip__label">{formatTooltipDate(label)}</div>
       {payload[0]?.payload?.was_unstable && (
         <div className="history-chart-tooltip__row history-chart-tooltip__row--unstable">
-          <span className="history-chart-tooltip__unstable-badge">⚠ Unstable Connection</span>
+          <span className="history-chart-tooltip__unstable-badge">{t('history.unstableConnection')}</span>
         </div>
       )}
       <div className="history-chart-tooltip__rows">
@@ -546,7 +549,7 @@ const ExperienceScoresTooltip = ({ active, payload }) => {
   return (
     <div className="history-chart-tooltip" style={{ minWidth: '160px' }}>
       <div className="history-chart-tooltip__label" style={{ marginBottom: '6px', paddingBottom: '4px' }}>
-        Experience Score
+        {t('history.experienceScore')}
       </div>
       <div className="history-chart-tooltip__row">
         <div className="history-chart-tooltip__series">
@@ -564,6 +567,7 @@ const ExperienceScoresTooltip = ({ active, payload }) => {
 };
 
 function History() {
+  const { t } = useTranslation();
   const { loading: authLoading, user } = useAuth();
 
   const renderUnstableDot = (strokeColor) => (props) => {
@@ -772,17 +776,17 @@ function History() {
   );
 
   const speedTooltipConfig = useMemo(() => ({
-    download: { label: 'Download', unit: 'Mbps', digits: 1, color: 'var(--download)' },
-    upload: { label: 'Upload', unit: 'Mbps', digits: 1, color: 'var(--upload)' }
+    download: { label: t('history.download'), unit: 'Mbps', digits: 1, color: 'var(--download)' },
+    upload: { label: t('history.upload'), unit: 'Mbps', digits: 1, color: 'var(--upload)' }
   }), []);
 
   const latencyTooltipConfig = useMemo(() => ({
-    ping: { label: 'Ping', unit: 'ms', digits: 1, color: 'var(--ping)' },
-    jitter: { label: 'Jitter', unit: 'ms', digits: 1, color: '#f59e0b' }
+    ping: { label: t('history.ping'), unit: 'ms', digits: 1, color: 'var(--ping)' },
+    jitter: { label: t('history.jitter'), unit: 'ms', digits: 1, color: '#f59e0b' }
   }), []);
 
   const healthTooltipConfig = useMemo(() => ({
-    healthScore: { label: 'Health Score', unit: '', digits: 0, color: 'var(--primary)' }
+    healthScore: { label: t('history.health'), unit: '', digits: 0, color: 'var(--primary)' }
   }), []);
 
   // Get first and last dates in chartData
@@ -817,8 +821,8 @@ function History() {
           <rect x="14" y="14" width="7" height="7" />
         </svg>
       ),
-      title: 'Speed Overview',
-      message: `Your average download speed is ${summary?.avgDownload} Mbps and upload is ${summary?.avgUpload} Mbps.`
+      title: t('history.aiInsights.speedOverview'),
+      message: t('history.aiInsights.speedOverviewMessage', { download: summary?.avgDownload, upload: summary?.avgUpload })
     });
 
     if (parseInt(summary?.avgPing) < 50) {
@@ -829,8 +833,8 @@ function History() {
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
         ),
-        title: 'Excellent Latency',
-        message: 'Your ping is consistently low, great for gaming and video calls!'
+        title: t('history.aiInsights.excellentLatency'),
+        message: t('history.aiInsights.excellentLatencyMessage')
       });
     } else if (parseInt(summary?.avgPing) < 100) {
       insights.push({
@@ -842,8 +846,8 @@ function History() {
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
         ),
-        title: 'Moderate Latency',
-        message: 'Your ping is acceptable, but could be better for real-time applications.'
+        title: t('history.aiInsights.moderateLatency'),
+        message: t('history.aiInsights.moderateLatencyMessage')
       });
     } else {
       insights.push({
@@ -855,8 +859,8 @@ function History() {
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
         ),
-        title: 'High Latency',
-        message: 'Your ping is quite high, consider checking your network connection.'
+        title: t('history.aiInsights.highLatency'),
+        message: t('history.aiInsights.highLatencyMessage')
       });
     }
 
@@ -868,8 +872,8 @@ function History() {
           <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
         </svg>
       ),
-      title: 'Best Performance',
-      message: `Your best test achieved a health score of ${summary?.bestTest?.network_health_score?.toFixed(0)}!`
+      title: t('history.aiInsights.bestPerformance'),
+      message: t('history.aiInsights.bestPerformanceMessage', { score: summary?.bestTest?.network_health_score?.toFixed(0) })
     });
 
     const unstableCount = allHistory.filter(t => t.was_unstable).length;
@@ -881,8 +885,8 @@ function History() {
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
         ),
-        title: 'Connection Instability Detected',
-        message: `${unstableCount} of your ${allHistory.length} test${allHistory.length === 1 ? '' : 's'} showed speed fluctuation between passes, indicating an erratic connection.`
+        title: t('history.aiInsights.connectionInstability'),
+        message: t('history.aiInsights.connectionInstabilityMessage', { count: unstableCount, total: allHistory.length })
       });
     }
 
@@ -913,7 +917,7 @@ function History() {
   });
 
   const exportToCSV = () => {
-    const headers = ['Date', 'Download (Mbps)', 'Upload (Mbps)', 'Ping (ms)', 'Jitter (ms)', 'Health Score', 'ISP', 'Unstable'];
+    const headers = t('history.exportCsvHeaders', { returnObjects: true });
     const rows = allHistory.map(test => [
       formatDate(test.created_at),
       test.download_speed_mbps?.toFixed(1) || 0,
@@ -922,7 +926,7 @@ function History() {
       test.jitter_ms?.toFixed(1) || 0,
       test.network_health_score?.toFixed(0) || 0,
       test.isp_name || 'N/A',
-      test.was_unstable ? 'Yes' : 'No'
+      test.was_unstable ? t('history.yes') : t('history.no')
     ]);
 
     const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
@@ -930,7 +934,7 @@ function History() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'test-history.csv';
+    a.download = t('history.exportCsvFilename');
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -946,8 +950,8 @@ function History() {
         <Loading
           isLoading={true}
           progress={progress}
-          message="Loading test history"
-          status="AkovoLabs Test History System v1.0"
+          message={t('loading.loadingHistory')}
+          status={t('loading.historySystem')}
           indeterminate={true}
         />
       </div>
@@ -961,13 +965,13 @@ function History() {
       {((allHistory || []).length > 0 || !allLoading) && (
         <>
           <div className="history-title-section">
-            <h1 className="history-title-section-title">Test History</h1>
+            <h1 className="history-title-section-title">{t('history.title')}</h1>
             <div className="history-subtitle-with-avatar">
-              <img src={womanAvatar} alt="Instructor" className="subtitle-avatar" />
+              <img src={womanAvatar} alt={t('imageAlt.instructor')} className="subtitle-avatar" />
               <div className="subtitle-text">
-                <p className="history-title-section-subtitle">Review your past speed tests, track performance trends, and gain insights into your network health.</p>
+                <p className="history-title-section-subtitle">{t('history.subtitle')}</p>
                 <p className="pro-tip-text">
-                  <span className="pro-tip-label">Pro Tip!</span> {randomTip}
+                  <span className="pro-tip-label">{t('history.proTipLabel')}</span> {randomTip}
                 </p>
               </div>
             </div>
@@ -975,7 +979,7 @@ function History() {
 
           {/* Hero Section */}
           <section className="history-hero">
-            <img src={heroImage} alt="Test History Hero" className="history-hero-image" />
+            <img src={heroImage} alt={t('imageAlt.historyHero')} className="history-hero-image" />
           </section>
 
           {/* Tab Navigation */}
@@ -984,19 +988,19 @@ function History() {
               className={`history-tab ${activeTab === 'trends' ? 'history-tab--active' : ''}`}
               onClick={() => handleTabChange('trends')}
             >
-              Trends
+              {t('history.tabTrends')}
             </button>
             <button 
               className={`history-tab ${activeTab === 'insights' ? 'history-tab--active' : ''}`}
               onClick={() => handleTabChange('insights')}
             >
-              Insights
+              {t('history.tabInsights')}
             </button>
             <button 
               className={`history-tab ${activeTab === 'history' ? 'history-tab--active' : ''}`}
               onClick={() => handleTabChange('history')}
             >
-              History
+              {t('history.tabHistory')}
             </button>
           </div>
           
@@ -1017,27 +1021,27 @@ function History() {
                     <div className="summary-grid">
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.totalTests}</span>
-                        <span className="summary-mini-label">Total Tests</span>
+                        <span className="summary-mini-label">{t('history.totalTests')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                        <span className="summary-mini-label">Avg Download</span>
+                        <span className="summary-mini-label">{t('history.avgDownload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                        <span className="summary-mini-label">Avg Upload</span>
+                        <span className="summary-mini-label">{t('history.avgUpload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                        <span className="summary-mini-label">Avg Ping</span>
+                        <span className="summary-mini-label">{t('history.avgPing')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                        <span className="summary-mini-label">Avg Health Score</span>
+                        <span className="summary-mini-label">{t('history.avgHealthScore')}</span>
                       </div>
                     </div>
                   )}
@@ -1045,27 +1049,27 @@ function History() {
                   {/* Section 2: Performance Trends */}
                   <div className="trends-section">
                     <div className="trends-header">
-                      <h2 className="section-title">Performance Trends</h2>
+                      <h2 className="section-title">{t('history.performanceTrends')}</h2>
                       <div className="date-filters">
                         <div className="date-filters-fields">
                           <label className="date-label-field">
-                            <span className="date-label">From</span>
+                            <span className="date-label">{t('history.from')}</span>
                             <DatePicker
                               selected={tempStartDate}
                               onChange={(date) => setTempStartDate(date)}
                               className="date-input"
-                              placeholderText="Select start date"
+                              placeholderText={t('history.selectStartDate')}
                               isClearable
                               dateFormat="yyyy-MM-dd"
                             />
                           </label>
                           <label className="date-label-field">
-                            <span className="date-label">To</span>
+                            <span className="date-label">{t('history.to')}</span>
                             <DatePicker
                               selected={tempEndDate}
                               onChange={(date) => setTempEndDate(date)}
                               className="date-input"
-                              placeholderText="Select end date"
+                              placeholderText={t('history.selectEndDate')}
                               isClearable
                               dateFormat="yyyy-MM-dd"
                             />
@@ -1095,7 +1099,7 @@ function History() {
                               setTableOffset(0);
                             }}
                           >
-                            Clear
+                            {t('history.clear')}
                           </button>
                         </div>
                       </div>
@@ -1110,7 +1114,7 @@ function History() {
                       <>
                         {/* Graph 1: Speed Trends */}
                         <div className="graph-card">
-                          <h3 className="graph-title">Speed Trends</h3>
+                          <h3 className="graph-title">{t('history.speedTrends')}</h3>
                           <ResponsiveContainer width="100%" height={chartHeight}>
                             <LineChart data={visibleChartData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
@@ -1154,7 +1158,7 @@ function History() {
                                 strokeWidth={2}
                                 dot={renderUnstableDot('var(--download)')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--download)', stroke: '#fff', strokeWidth: 2 }}
-                                name="Download (Mbps)"
+                                name={`${t('history.download')} (Mbps)`}
                               />
                               <Line
                                 yAxisId="upload"
@@ -1165,27 +1169,27 @@ function History() {
                                 dot={renderUnstableDot('var(--upload)')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--upload)', stroke: '#fff', strokeWidth: 2 }}
                                 strokeDasharray="5 5"
-                                name="Upload (Mbps)"
+                                name={`${t('history.upload')} (Mbps)`}
                               />
                             </LineChart>
                           </ResponsiveContainer>
                           <p className="graph-date-range">
-                            Speed axes auto-scale independently for download and upload so smaller trends remain readable.
+                            {t('history.speedAxesNote')}
                           </p>
                           <p className="graph-legend">
                             <span className="graph-legend__dot graph-legend__dot--unstable" />
-                            Amber dots mark tests where connection speed fluctuated significantly between passes.
+                            {t('history.unstableDotLegend')}
                           </p>
                           {dateRange && (
                             <p className="graph-date-range">
-                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                              {t('history.showingResults', { first: dateRange.firstDate, last: dateRange.lastDate })}
                             </p>
                           )}
                         </div>
 
                         {/* Graph 2: Latency Quality */}
                         <div className="graph-card">
-                          <h3 className="graph-title">Latency Quality</h3>
+                          <h3 className="graph-title">{t('history.latencyQuality')}</h3>
                           <ResponsiveContainer width="100%" height={chartHeight}>
                             <LineChart data={visibleChartData}>
                               <CartesianGrid strokeDasharray="3 3" stroke="var(--glass-border)" />
@@ -1217,7 +1221,7 @@ function History() {
                                 strokeWidth={2}
                                 dot={renderUnstableDot('var(--ping)')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: 'var(--ping)', stroke: '#fff', strokeWidth: 2 }}
-                                name="Ping (ms)"
+                                name={`${t('history.ping')} (ms)`}
                               />
                               <Line
                                 type="monotone"
@@ -1227,23 +1231,23 @@ function History() {
                                 dot={renderUnstableDot('#f59e0b')}
                                 activeDot={{ r: isMobile ? 5 : 6, fill: '#f59e0b', stroke: '#fff', strokeWidth: 2 }}
                                 strokeDasharray="5 5"
-                                name="Jitter (ms)"
+                                name={`${t('history.jitter')} (ms)`}
                               />
                             </LineChart>
                           </ResponsiveContainer>
                           <p className="graph-date-range">
-                            Latency values auto-scale to the visible ping and jitter range.
+                            {t('history.latencyAxesNote')}
                           </p>
                           {dateRange && (
                             <p className="graph-date-range">
-                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                              {t('history.showingResults', { first: dateRange.firstDate, last: dateRange.lastDate })}
                             </p>
                           )}
                         </div>
 
                         {/* Graph 3: Network Health Score */}
                         <div className="graph-card">
-                          <h3 className="graph-title">Network Health Score</h3>
+                          <h3 className="graph-title">{t('history.networkHealthScore')}</h3>
                           <ResponsiveContainer width="100%" height={chartHeight}>
                             <AreaChart data={visibleChartData}>
                               <defs>
@@ -1277,20 +1281,20 @@ function History() {
                                 stroke="var(--primary)" 
                                 fillOpacity={1} 
                                 fill="url(#colorScore)" 
-                                name="Health Score"
+                                name={`${t('history.health')} Score`}
                               />
                             </AreaChart>
                           </ResponsiveContainer>
                           {dateRange && (
                             <p className="graph-date-range">
-                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                              {t('history.showingResults', { first: dateRange.firstDate, last: dateRange.lastDate })}
                             </p>
                           )}
                         </div>
 
                         {/* Graph 4: Experience Scores (Radar Chart + Horizontal Bars) */}
                         <div className="graph-card">
-                          <h3 className="graph-title">Experience Scores</h3>
+                          <h3 className="graph-title">{t('history.experienceScores')}</h3>
                           <div className="experience-scores-container">
                             <div className="radar-chart-wrapper">
                               <ResponsiveContainer width="100%" height={radarHeight}>
@@ -1298,7 +1302,7 @@ function History() {
                                   <PolarGrid stroke="var(--glass-border)" />
                                   <PolarAngleAxis dataKey="subject" stroke="var(--text-primary)" tick={{ fontSize: isMobile ? 10 : 12 }} />
                                   <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="var(--text-muted)" />
-                                  <Radar name="Best Test" dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
+                                  <Radar name={t('history.bestTest')} dataKey="A" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
                                   <Legend wrapperStyle={{ fontSize: isMobile ? 10 : 12 }} />
                                   <Tooltip content={<ExperienceScoresTooltip />} />
                                 </RadarChart>
@@ -1323,22 +1327,22 @@ function History() {
                               <div className="score-bar-legend">
                                 <div className="legend-item">
                                   <div className="legend-color" style={{ backgroundColor: 'var(--success)' }}></div>
-                                  <div className="legend-text">Excellent (80-100)</div>
+                                  <div className="legend-text">                            {t('history.excellent')}</div>
                                 </div>
                                 <div className="legend-item">
                                   <div className="legend-color" style={{ backgroundColor: 'var(--warning)' }}></div>
-                                  <div className="legend-text">Good (60-79)</div>
+                                  <div className="legend-text">{t('history.good')}</div>
                                 </div>
                                 <div className="legend-item">
                                   <div className="legend-color" style={{ backgroundColor: 'var(--error)' }}></div>
-                                  <div className="legend-text">Poor (0-59)</div>
+                                  <div className="legend-text">{t('history.poor')}</div>
                                 </div>
                               </div>
                             </div>
                           </div>
                           {dateRange && (
                             <p className="graph-date-range">
-                              Showing results from {dateRange.firstDate} to {dateRange.lastDate}
+                              {t('history.showingResults', { first: dateRange.firstDate, last: dateRange.lastDate })}
                             </p>
                           )}
                         </div>
@@ -1368,27 +1372,27 @@ function History() {
                       <div className="summary-grid">
                         <div className="summary-mini-card">
                           <span className="summary-mini-value">{summary.totalTests}</span>
-                          <span className="summary-mini-label">Total Tests</span>
+                          <span className="summary-mini-label">{t('history.totalTests')}</span>
                         </div>
 
                         <div className="summary-mini-card">
                           <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                          <span className="summary-mini-label">Avg Download</span>
+                          <span className="summary-mini-label">{t('history.avgDownload')}</span>
                         </div>
 
                         <div className="summary-mini-card">
                           <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                          <span className="summary-mini-label">Avg Upload</span>
+                          <span className="summary-mini-label">{t('history.avgUpload')}</span>
                         </div>
 
                         <div className="summary-mini-card">
                           <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                          <span className="summary-mini-label">Avg Ping</span>
+                          <span className="summary-mini-label">{t('history.avgPing')}</span>
                         </div>
 
                         <div className="summary-mini-card">
                           <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                          <span className="summary-mini-label">Avg Health Score</span>
+                          <span className="summary-mini-label">{t('history.avgHealthScore')}</span>
                         </div>
                       </div>
                     </>
@@ -1402,7 +1406,7 @@ function History() {
                     />
                   ) : aiInsights.length > 0 ? (
                     <div className="ai-insights-section">
-                      <h2 className="section-title">AI Insights</h2>
+                      <h2 className="section-title">{t('history.aiInsights.speedOverview')}</h2>
                       <div className="ai-insights-grid">
                         {aiInsights.map((insight, index) => (
                           <div key={index} className="ai-insight-card">
@@ -1418,27 +1422,27 @@ function History() {
                       <div className="coming-soon-section">
                         <img 
                           src={womanAvatar} 
-                          alt="Coming Soon" 
+                          alt={t('imageAlt.comingSoon')} 
                           className="coming-soon-avatar"
                         />
                         <div className="coming-soon-content">
-                          <h3 className="coming-soon-title">Coming Soon - Advanced Network Analysis</h3>
+                          <h3 className="coming-soon-title">{t('history.comingSoonTitle')}</h3>
                           <ul className="coming-soon-list">
                             <li className="coming-soon-item">
                               <span className="coming-soon-bullet"></span>
-                              Public Wi-Fi Security Analysis
+                              {t('history.comingSoonItems.0')}
                             </li>
                             <li className="coming-soon-item">
                               <span className="coming-soon-bullet"></span>
-                              Network Traffic Anomaly Detection
+                              {t('history.comingSoonItems.1')}
                             </li>
                             <li className="coming-soon-item">
                               <span className="coming-soon-bullet"></span>
-                              ISP Performance Benchmarking
+                              {t('history.comingSoonItems.2')}
                             </li>
                             <li className="coming-soon-item">
                               <span className="coming-soon-bullet"></span>
-                              Device-Level Network Health Checks
+                              {t('history.comingSoonItems.3')}
                             </li>
                           </ul>
                         </div>
@@ -1464,27 +1468,27 @@ function History() {
                     <div className="summary-grid">
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.totalTests}</span>
-                        <span className="summary-mini-label">Total Tests</span>
+                        <span className="summary-mini-label">{t('history.totalTests')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
-                        <span className="summary-mini-label">Avg Download</span>
+                        <span className="summary-mini-label">{t('history.avgDownload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
-                        <span className="summary-mini-label">Avg Upload</span>
+                        <span className="summary-mini-label">{t('history.avgUpload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
-                        <span className="summary-mini-label">Avg Ping</span>
+                        <span className="summary-mini-label">{t('history.avgPing')}</span>
                       </div>
 
                       <div className="summary-mini-card">
                         <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
-                        <span className="summary-mini-label">Avg Health Score</span>
+                        <span className="summary-mini-label">{t('history.avgHealthScore')}</span>
                       </div>
                     </div>
                   )}
@@ -1492,28 +1496,28 @@ function History() {
                   {/* Section 4: Historical Test Table */}
                   <div className="test-table-section">
                     <div className="test-table-header">
-                      <h2 className="section-title">Test History</h2>
+                      <h2 className="section-title">{t('history.tabHistory')}</h2>
                       <div className="test-table-right-section">
                         <div className="date-filters">
                           <div className="date-filters-fields">
                             <label className="date-label-field">
-                              <span className="date-label">From</span>
+                              <span className="date-label">{t('history.from')}</span>
                               <DatePicker
                                 selected={tempStartDate}
                                 onChange={(date) => setTempStartDate(date)}
                                 className="date-input"
-                                placeholderText="Select start date"
+                                placeholderText={t('history.selectStartDate')}
                                 isClearable
                                 dateFormat="yyyy-MM-dd"
                               />
                             </label>
                             <label className="date-label-field">
-                              <span className="date-label">To</span>
+                              <span className="date-label">{t('history.to')}</span>
                               <DatePicker
                                 selected={tempEndDate}
                                 onChange={(date) => setTempEndDate(date)}
                                 className="date-input"
-                                placeholderText="Select end date"
+                                placeholderText={t('history.selectEndDate')}
                                 isClearable
                                 dateFormat="yyyy-MM-dd"
                               />
@@ -1543,7 +1547,7 @@ function History() {
                                 setTableOffset(0);
                               }}
                             >
-                              Clear
+                              {t('history.clear')}
                             </button>
                             <button onClick={exportToCSV} className="export-btn">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1585,20 +1589,20 @@ function History() {
                                 </div>
                                 <div className="test-card-mobile__metrics">
                                   <div className="test-card-mobile__metric">
-                                    <span className="test-card-mobile__metric-label">↓</span>
+                                    <span className="test-card-mobile__metric-label">{t('history.downloadShort')}</span>
                                     <span className="test-card-mobile__metric-value">{test.download_speed_mbps?.toFixed(1) || 0} <small>Mbps</small></span>
                                   </div>
                                   <div className="test-card-mobile__metric">
-                                    <span className="test-card-mobile__metric-label">↑</span>
+                                    <span className="test-card-mobile__metric-label">{t('history.uploadShort')}</span>
                                     <span className="test-card-mobile__metric-value">{test.upload_speed_mbps?.toFixed(1) || 0} <small>Mbps</small></span>
                                   </div>
                                   <div className="test-card-mobile__metric">
-                                    <span className="test-card-mobile__metric-label">Ping</span>
+                                    <span className="test-card-mobile__metric-label">{t('history.ping')}</span>
                                     <span className="test-card-mobile__metric-value">{test.ping_avg_ms?.toFixed(1) || 0} <small>ms</small></span>
                                   </div>
                                   <div className="test-card-mobile__metric">
-                                    <span className="test-card-mobile__metric-label">ISP</span>
-                                    <span className="test-card-mobile__metric-value test-card-mobile__metric-value--isp">{test.isp_name || 'N/A'}</span>
+                                    <span className="test-card-mobile__metric-label">{t('history.isp')}</span>
+                                    <span className="test-card-mobile__metric-value test-card-mobile__metric-value--isp">{test.isp_name || t('history.na')}</span>
                                   </div>
                                 </div>
                                 <svg
@@ -1614,49 +1618,49 @@ function History() {
                                   <div className="test-card-mobile__details">
                                     <div className="test-card-mobile__detail-grid">
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Ping (Min)</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.pingMin')}</span>
                                         <span className="test-card-mobile__detail-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Ping (Max)</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.pingMax')}</span>
                                         <span className="test-card-mobile__detail-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Jitter</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.jitter')}</span>
                                         <span className="test-card-mobile__detail-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Packet Loss</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.packetLoss')}</span>
                                         <span className="test-card-mobile__detail-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Stability</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.connectionStability')}</span>
                                         <span className="test-card-mobile__detail-value" style={{ color: test.was_unstable ? '#F59E0B' : '#10B981' }}>
-                                          {test.was_unstable ? '⚠ Unstable' : '✓ Stable'}
+                                          {test.was_unstable ? t('history.unstable') : t('history.stable')}
                                         </span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Gaming</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.gaming')}</span>
                                         <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.gaming_score) }}>{test.gaming_score?.toFixed(0) || 0}</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Streaming</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.streaming')}</span>
                                         <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.streaming_score) }}>{test.streaming_score?.toFixed(0) || 0}</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Video Call</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.videoCall')}</span>
                                         <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.video_call_score) }}>{test.video_call_score?.toFixed(0) || 0}</span>
                                       </div>
                                       <div className="test-card-mobile__detail-item">
-                                        <span className="test-card-mobile__detail-label">Browsing</span>
+                                        <span className="test-card-mobile__detail-label">{t('history.browsing')}</span>
                                         <span className="test-card-mobile__detail-value" style={{ color: getScoreColor(test.browsing_score) }}>{test.browsing_score?.toFixed(0) || 0}</span>
                                       </div>
                                     </div>
                                     {test.ai_summary && (
                                       <div className="test-card-mobile__ai">
                                         <h5 className="test-card-mobile__ai-title">
-                                          <img src={aiIcon} alt="AI" className="test-card-mobile__ai-icon" />
-                                          AI Analysis
+                                          <img src={aiIcon} alt={t('imageAlt.ai')} className="test-card-mobile__ai-icon" />
+                                          {t('history.aiAnalysisTitle')}
                                         </h5>
                                         <p className="test-card-mobile__ai-text">{test.ai_summary}</p>
                                       </div>
@@ -1676,39 +1680,39 @@ function History() {
                                     setSortColumn('created_at');
                                     setSortDirection(sortColumn === 'created_at' && sortDirection === 'desc' ? 'asc' : 'desc');
                                   }}>
-                                    Date {sortColumn === 'created_at' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                    {t('history.date')} {sortColumn === 'created_at' && (sortDirection === 'asc' ? '↑' : '↓')}
                                   </th>
                                   <th onClick={() => {
                                     setSortColumn('download_speed_mbps');
                                     setSortDirection(sortColumn === 'download_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
                                   }}>
-                                    Download {sortColumn === 'download_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                    {t('history.download')} {sortColumn === 'download_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
                                   </th>
                                   <th onClick={() => {
                                     setSortColumn('upload_speed_mbps');
                                     setSortDirection(sortColumn === 'upload_speed_mbps' && sortDirection === 'desc' ? 'asc' : 'desc');
                                   }}>
-                                    Upload {sortColumn === 'upload_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                    {t('history.upload')} {sortColumn === 'upload_speed_mbps' && (sortDirection === 'asc' ? '↑' : '↓')}
                                   </th>
                                   <th onClick={() => {
                                     setSortColumn('ping_avg_ms');
                                     setSortDirection(sortColumn === 'ping_avg_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
                                   }}>
-                                    Ping {sortColumn === 'ping_avg_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                    {t('history.ping')} {sortColumn === 'ping_avg_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
                                   </th>
                                   <th onClick={() => {
                                     setSortColumn('jitter_ms');
                                     setSortDirection(sortColumn === 'jitter_ms' && sortDirection === 'desc' ? 'asc' : 'desc');
                                   }}>
-                                    Jitter {sortColumn === 'jitter_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                    {t('history.jitter')} {sortColumn === 'jitter_ms' && (sortDirection === 'asc' ? '↑' : '↓')}
                                   </th>
                                   <th onClick={() => {
                                     setSortColumn('network_health_score');
                                     setSortDirection(sortColumn === 'network_health_score' && sortDirection === 'desc' ? 'asc' : 'desc');
                                   }}>
-                                    Health {sortColumn === 'network_health_score' && (sortDirection === 'asc' ? '↑' : '↓')}
+                                    {t('history.health')} {sortColumn === 'network_health_score' && (sortDirection === 'asc' ? '↑' : '↓')}
                                   </th>
-                                  <th>ISP</th>
+                                  <th>{t('history.isp')}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1731,7 +1735,7 @@ function History() {
                                       </td>
                                       <td>
                                         {test.was_unstable && (
-                                          <span className="stability-dot stability-dot--unstable" title="Unstable connection">⚠</span>
+                                          <span className="stability-dot stability-dot--unstable" title={t('history.unstableConnection')}>⚠</span>
                                         )}
                                         {formatDate(test.created_at)}
                                       </td>
@@ -1744,7 +1748,7 @@ function History() {
                                           {test.network_health_score?.toFixed(0) || 0}
                                         </span>
                                       </td>
-                                      <td>{test.isp_name || 'N/A'}</td>
+                                      <td>{test.isp_name || t('history.na')}</td>
                                     </tr>
                                     {expandedTestId === test.id && (
                                       <tr className="test-table-row--expanded">
@@ -1752,74 +1756,74 @@ function History() {
                                           <div className="test-details-container">
                                             <div className="test-details-wrapper">
                                               <div className="test-details-section test-details-section--two-col">
-                                                <h4 className="test-details-section-title">Performance</h4>
+                                                <h4 className="test-details-section-title">{t('history.performanceTitle')}</h4>
                                                 <div className="test-details-grid">
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Download Speed</span>
+                                                    <span className="test-details-label">{t('history.downloadSpeed')}</span>
                                                     <span className="test-details-value">{test.download_speed_mbps?.toFixed(1) || 0} Mbps</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Upload Speed</span>
+                                                    <span className="test-details-label">{t('history.uploadSpeed')}</span>
                                                     <span className="test-details-value">{test.upload_speed_mbps?.toFixed(1) || 0} Mbps</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Ping (Avg)</span>
+                                                    <span className="test-details-label">{t('history.pingAvg')}</span>
                                                     <span className="test-details-value">{test.ping_avg_ms?.toFixed(1) || 0} ms</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Ping (Min)</span>
+                                                    <span className="test-details-label">{t('history.pingMin')}</span>
                                                     <span className="test-details-value">{test.ping_min_ms?.toFixed(1) || 0} ms</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Ping (Max)</span>
+                                                    <span className="test-details-label">{t('history.pingMax')}</span>
                                                     <span className="test-details-value">{test.ping_max_ms?.toFixed(1) || 0} ms</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Jitter</span>
+                                                    <span className="test-details-label">{t('history.jitter')}</span>
                                                     <span className="test-details-value">{test.jitter_ms?.toFixed(1) || 0} ms</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Packet Loss</span>
+                                                    <span className="test-details-label">{t('history.packetLoss')}</span>
                                                     <span className="test-details-value">{test.packet_loss_percent?.toFixed(1) || 0}%</span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Connection Stability</span>
+                                                    <span className="test-details-label">{t('history.connectionStability')}</span>
                                                     <span className="test-details-value" style={{ color: test.was_unstable ? '#F59E0B' : '#10B981' }}>
-                                                      {test.was_unstable ? '⚠ Unstable' : '✓ Stable'}
+                                                      {test.was_unstable ? t('history.unstable') : t('history.stable')}
                                                     </span>
                                                   </div>
                                                 </div>
                                               </div>
 
                                               <div className="test-details-section test-details-section--two-col">
-                                                <h4 className="test-details-section-title">Experience Scores</h4>
+                                                <h4 className="test-details-section-title">{t('history.experienceScoresTitle')}</h4>
                                                 <div className="test-details-grid">
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Network Health</span>
+                                                    <span className="test-details-label">{t('history.networkHealth')}</span>
                                                     <span className="test-details-value" style={{ color: getScoreColor(test.network_health_score) }}>
                                                       {test.network_health_score?.toFixed(0) || 0}
                                                     </span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Gaming</span>
+                                                    <span className="test-details-label">{t('history.gaming')}</span>
                                                     <span className="test-details-value" style={{ color: getScoreColor(test.gaming_score) }}>
                                                       {test.gaming_score?.toFixed(0) || 0}
                                                     </span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Streaming</span>
+                                                    <span className="test-details-label">{t('history.streaming')}</span>
                                                     <span className="test-details-value" style={{ color: getScoreColor(test.streaming_score) }}>
                                                       {test.streaming_score?.toFixed(0) || 0}
                                                     </span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Video Call</span>
+                                                    <span className="test-details-label">{t('history.videoCall')}</span>
                                                     <span className="test-details-value" style={{ color: getScoreColor(test.video_call_score) }}>
                                                       {test.video_call_score?.toFixed(0) || 0}
                                                     </span>
                                                   </div>
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Browsing</span>
+                                                    <span className="test-details-label">{t('history.browsing')}</span>
                                                     <span className="test-details-value" style={{ color: getScoreColor(test.browsing_score) }}>
                                                       {test.browsing_score?.toFixed(0) || 0}
                                                     </span>
@@ -1836,7 +1840,7 @@ function History() {
                                                     alt="AI" 
                                                     className="test-details-section-icon"
                                                   />
-                                                  AI Analysis
+                                                    {t('history.aiAnalysisTitle')}
                                                 </h4>
                                                 <div className="test-details-ai-summary">
                                                   <p>{test.ai_summary}</p>
@@ -1845,25 +1849,25 @@ function History() {
                                             )}
 
                                             <div className="test-details-section">
-                                              <h4 className="test-details-section-title">Environment</h4>
+                                                <h4 className="test-details-section-title">{t('history.environmentTitle')}</h4>
                                               <div className="test-details-grid">
                                                 <div className="test-details-item">
-                                                  <span className="test-details-label">Date & Time</span>
+                                                    <span className="test-details-label">{t('history.dateTime')}</span>
                                                   <span className="test-details-value">{formatDate(test.created_at)}</span>
                                                 </div>
                                                 <div className="test-details-item">
-                                                  <span className="test-details-label">ISP</span>
-                                                  <span className="test-details-value">{test.isp_name || 'N/A'}</span>
+                                                    <span className="test-details-label">{t('history.isp')}</span>
+                                                  <span className="test-details-value">{test.isp_name || t('history.na')}</span>
                                                 </div>
                                                 {test.country && (
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Country</span>
+                                                    <span className="test-details-label">{t('history.country')}</span>
                                                     <span className="test-details-value">{test.country}</span>
                                                   </div>
                                                 )}
                                                 {test.probe_method && (
                                                   <div className="test-details-item">
-                                                    <span className="test-details-label">Probe Method</span>
+                                                    <span className="test-details-label">{t('history.probeMethod')}</span>
                                                     <span className="test-details-value">{test.probe_method}</span>
                                                   </div>
                                                 )}
@@ -1890,18 +1894,17 @@ function History() {
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <polyline points="15 18 9 12 15 6" />
                             </svg>
-                            Previous
+                            {t('history.previous')}
                           </button>
                           <span className="pagination-info">
-                            Showing {tableOffset + 1}-{Math.min(tableOffset + tableLimit, tableTotal || tableOffset + tableHistory.length)}
-                            {tableTotal > 0 && ` of ${tableTotal}`}
+                            {t('history.showing', { start: tableOffset + 1, end: Math.min(tableOffset + tableLimit, tableTotal || tableOffset + tableHistory.length), total: tableTotal })}
                           </span>
                           <button
                             className="pagination-btn"
                             onClick={() => setTableOffset(tableOffset + tableLimit)}
                             disabled={!tableTotal || (tableOffset + tableLimit >= tableTotal) || tableLoading}
                           >
-                            Next
+                            {t('history.next')}
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <polyline points="9 18 15 12 9 6" />
                             </svg>

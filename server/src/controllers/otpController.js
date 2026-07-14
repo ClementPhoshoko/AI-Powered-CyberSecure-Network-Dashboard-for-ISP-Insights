@@ -44,13 +44,13 @@ async function registerUser(req, res, next) {
     const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
     if (listError) {
       console.error('[Register] listUsers error:', listError);
-      return res.status(500).json({ status: 'error', message: 'Unable to process request' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Unable to process request' });
     }
 
     const existing = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
 
     if (existing && existing.email_confirmed_at) {
-      return res.status(400).json({ status: 'error', message: 'An account with this email already exists.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_EMAIL_EXISTS', message: 'An account with this email already exists.' });
     }
 
     let userId;
@@ -59,7 +59,7 @@ async function registerUser(req, res, next) {
       const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(existing.id, { password });
       if (updErr) {
         console.error('[Register] update password error:', updErr);
-        return res.status(500).json({ status: 'error', message: 'Unable to create account. Please try again.' });
+        return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Unable to create account. Please try again.' });
       }
       userId = existing.id;
     } else {
@@ -74,6 +74,7 @@ async function registerUser(req, res, next) {
         const already = createErr.message?.toLowerCase().includes('already');
         return res.status(already ? 400 : 500).json({
           status: 'error',
+          code: already ? 'AUTH_EMAIL_EXISTS' : 'SERVER_ERROR',
           message: already ? 'An account with this email already exists.' : 'Unable to create account. Please try again.',
         });
       }
@@ -104,7 +105,7 @@ async function registerUser(req, res, next) {
       });
     } catch (emailErr) {
       console.error('[Register] Email send failed:', emailErr.message);
-      return res.status(500).json({ status: 'error', message: 'Failed to send email. Please try again.' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Failed to send email. Please try again.' });
     }
 
     res.status(201).json({ status: 'success', message: 'Account created. Verification email sent.' });
@@ -137,7 +138,7 @@ async function sendOtp(req, res, next) {
     const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
     if (listError) {
       console.error('[OTP] listUsers error:', listError);
-      return res.status(500).json({ status: 'error', message: 'Unable to process request' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Unable to process request' });
     }
 
     const user = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
@@ -149,11 +150,11 @@ async function sendOtp(req, res, next) {
     }
 
     if (purpose === 'verify' && !user) {
-      return res.status(400).json({ status: 'error', message: 'No account found with this email.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_USER_NOT_FOUND', message: 'No account found with this email.' });
     }
 
     if (purpose === 'verify' && user?.email_confirmed_at) {
-      return res.status(400).json({ status: 'error', message: 'This email is already verified.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_EMAIL_ALREADY_VERIFIED', message: 'This email is already verified.' });
     }
 
     const code = generateOtp();
@@ -206,7 +207,7 @@ async function sendOtp(req, res, next) {
       await sendEmail(emailParams);
     } catch (emailErr) {
       console.error('[OTP] Email send failed:', emailErr.message);
-      return res.status(500).json({ status: 'error', message: 'Failed to send email. Please try again.' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Failed to send email. Please try again.' });
     }
 
     res.status(200).json({
@@ -242,23 +243,23 @@ async function verifyOtp(req, res, next) {
     const stored = otpStore.get(key);
 
     if (!stored || stored.purpose !== purpose) {
-      return res.status(400).json({ status: 'error', message: 'No OTP found. Please request a new one.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_OTP_NOT_FOUND', message: 'No OTP found. Please request a new one.' });
     }
 
     if (Date.now() > stored.expiresAt) {
       otpStore.delete(key);
-      return res.status(400).json({ status: 'error', message: 'OTP has expired. Please request a new one.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_OTP_EXPIRED', message: 'OTP has expired. Please request a new one.' });
     }
 
     if (stored.attempts >= MAX_ATTEMPTS) {
       otpStore.delete(key);
-      return res.status(400).json({ status: 'error', message: 'Too many attempts. Please request a new OTP.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_OTP_MAX_ATTEMPTS', message: 'Too many attempts. Please request a new OTP.' });
     }
 
     stored.attempts++;
 
     if (code !== stored.code) {
-      return res.status(400).json({ status: 'error', message: 'Invalid code. Please try again.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_OTP_INVALID', message: 'Invalid code. Please try again.' });
     }
 
     // OTP verified — generate a short-lived reset token for password reset
@@ -280,7 +281,7 @@ async function verifyOtp(req, res, next) {
       );
       if (confirmError) {
         console.error('[OTP] Failed to confirm email:', confirmError);
-        return res.status(500).json({ status: 'error', message: 'Failed to verify email. Please try again.' });
+        return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Failed to verify email. Please try again.' });
       }
     }
 
@@ -322,20 +323,20 @@ async function resetPassword(req, res, next) {
     const stored = otpStore.get(key);
 
     if (!stored || stored.purpose !== 'reset') {
-      return res.status(400).json({ status: 'error', message: 'Invalid reset session. Please start over.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_INVALID_RESET_SESSION', message: 'Invalid reset session. Please start over.' });
     }
 
     if (!stored.resetToken || stored.resetToken !== resetToken) {
-      return res.status(400).json({ status: 'error', message: 'Invalid reset token.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_INVALID_RESET_TOKEN', message: 'Invalid reset token.' });
     }
 
     if (Date.now() > stored.resetTokenExpiresAt) {
       otpStore.delete(key);
-      return res.status(400).json({ status: 'error', message: 'Reset token has expired. Please start over.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_RESET_TOKEN_EXPIRED', message: 'Reset token has expired. Please start over.' });
     }
 
     if (!stored.userId) {
-      return res.status(400).json({ status: 'error', message: 'User not found.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_USER_NOT_FOUND', message: 'User not found.' });
     }
 
     // Update the password via Supabase admin
@@ -346,7 +347,7 @@ async function resetPassword(req, res, next) {
 
     if (updateError) {
       console.error('[OTP] Failed to reset password:', updateError);
-      return res.status(500).json({ status: 'error', message: 'Failed to reset password. Please try again.' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Failed to reset password. Please try again.' });
     }
 
     // Clean up
@@ -383,28 +384,28 @@ async function verifyLink(req, res, next) {
     const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
     if (listError) {
       console.error('[OTP] verifyLink listUsers error:', listError);
-      return res.status(500).json({ status: 'error', message: 'Unable to process request' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Unable to process request' });
     }
 
     const user = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
 
     if (!user) {
-      return res.status(400).json({ status: 'error', message: 'Invalid or expired verification link.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_INVALID_VERIFY_LINK', message: 'Invalid or expired verification link.' });
     }
 
     if (user.email_confirmed_at) {
-      return res.status(400).json({ status: 'error', message: 'This email is already verified. You can sign in.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_EMAIL_ALREADY_VERIFIED', message: 'This email is already verified. You can sign in.' });
     }
 
     const storedToken = user.user_metadata?.verify_token;
     const storedExpires = user.user_metadata?.verify_token_expires;
 
     if (!storedToken || storedToken !== token) {
-      return res.status(400).json({ status: 'error', message: 'Invalid verification link.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_INVALID_VERIFY_LINK', message: 'Invalid verification link.' });
     }
 
     if (Date.now() > (storedExpires || 0)) {
-      return res.status(400).json({ status: 'error', message: 'Verification link has expired. Please sign up again.' });
+      return res.status(400).json({ status: 'error', code: 'AUTH_VERIFY_LINK_EXPIRED', message: 'Verification link has expired. Please sign up again.' });
     }
 
     // Confirm email in Supabase
@@ -415,7 +416,7 @@ async function verifyLink(req, res, next) {
 
     if (confirmError) {
       console.error('[OTP] Failed to confirm email via link:', confirmError);
-      return res.status(500).json({ status: 'error', message: 'Failed to verify email. Please try again.' });
+      return res.status(500).json({ status: 'error', code: 'SERVER_ERROR', message: 'Failed to verify email. Please try again.' });
     }
 
     res.status(200).json({

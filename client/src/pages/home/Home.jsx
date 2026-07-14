@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './Home.css';
 import SpeedMeter from '../../components/speedmeter/SpeedMeter';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
@@ -13,6 +14,7 @@ import { useSpeedTest } from '../../hooks/useSpeedTest';
 import { useAuth } from '../../context/AuthContext';
 
 function Home() {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const navigate = useNavigate();
@@ -44,15 +46,15 @@ function Home() {
   };
   const aiSummaryText =
     testResult?.ai_summary ||
-    'Your speed test summary will appear here after the system interprets the results.';
+    t('speedtest:aiSummary.placeholder');
 
   const getPhaseLabel = () => {
     switch (phase) {
-      case 'initializing': return 'Initializing...';
-      case 'ping': return 'Testing App Latency...';
-      case 'download': return 'Testing Download...';
-      case 'upload': return 'Testing Upload...';
-      case 'calculating': return 'Calculating Derived Scores...';
+      case 'initializing': return t('speedtest:phases.initializing');
+      case 'ping': return t('speedtest:phases.appLatency');
+      case 'download': return t('speedtest:phases.download');
+      case 'upload': return t('speedtest:phases.upload');
+      case 'calculating': return t('speedtest:phases.derivedScores');
       default: return '';
     }
   };
@@ -60,7 +62,7 @@ function Home() {
   return (
     <div className="home-page">
       <div className="home-container">
-        <h1 className="home-title">AI-Powered Network Speed Testing</h1>
+        <h1 className="home-title">{t('speedtest:hero.heading')}</h1>
         <div className="home-col">
           <div className="speedmeter-wrapper">
             <div className={`speedmeter-container ${isRunning || isComplete ? 'speedmeter-container--visible' : ''}`}>
@@ -70,7 +72,7 @@ function Home() {
               />
             </div>
             <div className={`logo-overlay ${isRunning || isComplete ? 'logo-overlay--open' : ''}`}>
-              <img src={loginLogo} alt="AkovoLabs Logo" className="logo-overlay-icon" />
+              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="logo-overlay-icon" />
             </div>
           </div>
           {loading && (
@@ -95,33 +97,33 @@ function Home() {
             }}
           >
             {isRunning ? (
-              'Stop Test'
+              t('speedtest:buttons.stopTest')
             ) : isComplete ? (
-              'Run Again'
+              t('speedtest:buttons.runAgain')
             ) : (
               <>
                 <svg className="begin-test-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M8 5v14l11-7z" fill="currentColor"/>
                 </svg>
-                Begin Test
+                {t('speedtest:buttons.beginTest')}
               </>
             )}
           </button>
 
           {!isRunning && !isComplete ? (
             <div className="graph-advisory">
-              <h3 className="graph-advisory-title">Understand Your Speedtest</h3>
-              <p>• <strong>Download Speed Over Time:</strong> Shows consistency of connection</p>
-              <p>• <strong>Upload Speed Over Time:</strong> Measures upload performance</p>
-              <p>• <strong>App Latency:</strong> Tracks how quickly your device reaches this service during the test</p>
+              <h3 className="graph-advisory-title">{t('speedtest:advisory.heading')}</h3>
+              <p>{t('speedtest:advisory.downloadOverTime')}</p>
+              <p>{t('speedtest:advisory.uploadOverTime')}</p>
+              <p>{t('speedtest:advisory.appLatency')}</p>
             </div>
           ) : isRunning || (testResult && !testResult.ai_summary) ? (
             <div className="ai-summary-section is-loading" />
           ) : testResult && (
             <div className="ai-summary-section">
               <h3 className="ai-summary-title">
-                <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
-                AI-Powered Summary
+                <img src={aiIcon} alt={t('imageAlt.aiIcon')} className="ai-summary-icon" />
+                {t('speedtest:aiSummary.heading')}
               </h3>
               <p className="ai-summary-text">
                 {aiSummaryText}
@@ -131,28 +133,26 @@ function Home() {
         </div>
         <div className={`home-col ${!isRunning && !isComplete ? 'home-col--center' : ''}`}>
           {!isRunning && !isComplete ? (
-            <section className="speaker-section" aria-label="How to read this test">
+            <section className="speaker-section" aria-label={t('speedtest:howToUse.heading')}>
               <img
                 src={speakerAvatar}
-                alt="Instructor avatar"
+                alt={t('imageAlt.instructorAvatar')}
                 className="speaker-avatar"
               />
               <div className="speaker-card">
-                <span className="speaker-tag">How To Use This Test</span>     
-                <h3 className="speaker-title">Test your current network speed</h3>
+                <span className="speaker-tag">{t('speedtest:howToUse.tag')}</span>     
+                <h3 className="speaker-title">{t('speedtest:howToUse.heading')}</h3>
                 <p className="speaker-text">
-                  You can run a speed test from your current device and connection. If you're on home Wi-Fi, the results reflect your real-world experience right now.
+                  {t('speedtest:howToUse.currentDevice')}
                 </p>
                 <p className="speaker-text">
-                  It measures device-to-server performance, not a deep inspection of your router, signal strength, or every internal Wi-Fi detail.
+                  {t('speedtest:howToUse.deviceToServer')}
                 </p>
                 <p className="speaker-text">
                   {user ? (
-                    "Now that you are signed in, don't forget to check your test graphs and history below!"
+                    t('speedtest:howToUse.signedIn')
                   ) : (
-                    <>
-                      <strong>Sign in</strong> or <strong>Sign up</strong> to get more detailed insights about your network performance!
-                    </>
+                    <>{t('speedtest:howToUse.signedOut')}</>
                   )}
                 </p>
               </div>
@@ -169,14 +169,14 @@ function Home() {
       )}
       <Modal
         isOpen={isModalOpen}
-        message="Sign in to get detailed insights from your speed test results. Would you like to proceed to the sign-in page?"
+        message={t('home.signInModal.message')}
         leftOption={{
           icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           ),
-          label: "Cancel",
+          label: t('home.signInModal.cancel'),
           onClick: () => setIsModalOpen(false)
         }}
         rightOption={{
@@ -185,7 +185,7 @@ function Home() {
               <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           ),
-          label: "Proceed",
+          label: t('home.signInModal.proceed'),
           onClick: () => {
             setIsModalOpen(false);
             navigate('/login');

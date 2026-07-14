@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { register } from '../../../services/authService';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
@@ -9,6 +10,7 @@ import successAvatar from '../../../assets/avatars/success_avatar_2.png';
 import './Register.css';
 
 function Register() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -53,19 +55,19 @@ function Register() {
 
   const validatePassword = (pwd) => {
     if (pwd.length < 8) {
-      return 'Password must be at least 8 characters long';
+      return t('auth.register.validation.minChars');
     }
     if (!/[A-Z]/.test(pwd)) {
-      return 'Password must contain at least one uppercase letter';
+      return t('auth.register.validation.uppercase');
     }
     if (!/[a-z]/.test(pwd)) {
-      return 'Password must contain at least one lowercase letter';
+      return t('auth.register.validation.lowercase');
     }
     if (!/[0-9]/.test(pwd)) {
-      return 'Password must contain at least one number';
+      return t('auth.register.validation.number');
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
-      return 'Password must contain at least one special character (!@#$%^&*(),.?":{|}<>)';
+      return t('auth.register.validation.special');
     }
     return null;
   };
@@ -75,12 +77,12 @@ function Register() {
     setPasswordError('');
 
     if (!agreeToTerms) {
-      setErrorModal({ isOpen: true, message: 'You must agree to the Terms & Conditions and Privacy Policy to create an account.' });
+      setErrorModal({ isOpen: true, message: t('auth.register.validation.agreeTerms') });
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrorModal({ isOpen: true, message: 'Passwords do not match' });
+      setErrorModal({ isOpen: true, message: t('auth.register.validation.passwordMismatch') });
       return;
     }
 
@@ -91,7 +93,7 @@ function Register() {
     }
 
     if (captchaEnabled && !captchaToken) {
-      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      setErrorModal({ isOpen: true, message: t('errors:CAPTCHA_REQUIRED') });
       return;
     }
 
@@ -118,15 +120,15 @@ function Register() {
         <div className="auth-form" key={animationKey}>
           <div className="auth-success-icon-wrapper">
             <div className="auth-success-icon">
-              <img src={successAvatar} alt="Success" />
+              <img src={successAvatar} alt={t('imageAlt.success')} />
             </div>
           </div>
-          <h1 className="auth-form-title">Check your email</h1>
+          <h1 className="auth-form-title">{t('auth.register.checkEmail')}</h1>
           <p className="auth-success-text">
-            We sent a verification link to <strong>{registeredEmail}</strong>. Click the link to activate your account.
+            {t('auth.register.successMessage', { email: registeredEmail })}
           </p>
           <p className="auth-success-hint">
-            If you don't see the email, check your spam folder or try signing up again.
+            {t('auth.register.spamNote')}
           </p>
           <button className="auth-form-button" onClick={() => navigate('/login')}>
             <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -134,7 +136,7 @@ function Register() {
               <polyline points="10 17 15 12 10 7" />
               <line x1="15" y1="12" x2="3" y2="12" />
             </svg>
-            Go to Login
+            {t('auth.register.goToLogin')}
           </button>
         </div>
         <ErrorModal
@@ -151,17 +153,17 @@ function Register() {
       <Loading 
         isLoading={isLoading} 
         progress={progress}
-        message="Creating your account"
-        status="AkovoLabs Auth System v1.0"
+        message={t('auth.register.signingUp')}
+        status={t('nav.authSystemStatus')}
         indeterminate={true}
       />
       <form key={animationKey} className="auth-form" onSubmit={handleSubmit}>
-        <h1 className="auth-form-title">Create account</h1>
+        <h1 className="auth-form-title">{t('auth.register.heading')}</h1>
         
         {passwordError && <div className="auth-form-error">{passwordError}</div>}
 
         <div className="auth-form-field">
-          <label className="auth-form-label" htmlFor="register-email-input">Email</label>
+          <label className="auth-form-label" htmlFor="register-email-input">{t('auth.register.emailLabel')}</label>
           <div className="auth-form-input-wrapper">
             <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -172,7 +174,7 @@ function Register() {
               name="email"
               type="email" 
               className="auth-form-input" 
-              placeholder="Enter your email" 
+              placeholder={t('auth.register.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -182,7 +184,7 @@ function Register() {
         </div>
         
         <div className="auth-form-field">
-          <label className="auth-form-label" htmlFor="register-password-input">Password</label>
+          <label className="auth-form-label" htmlFor="register-password-input">{t('auth.register.passwordLabel')}</label>
           <div className="auth-form-input-wrapper">
             <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -193,7 +195,7 @@ function Register() {
               name="password"
               type="password" 
               className="auth-form-input" 
-              placeholder="Enter your password" 
+              placeholder={t('auth.register.passwordPlaceholder')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setShowPasswordRequirements(true)}
@@ -205,26 +207,26 @@ function Register() {
           {showPasswordRequirements && (
             <div className="password-requirements">
               <div className={`requirement ${password.length >= 8 ? 'valid' : ''}`}>
-                {password.length >= 8 ? '✓' : '○'} At least 8 characters
+                {password.length >= 8 ? '✓' : '○'} {t('auth.register.passwordRequirements.minChars')}
               </div>
               <div className={`requirement ${/[A-Z]/.test(password) ? 'valid' : ''}`}>
-                {/[A-Z]/.test(password) ? '✓' : '○'} One uppercase letter
+                {/[A-Z]/.test(password) ? '✓' : '○'} {t('auth.register.passwordRequirements.uppercase')}
               </div>
               <div className={`requirement ${/[a-z]/.test(password) ? 'valid' : ''}`}>
-                {/[a-z]/.test(password) ? '✓' : '○'} One lowercase letter
+                {/[a-z]/.test(password) ? '✓' : '○'} {t('auth.register.passwordRequirements.lowercase')}
               </div>
               <div className={`requirement ${/[0-9]/.test(password) ? 'valid' : ''}`}>
-                {/[0-9]/.test(password) ? '✓' : '○'} One number
+                {/[0-9]/.test(password) ? '✓' : '○'} {t('auth.register.passwordRequirements.number')}
               </div>
               <div className={`requirement ${/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'valid' : ''}`}>
-                {/[!@#$%^&*(),.?":{}|<>]/.test(password) ? '✓' : '○'} One special character
+                {/[!@#$%^&*(),.?":{}|<>]/.test(password) ? '✓' : '○'} {t('auth.register.passwordRequirements.special')}
               </div>
             </div>
           )}
         </div>
         
         <div className="auth-form-field">
-          <label className="auth-form-label" htmlFor="register-confirm-password-input">Confirm password</label>
+          <label className="auth-form-label" htmlFor="register-confirm-password-input">{t('auth.register.confirmPasswordLabel')}</label>
           <div className="auth-form-input-wrapper">
             <svg className="auth-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -235,7 +237,7 @@ function Register() {
               name="confirm-password"
               type="password" 
               className="auth-form-input" 
-              placeholder="Confirm your password" 
+              placeholder={t('auth.register.confirmPasswordPlaceholder')}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
@@ -254,8 +256,8 @@ function Register() {
               onChange={(e) => setAgreeToTerms(e.target.checked)}
               required
             />
-            <span className="desktop-agreement-text">I agree to the Terms & Conditions and Privacy Policy</span>
-            <span className="mobile-agreement-text">I agree to the Ts & Cs and Privacy Policy</span>
+            <span className="desktop-agreement-text">{t('auth.register.agreeDesktop')}</span>
+            <span className="mobile-agreement-text">{t('auth.register.agreeMobile')}</span>
           </label>
         </div>
         
@@ -270,7 +272,7 @@ function Register() {
           <svg className="auth-form-button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 5v14M5 12h14" />
           </svg>
-          {isLoading ? 'Signing up...' : 'Sign up'}
+          {isLoading ? t('auth.register.signingUp') : t('auth.register.signUp')}
         </button>
       </form>
       <ErrorModal

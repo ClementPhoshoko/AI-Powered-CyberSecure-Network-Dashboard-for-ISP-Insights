@@ -1,27 +1,20 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 import './Loading.css';
 
-/**
- * Loading Component
- * A reusable glassmorphism loading bar with dynamic segmented squares.
- * Renders via Portal to ensure full-screen coverage.
- * 
- * @param {boolean} isLoading - Controls visibility of the loading modal.
- * @param {number} progress - 0 to 100 value for determinate progress.
- * @param {string} message - Optional message to display above the bar.
- * @param {string} status - Optional status text for the footer.
- * @param {boolean} indeterminate - If true, ignores progress and shows a continuous loop.
- */
 const Loading = ({ 
   isLoading,
   progress = 0, 
-  message = 'Initializing System', 
-  status = 'GL Web System v1.0',
+  message, 
+  status,
   indeterminate = false 
 }) => {
+  const { t } = useTranslation();
   const totalSquares = 12;
   const filledSquares = Math.floor((progress / 100) * totalSquares);
+  const displayMessage = message || t('loading.initializing');
+  const displayStatus = status || t('loading.systemStatus');
 
   if (!isLoading) return null;
 
@@ -30,7 +23,7 @@ const Loading = ({
       <div className="gl-loading-card">
         <div className="gl-loading-header">
           <div className="gl-loading-title-group">
-            <span className="gl-loading-message">{message}</span>
+            <span className="gl-loading-message">{displayMessage}</span>
             <div className="gl-loading-dots">
               <span>.</span><span>.</span><span>.</span>
             </div>
@@ -56,7 +49,7 @@ const Loading = ({
         </div>
         
         <div className="gl-loading-footer">
-          <span className="gl-loading-status">{status}</span>
+          <span className="gl-loading-status">{displayStatus}</span>
           <div className="gl-loading-pulse-dot" />
         </div>
       </div>

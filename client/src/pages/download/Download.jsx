@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './Download.css';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import mobileMockup from '../../assets/avatars/Futuristic_speed_test_UI_showcase.png';
@@ -7,26 +8,27 @@ import appStoreBadge from '../../assets/download-on-the-app-store-apple-logo-svg
 import { RocketLaunchIcon, BoltIcon, ShieldCheckIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
 
 const Download = () => {
+  const { t } = useTranslation();
   const features = [
     {
       icon: <RocketLaunchIcon />,
-      title: 'Accurate Speed Test',
-      subtitle: 'Test download, upload & ping'
+      title: t('download.features.0.title'),
+      subtitle: t('download.features.0.desc')
     },
     {
       icon: <BoltIcon />,
-      title: 'Real-time Results',
-      subtitle: 'Instant & precise measurements'
+      title: t('download.features.1.title'),
+      subtitle: t('download.features.1.desc')
     },
     {
       icon: <ShieldCheckIcon />,
-      title: 'Network Analysis',
-      subtitle: 'Monitor your connection quality'
+      title: t('download.features.2.title'),
+      subtitle: t('download.features.2.desc')
     },
     {
       icon: <GlobeAltIcon />,
-      title: 'Network Security Scan',
-      subtitle: 'Port risk detection built-in tools'
+      title: t('download.features.3.title'),
+      subtitle: t('download.features.3.desc')
     }
   ];
 
@@ -39,7 +41,7 @@ const Download = () => {
             <div className="download_logo_container">
               <img 
                 src={loginLogo} 
-                alt="AkovoLabs Speedtest" 
+                alt={t('imageAlt.akovolabsLogo')} 
                 className="download_logo" 
               />
             </div>
@@ -47,7 +49,7 @@ const Download = () => {
             <div className="download_image_container">
               <img 
                 src={mobileMockup} 
-                alt="Futuristic Speed Test UI" 
+                alt={t('imageAlt.futureUI')} 
                 className="download_mockup_image" 
               />
             </div>
@@ -56,11 +58,11 @@ const Download = () => {
           {/* Content Section */}
           <div className="download_content_section">
             <h1 className="download_headline">
-              AkovoLabs Speedtest
+              {t('download.headline')}
             </h1>
             
             <p className="download_subtitle">
-              Fast. Accurate. Smart.
+              {t('download.subtitle')}
             </p>
             
             <div className="download_features">
@@ -90,7 +92,7 @@ const Download = () => {
               >
                 <img 
                   src={googlePlayBadge} 
-                  alt="Get it on Google Play" 
+                  alt={t('imageAlt.playStore')} 
                   className="download_app_badge download_google_play_badge" 
                 />
               </a>
@@ -102,14 +104,14 @@ const Download = () => {
               >
                 <img 
                   src={appStoreBadge} 
-                  alt="Download on the App Store" 
+                  alt={t('imageAlt.appStore')} 
                   className="download_app_badge" 
                 />
               </a>
             </div>
 
             <p className="download_advisory">
-              Join our beta testing program for early access! Your data and speed test information is protected with end-to-end encryption. We never share your personal information without your consent.
+              {t('download.betaAdvisory')}
             </p>
           </div>
         </section>

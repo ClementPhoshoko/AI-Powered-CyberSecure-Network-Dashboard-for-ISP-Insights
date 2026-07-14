@@ -9,6 +9,7 @@ async function devLogin(req, res, next) {
     if (!email || !password) {
       return res.status(400).json({
         status: 'error',
+        code: 'VALIDATION_REQUIRED',
         message: 'Email and password are required'
       });
     }
@@ -22,6 +23,7 @@ async function devLogin(req, res, next) {
     if (error) {
       return res.status(401).json({
         status: 'error',
+        code: 'AUTH_INVALID_CREDENTIALS',
         message: 'Invalid credentials'
       });
     }

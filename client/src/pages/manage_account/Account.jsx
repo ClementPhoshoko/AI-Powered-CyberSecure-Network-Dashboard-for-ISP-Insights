@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import useProfile from '../../hooks/useProfile';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +12,7 @@ import successAvatar2 from '../../assets/avatars/success_avatar_2.png';
 import './Account.css';
 
 function Account() {
+  const { t } = useTranslation();
   const { user, logout, loading: authLoading, setIsLoggingOut } = useAuth();
   const { profile, loading: profileLoading, error: profileError, updateProfile, refetch } = useProfile(!authLoading && !!user);
   const navigate = useNavigate();
@@ -141,8 +143,8 @@ function Account() {
       <div className="account-page">
         <Loading 
           isLoading={true}
-          message="Loading profile"
-          status="AkovoLabs Profile System v1.0"
+          message={t('account.loadingProfile')}
+          status={t('account.profileSystem')}
           indeterminate={true}
         />
       </div>
@@ -153,9 +155,9 @@ function Account() {
     return (
       <div className="account-page">
         <div className="account-error-view">
-          <img src={notFoundAvatar} alt="Error" className="account-error-avatar" />
-          <h1 className="account-error-title">Oops!</h1>
-          <p className="account-error-text">We couldn't load your profile</p>
+          <img src={notFoundAvatar} alt={t('imageAlt.error')} className="account-error-avatar" />
+          <h1 className="account-error-title">{t('account.errorTitle')}</h1>
+          <p className="account-error-text">{t('account.errorText')}</p>
           <p className="account-error-subtext">{profileError}</p>
           <button 
             className="account-error-link"
@@ -164,7 +166,7 @@ function Account() {
             <svg className="account-error-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
             </svg>
-            Try Again
+            {t('account.tryAgain')}
           </button>
         </div>
       </div>
@@ -175,9 +177,9 @@ function Account() {
     return (
       <div className="account-page">
         <div className="account-success-view">
-          <img src={successAvatar2} alt="Success" className="account-success-avatar" />
-          <h1 className="account-success-title">Profile Updated!</h1>
-          <p className="account-success-text">Your personal information has been updated successfully.</p>
+          <img src={successAvatar2} alt={t('imageAlt.success')} className="account-success-avatar" />
+          <h1 className="account-success-title">{t('account.profileUpdated')}</h1>
+          <p className="account-success-text">{t('account.profileUpdatedText')}</p>
           <div className="account-success-links">
             <Link to="/" className="account-success-link">
               <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -203,9 +205,9 @@ function Account() {
     return (
       <div className="account-page">
         <div className="account-success-view">
-          <img src={successAvatar2} alt="Success" className="account-success-avatar" />
-          <h1 className="account-success-title">Check your inbox!</h1>
-          <p className="account-success-text">We've sent a verification email to your new address. Please click the link to confirm your email change.</p>
+          <img src={successAvatar2} alt={t('imageAlt.success')} className="account-success-avatar" />
+          <h1 className="account-success-title">{t('account.checkInbox')}</h1>
+          <p className="account-success-text">{t('account.verificationSent')}</p>
           <div className="account-success-links">
             <Link to="/" className="account-success-link">
               <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -232,13 +234,13 @@ function Account() {
       <Loading 
         isLoading={isUpdating} 
         progress={progress}
-        message="Updating profile"
-        status="AkovoLabs Profile System v1.0"
+          message={t('account.updatingProfile')}
+          status={t('account.profileSystemUpdating')}
         indeterminate={true}
       />
       <div key={animationKey} className="account-form-container">
         <div className="account-header">
-          <h1 className="account-title">Manage your profile</h1>
+          <h1 className="account-title">{t('account.manageProfile')}</h1>
           <button 
             type="button" 
             className="account-sign-out-btn"
@@ -249,14 +251,14 @@ function Account() {
               <polyline points="16 17 21 12 16 7" />
               <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            Sign Out
+            {t('account.signOut')}
           </button>
         </div>
         
         {/* Personal Info */}
         <div className="account-section">
           <div className="account-section-header">
-            <h2 className="account-section-title">Personal Information</h2>
+            <h2 className="account-section-title">{t('account.personalInformation')}</h2>
             {!editingPersonalInfo ? (
               <button 
                 type="button" 
@@ -267,14 +269,14 @@ function Account() {
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
-                Edit
+                {t('account.edit')}
               </button>
             ) : null}
           </div>
 
           <div className="account-field-group">
             <div className="account-form-field">
-              <label className="account-form-label">Username</label>
+              <label className="account-form-label">{t('account.username')}</label>
               <div className="account-form-input-wrapper">
                 <svg className="account-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -284,14 +286,14 @@ function Account() {
                   <input 
                     type="text" 
                     className="account-form-input" 
-                    placeholder="Enter your username" 
+                    placeholder={t('account.usernamePlaceholder')} 
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     autoFocus
                   />
                 ) : (
                   <div className="account-readonly-value">
-                    {username || <span className="account-readonly-placeholder">Not set</span>}
+                    {username || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
                   </div>
                 )}
               </div>
@@ -301,7 +303,7 @@ function Account() {
           <div className="account-field-row">
             <div className="account-field-group">
               <div className="account-form-field">
-                <label className="account-form-label">First Name</label>
+                <label className="account-form-label">{t('account.firstName')}</label>
                 <div className="account-form-input-wrapper">
                   <svg className="account-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -311,13 +313,13 @@ function Account() {
                     <input 
                       type="text" 
                       className="account-form-input" 
-                      placeholder="First name" 
+                      placeholder={t('account.firstNamePlaceholder')} 
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                     />
                   ) : (
                     <div className="account-readonly-value">
-                      {firstName || <span className="account-readonly-placeholder">Not set</span>}
+                      {firstName || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
                     </div>
                   )}
                 </div>
@@ -326,7 +328,7 @@ function Account() {
 
             <div className="account-field-group">
               <div className="account-form-field">
-                <label className="account-form-label">Last Name</label>
+                <label className="account-form-label">{t('account.lastName')}</label>
                 <div className="account-form-input-wrapper">
                   <svg className="account-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -336,13 +338,13 @@ function Account() {
                     <input 
                       type="text" 
                       className="account-form-input" 
-                      placeholder="Last name" 
+                      placeholder={t('account.lastNamePlaceholder')} 
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                     />
                   ) : (
                     <div className="account-readonly-value">
-                      {lastName || <span className="account-readonly-placeholder">Not set</span>}
+                      {lastName || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
                     </div>
                   )}
                 </div>
@@ -357,7 +359,7 @@ function Account() {
                 className="account-field-btn account-field-btn-cancel"
                 onClick={handleCancelPersonalInfo}
               >
-                Cancel
+                {t('account.cancel')}
               </button>
               <button 
                 type="button" 
@@ -365,7 +367,7 @@ function Account() {
                 onClick={() => setShowSavePersonalInfoConfirm(true)}
                 disabled={isUpdating}
               >
-                Save
+                {t('account.save')}
               </button>
             </div>
           ) : null}
@@ -377,7 +379,7 @@ function Account() {
         {/* Email */}
         <div className="account-section">
           <div className="account-section-header">
-            <h2 className="account-section-title">Email</h2>
+            <h2 className="account-section-title">{t('account.email')}</h2>
             {!editingEmail ? (
               <button 
                 type="button" 
@@ -388,14 +390,14 @@ function Account() {
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
-                Edit
+                {t('account.edit')}
               </button>
             ) : null}
           </div>
 
           <div className="account-field-group">
             <div className="account-form-field">
-              <label className="account-form-label">Email Address</label>
+              <label className="account-form-label">{t('account.emailAddress')}</label>
               <div className="account-form-input-wrapper">
                 <svg className="account-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -405,7 +407,7 @@ function Account() {
                   <input 
                     type="email" 
                     className="account-form-input" 
-                    placeholder="Enter your email" 
+                    placeholder={t('account.emailPlaceholder')} 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     autoFocus
@@ -425,7 +427,7 @@ function Account() {
                   className="account-field-btn account-field-btn-cancel"
                   onClick={handleCancelEmail}
                 >
-                  Cancel
+                  {t('account.cancel')}
                 </button>
                 <button 
                   type="button" 
@@ -433,7 +435,7 @@ function Account() {
                   onClick={() => setShowSaveEmailConfirm(true)}
                   disabled={isUpdating}
                 >
-                  Save
+                  {t('account.save')}
                 </button>
               </div>
             ) : null}
@@ -443,16 +445,16 @@ function Account() {
         {/* Bottom Links */}
         <div className="account-success-links">
           <Link to="/" className="account-success-link">
-            Run Speedtest
-          </Link>
-          <Link to="/security" className="account-success-link">
-            <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
-            Scan Port
-          </Link>
+              {t('account.runSpeedtest')}
+            </Link>
+            <Link to="/security" className="account-success-link" replace>
+              <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              {t('account.scanPort')}
+            </Link>
         </div>
       </div>
       <ErrorModal
@@ -464,13 +466,13 @@ function Account() {
       {/* Save Personal Info Confirmation Modal */}
       <Modal
         isOpen={showSavePersonalInfoConfirm}
-        message="Are you sure you want to save your personal information changes?"
+        message={t('account.savePersonalInfoConfirm')}
         leftOption={{
-          label: "Cancel",
+          label: t('account.cancel'),
           onClick: () => setShowSavePersonalInfoConfirm(false)
         }}
         rightOption={{
-          label: "Save",
+          label: t('account.save'),
           onClick: handleSavePersonalInfoConfirm
         }}
       />
@@ -478,13 +480,13 @@ function Account() {
       {/* Save Email Confirmation Modal */}
       <Modal
         isOpen={showSaveEmailConfirm}
-        message="Are you sure you want to update your email address? You'll need to verify your new email."
+        message={t('account.saveEmailConfirm')}
         leftOption={{
-          label: "Cancel",
+          label: t('account.cancel'),
           onClick: () => setShowSaveEmailConfirm(false)
         }}
         rightOption={{
-          label: "Save",
+          label: t('account.save'),
           onClick: handleSaveEmailConfirm
         }}
       />
@@ -492,13 +494,13 @@ function Account() {
       {/* Sign Out Confirmation Modal */}
       <Modal
         isOpen={showSignOutConfirm}
-        message="Are you sure you want to sign out of your account?"
+        message={t('account.signOutConfirm')}
         leftOption={{
-          label: "Cancel",
+          label: t('account.cancel'),
           onClick: () => setShowSignOutConfirm(false)
         }}
         rightOption={{
-          label: "Sign Out",
+          label: t('account.signOutConfirmLabel'),
           onClick: handleSignOutConfirm
         }}
       />

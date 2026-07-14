@@ -1,0 +1,703 @@
+{
+  "app": {
+    "name": "AkovoLabs",
+    "tagline": "Idayishibhodi Yokuhlaziya Inethiwekhi ene-AI",
+    "description": "Ukunika amandla ama-ISP ngemibono ehlakaniphile, ukuqapha ngesikhathi sangempela, nokuphepha kwezinga lebhizinisi",
+    "copyright": "© 2026 AkovoLabs. Wonke amalungelo agodliwe.",
+    "version": "Inguqulo yohlelo 1.0.0 © 2026 AkovoLabs. Wonke amalungelo agodliwe."
+  },
+  "nav": {
+    "home": "Ikhaya",
+    "about": "Mayelana",
+    "aboutDesc": "Funda ngomgomo wethu",
+    "aboutDropdown": {
+      "ourCompany": "Inkampani Yethu",
+      "team": "Ithimba",
+      "contactUs": "Xhumana Nathi",
+      "ourCompanyDesc": "Funda ngomgomo wethu",
+      "teamDesc": "Hlangana nochwepheshe bethu",
+      "contactUsDesc": "Xhumana nathi"
+    },
+    "services": "Izinsiza",
+    "servicesDesc": "Amathuluzi Ejubane Nezinethiwekhi",
+    "servicesDropdown": {
+      "speedTesting": "Ukuhlola Ijubane",
+      "networkAnalytics": "Ukuhlaziya Inethiwekhi",
+      "security": "Ukuphepha",
+      "aiInsights": "Imininingwane ye-AI",
+      "speedTestingDesc": "Kala ukuxhumana kwakho",
+      "networkAnalyticsDesc": "Imininingwane ejulile yenethiwekhi",
+      "securityDesc": "Vikela inethiwekhi yakho",
+      "aiInsightsDesc": "Izincomo ezihlakaniphile"
+    },
+    "download": "Landa",
+    "downloadDesc": "Kokubili i-iOS ne-Android",
+    "downloadDropdown": {
+      "iosApp": "Uhlelo lwe-iOS",
+      "androidApp": "Uhlelo lwe-Android",
+      "iosDesc": "Landa i-iPhone ne-iPad",
+      "androidDesc": "Landa amadivayisi e-Android",
+      "forBoth": "Kokubili i-iOS ne-Android"
+    },
+    "news": "Izindaba",
+    "newsDesc": "Izibuyekezo nabezindaba",
+    "newsDropdown": {
+      "updatesPress": "Izibuyekezo nabezindaba",
+      "desc": "Izindaba zakamuva, izibuyekezo nabezindaba"
+    },
+    "accountDropdown": {
+      "manageAccount": "Phatha i-akhawunti",
+      "testHistory": "Umlando wokuhlola",
+      "security": "Ukuphepha",
+      "changeTheme": "Shintsha itimu",
+      "login": "Ngena",
+      "logout": "Phuma"
+    },
+    "mobileDrawer": {
+      "manageAccount": "Phatha i-akhawunti",
+      "manageAccountDesc": "Iphrofayela nezilungiselelo",
+      "testHistory": "Umlando wokuhlola",
+      "testHistoryDesc": "Buka ukuhlola kwangaphambilini",
+      "security": "Ukuphepha",
+      "securityDesc": "Ukuphepha kwe-akhawunti",
+      "theme": "Itimu",
+      "language": "Ulimi",
+      "login": "Ngena",
+      "logout": "Phuma"
+    },
+    "toggleNavigation": "Shintsha ukuzulazula",
+    "signingOut": "Iyakukhipha",
+    "authSystemStatus": "Uhlelo Lokuqinisekisa Lwe-AkovoLabs v1.0",
+    "logoutModalMessage": "Uqinisekile ukuthi ufuna ukuphuma kwi-akhawunti yakho?"
+  },
+  "modal": {
+    "cancel": "Khansela",
+    "proceed": "Qhubeka"
+  },
+  "footer": {
+    "tagline": "Idayishibhodi Yokuhlaziya Inethiwekhi ene-AI",
+    "newsletter": "Thola izindaba ezintsha kanye nezimemezelo zezici",
+    "newsletterNote": "Sithembisa ukuthi ngeke sigcwalise ibhokisi lakho lokungena. Khansela noma nini.",
+    "subscribe": "Bhalisa",
+    "subscribing": "Iyabhalisa...",
+    "unsubscribe": "Khansela ubhaliso",
+    "unsubscribing": "Iyakhansela ubhaliso...",
+    "mobileApp": "Itholakala nakuMakhala",
+    "mobileAppDesc": "Landa uhlelo lwethu lwe-Android ne-iOS",
+    "android": "I-Android",
+    "ios": "I-iOS",
+    "updating": "Ibuyekeza ubhaliso",
+    "newsletterStatus": "Uhlelo Lwezindaba Lwe-AkovoLabs v1.0"
+  },
+  "auth": {
+    "layout": {
+      "login": "Ngena",
+      "signUp": "Bhalisa",
+      "backToLogin": "Buyela ekuNgeneni",
+      "backToSignUp": "Buyela ekubhaliseni",
+      "tagline": "Ukuhlaziywa kwejubane kwesikhathi sangempela okunamandla e-AI kanye nemininingwane yokuphepha yenethiwekhi yama-ISP",
+      "agreement": "Ngokudala noma ukusebenzisa i-akhawunti ye-AkovoLabs, uyavumelana **nemigomo nemibandela** kanye **nenqubomgomo yobumfihlo** yethu.",
+      "termsTitle": "Imigomo Nemibandela",
+      "privacyTitle": "Inqubomgomo Yobumfihlo"
+    },
+    "login": {
+      "heading": "Siyakwamukela futhi",
+      "emailLabel": "I-imeyili",
+      "emailPlaceholder": "Faka i-imeyili yakho",
+      "passwordLabel": "Iphasiwedi",
+      "passwordPlaceholder": "Faka iphasiwedi yakho",
+      "rememberMe": "Ngangikhumbule",
+      "forgotPassword": "Iphasiwedi uyikhohliwe?",
+      "signIn": "Ngena",
+      "signingIn": "Iyangenisa...",
+      "captchaError": "Sicela ugcwalise ukuqinisekiswa kwe-captcha."
+    },
+    "register": {
+      "heading": "Dala i-akhawunti",
+      "checkEmail": "Hlola i-imeyili yakho",
+      "emailLabel": "I-imeyili",
+      "emailPlaceholder": "Faka i-imeyili yakho",
+      "passwordLabel": "Iphasiwedi",
+      "passwordPlaceholder": "Faka iphasiwedi yakho",
+      "confirmPasswordLabel": "Qinisekisa iphasiwedi",
+      "confirmPasswordPlaceholder": "Qinisekisa iphasiwedi yakho",
+      "agreeDesktop": "Ngiyavumelana nemigomo nemibandela kanye nenqubomgomo yobumfihlo",
+      "agreeMobile": "Ngiyavumelana nemigomo kanye nenqubomgomo yobumfihlo",
+      "passwordRequirements": {
+        "minChars": "Okungenani izinhlamvu eziyi-8",
+        "uppercase": "Uhlamvu olulodwa olukhulu",
+        "lowercase": "Uhlamvu olulodwa oluncane",
+        "number": "Inombolo eyodwa",
+        "special": "Uhlamvu olulodwa olukhethekile"
+      },
+      "signUp": "Bhalisa",
+      "signingUp": "Iyabhalisa...",
+      "goToLogin": "Iya ekungeneni",
+      "successMessage": "Sithumele isixhumanisi sokuqinisekisa ku-**{{email}}**. Chofoza isixhumanisi ukuze uvule i-akhawunti yakho.",
+      "spamNote": "Uma ungayiboni i-imeyili, hlola ifolda yakho ye-spam noma uzame ukubhalisa futhi.",
+      "validation": {
+        "minChars": "Iphasiwedi kufanele okungenani ibe nezinhlamvu eziyi-8",
+        "uppercase": "Iphasiwedi kufanele iqukathe okungenani uhlamvu olulodwa olukhulu",
+        "lowercase": "Iphasiwedi kufanele iqukathe okungenani uhlamvu olulodwa oluncane",
+        "number": "Iphasiwedi kufanele iqukathe okungenani inombolo eyodwa",
+        "special": "Iphasiwedi kufanele iqukathe okungenani uhlamvu olulodwa olukhethekile (!@#$%^&*(),.?\":{|}<>)",
+        "passwordMismatch": "Amaphasiwedi awafani",
+        "agreeTerms": "Kufanele uvumelane nemigomo nemibandela kanye nenqubomgomo yobumfihlo ukuze udale i-akhawunti."
+      }
+    },
+    "forgot": {
+      "resetPassword": "Setha kabusha iphasiwedi",
+      "enterCode": "Faka ikhodi yokuqinisekisa",
+      "createPassword": "Dala iphasiwedi entsha",
+      "passwordUpdated": "Iphasiwedi isibuyekeziwe",
+      "emailStepSubtitle": "Faka i-imeyili obhalise ngayo futhi sizokuthumelela ikhodi yokuqinisekisa.",
+      "otpStepSubtitle": "Sithumele ikhodi enezinombolo eziyi-6 ku-**{{email}}**",
+      "passwordStepSubtitle": "Iphasiwedi yakho entsha kufanele okungenani ibe nezinhlamvu eziyi-8.",
+      "successSubtitle": "Iphasiwedi yakho isethiwe kabusha ngempumelelo. Manje ungangena ngephasiwedi yakho entsha.",
+      "emailLabel": "I-imeyili",
+      "emailPlaceholder": "Faka i-imeyili yakho",
+      "newPasswordLabel": "Iphasiwedi entsha",
+      "newPasswordPlaceholder": "Faka iphasiwedi entsha",
+      "confirmPasswordLabel": "Qinisekisa iphasiwedi",
+      "confirmPasswordPlaceholder": "Qinisekisa iphasiwedi entsha",
+      "sendOtp": "Thumela i-OTP",
+      "sending": "Iyathumela...",
+      "verify": "Qinisekisa",
+      "verifying": "Iyaqinisekisa...",
+      "resetPasswordBtn": "Setha kabusha iphasiwedi",
+      "resetting": "Iyasetha kabusha...",
+      "goToLogin": "Iya ekungeneni",
+      "resendCode": "Thumela ikhodi futhi",
+      "resendIn": "Thumela ikhodi futhi ngemva kwemizuzwana {{seconds}}",
+      "sendingCode": "Ithumela ikhodi yokuqinisekisa",
+      "verifyingCode": "Iyaqinisekisa ikhodi",
+      "resettingPassword": "Isetha kabusha iphasiwedi"
+    },
+    "verify": {
+      "emailVerified": "I-imeyili iqinisekisiwe",
+      "verificationFailed": "Ukuqinisekisa kwehlulekile",
+      "successMessage": "I-imeyili yakho iqinisekisiwe ngempumelelo. Manje ungangena kwi-akhawunti yakho.",
+      "goToLogin": "Iya ekungeneni",
+      "errorMessage": "Isixhumanisi sokuqinisekisa asivumelekile noma siphelelwe yisikhathi. Sicela ubhalise futhi.",
+      "backToSignUp": "Buyela ekubhaliseni",
+      "connectionError": "Ayikwazi ukuxhuma kuseva. Hlola ukuxhumana kwakho kwe-inthanethi.",
+      "serverError": "Kukhona okungahambanga kahle. Zama futhi kamuva.",
+      "invalidLink": "Isixhumanisi sokuqinisekisa esingavumelekile.",
+      "verifyingEmail": "Iyaqinisekisa i-imeyili yakho"
+    },
+    "logoutModal": {
+      "message": "Uqinisekile ukuthi ufuna ukuphuma kwi-akhawunti yakho?",
+      "cancel": "Khansela",
+      "proceed": "Qhubeka"
+    }
+  },
+  "home": {
+    "hero": {
+      "heading": "Ukuhlolwa Kwejubane Lenethiwekhi okunamandla e-AI",
+      "advisoryHeading": "Qonda Ukuhlolwa Kwakho Kwejubane",
+      "aiSummaryHeading": "Isifinyezo esinamandla e-AI",
+      "howToUse": "Ungasebenzisa Kanjani Lokhu Kuhlola",
+      "howToUseHeading": "Hlola ijubane lenethiwekhi yakho yamanje"
+    },
+    "speedTest": {
+      "beginTest": "Qala Ukuhlola",
+      "stopTest": "Misa Ukuhlola",
+      "runAgain": "Gijima Futhi"
+    },
+    "phases": {
+      "initializing": "Iyaqalisa...",
+      "appLatency": "Ihlola i-App Latency...",
+      "download": "Ihlola Ukulanda...",
+      "upload": "Ihlola Ukulayisha...",
+      "derivedScores": "Iballa Izikolo Ezitholiwe..."
+    },
+    "advisory": {
+      "downloadOverTime": "**Ijubane Lokulanda Ngokuhamba Kwesikhathi:** Ikhombisa ukuqina kokuxhumana",
+      "uploadOverTime": "**Ijubane Lokulayisha Ngokuhamba Kwesikhathi:** Ikala ukusebenza kokulayisha",
+      "appLatency": "**I-App Latency:** Ilandelela ukuthi idivayisi yakho ifinyelela ngokushesha kangakanani kule sevisi ngesikhathi sokuhlola"
+    },
+    "aiSummaryPlaceholder": "Isifinyezo sakho sokuhlola ijubane sizovela lapha ngemuva kokuthi uhlelo luchaze imiphumela.",
+    "howToUseCards": {
+      "currentDevice": "Ungenza ukuhlola ijubane kusuka kudivayisi yakho yamanje nokuxhumana kwakho. Uma use-Wi-Fi wasekhaya, imiphumela ikhombisa ulwazi lwakho lwangempela.",
+      "deviceToServer": "Ikala ukusebenza kwedivayisi ukuya kuseva, hhayi ukuhlolwa okujulile kwerouter yakho noma imininingwane ye-Wi-Fi yangaphakathi.",
+      "signedIn": "Manje njengoba ungenile, ungakhohlwa ukubheka amagrafu akho wokuhlola kanye nomlando ngezansi!",
+      "signedOut": "**Ngena ngemvume** noma **Bhalisa** ukuze uthole imininingwane eningiliziwe mayelana nokusebenza kwenethiwekhi yakho!"
+    },
+    "signInModal": {
+      "message": "Ngena ukuze uthole imininingwane eningiliziwe emiphumeleni yakho yokuhlola ijubane. Ingabe ufisa ukuya ekhasini lokungena?",
+      "cancel": "Khansela",
+      "proceed": "Qhubeka"
+    }
+  },
+  "services": {
+    "heroHeading1": "Izinsiza Zethu",
+    "heroHeading2": "Zinikwe amandla i-AI",
+    "heroDesc": "Kusukela ekuhloleni ijubane elisheshayo kuya ekuskeneni okuthuthukile kokuphepha kanye nokuhlaziywa kwe-AI, sihlinzeka izixazululo eziphelele zenethiwekhi kubasebenzisi basekhaya, amabhizinisi amancane, nama-ISP.",
+    "sectionTitle": "Esikunikelayo",
+    "cards": {
+      "speedtest": {
+        "title": "Ukuhlola Ijubane",
+        "description": "Ukuhlola ijubane okusheshayo ngezilinganiso zesikhathi sangempela, idatha yomlando, nokubonwa okuhle. Kala ukulanda, ukulayisha, i-ping ne-jitter ngokunemba.",
+        "tags": ["Isikhathi sangempela", "Umlando", "Ukubonwa"]
+      },
+      "networkAnalysis": {
+        "title": "Ukuhlaziya Inethiwekhi",
+        "description": "Ukuxilonga okujulile kwenethiwekhi, ukuhlaziya nokuqapha ukusebenza. Khomba izithiyo nezimo ezingavamile zenethiwekhi ngokuzenzakalelayo.",
+        "tags": ["Ukuxilonga", "Ukuqapha", "Ukuthola Okungavamile"]
+      },
+      "security": {
+        "title": "Ukuphepha",
+        "description": "Ukuskena kwamachweba okuthuthukile, ukuthola ubungozi, nokuhlola ubungozi ukugcina inethiwekhi yakho iphephile ekuhlaselweni.",
+        "tags": ["Ukuskena Amachweba", "Ukuhlola Ubungozi", "Izincomo"]
+      },
+      "aiInsights": {
+        "title": "Imininingwane ye-AI",
+        "description": "Imininingwane enikwe amandla i-AI, ukukala, nezincomo ezihlakaniphile zokwenza ngcono ukusebenza kwenethiwekhi yakho ngokuzenzakalelayo.",
+        "tags": ["Izifinyezo ze-AI", "Ukukala Inethiwekhi", "Izincomo"]
+      }
+    }
+  },
+  "download": {
+    "headline": "I-AkovoLabs Speedtest",
+    "subtitle": "Kushesha. Kunembile. Kuhlakaniphile.",
+    "features": [
+      { "title": "Ukuhlola Ijubane Okunembile", "desc": "Hlola ukulanda, ukulayisha ne-ping" },
+      { "title": "Imiphumela Yesikhathi Sangempela", "desc": "Izilinganiso ezisheshayo nezinembile" },
+      { "title": "Ukuhlaziya Inethiwekhi", "desc": "Qapha ikhwalithi yakho yokuxhumana" },
+      { "title": "Ukuskena Ukuphepha Kwenethiwekhi", "desc": "Ukutholwa kobungozi bamachweba okwakhelwe ngaphakathi" }
+    ],
+    "betaAdvisory": "Joyina uhlelo lwethu lokuhlola i-beta ukuze uthole ukufinyelela kwangaphambi kwesikhathi! Idatha yakho ivikelwe ngombhalo oqinile wokugcina."
+  },
+  "news": {
+    "heroHeadline1": "Izindaba Zakamuva Nezibuyekezo",
+    "heroHeadline2": "Izibuyekezo",
+    "subtitle": "Hlala unolwazi ngokuthuthuka kwakamuva, ukukhishwa kwezici, kanye nokwenza ngcono kwenkundla yethu yokuphepha yenethiwekhi enikwe amandla i-AI.",
+    "previous": "Okwedlule",
+    "next": "Okulandelayo"
+  },
+  "about": {
+    "heroHeadline1": "Ukwakha Ikusasa",
+    "heroHeadline2": "Lokuxhumana",
+    "heroDesc": "Sakha ikusasa lokuhlolwa kwejubane le-inthanethi nokuhlaziywa kwenethiwekhi. I-AkovoLabs Speedtest inika ama-ISP nabasebenzisi imininingwane engakaze ibonwe mayelana nokusebenza, ukuphepha, nokwethenjelwa kwenethiwekhi.",
+    "stats": {
+      "users": "Abasebenzisi",
+      "countries": "Amazwe",
+      "uptime": "Isikhathi sokusebenza",
+      "offline": "Ukungaxhumene",
+      "founded": "Isungulwe"
+    },
+    "cta": "Xhumana Nathi",
+    "ourStory": "Indaba Yethu",
+    "storyParagraph1": "E-AkovoLabs, sikholelwa ukuthi ubuchwepheshe kufanele benze impilo ibe lula esikhundleni sokuyinkimbinkimbi. Yingakho sakhe i-AkovoLabs Speedtest, inkundla yokuhlola inethiwekhi enamandla futhi eqondakalayo.",
+    "storyParagraph2": "Umgomo wethu ukwenza ukuphathwa kwenethiwekhi kufinyeleleke kuwo wonke umuntu. Noma ungumsebenzisi wasekhaya ofuna ukwazi ngenethiwekhi yakho noma i-ISP ephethe izinkulungwane zamakhasimende, i-AkovoLabs Speedtest ikunikeza imininingwane oyidingayo.",
+    "storyParagraph3": "Ngokuqapha ngesikhathi sangempela, ukuthola okungavamile okuhlakaniphile, nokubonwa okuhle, senza ukuphathwa kwenethiwekhi kube lula, kunamandla, futhi kufinyeleleke kubo bonke.",
+    "quote": "Ubuchwepheshe obuhlakaniphile, ijubane elisheshayo, nemininingwane esebenzisekayo ngoba ukuxhumana kufanele kusebenzele wena, hhayi ngokumelene nawe.",
+    "team": "Ithimba",
+    "teamMember1": {
+      "name": "Clement Phoshoko",
+      "role": "Unjiniyela Womkhiqizo we-Full-Stack",
+      "quote": "Wonke umkhiqizo omkhulu uqala ngokuxazulula inkinga yangempela. Ngakha izixazululo eziqhutshwa yi-AI, ezenzakalelayo nezinwebekayo ngezindlela zesimanje."
+    },
+    "teamMember2": {
+      "name": "Tsumbedzo Matloga",
+      "role": "Unjiniyela Wesofthiwe Yenethiwekhi",
+      "quote": "Cabanga ukubona konke ukuxhumana, yonke imethrikhi, nazo zonke izinto ezingavamile endaweni eyodwa. Leyo amandla okuhlaziya inethiwekhi okuhlakaniphile."
+    },
+    "contact": "Xhumana Nathi"
+  },
+  "contact": {
+    "fullName": "Igama eliphelele",
+    "fullNamePlaceholder": "Faka igama lakho eliphelele",
+    "businessEmail": "I-imeyili yebhizinisi",
+    "emailPlaceholder": "wakho@inkampani.com",
+    "companyName": "Igama lenkampani",
+    "companyPlaceholder": "Inkampani yakho (ngokuzithandela)",
+    "subject": "Isihloko",
+    "subjectDefault": "Khetha isihloko",
+    "subjectOptions": ["Khetha isihloko", "Umbuzo ojwayelekile", "Ukuthengisa", "Ukusekela", "Ubambiswano"],
+    "message": "Umlayezo",
+    "messagePlaceholder": "Singakusiza kanjani ibhizinisi lakho?",
+    "sendMessage": "Thumela umlayezo",
+    "successHeading": "Umlayezo uthunyelwe!",
+    "successMessage": "Siyabonga ukuthi uxhumane ne-AkovoLabs. Ithimba lethu lizobuyekeza umbuzo wakho futhi liphendule maduze.",
+    "newBtn": "Okusha",
+    "homeBtn": "Ikhaya",
+    "sendingMessage": "Ithumela umlayezo",
+    "crmStatus": "Uhlelo lwe-CRM lwe-AkovoLabs v1.0",
+    "failedMessage": "Umlayezo wehlulekile ukuthunyelwa. Zama futhi kamuva.",
+    "validation": {
+      "fullNameRequired": "Igama eliphelele liyadingeka",
+      "emailRequired": "I-imeyili iyadingeka",
+      "emailInvalid": "Ifomethi ye-imeyili engavumelekile",
+      "subjectRequired": "Sicela ukhethe isihloko",
+      "messageRequired": "Umlayezo uyadingeka",
+      "messageMinLength": "Umlayezo kufanele okungenani ube nezinhlamvu eziyi-10"
+    }
+  },
+  "history": {
+    "title": "Umlando Wokuhlola",
+    "subtitle": "Buyekeza ukuhlola kwakho kwejubane kwangaphambilini, ulandelela izitayela zokusebenza, futhi uthole imininingwane mayelana nempilo yenethiwekhi yakho.",
+    "proTip": "Ithiphu!",
+    "tabs": {
+      "trends": "Izitayela",
+      "insights": "Imininingwane",
+      "history": "Umlando"
+    },
+    "metrics": {
+      "totalTests": "Ukuhlola Okuphelele",
+      "avgDownload": "Isilinganiso Sokulanda",
+      "avgUpload": "Isilinganiso Sokulayisha",
+      "avgPing": "Isilinganiso se-Ping",
+      "avgHealthScore": "Isilinganiso Senholo Yempilo"
+    },
+    "performanceTrends": {
+      "title": "Izitayela Zokusebenza",
+      "speedTrends": "Izitayela Zejubane",
+      "latencyQuality": "Ikhwalithi Ye-Latency",
+      "networkHealthScore": "Inholo Yempilo Yenethiwekhi",
+      "experienceScores": "Izikolo Zolwazi",
+      "from": "Kusukela",
+      "to": "Kuya",
+      "selectStartDate": "Khetha usuku lokuqala",
+      "selectEndDate": "Khetha usuku lokugcina",
+      "clear": "Sula",
+      "speedAutoScaleNote": "Izimbazo zejubane zizilinganisela ngokuzenzakalelayo ukuze izitayela ezincane zihlale zifundeka.",
+      "amberDotNote": "Amachashazi ansomi amaka ukuhlola lapho ijubane lokuxhumana liguquke kakhulu phakathi kwezindlela.",
+      "showingResults": "Ibonisa imiphumela kusukela {{firstDate}} kuya {{lastDate}}",
+      "latencyAutoScaleNote": "Amanani e-latency azilinganisela ngokuzenzakalelayo kububanzi be-pinge ne-jitter ebonakalayo."
+    },
+    "chartLegend": {
+      "download": "Ukulanda (Mbps)",
+      "upload": "Ukulayisha (Mbps)",
+      "ping": "I-Ping (ms)",
+      "jitter": "I-Jitter (ms)",
+      "healthScore": "Inholo Yempilo",
+      "bestTest": "Ukuhlola Okungcono Kakhulu"
+    },
+    "scoreBar": {
+      "excellent": "Kuhle Kakhulu (80-100)",
+      "good": "Kuhle (60-79)",
+      "poor": "Kubi (0-59)"
+    },
+    "insights": {
+      "title": "Imininingwane ye-AI",
+      "speedOverview": "Umbono Ophelele Wejubane",
+      "excellentLatency": "I-Latency Enhle Kakhulu",
+      "moderateLatency": "I-Latency Emaphakathi",
+      "highLatency": "I-Latency Ephezulu",
+      "bestPerformance": "Ukusebenza Okungcono Kakhulu",
+      "connectionInstability": "Ukungazinzi Kokuxhumana Kutholiwe",
+      "avgSpeedMessage": "Ijubane lakho elijwayelekile lokulanda lingu-{{download}} Mbps nokulayisha lingu-{{upload}} Mbps.",
+      "pingLowMessage": "I-ping yakho iphansi ngokuqhubekayo, kuhle kakhulu emidlalweni nezingcingo zevidiyo!",
+      "pingModerateMessage": "I-ping yakho yamukelekile, kodwa ingaba ngcono ezinhlelweni zesikhathi sangempela.",
+      "pingHighMessage": "I-ping yakho iphezulu impela, cabanga ukuhlola ukuxhumana kwakho kwenethiwekhi.",
+      "bestTestMessage": "Ukuhlola kwakho okungcono kakhulu kuthole inholo yempilo engu-{{score}}!",
+      "instabilityMessage": "I-{{count}} yokuhlola kwakho okungu-{{total}} ikhombise ukushintshashintsha kwejubane phakathi kwezindlela, okukhombisa ukuxhumana okungazinzile.",
+      "instabilityMessage_plural": "Ama-{{count}} wokuhlola kwakho angu-{{total}} akhombise ukushintshashintsha kwejubane phakathi kwezindlela, okukhombisa ukuxhumana okungazinzile.",
+      "comingSoon": "Kuza Maduze - Ukuhlaziywa Kwenethiwekhi Okuthuthukile",
+      "publicWifi": "Ukuhlaziywa Kokuphepha Kwe-Wi-Fi Yomphakathi",
+      "anomalyDetection": "Ukutholwa Kokungavamile Kwenethiwekhi",
+      "ispBenchmarking": "Ukuqhathanisa Ukusebenza Kwe-ISP",
+      "deviceHealth": "Ukuhlolwa Kwenholo Yempilo Yenethiwekhi Ezingeni Ledivayisi"
+    },
+    "table": {
+      "title": "Umlando Wokuhlola",
+      "date": "Usuku",
+      "download": "Ukulanda",
+      "upload": "Ukulayisha",
+      "ping": "I-Ping",
+      "jitter": "I-Jitter",
+      "health": "Impilo",
+      "isp": "I-ISP",
+      "sortAsc": "↑",
+      "sortDesc": "↓"
+    },
+    "mobileCard": {
+      "download": "↓",
+      "upload": "↑",
+      "downloadUnit": "Mbps",
+      "uploadUnit": "Mbps",
+      "ping": "I-Ping",
+      "isp": "I-ISP"
+    },
+    "expandedDetails": {
+      "performance": "Ukusebenza",
+      "experienceScores": "Izikolo Zolwazi",
+      "environment": "Imvelo",
+      "aiAnalysis": "Ukuhlaziywa kwe-AI",
+      "downloadSpeed": "Ijubane Lokulanda",
+      "uploadSpeed": "Ijubane Lokulayisha",
+      "pingAvg": "I-Ping (Isilinganiso)",
+      "pingMin": "I-Ping (Incane)",
+      "pingMax": "I-Ping (Enkulu)",
+      "jitter": "I-Jitter",
+      "packetLoss": "Ukulahleka Kwamaphakethe",
+      "connectionStability": "Ukuzinza Kokuxhumana",
+      "networkHealth": "Impilo Yenethiwekhi",
+      "gaming": "Umdlalo",
+      "streaming": "Ukusakaza",
+      "videoCall": "Ucingo Lwevidiyo",
+      "browsing": "Ukuphenya",
+      "dateTime": "Usuku Nesikhathi",
+      "isp": "I-ISP",
+      "country": "Izwe",
+      "probeMethod": "Indlela Yokuphenya",
+      "stable": "✓ Kuzinzile",
+      "unstable": "⚠ Akuzinzile"
+    },
+    "empty": {
+      "withFiltersTitle": "Akukho ukuhlola kwejubane okufana nezihlungi ozisebenzisile.",
+      "withFiltersMessage": "Zama ukwandisa ububanzi bezinsuku noma sula izihlungi ukuze ubone imiphumela eminingi.",
+      "withoutFiltersTitle": "Akukho mlando wokuhlola kwejubane okhona okwamanje.",
+      "withoutFiltersMessage": "Gijima ukuhlola kwejubane ukuze uqale ukwakha umlando wakho futhi uvule imininingwane yezitayela.",
+      "goToSpeedTest": "Iya ekuhloleni Ijubane"
+    },
+    "error": {
+      "title": "Kukhona okungahambanga kahle",
+      "tryAgain": "Zama futhi"
+    },
+    "csv": {
+      "filename": "umlando-wokuhlola.csv",
+      "yes": "Yebo",
+      "no": "Cha",
+      "na": "A/I"
+    },
+    "pagination": {
+      "previous": "Okwedlule",
+      "next": "Okulandelayo",
+      "showing": "Ibonisa {{start}}-{{end}} kwangu-{{total}}"
+    },
+    "unstableTooltip": "⚠ Ukuxhumana Okungazinzile",
+    "chartTooltip": {
+      "download": "Ukulanda",
+      "upload": "Ukulayisha",
+      "ping": "I-Ping",
+      "jitter": "I-Jitter",
+      "healthScore": "Inholo Yempilo",
+      "experienceScore": "Inholo Yolwazi",
+      "mbps": "{{value}} Mbps",
+      "ms": "{{value}} ms",
+      "outOf100": "{{value}}/100"
+    }
+  },
+  "statsCards": {
+    "download": "Ukulanda",
+    "upload": "Ukulayisha",
+    "appLatency": "I-App Latency",
+    "latencyVariation": "Ukuhluka Kwe-Latency",
+    "failedRequests": "Izicelo Ezehlulekile",
+    "networkHealth": "IMPILO YENETHA",
+    "gaming": "IMIDLALO",
+    "streaming": "UKUSAKAZA",
+    "videoCalls": "IZINGCINGO ZAMAVIDIYO",
+    "browsing": "UKUPHENYA",
+    "connectionStability": "UKUZINZA KOKUXHUMANA",
+    "stable": "✓ Kuzinzile",
+    "unstable": "⚠ Akuzinzile",
+    "latencyNote": "I-Latency Ikala Kanjani",
+    "latencyNoteDesc": "Izicelo ezisheshayo zohlelo zithunyelwa kule sevisi ukulinganisela ukusabela kwedivayisi yakho yamanje nenethiwekhi.",
+    "latencyNoteDesc2": "Lokhu kuwusizo ekusebenzeni kwangempela kokuphenya, kodwa akufani ne-ICMP ping evamile.",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    },
+    "ariaLabel": "Izilinganiso zenethiwekhi",
+    "scoreAria": "Inholo {{label}}: {{value}} kweyizi-100"
+  },
+  "account": {
+    "title": "Phatha iphrofayela yakho",
+    "personalInfo": {
+      "title": "Imininingwane Yomuntu",
+      "username": "Igama lomsebenzisi",
+      "firstName": "Igama",
+      "lastName": "Isibongo",
+      "usernamePlaceholder": "Faka igama lomsebenzisi",
+      "firstNamePlaceholder": "Igama",
+      "lastNamePlaceholder": "Isibongo",
+      "notSet": "Akushiwongo",
+      "edit": "Hlela",
+      "cancel": "Khansela",
+      "save": "Londoloza"
+    },
+    "email": {
+      "title": "I-imeyili",
+      "emailAddress": "Ikheli le-imeyili",
+      "placeholder": "Faka i-imeyili yakho",
+      "edit": "Hlela",
+      "cancel": "Khansela",
+      "save": "Londoloza"
+    },
+    "signOut": "Phuma",
+    "links": {
+      "runSpeedtest": "Gijima Ukuhlola Ijubane",
+      "scanPort": "Skena Ichweba"
+    },
+    "success": {
+      "profileUpdated": "Iphrofayela Ibuyekeziwe!",
+      "profileMessage": "Imininingwane yakho ibuyekeziwe ngempumelelo.",
+      "checkInbox": "Hlola ibhokisi lakho lokungenai!",
+      "emailMessage": "Sithumele i-imeyili yokuqinisekisa ekhelini lakho elisha."
+    },
+    "error": {
+      "title": "Hhayi!",
+      "message": "Asikwazanga ukulayisha iphrofayela yakho"
+    },
+    "modals": {
+      "savePersonalInfo": "Uqinisekile ukuthi ufuna ukulondoloza izinguquko zemininingwane yakho?",
+      "updateEmail": "Uqinisekile ukuthi ufuna ukubuyekeza ikheli lakho le-imeyili? Kuzodingeka uqinisekise i-imeyili yakho entsha.",
+      "signOut": "Uqinisekile ukuthi ufuna ukuphuma kwi-akhawunti yakho?",
+      "cancel": "Khansela",
+      "save": "Londoloza",
+      "signOutBtn": "Phuma"
+    }
+  },
+  "security": {
+    "title": "Ukuphepha Kwamachweba",
+    "subtitle": "Qapha izinsiza eziveziwe, gijima ukuskena okusebenzayo, futhi ugcine indawo yokuhlasela yenethiwekhi ingekho ekusebenzeni.",
+    "proTip": "Ithiphu!",
+    "tabs": {
+      "scan": "Skena",
+      "insights": "Imininingwane",
+      "knowledge": "Ulwazi"
+    },
+    "scanOverview": "Umbono Ophelele Wokuskena Kwamanje",
+    "wheelProgress": "Inqubekelaphambili Yokuskena Kwesondo",
+    "howItWorks": "Lokhu kuskena kubheka amachweba avamile ezinsiza futhi kuwahlukanise njengavulekile, avaliwe, noma ahlungiwe, bese kuthola isimo sobungozi.",
+    "howItWorks2": "Sebenzisa lokhu njengesisekelo sokuchayeka okusebenzayo futhi uqinisekise okutholakele okunobungozi obukhulu ngemithetho yodonga lomlilo nobunikazi bezinsiza.",
+    "aiSummary": "Isifinyezo esinamandla e-AI",
+    "aiSummaryPlaceholder": "Isifinyezo sakho sokuphepha sizovela lapha ngemuva kokuthi ukuskena sekuqediwe futhi kwahlaziywa.",
+    "emptyState": {
+      "title": "Akukho nhlolovo yamanje",
+      "message": "Sebenzisa isondo lokuskena ukugijima ukuskena, bese izilinganiso zakho zokubuka konke kanye nesifinyezo se-AI kuzovela lapha."
+    },
+    "metrics": {
+      "openPorts": "Amachweba Avulekile",
+      "closedPorts": "Amachweba Avaliwe",
+      "filteredPorts": "Amachweba Ahlungiwe",
+      "duration": "Ubude besikhathi"
+    },
+    "sections": {
+      "riskGroups": "Amaqembu Obungozi Nezincomo Eziphezulu",
+      "scannedResults": "Imiphumela Ehloliwe Ngokobungozi",
+      "topRecommendations": "Izincomo Eziphezulu",
+      "fullDetails": "Imininingwane Ephelele Yokuskena",
+      "viewDetails": "Bona imininingwane",
+      "hideDetails": "Fihla imininingwane"
+    },
+    "riskLevels": {
+      "critical": "Okubucayi",
+      "high": "Okuphezulu",
+      "moderate": "Okuphakathi",
+      "low": "Okuphansi",
+      "unknown": "Akungaziwa"
+    },
+    "table": {
+      "port": "Ichweba",
+      "state": "Isimo",
+      "service": "Inkonzo",
+      "risk": "Ubungozi"
+    },
+    "emptyPorts": "Akukho machweba avulekile atholakele kulokhu kuskena.",
+    "emptyRecommendations": "Azikho izincomo okwamanje zalesi skena.",
+    "emptyRiskGroup": "Akukho machweba avulekile",
+    "statusChip": {
+      "label": "Ukuphepha",
+      "excellent": "Kuhle Kakhulu",
+      "good": "Kuhle",
+      "moderate": "Okuphakathi",
+      "highRisk": "Ubungozi Obukhulu",
+      "critical": "Okubucayi"
+    },
+    "insights": {
+      "title": "Umlando Wokuskena Nezitayela",
+      "subtitle": "Chofoza noma yikuphi ukuskena kwakamuva ngezansi ukuze ubone imiphumela yako.",
+      "emptyTitle": "Ayikho idatha yokuskena yokuphepha etholakalayo",
+      "emptyMessage": "Gijima ukuskena kokuphepha ukuze uqale ukwakha umlando wakho futhi uvule imininingwane yezitayela.",
+      "runScan": "Gijima Ukuskena Kokuphepha"
+    },
+    "knowledge": {
+      "eyebrow": "Isikhungo Solwazi",
+      "title": "Izincomo zokuphepha nereferensi yezinsiza",
+      "description": "Buyekeza imihlahlandlela yakamuva ye-AI, hlola izinsiza ezivezwe kakhulu ekuskeneni kwakho, futhi ugcine ikhathalogi yamachweba avamile nezeluleko zokunciphisa.",
+      "libraryEyebrow": "Umtapo wolwazi wereferensi",
+      "libraryTitle": "Ulwazi lwezinsiza eziphakeme",
+      "count": "Izinsiza ezaziwayo ezingama-{{count}}",
+      "viewDetails": "Bona imininingwane",
+      "hideDetails": "Fihla imininingwane",
+      "portEntry": "Ichweba {{number}} / {{protocol}}",
+      "noDescription": "Ayikho incazelo yesevisi etholakalayo.",
+      "recommendation": "Isincomo: {{text}}",
+      "noRecommendation": "Asikho isincomo esitholakalayo.",
+      "flagCommon": "Okuvamile",
+      "flagUnencrypted": "Okungabhalwanga ngombhalo oqinile",
+      "flagExploitTarget": "Inhloso yokuxhashazwa",
+      "knownExposure": "Ukuchayeka okwaziwayo: {{text}}",
+      "emptyTitle": "Azikho okufakiwe esizeni solwazi ezitholakalayo",
+      "emptyMessage": "Ireferensi yolwazi lwamachweba izovela lapha lapho ikhathalogi yezinsiza itholakala."
+    }
+  },
+  "loading": {
+    "defaultMessage": "Iyaqalisa Uhlelo",
+    "defaultStatus": "Uhlelo lwe-GL Web v1.0",
+    "initializing": "Iyaqalisa Uhlelo",
+    "systemStatus": "Uhlelo lwe-GL Web v1.0",
+    "loadingHistory": "Ilanda umlando wokuhlola",
+    "historySystem": "Uhlelo Lomlando Wokuhlola Lwe-AkovoLabs v1.0",
+    "loadingSecurity": "Ilanda iskena sokuphepha",
+    "securitySystem": "Uhlelo Lokuphepha Lwe-AkovoLabs v1.0",
+    "loadingProfile": "Ilanda iphrofayela",
+    "profileSystem": "Uhlelo Lwephrofayela Lwe-AkovoLabs v1.0",
+    "updatingProfile": "Ibuyekeza iphrofayela",
+    "profileSystemUpdating": "Uhlelo Lwephrofayela Lwe-AkovoLabs v1.0"
+  },
+  "scanEmptyState": {
+    "title": "Ayikho idatha yokuskena okwamanje",
+    "message": "Qala ukuskena kwakho kokuqala ukuze ugcwalise le phaneli."
+  },
+  "ariaLabels": {
+    "toggleNav": "Shintsha ukuzulazula",
+    "networkMetrics": "Izilinganiso zenethiwekhi",
+    "scoreValue": "Inholo {{label}}: {{value}} kweyizi-100"
+  },
+  "imageAlt": {
+    "akovolabsLogo": "Ilogo Ye-AkovoLabs",
+    "aiIcon": "Isithonjana Se-AI",
+    "instructor": "Umfundisi",
+    "instructorAvatar": "I-avatar yomfundisi",
+    "success": "Impumelelo",
+    "error": "Iphutha",
+    "noResults": "Ayikho imiphumela etholiwe",
+    "errorOccurred": "Iphutha livelile",
+    "comingSoon": "Kuza Maduze",
+    "historyHero": "I-hero yomlando wokuhlola",
+    "securityGuide": "Umhlahlandlela wokuphepha",
+    "securityHero": "I-hero yokusebenza kokuphepha",
+    "noRiskGroups": "Awekho amaqembu obungozi atholiwe",
+    "noRecommendations": "Azikho izincomo ezitholiwe",
+    "authRequired": "Ukuqinisekisa kuyadingeka",
+    "pageNotFound": "Ikhasi alitholakali",
+    "futureUI": "I-Futuristic Speed Test UI",
+    "playStore": "Thola ku-Google Play",
+    "appStore": "Landa ku-App Store",
+    "fullStackDev": "Clement Phoshoko",
+    "networkEngineer": "Tsumbedzo Matloga",
+    "operatingSystems": "Izinhlelo Zokusebenza",
+    "speedTest": "Ukuhlola Ijubane",
+    "downloadHero": "Landa I-AkovoLabs Speedtest",
+    "newsHero": "Izindaba Nezibuyekezo Zakamuva",
+    "ai": "I-AI"
+  },
+  "authRequired": {
+    "title": "401 - Ukufinyelela kunqatshiwe",
+    "message": "Hhayi! Kumele ungene ukuze ufinyelele leli khasi.",
+    "subtitle": "Sicela ungene noma udale i-akhawunti ukuze uqhubeke.",
+    "goToLogin": "Iya ekhasini lokungena ngemvume"
+  },
+  "notFound": {
+    "title": "404 - Ikhasi alitholakali",
+    "message": "Hhayi! Ikhasi olifunayo alikho.",
+    "subtitle": "Mhlawumbe lihanjisiwe, lisiwe, noma ubhale i-URL ngephutha.",
+    "goHome": "Iya ekhaya futhi ugijime ukuhlola ijubane"
+  }
+}

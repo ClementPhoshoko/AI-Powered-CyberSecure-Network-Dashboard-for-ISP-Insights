@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Modal from '../modal/Modal';
 import ErrorModal from '../error_modal/ErrorModal';
 import Loading from '../loading/Loading';
+import LanguageSwitcher from '../LanguageSwitcher';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import {
   DevicePhoneMobileIcon,
@@ -23,6 +25,7 @@ import './Nav.css';
 function Nav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
   const { user, logout, isLoggingOut, setIsLoggingOut } = useAuth();
   const { getCurrentThemeData, cycleTheme } = useTheme();
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -160,96 +163,96 @@ function Nav() {
   const navItems = [
     {
       name: 'about',
-      label: 'About',
+      label: t('nav.about'),
       href: '/about',
       icon: <ShieldCheckIcon />,
-      description: 'Learn about our mission',
+      description: t('nav.aboutDesc'),
       items: [
         { 
-          label: 'Our Company', 
+          label: t('nav.aboutDropdown.ourCompany'), 
           href: '/about#our-story',
-          description: 'Learn about our mission',
+          description: t('nav.aboutDropdown.ourCompanyDesc'),
           icon: <ShieldCheckIcon />
         },
         { 
-          label: 'Team', 
+          label: t('nav.aboutDropdown.team'), 
           href: '/about#the-team',
-          description: 'Meet our experts',
+          description: t('nav.aboutDropdown.teamDesc'),
           icon: <DevicePhoneMobileIcon />
         },
         { 
-          label: 'Contact Us', 
+          label: t('nav.aboutDropdown.contactUs'), 
           href: '/about#contact-us',
-          description: 'Get in touch with us',
+          description: t('nav.aboutDropdown.contactUsDesc'),
           icon: <ArrowDownTrayIcon />
         }
       ]
     },
     {
       name: 'services',
-      label: 'Services',
+      label: t('nav.services'),
       href: '/services',
       icon: <RocketLaunchIcon />,
-      description: 'Speed & Network Tools',
+      description: t('nav.servicesDesc'),
       items: [
         { 
-          label: 'Speed Testing', 
+          label: t('nav.servicesDropdown.speedTesting'), 
           href: '/services#speedtest',
-          description: 'Measure your connection',
+          description: t('nav.servicesDropdown.speedTestingDesc'),
           icon: <RocketLaunchIcon />
         },
         { 
-          label: 'Network Analytics', 
+          label: t('nav.servicesDropdown.networkAnalytics'), 
           href: '/services#network-analysis',
-          description: 'Deep network insights',
+          description: t('nav.servicesDropdown.networkAnalyticsDesc'),
           icon: <CpuChipIcon />
         },
         { 
-          label: 'Security', 
+          label: t('nav.servicesDropdown.security'), 
           href: '/services#security',
-          description: 'Protect your network',
+          description: t('nav.servicesDropdown.securityDesc'),
           icon: <ShieldCheckIcon />
         },
         { 
-          label: 'AI Insights', 
+          label: t('nav.servicesDropdown.aiInsights'), 
           href: '/services#ai-insights',
-          description: 'Intelligent recommendations',
+          description: t('nav.servicesDropdown.aiInsightsDesc'),
           icon: <SparklesIcon />
         }
       ]
     },
     {
       name: 'download',
-      label: 'Download',
+      label: t('nav.download'),
       href: '/download',
       icon: <ArrowDownTrayIcon />,
-      description: 'For both iOS and Android',
+      description: t('nav.downloadDesc'),
       items: [
         { 
-          label: 'iOS App', 
+          label: t('nav.downloadDropdown.iosApp'), 
           href: '/download#ios',
-          description: 'Download for iPhone and iPad',
+          description: t('nav.downloadDropdown.iosDesc'),
           icon: <DevicePhoneMobileIcon />
         },
         { 
-          label: 'Android App', 
+          label: t('nav.downloadDropdown.androidApp'), 
           href: '/download#android',
-          description: 'Download for Android devices',
+          description: t('nav.downloadDropdown.androidDesc'),
           icon: <DevicePhoneMobileIcon />
         }
       ]
     },
     {
       name: 'news',
-      label: 'News',
+      label: t('nav.news'),
       href: '/news',
       icon: <NewspaperIcon />,
-      description: 'Updates & Press',
+      description: t('nav.newsDesc'),
       items: [
         { 
-          label: 'Updates & Press', 
+          label: t('nav.newsDropdown.updatesPress'), 
           href: '/news#latest-updates',
-          description: 'Latest news, updates, and press',
+          description: t('nav.newsDropdown.desc'),
           icon: <NewspaperIcon />
         }
       ]
@@ -299,8 +302,8 @@ function Nav() {
   const mobileAccountLinks = user ? [
     location.pathname !== '/account' && {
       to: '/account',
-      label: 'Manage Account',
-      description: 'Profile & settings',
+      label: t('nav.accountDropdown.manageAccount'),
+      description: t('nav.mobileDrawer.manageAccountDesc'),
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -310,8 +313,8 @@ function Nav() {
     },
     location.pathname !== '/tests' && {
       to: '/tests',
-      label: 'Test History',
-      description: 'View past speed tests',
+      label: t('nav.accountDropdown.testHistory'),
+      description: t('nav.mobileDrawer.testHistoryDesc'),
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <line x1="18" y1="20" x2="18" y2="10" />
@@ -322,8 +325,8 @@ function Nav() {
     },
     location.pathname !== '/security' && {
       to: '/security',
-      label: 'Security',
-      description: 'Account security',
+      label: t('nav.accountDropdown.security'),
+      description: t('nav.mobileDrawer.securityDesc'),
       icon: <ShieldCheckIcon />,
     },
   ].filter(Boolean) : [];
@@ -334,8 +337,8 @@ function Nav() {
         {/* Left Side: Logo & System Name */}
         <div className="nav-left">
           <Link to="/" className="nav-logo">
-            <img src={loginLogo} alt="AkovoLabs Logo" className="nav-logo-icon" />
-            <span className="nav-logo-text">AkovoLabs</span>
+            <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="nav-logo-icon" />
+            <span className="nav-logo-text">{t('app.name')}</span>
           </Link>
         </div>
 
@@ -387,6 +390,8 @@ function Nav() {
             ))}
           </div>
 
+          <LanguageSwitcher variant="desktop" />
+
           <div 
             className="nav-account"
             onMouseEnter={() => {
@@ -418,7 +423,7 @@ function Nav() {
                         <circle cx="12" cy="7" r="4" />
                       </svg>
                     </div>
-                    <span className="nav-chain-label">Manage Account</span>
+                    <span className="nav-chain-label">{t('nav.accountDropdown.manageAccount')}</span>
                   </Link>
                 )}
                 
@@ -431,7 +436,7 @@ function Nav() {
                         <line x1="6" y1="20" x2="6" y2="14" />
                       </svg>
                     </div>
-                    <span className="nav-chain-label">Test History</span>
+                    <span className="nav-chain-label">{t('nav.accountDropdown.testHistory')}</span>
                   </Link>
                 )}
 
@@ -440,7 +445,7 @@ function Nav() {
                     <div className="nav-chain-circle">
                       <ShieldCheckIcon className="nav-chain-icon" />
                     </div>
-                    <span className="nav-chain-label">Security</span>
+                    <span className="nav-chain-label">{t('nav.accountDropdown.security')}</span>
                   </Link>
                 )}
                 
@@ -463,7 +468,7 @@ function Nav() {
                     </svg>
                   </div>
                   <div className="nav-theme-wrapper">
-                    <span className="nav-chain-label">Change Theme</span>
+                    <span className="nav-chain-label">{t('nav.accountDropdown.changeTheme')}</span>
                     <span className="nav-theme-label">{getCurrentThemeData().name}</span>
                   </div>
                 </button>
@@ -477,7 +482,7 @@ function Nav() {
                         <line x1="15" y1="12" x2="3" y2="12" />
                       </svg>
                     </div>
-                    <span className="nav-chain-label">Login</span>
+                    <span className="nav-chain-label">{t('nav.accountDropdown.login')}</span>
                   </Link>
                 )}
                 
@@ -497,7 +502,7 @@ function Nav() {
                         <line x1="21" y1="12" x2="9" y2="12" />
                       </svg>
                     </div>
-                    <span className="nav-chain-label">Logout</span>
+                    <span className="nav-chain-label">{t('nav.accountDropdown.logout')}</span>
                   </button>
                 )}
               </div>
@@ -509,7 +514,7 @@ function Nav() {
         <button
           className="nav-mobile-toggle"
           onClick={() => mobileMenuOpen ? closeMobileMenu() : setMobileMenuOpen(true)}
-          aria-label="Toggle navigation"
+          aria-label={t('nav.toggleNavigation')}
         >
           {mobileMenuOpen ? (
             <XMarkIcon className="nav-toggle-icon" />
@@ -529,8 +534,8 @@ function Nav() {
         <div className={`nav-drawer ${isClosing ? 'nav-drawer-closing' : ''}`} ref={drawerRef}>
           <div className="nav-drawer-header">
             <Link to="/" className="nav-logo" onClick={() => closeMobileMenu()}>
-              <img src={loginLogo} alt="AkovoLabs Logo" className="nav-logo-icon" />
-              <span className="nav-logo-text">AkovoLabs</span>
+              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="nav-logo-icon" />
+              <span className="nav-logo-text">{t('app.name')}</span>
             </Link>
 
             <div className="nav-account nav-account--drawer">
@@ -633,8 +638,30 @@ function Nav() {
                 </svg>
               </div>
               <div className="nav-drawer-footer-text">
-                <span className="nav-drawer-footer-label">Theme</span>
+                <span className="nav-drawer-footer-label">{t('nav.mobileDrawer.theme')}</span>
                 <span className="nav-drawer-footer-desc">{getCurrentThemeData().name}</span>
+              </div>
+            </button>
+
+            <button
+              className="nav-drawer-footer-btn"
+              onClick={() => {
+                const langs = ['en', 'fr', 'pt', 'af', 'zu'];
+                const currentIndex = langs.indexOf(i18n.language);
+                const nextLang = langs[(currentIndex + 1) % langs.length];
+                i18n.changeLanguage(nextLang);
+              }}
+            >
+              <div className="nav-drawer-footer-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                </svg>
+              </div>
+              <div className="nav-drawer-footer-text">
+                <span className="nav-drawer-footer-label">{t('nav.mobileDrawer.language')}</span>
+                <span className="nav-drawer-footer-desc">{i18n.language.toUpperCase()}</span>
               </div>
             </button>
             
@@ -652,7 +679,7 @@ function Nav() {
                   </svg>
                 </div>
                 <div className="nav-drawer-footer-text">
-                  <span className="nav-drawer-footer-label">Login</span>
+                  <span className="nav-drawer-footer-label">{t('nav.mobileDrawer.login')}</span>
                 </div>
               </Link>
             )}
@@ -670,7 +697,7 @@ function Nav() {
                   </svg>
                 </div>
                 <div className="nav-drawer-footer-text">
-                  <span className="nav-drawer-footer-label">Logout</span>
+                  <span className="nav-drawer-footer-label">{t('nav.mobileDrawer.logout')}</span>
                 </div>
               </button>
             )}
@@ -680,20 +707,20 @@ function Nav() {
 
       <Loading 
         isLoading={isLoggingOut} 
-        message="Signing you out"
-        status="AkovoLabs Auth System v1.0"
+        message={t('nav.signingOut')}
+        status={t('nav.authSystemStatus')}
         indeterminate={true}
       />
       <Modal
         isOpen={showLogoutModal}
-        message="Are you sure you want to logout from your account?"
+        message={t('nav.logoutModalMessage')}
         leftOption={{
           icon: (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           ),
-          label: "Cancel",
+          label: t('modal.cancel'),
           onClick: () => setShowLogoutModal(false)
         }}
         rightOption={{
@@ -702,7 +729,7 @@ function Nav() {
               <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           ),
-          label: "Proceed",
+          label: t('modal.proceed'),
           onClick: handleLogout
         }}
       />

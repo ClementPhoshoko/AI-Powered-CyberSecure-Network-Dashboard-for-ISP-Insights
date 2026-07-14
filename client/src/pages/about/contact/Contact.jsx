@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
@@ -9,6 +10,7 @@ import successAvatar2 from '../../../assets/avatars/success_avatar_2.png';
 import './Contact.css';
 
 const Contact = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -35,28 +37,28 @@ const Contact = () => {
   const dropdownRef = useRef(null);
 
   const subjectOptions = [
-    { value: '', label: 'Select a topic' },
-    { value: 'general', label: 'General Inquiry' },
-    { value: 'sales', label: 'Sales' },
-    { value: 'support', label: 'Support' },
-    { value: 'partnership', label: 'Partnership' }
+    { value: '', label: t('contact.subjectOptions.0') },
+    { value: 'general', label: t('contact.subjectOptions.1') },
+    { value: 'sales', label: t('contact.subjectOptions.2') },
+    { value: 'support', label: t('contact.subjectOptions.3') },
+    { value: 'partnership', label: t('contact.subjectOptions.4') }
   ];
 
   const selectedSubject = subjectOptions.find(opt => opt.value === formData.subject) || subjectOptions[0];
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (!formData.fullName.trim()) newErrors.fullName = t('contact.validation.fullNameRequired');
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('contact.validation.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = t('contact.validation.emailInvalid');
     }
-    if (!formData.subject) newErrors.subject = 'Please select a topic';
+    if (!formData.subject) newErrors.subject = t('contact.validation.subjectRequired');
     if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
+      newErrors.message = t('contact.validation.messageRequired');
     } else if (formData.message.trim().length < 10) {
-      newErrors.message = 'Message must be at least 10 characters';
+      newErrors.message = t('contact.validation.messageMinLength');
     }
     
     setErrors(newErrors);
@@ -115,7 +117,7 @@ const Contact = () => {
     if (!validateForm()) return;
 
     if (captchaEnabled && !captchaToken) {
-      setErrorModal({ isOpen: true, message: 'Please complete the captcha verification.' });
+      setErrorModal({ isOpen: true, message: t('errors:CAPTCHA_REQUIRED') });
       return;
     }
 
@@ -131,7 +133,7 @@ const Contact = () => {
       setShowSuccess(true);
       setAnimationKey(Date.now());
     } catch (err) {
-      setErrorModal({ isOpen: true, message: err.message || 'Failed to send message. Please try again later.' });
+      setErrorModal({ isOpen: true, message: err.message || t('contact.failedMessage') });
       resetCaptcha();
     } finally {
       setIsSubmitting(false);
@@ -141,10 +143,10 @@ const Contact = () => {
   if (showSuccess) {
     return (
       <div key={animationKey} className="contact-success-view">
-        <img src={successAvatar2} alt="Success" className="contact-success-avatar" />
-        <h1 className="contact-success-title">Message Sent!</h1>
+        <img src={successAvatar2} alt={t('imageAlt.success')} className="contact-success-avatar" />
+        <h1 className="contact-success-title">{t('contact.successHeading')}</h1>
         <p className="contact-success-text">
-          Thank you for reaching out to AkovoLabs. Our team will review your inquiry and get back to you shortly.
+          {t('contact.successMessage')}
         </p>
         <div className="contact-success-links">
           <button 
@@ -155,10 +157,10 @@ const Contact = () => {
             }} 
             className="contact-success-link"
           >
-            New
+            {t('contact.newBtn')}
           </button>
           <Link to="/" className="contact-success-link">
-            Home
+            {t('contact.homeBtn')}
           </Link>
         </div>
       </div>
@@ -170,8 +172,8 @@ const Contact = () => {
       <Loading 
         isLoading={isSubmitting} 
         progress={progress}
-        message="Sending message"
-        status="AkovoLabs CRM System v1.0"
+        message={t('contact.sendingMessage')}
+        status={t('contact.crmStatus')}
         indeterminate={true}
       />
       
@@ -180,7 +182,7 @@ const Contact = () => {
           <div className="contact-field-row">
             <div className="contact-field-group">
               <div className="contact-form-field">
-                <label className="contact-form-label">Full Name</label>
+                <label className="contact-form-label">{t('contact.fullName')}</label>
                 <div className="contact-form-input-wrapper">
                   <svg className={`contact-form-icon ${errors.fullName ? 'error' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -193,7 +195,7 @@ const Contact = () => {
                     className={`contact-form-input ${errors.fullName ? 'error' : ''}`}
                     value={formData.fullName}
                     onChange={handleChange}
-                    placeholder="Enter your full name"
+                    placeholder={t('contact.fullNamePlaceholder')}
                   />
                 </div>
                 {errors.fullName && <span className="contact-error-message">{errors.fullName}</span>}
@@ -202,7 +204,7 @@ const Contact = () => {
 
             <div className="contact-field-group">
               <div className="contact-form-field">
-                <label className="contact-form-label">Business Email</label>
+                <label className="contact-form-label">{t('contact.businessEmail')}</label>
                 <div className="contact-form-input-wrapper">
                   <svg className={`contact-form-icon ${errors.email ? 'error' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -215,7 +217,7 @@ const Contact = () => {
                     className={`contact-form-input ${errors.email ? 'error' : ''}`}
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="your@company.com"
+                    placeholder={t('contact.emailPlaceholder')}
                   />
                 </div>
                 {errors.email && <span className="contact-error-message">{errors.email}</span>}
@@ -226,7 +228,7 @@ const Contact = () => {
           <div className="contact-field-row">
             <div className="contact-field-group">
               <div className="contact-form-field">
-                <label className="contact-form-label">Company Name</label>
+                <label className="contact-form-label">{t('contact.companyName')}</label>
                 <div className="contact-form-input-wrapper">
                   <svg className="contact-form-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5m-4 0h4" />
@@ -238,7 +240,7 @@ const Contact = () => {
                     className="contact-form-input"
                     value={formData.company}
                     onChange={handleChange}
-                    placeholder="Your company (optional)"
+                    placeholder={t('contact.companyPlaceholder')}
                   />
                 </div>
               </div>
@@ -246,7 +248,7 @@ const Contact = () => {
 
             <div className="contact-field-group">
               <div className="contact-form-field">
-                <label className="contact-form-label">Subject / Topic</label>
+                <label className="contact-form-label">{t('contact.subject')}</label>
                 <div className="contact-form-input-wrapper" ref={dropdownRef}>
                   <svg className={`contact-form-icon ${errors.subject ? 'error' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -297,7 +299,7 @@ const Contact = () => {
 
           <div className="contact-field-group">
             <div className="contact-form-field">
-              <label className="contact-form-label">Message</label>
+                <label className="contact-form-label">{t('contact.message')}</label>
               <div className="contact-form-input-wrapper">
                 <svg className={`contact-form-icon ${errors.message ? 'error' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
@@ -308,7 +310,7 @@ const Contact = () => {
                   className={`contact-form-input contact-form-textarea ${errors.message ? 'error' : ''}`}
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="How can we help your business?"
+                  placeholder={t('contact.messagePlaceholder')}
                   rows="5"
                 ></textarea>
               </div>
@@ -329,7 +331,7 @@ const Contact = () => {
               className="contact-submit-btn"
               disabled={isSubmitting || (captchaEnabled && !captchaToken)}
             >
-              Send Message
+              {t('contact.sendMessage')}
             </button>
           </div>
         </form>

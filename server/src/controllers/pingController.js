@@ -84,6 +84,7 @@ const getPingTestById = async (req, res, next) => {
     if (!testResult) {
       return res.status(404).json({
         status: 'error',
+        code: 'SPEEDTEST_NO_RESULTS',
         message: 'Test result not found'
       });
     }
