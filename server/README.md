@@ -65,6 +65,7 @@ Supabase Database
 ## Features
 
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling
+- **Connection Stability Detection**: Flags erratic connections when max/min speed ratio across adaptive passes exceeds ~2.5×
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
 - **Network Scoring**: Automated health, gaming, streaming, video call, and browsing scores
 - **Port Risk Detection**: TCP port scanning, risk scoring, and security recommendations with:
@@ -116,6 +117,7 @@ server/
 │   │   └── systemMetricsController.js
 │   ├── docs/         # SQL schemas, setup guides, ER diagrams, migrations
 │   │   ├── migrations/
+│   │   │   └── 004_add_was_unstable.sql
 │   │   ├── deletion_stepsAndPlan.txt
 │   │   ├── empty_db_schema.sql
 │   │   ├── phase_one_schema.md
@@ -277,7 +279,7 @@ The AI summary endpoint includes a robust fallback system to ensure 100% uptime:
 1. **Primary Provider**: Google Gemini API (requires `GEMINI_API_KEY` in `.env`)
 2. **Fallback**: Rule-based summary generator (always available, no external dependencies)
 
-The rule-based system uses network_health_score to categorize connection quality (excellent/good/fair/poor) and evaluates suitability for gaming, streaming, and video calls based on their respective scores.
+The rule-based system uses network_health_score to categorize connection quality (excellent/good/fair/poor) and evaluates suitability for gaming, streaming, and video calls based on their respective scores. If the `was_unstable` flag is set, the fallback adds connection stability advice.
 
 ## Requirements
 

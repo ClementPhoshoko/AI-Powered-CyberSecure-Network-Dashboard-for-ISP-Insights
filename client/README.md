@@ -52,6 +52,7 @@ Supabase Database
 ## Features
 
 - **Network Speed Testing**: Real-time ping, download, and upload speed tests
+- **Connection Stability Warning**: Visual badge on test results when connection speed fluctuates significantly across passes; amber dot markers on history chart data points
 - **Test History**: Complete historical record of all network tests
 - **Port Risk Security**: Interactive scan wheel, risk scoring, open-port breakdown, recommendations, and a security knowledge base
 - **Analytics Dashboard**: Visual data representation using Recharts

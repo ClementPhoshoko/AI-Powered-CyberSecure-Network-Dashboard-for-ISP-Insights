@@ -69,6 +69,7 @@ erDiagram
         integer probe_sample_count
         integer successful_probe_count
         integer failed_probe_count
+        boolean was_unstable
         varchar isp_name
         varchar country
         varchar province

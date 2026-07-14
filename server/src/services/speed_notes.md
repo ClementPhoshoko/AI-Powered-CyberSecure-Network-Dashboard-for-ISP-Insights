@@ -23,6 +23,7 @@
 ### POST /api/speed/tests/upload
 - **Purpose**: Save final upload test result + all individual size measurements
 - **When to use it**: Always use this (for debugging/analytics, Grafana insights, etc.)
+- **Optional field**: `was_unstable` (boolean) — set to `true` when max/min speed ratio across passes exceeds ~2.5×, flagging an erratic connection
 
 ---
 
@@ -40,8 +41,8 @@
      - If speed is 10-50 Mbps → run 5MB → 10MB → 20MB
      - If speed < 10 Mbps → stop at 5MB (no need for larger sizes)
   3. For each subsequent test size, continue tracking progress for the real-time graph
-  4. Pick best/average result from the sizes you did run
-  5. POST /api/speed/tests/download with all measurements you collected + final result
+   4. Pick best (max speed) result from the sizes you did run
+   5. POST /api/speed/tests/download with all measurements you collected + final result
 
 ### Upload Adaptive Sequence
 - Start small, adjust based on initial speed (saves time!)
@@ -55,8 +56,9 @@
      - If speed is 10-50 Mbps → run 1MB → 5MB → 10MB → 20MB
      - If speed < 10 Mbps → stop at 1MB (no need for larger sizes)
   3. For each subsequent test size, continue tracking progress for the real-time graph
-  4. Pick best/average result from the sizes you did run
-  5. POST /api/speed/tests/upload with all measurements you collected + final result
+   4. Pick best (max speed) result from the sizes you did run
+   5. Determine connection stability: if max/min speed ratio across all passes (download + upload) exceeds ~2.5×, set `was_unstable: true`
+   6. POST /api/speed/tests/upload with all measurements you collected + final result + `was_unstable` flag
 
 ---
 

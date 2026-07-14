@@ -196,6 +196,7 @@ Generate:
 - Streaming Score
 - Video Call Score
 - General Browsing Score
+- **Connection Stability Flag**: Compares max/min speed across adaptive passes — flags as unstable when ratio > ~2.5×
 
 **Example:**
 ```json
@@ -386,6 +387,7 @@ Market it as a **Network Insight Platform** with features:
 - Historical Trends
 - Network Health Score
 - ISP Analytics
+- **Connection Stability Detection**
 - AI Explanations
 
 This makes the project much stronger and more unique.
