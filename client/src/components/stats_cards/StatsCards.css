@@ -359,6 +359,45 @@
   }
 }
 
+/* Laptop and up — 3 explicit columns so cards stretch to fill space */
+@media (min-width: 1025px) {
+  .latency-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .latency-card,
+  .quality-card {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .latency-card-icon,
+  .quality-card-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .latency-card-icon svg,
+  .quality-card-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .latency-card-label,
+  .quality-card-label {
+    font-size: 11px;
+  }
+
+  .latency-card-value {
+    font-size: var(--text-lg);
+  }
+
+  .quality-card-circle {
+    width: 10px;
+    height: 10px;
+  }
+}
+
 /* Narrow column container — keep list layout even on wider viewports */
 @container (max-width: 420px) {
   .speed-cards {

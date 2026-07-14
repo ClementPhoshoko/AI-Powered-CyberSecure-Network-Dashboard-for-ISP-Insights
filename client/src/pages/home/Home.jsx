@@ -108,12 +108,26 @@ function Home() {
             )}
           </button>
 
-          <div className="graph-advisory">
-            <h3 className="graph-advisory-title">Understand Your Speedtest</h3>
-            <p>• <strong>Download Speed Over Time:</strong> Shows consistency of connection</p>
-            <p>• <strong>Upload Speed Over Time:</strong> Measures upload performance</p>
-            <p>• <strong>App Latency:</strong> Tracks how quickly your device reaches this service during the test</p>
-          </div>
+          {!isRunning && !isComplete ? (
+            <div className="graph-advisory">
+              <h3 className="graph-advisory-title">Understand Your Speedtest</h3>
+              <p>• <strong>Download Speed Over Time:</strong> Shows consistency of connection</p>
+              <p>• <strong>Upload Speed Over Time:</strong> Measures upload performance</p>
+              <p>• <strong>App Latency:</strong> Tracks how quickly your device reaches this service during the test</p>
+            </div>
+          ) : isRunning || (testResult && !testResult.ai_summary) ? (
+            <div className="ai-summary-section is-loading" />
+          ) : testResult && (
+            <div className="ai-summary-section">
+              <h3 className="ai-summary-title">
+                <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
+                AI-Powered Summary
+              </h3>
+              <p className="ai-summary-text">
+                {aiSummaryText}
+              </p>
+            </div>
+          )}
         </div>
         <div className={`home-col ${!isRunning && !isComplete ? 'home-col--center' : ''}`}>
           {!isRunning && !isComplete ? (
@@ -144,24 +158,7 @@ function Home() {
               </div>
             </section>
           ) : (
-            <>
-              <StatsCards testResult={testResult} isLoading={isRunning} />     
-              {(isRunning || isComplete) && (
-                <div className="ai-summary-section">
-                  <h3 className="ai-summary-title">
-                    <img src={aiIcon} alt="AI Icon" className="ai-summary-icon" />
-                    AI-Powered Summary
-                  </h3>
-                  {isRunning || (testResult && !testResult.ai_summary) ? (
-                    <p className="skeleton ai-summary-text"></p>
-                  ) : testResult && (
-                    <p className="ai-summary-text">
-                      {aiSummaryText}
-                    </p>
-                  )}
-                </div>
-              )}
-            </>
+            <StatsCards testResult={testResult} isLoading={isRunning} />
           )}
         </div>
       </div>

@@ -179,15 +179,10 @@
 
 .graph-advisory {
   width: 100%;
-  /* max-width: 400px; */
   margin-top: var(--space-5);
-  /* background: var(--glass-bg); */
-  /* backdrop-filter: var(--blur-md); */
-  /* -webkit-backdrop-filter: var(--blur-md); */
-  /* border: 1px solid var(--glass-border); */
   border-radius: var(--radius-xl);
   padding: var(--space-4);
-  /* box-shadow: var(--shadow-glass); */
+  animation: home-content-fade var(--motion-slow) var(--ease-out) both;
 }
 
 .graph-advisory-title {
@@ -269,16 +264,25 @@
 }
 
 .ai-summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   width: 100%;
-  margin-top: 0;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  border: none;
-  border-radius: 0;
-  padding: 0 var(--space-4);
-  box-shadow: none;
+  padding: var(--space-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
   box-sizing: border-box;
+  animation: home-content-fade var(--motion-slow) var(--ease-out) both;
+}
+
+.ai-summary-section.is-loading {
+  min-height: 80px;
+  background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
+  background-size: 200% 100%;
+  animation: home-content-fade var(--motion-slow) var(--ease-out) both, skeleton-loading 1.5s infinite;
+  border: none;
+  padding: 0;
 }
 
 .ai-summary-title {
@@ -318,6 +322,17 @@
   border-radius: var(--radius-sm);
 }
 
+@keyframes home-content-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes skeleton-loading {
   0% {
     background-position: 200% 0;
@@ -326,24 +341,6 @@
   100% {
     background-position: -200% 0;
   }
-}
-
-.skeleton.ai-summary-text {
-  width: 100%;
-  height: auto;
-  min-height: 2.5rem;
-  display: block;
-  background: none;
-  animation: none;
-  border-radius: 0;
-  color: var(--text-muted);
-  opacity: 0.55;
-}
-
-.skeleton.ai-summary-text::after {
-  content: 'Generating AI summary...';
-  font-size: var(--text-sm);
-  line-height: 1.65;
 }
 
 .graphs-section {
@@ -440,17 +437,14 @@
   }
 }
 
-/* Tablet and up — glass card treatment for AI summary */
+/* Tablet and up — consistent stats-note-style card for AI summary */
 @media (min-width: 641px) {
   .ai-summary-section {
     margin-top: var(--space-6);
-    background: var(--glass-bg);
-    backdrop-filter: var(--blur-md);
-    -webkit-backdrop-filter: var(--blur-md);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-xl);
-    padding: var(--space-4);
-    box-shadow: var(--shadow-glass);
+  }
+
+  .ai-summary-section.is-loading {
+    min-height: 90px;
   }
 
   .ai-summary-title {
@@ -462,21 +456,6 @@
     height: 26px;
   }
 
-  .skeleton.ai-summary-text {
-    height: 120px;
-    min-height: 120px;
-    background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
-    border-radius: var(--radius-sm);
-    color: transparent;
-    opacity: 1;
-  }
-
-  .skeleton.ai-summary-text::after {
-    content: none;
-  }
-
   .graphs-section {
     padding: var(--space-8) var(--space-6);
   }
@@ -485,13 +464,6 @@
 @container (max-width: 420px) {
   .ai-summary-section {
     margin-top: 0;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border: none;
-    border-radius: 0;
-    padding: 0 var(--space-4);
-    box-shadow: none;
   }
 
   .ai-summary-icon {
