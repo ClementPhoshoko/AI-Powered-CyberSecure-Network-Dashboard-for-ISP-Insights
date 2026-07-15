@@ -58,7 +58,13 @@ function AuthLayout({ activeTab = 'login', children }) {
           <div className="auth-form-column">
             {children}
             <p className="auth-advisory-text">
-              {t('auth.layout.agreement')}
+              {t('auth.layout.agreement').split(/\*\*(.*?)\*\*/g).map((part, i) => {
+                if (i % 2 === 1) {
+                  const modal = i === 1 ? 'terms' : 'privacy';
+                  return <button key={i} className="auth-advisory-link" onClick={() => setActiveModal(modal)}>{part}</button>;
+                }
+                return part;
+              })}
             </p>
           </div>
           

@@ -8,7 +8,6 @@ import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
-import Loading from './components/loading/Loading'
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -78,7 +77,7 @@ function AppContent() {
             transition={pageTransition}
             className="page-transition-wrapper"
           >
-            <Suspense fallback={<Loading isLoading={true} />}>
+            <Suspense>
               <Routes location={location}>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />

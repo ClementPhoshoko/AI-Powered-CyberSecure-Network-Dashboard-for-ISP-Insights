@@ -265,7 +265,7 @@ function Home() {
                     {user ? (
                       t('speedtest:howToUse.signedIn')
                     ) : (
-                      <>{t('speedtest:howToUse.signedOut')}</>
+                      <>{t('speedtest:howToUse.signedOut').split(/\*\*(.*?)\*\*/g).map((part, i) => i % 2 === 1 ? <strong key={i}>{part}</strong> : part)}</>
                     )}
                   </p>
                 </div>
