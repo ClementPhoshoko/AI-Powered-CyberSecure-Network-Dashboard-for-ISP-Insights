@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 
 const SITE_NAME = 'AkovoLabs';
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://akovolabs.com';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://akovolabs.co.za';
 
 function Seo({ title, description, path, image }) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
