@@ -37,9 +37,14 @@ function useTypewriter(text, speed = 30) {
 }
 
 const fadeVariants = {
-  initial: { opacity: 0, y: 12 },
+  initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -8 }
+}
+
+const cardVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 }
 }
 
 const fadeTransition = {
@@ -252,7 +257,13 @@ function Home() {
                   alt={t('imageAlt.instructorAvatar')}
                   className="speaker-avatar"
                 />
-                <div className="speaker-card">
+                <motion.div
+                  className="speaker-card"
+                  variants={cardVariants}
+                  initial="initial"
+                  animate="animate"
+                  transition={{ ...fadeTransition, delay: 0.1 }}
+                >
                   <span className="speaker-tag">{t('speedtest:howToUse.tag')}</span>
                   <h3 className="speaker-title">{t('speedtest:howToUse.heading')}</h3>
                   <p className="speaker-text">
@@ -268,7 +279,7 @@ function Home() {
                       <>{t('speedtest:howToUse.signedOut').split(/\*\*(.*?)\*\*/g).map((part, i) => i % 2 === 1 ? <strong key={i}>{part}</strong> : part)}</>
                     )}
                   </p>
-                </div>
+                </motion.div>
               </motion.section>
             ) : (
               <motion.div
