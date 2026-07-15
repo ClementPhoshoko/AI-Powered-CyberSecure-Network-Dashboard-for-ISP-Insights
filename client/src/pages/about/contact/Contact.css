@@ -66,10 +66,10 @@
   font-size: var(--text-sm);
   color: var(--text-primary);
   background: var(--bg-secondary);
-  border: none;
+  border: 1px solid var(--border-dark);
   outline: none;
-  transition: all var(--motion-fast) var(--ease-out);
-  border-radius: none;
+  transition: border-color var(--motion-fast) var(--ease-out);
+  border-radius: 4px;
   font-family: inherit;
 }
 
@@ -79,7 +79,6 @@
 
 .contact-form-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Dropdown specific styles */
@@ -93,9 +92,10 @@ select.contact-form-input-hidden {
   font-size: var(--text-sm);
   color: var(--text-primary);
   background: var(--bg-secondary);
-  border: none;
+  border: 1px solid var(--border-dark);
   outline: none;
-  transition: all var(--motion-fast) var(--ease-out);
+  transition: border-color var(--motion-fast) var(--ease-out);
+  border-radius: 4px;
   font-family: inherit;
   display: flex;
   align-items: center;
@@ -168,7 +168,6 @@ select.contact-form-input-hidden {
   resize: vertical;
   min-height: 120px;
   line-height: 1.6;
-  border-left: double 8px var(--text-muted);
 }
 
 .contact-field-actions {
