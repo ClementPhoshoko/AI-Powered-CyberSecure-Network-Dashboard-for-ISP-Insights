@@ -8,6 +8,7 @@ import ScanProgressBar from '../../components/scan_progress_bar/ScanProgressBar'
 import ScanMetricGrid from '../../components/scan_metric_grid/ScanMetricGrid'
 import NetworkScoreBadge from '../../components/network_score_badge/NetworkScoreBadge'
 import PortRiskStatusChip from '../../components/port_risk_status_chip/PortRiskStatusChip'
+import Seo from '../../components/seo/Seo'
 import ScanEmptyState from '../../components/scan_empty_state/ScanEmptyState'
 import ScanHighlightsSection from '../../components/scan_highlights_section/ScanHighlightsSection'
 import ErrorModal from '../../components/error_modal/ErrorModal'
@@ -183,7 +184,8 @@ function Security() {
 
   return (
     <div className="security-page">
-      <div className="security-title-section">
+      <Seo title={t('seo.securityTitle')} description={t('seo.securityDesc')} path="/security" />
+        <div className="security-title-section">
         <h1 className="security-title-section-title">{t('security.title')}</h1>
         <div className="security-subtitle-with-avatar">
           <img src={womanAvatar} alt={t('imageAlt.securityGuide')} className="security-subtitle-avatar" />

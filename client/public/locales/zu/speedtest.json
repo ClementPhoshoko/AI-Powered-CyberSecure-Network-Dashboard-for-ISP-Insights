@@ -1,0 +1,60 @@
+{
+  "phases": {
+    "initializing": "Iyaqalisa...",
+    "appLatency": "Ihlola i-latency ye-app...",
+    "download": "Ihlola ukulanda...",
+    "upload": "Ihlola ukulayisha...",
+    "derivedScores": "Iballa amaphuzu atholakele..."
+  },
+  "buttons": {
+    "beginTest": "Qala ukuhlola",
+    "stopTest": "Misa ukuhlola",
+    "runAgain": "Gijima futhi"
+  },
+  "hero": {
+    "heading": "Ukuhlola ijubane lenethiwekhi elinamandla e-AI"
+  },
+  "advisory": {
+    "heading": "Qonda ukuhlola kwakho ijubane",
+    "downloadOverTime": "**Ijubane lokulanda ngokuhamba kwesikhathi:** Libonisa ukuqina koxhumo",
+    "uploadOverTime": "**Ijubane lokulayisha ngokuhamba kwesikhathi:** Likala ukusebenza kokulayisha",
+    "appLatency": "**I-latency ye-App:** Lilandelela ukuthi idivayisi yakho ifinyelela ngokushesha kangakanani le sevisi ngesikhathi sokuhlola"
+  },
+  "aiSummary": {
+    "heading": "Isifinyezo esinamandla e-AI",
+    "placeholder": "Isifinyezo sakho sokuhlola ijubane sizovela lapha ngemuva kokuthi uhlelo luhumushe imiphumela."
+  },
+  "howToUse": {
+    "tag": "Indlela yokusebenzisa lokhu kuhlola",
+    "heading": "Hlola ijubane lenethiwekhi yakho lamanje",
+    "currentDevice": "Ungagijima ukuhlola ijubane kusuka kudivayisi yakho nokuxhumana kwakho kwamanje. Uma use-Wi-Fi wasekhaya, imiphumela ibonisa isipiliyoni sakho sangempela manje.",
+    "deviceToServer": "Ilala ukusebenza kwedivayisi kuseva, hhayi ukuhlolwa okujulile kwe-router yakho, amandla esiginali, noma yonke imininingwane yangaphakathi ye-Wi-Fi.",
+    "signedIn": "Manje njengoba ungenile, ungakhohlwa ukubheka amagrafu akho okuhlola nomlando ngezansi!",
+    "signedOut": "**Ngena ngemvume** noma **Bhalisa** ukuze uthole imininingwane eningiliziwe mayelana nokusebenza kwenethiwekhi yakho!"
+  },
+  "results": {
+    "download": "Ukulanda",
+    "upload": "Ukulayisha",
+    "appLatency": "I-latency ye-App",
+    "latencyVariation": "Ukuhluka kwe-latency",
+    "failedRequests": "Izicelo ezihlulekile",
+    "networkHealth": "IMPILO YENETHAWUKHI",
+    "gaming": "IMIDLALO",
+    "streaming": "UKUSAKAZA",
+    "videoCalls": "IZINGQO ZEVEDIYO",
+    "browsing": "UKUPHESHA",
+    "connectionStability": "UKUQINA KOXHUMO",
+    "stable": "✓ Kuqinile",
+    "unstable": "⚠ Akuqinile",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    }
+  },
+  "latencyNote": {
+    "title": "Indlela i-latency elinganiswa ngayo",
+    "desc1": "Izicelo ezisheshayo ze-app zithunyelwa kule sevisi ukuze kulinganiswe ukusabela kwedivayisi yakho nenethiwekhi yakho yamanje.",
+    "desc2": "Lokhu kuwusizo ekusebenzeni kwangempela kokuphesha, kodwa akufani ne-ICMP ping yakudala."
+  }
+}

@@ -6,6 +6,7 @@ import mobileMockup from '../../assets/avatars/Futuristic_speed_test_UI_showcase
 import googlePlayBadge from '../../assets/GetItOnGooglePlay_Badge_Web_color_English.svg';
 import appStoreBadge from '../../assets/download-on-the-app-store-apple-logo-svgrepo-com.svg';
 import { RocketLaunchIcon, BoltIcon, ShieldCheckIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
+import Seo from '../../components/seo/Seo';
 
 const Download = () => {
   const { t } = useTranslation();
@@ -34,7 +35,8 @@ const Download = () => {
 
   return (
     <div className="download_page">
-      <div className="download_container">
+      <Seo title={t('seo.downloadTitle')} description={t('seo.downloadDesc')} path="/download" />
+        <div className="download_container">
         <section className="download_hero">
           {/* Top Section - Logo and Mockup */}
           <div className="download_visual_header">

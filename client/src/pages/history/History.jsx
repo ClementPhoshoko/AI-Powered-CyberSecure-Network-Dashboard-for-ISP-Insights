@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import useSpeedTestHistory from '../../hooks/useSpeedTestHistory';
 import { useAuth } from '../../context/AuthContext';
+import Seo from '../../components/seo/Seo';
 import heroImage from '../../assets/hero/Modern_office_with_data_flow_dynamics.png';
 import womanAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import aiIcon from '../../assets/avatars/ai.png';
@@ -469,6 +470,7 @@ const tooltipIcons = {
 };
 
 function HistoryChartTooltip({ active, payload, label, config = {} }) {
+  const { t } = useTranslation();
   if (!active || !payload?.length) {
     return null;
   }
@@ -960,6 +962,7 @@ function History() {
 
   return (
     <div className="history-page">
+      <Seo title={t('seo.historyTitle')} description={t('seo.historyDesc')} path="/tests" />
       
       {/* Title Section */}
       {((allHistory || []).length > 0 || !allLoading) && (

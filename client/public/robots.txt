@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /verify-email
+Disallow: /auth-required
+Disallow: /account
+Disallow: /tests
+Disallow: /security

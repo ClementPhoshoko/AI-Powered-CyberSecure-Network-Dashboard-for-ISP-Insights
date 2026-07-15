@@ -7,6 +7,7 @@ import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
 import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
 import { useTurnstile } from '../../../hooks/useTurnstile';
+import Seo from '../../../components/seo/Seo';
 import './Login.css';
 
 function Login() {
@@ -76,6 +77,7 @@ function Login() {
 
   return (
     <>
+      <Seo title={t('seo.loginTitle')} description={t('seo.loginDesc')} path="/login" />
       <Loading 
         isLoading={isLoading} 
         progress={progress}

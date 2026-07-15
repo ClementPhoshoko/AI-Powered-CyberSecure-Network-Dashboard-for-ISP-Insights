@@ -9,6 +9,7 @@ import Modal from '../../components/modal/Modal';
 import { updateEmail } from '../../services/authService';
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
 import successAvatar2 from '../../assets/avatars/success_avatar_2.png';
+import Seo from '../../components/seo/Seo';
 import './Account.css';
 
 function Account() {
@@ -139,16 +140,16 @@ function Account() {
   };
 
   if (authLoading || profileLoading) {
-    return (
-      <div className="account-page">
-        <Loading 
+  return (
+    <div className="account-page">
+      <Seo title={t('seo.accountTitle')} description={t('seo.accountDesc')} path="/account" />
+      <Loading 
           isLoading={true}
           message={t('account.loadingProfile')}
           status={t('account.profileSystem')}
           indeterminate={true}
         />
-      </div>
-    );
+    </div>);
   }
 
   if (profileError) {
@@ -231,6 +232,7 @@ function Account() {
 
   return (
     <div className="account-page">
+      <Seo title={t('seo.accountTitle')} description={t('seo.accountDesc')} path="/account" />
       <Loading 
         isLoading={isUpdating} 
         progress={progress}

@@ -24,7 +24,7 @@ i18n
       escapeValue: false,
     },
     returnNull: false,
-    saveMissing: process.env.NODE_ENV === 'development',
+    saveMissing: import.meta.env.DEV,
   });
 
 export default i18n;

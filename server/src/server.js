@@ -132,9 +132,17 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customSiteTitle: 'ISP Speedtest API Docs'
 }));
 
-// Health Check Route
+// Health Check Routes
 app.get('/', (req, res) => {
     res.send('AI-Powered AkovoLabs Speedtest API is running...');
+});
+
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Test Database Connection
@@ -179,11 +187,27 @@ app.use('/api/turnstile', turnstileRouter);
 // Error Handler Middleware (must be last middleware)
 app.use(errorHandler);
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => {
+// Graceful shutdown
+const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
     console.log('Database configuration loaded');
+});
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received — shutting down gracefully...');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT received — shutting down gracefully...');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });
 
 /*

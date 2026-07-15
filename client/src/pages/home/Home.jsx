@@ -12,6 +12,7 @@ import Modal from '../../components/modal/Modal';
 import ErrorModal from '../../components/error_modal/ErrorModal';
 import { useSpeedTest } from '../../hooks/useSpeedTest';
 import { useAuth } from '../../context/AuthContext';
+import Seo from '../../components/seo/Seo';
 
 function Home() {
   const { t } = useTranslation();
@@ -61,7 +62,8 @@ function Home() {
 
   return (
     <div className="home-page">
-      <div className="home-container">
+      <Seo title={t('seo.homeTitle')} description={t('seo.homeDesc')} path="/" />
+        <div className="home-container">
         <h1 className="home-title">{t('speedtest:hero.heading')}</h1>
         <div className="home-col">
           <div className="speedmeter-wrapper">

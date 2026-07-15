@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './NotFound.css';
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
+import Seo from '../../components/seo/Seo';
 
 function NotFound() {
   const { t } = useTranslation();
   return (
     <div className="not-found-page">
+      <Seo title={t('seo.notFoundTitle')} description={t('seo.notFoundDesc')} path="" />
       <div className="not-found-card">
         <h1 className="not-found-title">{t('notFound.title')}</h1>
         <img src={notFoundAvatar} alt={t('imageAlt.pageNotFound')} className="not-found-avatar" />

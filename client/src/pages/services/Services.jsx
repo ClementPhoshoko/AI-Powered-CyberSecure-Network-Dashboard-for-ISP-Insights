@@ -5,6 +5,7 @@ import './Services.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import speedTestPreview2 from '../../assets/avatars/speedtest_preview_image_2.png';
 import logo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
+import Seo from '../../components/seo/Seo';
 
 const Services = () => {
   const location = useLocation();
@@ -23,7 +24,8 @@ const Services = () => {
   }, [location]);
   return (
     <div className="services_page">
-      <div className="services_container">
+      <Seo title={t('seo.servicesTitle')} description={t('seo.servicesDesc')} path="/services" />
+        <div className="services_container">
         
         {/* Hero Section */}
         <section className="services_hero">

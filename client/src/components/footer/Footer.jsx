@@ -17,9 +17,6 @@ function Footer() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   
-  console.log('Footer: user:', user);
-  console.log('Footer: subscriber:', subscriber);
-  console.log('Footer: subscriber?.status:', subscriber?.status);
 
   useEffect(() => {
     let interval;

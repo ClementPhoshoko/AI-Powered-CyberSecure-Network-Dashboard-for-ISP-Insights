@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import './News.css';
 import * as blogs from './blogs';
+import Seo from '../../components/seo/Seo';
 
 const News = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,7 +133,8 @@ const News = () => {
 
   return (
     <div className="news_page">
-      <div className="news_container">
+      <Seo title={t('seo.newsTitle')} description={t('seo.newsDesc')} path="/news" />
+        <div className="news_container">
         
         {/* Hero Section */}
         <section className="news_hero">

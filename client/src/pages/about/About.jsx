@@ -9,6 +9,7 @@ import Bubble from '../../components/speech_bubble/Bubble';
 import Contact from './contact/Contact';
 import AnimatedNumber from '../../components/AnimatedNumber';
 import useSystemMetrics from '../../hooks/useSystemMetrics';
+import Seo from '../../components/seo/Seo';
 
 const About = () => {
   const location = useLocation();
@@ -43,7 +44,8 @@ const About = () => {
 
   return (
     <div className="about_page">
-      <div className="about_container">
+      <Seo title={t('seo.aboutTitle')} description={t('seo.aboutDesc')} path="/about" />
+        <div className="about_container">
         
         {/* Hero Section - Company */}
         <section className="about_hero">

@@ -1,25 +1,28 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import './global_styles/App.css'
 import { AuthProvider } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
-import Login from './pages/auth/forms/Login'
-import Register from './pages/auth/forms/Register'
-import Forgot from './pages/auth/forms/Forgot'
-import Verify from './pages/auth/forms/Verify'
-import Home from './pages/home/Home'
-import History from './pages/history/History'
-import Security from './pages/security/Security'
 import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
-import NotFound from './pages/not_found/NotFound'
-import AuthRequired from './pages/auth_required/AuthRequired'
-import Account from './pages/manage_account/Account'
-import About from './pages/about/About'
-import Services from './pages/services/Services'
-import News from './pages/news/News'
-import Download from './pages/download/Download'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
+import Loading from './components/loading/Loading'
+
+const Login = lazy(() => import('./pages/auth/forms/Login'))
+const Register = lazy(() => import('./pages/auth/forms/Register'))
+const Forgot = lazy(() => import('./pages/auth/forms/Forgot'))
+const Verify = lazy(() => import('./pages/auth/forms/Verify'))
+const Home = lazy(() => import('./pages/home/Home'))
+const History = lazy(() => import('./pages/history/History'))
+const Security = lazy(() => import('./pages/security/Security'))
+const NotFound = lazy(() => import('./pages/not_found/NotFound'))
+const AuthRequired = lazy(() => import('./pages/auth_required/AuthRequired'))
+const Account = lazy(() => import('./pages/manage_account/Account'))
+const About = lazy(() => import('./pages/about/About'))
+const Services = lazy(() => import('./pages/services/Services'))
+const News = lazy(() => import('./pages/news/News'))
+const Download = lazy(() => import('./pages/download/Download'))
 
 function AppContent() {
   const location = useLocation();
@@ -53,46 +56,48 @@ function AppContent() {
 
       {/* Main Content */}
       <div className="app-content">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/news" element={<News />} />
-          <Route path="/download" element={<Download />} />
-          <Route path="/tests" element={
-            <ProtectedRoute>
-              <History />
-            </ProtectedRoute>
-          } />
-          <Route path="/security" element={
-            <ProtectedRoute>
-              <Security />
-            </ProtectedRoute>
-          } />
-          <Route path="/account" element={
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          } />
-          <Route path="/login" element={
-            <PublicRoute>
-              <AuthLayout activeTab="login"><Login /></AuthLayout>
-            </PublicRoute>
-          } />
-          <Route path="/signup" element={
-            <PublicRoute>
-              <AuthLayout activeTab="signup"><Register /></AuthLayout>
-            </PublicRoute>
-          } />
-          <Route path="/forgot-password" element={
-            <AuthLayout activeTab="forgot"><Forgot /></AuthLayout>
-          } />
-          <Route path="/verify-email" element={
-            <AuthLayout activeTab="verify"><Verify /></AuthLayout>
-          } />
-          <Route path="/auth-required" element={<AuthRequired />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="app-content"><Loading isLoading={true} /></div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/download" element={<Download />} />
+            <Route path="/tests" element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            } />
+            <Route path="/security" element={
+              <ProtectedRoute>
+                <Security />
+              </ProtectedRoute>
+            } />
+            <Route path="/account" element={
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
+            } />
+            <Route path="/login" element={
+              <PublicRoute>
+                <AuthLayout activeTab="login"><Login /></AuthLayout>
+              </PublicRoute>
+            } />
+            <Route path="/signup" element={
+              <PublicRoute>
+                <AuthLayout activeTab="signup"><Register /></AuthLayout>
+              </PublicRoute>
+            } />
+            <Route path="/forgot-password" element={
+              <AuthLayout activeTab="forgot"><Forgot /></AuthLayout>
+            } />
+            <Route path="/verify-email" element={
+              <AuthLayout activeTab="verify"><Verify /></AuthLayout>
+            } />
+            <Route path="/auth-required" element={<AuthRequired />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </div>
 
       {/* Footer - Only on non-auth routes */}

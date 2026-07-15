@@ -1,0 +1,60 @@
+{
+  "phases": {
+    "initializing": "Inicializando...",
+    "appLatency": "Testando latência...",
+    "download": "Testando download...",
+    "upload": "Testando upload...",
+    "derivedScores": "Calculando pontuações derivadas..."
+  },
+  "buttons": {
+    "beginTest": "Iniciar teste",
+    "stopTest": "Parar teste",
+    "runAgain": "Executar novamente"
+  },
+  "hero": {
+    "heading": "Teste de velocidade de rede com IA"
+  },
+  "advisory": {
+    "heading": "Entenda seu teste de velocidade",
+    "downloadOverTime": "**Velocidade de download ao longo do tempo:** Mostra a consistência da conexão",
+    "uploadOverTime": "**Velocidade de upload ao longo do tempo:** Mede o desempenho de upload",
+    "appLatency": "**Latência do aplicativo:** Acompanha a rapidez com que seu dispositivo alcança este serviço durante o teste"
+  },
+  "aiSummary": {
+    "heading": "Resumo com IA",
+    "placeholder": "Seu resumo do teste de velocidade aparecerá aqui após o sistema interpretar os resultados."
+  },
+  "howToUse": {
+    "tag": "Como usar este teste",
+    "heading": "Teste sua velocidade de rede atual",
+    "currentDevice": "Você pode executar um teste de velocidade do seu dispositivo e conexão atuais. Se estiver no Wi-Fi doméstico, os resultados refletem sua experiência real agora.",
+    "deviceToServer": "Ele mede o desempenho do dispositivo ao servidor, não uma inspeção profunda do seu roteador, intensidade do sinal ou detalhes internos do Wi-Fi.",
+    "signedIn": "Agora que você está conectado, não se esqueça de verificar seus gráficos e histórico de testes abaixo!",
+    "signedOut": "**Faça login** ou **Cadastre-se** para obter insights mais detalhados sobre o desempenho da sua rede!"
+  },
+  "results": {
+    "download": "Download",
+    "upload": "Upload",
+    "appLatency": "Latência do app",
+    "latencyVariation": "Variação de latência",
+    "failedRequests": "Requisições falhas",
+    "networkHealth": "SAÚDE DA REDE",
+    "gaming": "JOGOS",
+    "streaming": "STREAMING",
+    "videoCalls": "CHAMADAS DE VÍDEO",
+    "browsing": "NAVEGAÇÃO",
+    "connectionStability": "ESTABILIDADE DA CONEXÃO",
+    "stable": "✓ Estável",
+    "unstable": "⚠ Instável",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    }
+  },
+  "latencyNote": {
+    "title": "Como a latência é medida",
+    "desc1": "Requisições rápidas do aplicativo são enviadas a este serviço para estimar a capacidade de resposta do seu dispositivo e rede atuais.",
+    "desc2": "Isso é útil para o desempenho real de navegação, mas não é o mesmo que o ping ICMP clássico."
+  }
+}

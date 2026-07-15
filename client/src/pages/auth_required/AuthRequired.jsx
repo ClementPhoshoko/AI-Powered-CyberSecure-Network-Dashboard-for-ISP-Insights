@@ -2,11 +2,13 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './AuthRequired.css';
 import notFoundAvatar from '../../assets/avatars/not_found_avatar.png';
+import Seo from '../../components/seo/Seo';
 
 function AuthRequired() {
   const { t } = useTranslation();
   return (
     <div className="auth-required-page">
+      <Seo title={t('seo.authRequiredTitle')} description={t('seo.authRequiredDesc')} path="/auth-required" />
       <div className="auth-required-card">
         <h1 className="auth-required-title">{t('authRequired.title')}</h1>
         <img src={notFoundAvatar} alt={t('imageAlt.authRequired')} className="auth-required-avatar" />

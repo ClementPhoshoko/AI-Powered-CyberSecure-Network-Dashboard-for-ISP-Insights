@@ -1,0 +1,60 @@
+{
+  "phases": {
+    "initializing": "Initialiseer...",
+    "appLatency": "Toets app-latensie...",
+    "download": "Toets aflaai...",
+    "upload": "Toets oplaai...",
+    "derivedScores": "Bereken afgeleide tellings..."
+  },
+  "buttons": {
+    "beginTest": "Begin toets",
+    "stopTest": "Stop toets",
+    "runAgain": "Weer hardloop"
+  },
+  "hero": {
+    "heading": "KI-aangedrewe netwerkspoedtoets"
+  },
+  "advisory": {
+    "heading": "Verstaan jou spoedtoets",
+    "downloadOverTime": "**Aflaaispoed oor tyd:** Woon konsekwentheid van verbinding",
+    "uploadOverTime": "**Oplaaispoed oor tyd:** Meet oplaai-prestasie",
+    "appLatency": "**App-latensie:** Volg hoe vinnig jou toestel hierdie diens bereik tydens die toets"
+  },
+  "aiSummary": {
+    "heading": "KI-aangedrewe opsomming",
+    "placeholder": "Jou spoedtoets-opsomming sal hier verskyn nadat die stelsel die resultate geïnterpreteer het."
+  },
+  "howToUse": {
+    "tag": "Hoe om hierdie toets te gebruik",
+    "heading": "Toets jou huidige netwerkspoed",
+    "currentDevice": "Jy kan 'n spoedtoets vanaf jou huidige toestel en verbinding hardloop. As jy op huis-WiFi is, weerspieël die resultate jou werklike ervaring nou.",
+    "deviceToServer": "Dit meet toestel-tot-bediener-prestasie, nie 'n diep inspeksie van jou router, seinsterkte of elke interne WiFi-besonderheid nie.",
+    "signedIn": "Noudat jy aangemeld is, moenie vergeet om jou toetsgrafieke en geskiedenis hieronder te kyk nie!",
+    "signedOut": "**Meld aan** of **Registreer** om meer gedetailleerde insigte oor jou netwerkprestasie te kry!"
+  },
+  "results": {
+    "download": "Aflaai",
+    "upload": "Oplaai",
+    "appLatency": "App-latensie",
+    "latencyVariation": "Latensievariasie",
+    "failedRequests": "Mislukte versoeke",
+    "networkHealth": "NETWERKGESONDHEID",
+    "gaming": "SPELETJIES",
+    "streaming": "STROOM",
+    "videoCalls": "VIDEO-OPROEPE",
+    "browsing": "BLAAI",
+    "connectionStability": "VERBINDINGSTABILITEIT",
+    "stable": "✓ Stabiel",
+    "unstable": "⚠ Onstabiel",
+    "units": {
+      "mbps": "Mbps",
+      "ms": "ms",
+      "percent": "%"
+    }
+  },
+  "latencyNote": {
+    "title": "Hoe latensie gemeet word",
+    "desc1": "Vinnige app-versoeke word na hierdie diens gestuur om responsiwiteit van jou huidige toestel en netwerk te skat.",
+    "desc2": "Dit is nuttig vir werklike blaai-styl prestasie, maar dit is nie dieselfde as klassieke ICMP-ping nie."
+  }
+}
