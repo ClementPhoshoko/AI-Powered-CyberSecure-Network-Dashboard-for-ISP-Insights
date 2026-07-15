@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './Modal.css';
 
@@ -8,23 +8,24 @@ const Modal = ({
   leftOption, 
   rightOption 
 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
+      setIsVisible(true);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      const timer = setTimeout(() => setIsVisible(false), 300);
+      return () => clearTimeout(timer);
     }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isVisible) return null;
 
   const content = (
-    <div className="gl-modal-overlay">
-      <div className="gl-modal-card">
+    <div className={`gl-modal-overlay ${!isOpen ? 'closing' : ''}`}>
+      <div className={`gl-modal-card ${!isOpen ? 'closing' : ''}`}>
         <p className="gl-modal-message">{message}</p>
         <div className="gl-modal-buttons">
           {leftOption && (

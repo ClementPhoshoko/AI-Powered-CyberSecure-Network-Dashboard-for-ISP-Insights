@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import Scan from '../../components/scan_wheel/Scan'
 import ScanOverviewCard from '../../components/scan_overview_card/ScanOverviewCard'
 import ScanPhaseStepper from '../../components/scan_phase_stepper/ScanPhaseStepper'
@@ -74,6 +75,18 @@ function Security() {
 
   const handleTabChange = (newTab) => {
     setSearchParams({ tab: newTab })
+  }
+
+  const tabKeys = tabs.map((t) => t.id)
+  const tabIndex = tabKeys.indexOf(activeTab)
+  const [prevTabIndex, setPrevTabIndex] = useState(tabIndex)
+  useEffect(() => { setPrevTabIndex(tabIndex) }, [tabIndex])
+  const direction = tabIndex >= prevTabIndex ? 1 : -1
+
+  const tabVariants = {
+    enter: (dir) => ({ x: dir * 40, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir) => ({ x: dir * -40, opacity: 0 }),
   }
 
   const [scanWheelState, setScanWheelState] = useState({
@@ -218,8 +231,9 @@ function Security() {
       </div>
 
       <div className="security-container">
+        <AnimatePresence mode="wait" custom={direction}>
         {activeTab === 'scan' && (
-          <section className="scan-tab-panel">
+          <motion.section key="scan" custom={direction} variants={tabVariants} initial="enter" animate="center" exit="exit" className="scan-tab-panel">
             {hasError ? (
               <section className="security-error-state" aria-label="Security scan error">
                 <img src={notFoundAvatar} alt={t('imageAlt.errorOccurred')} className="security-error-avatar" />
@@ -322,10 +336,16 @@ function Security() {
                             <h3 className="security-risk-groups-title">{t('security.scannedResultsByRisk')}</h3>
                             {hasOpenRiskPorts ? (
                               <div className="security-risk-groups-grid">
-                                {RISK_LEVELS.map((risk) => {
+                                {RISK_LEVELS.map((risk, idx) => {
                                   const ports = groupedOpenPortsByRisk?.[risk.key] || []
                                   return (
-                                    <article key={risk.key} className={`security-risk-group-card security-risk-group-card-${risk.key}`.trim()}>
+                                    <motion.article
+                                      key={risk.key}
+                                      initial={{ opacity: 0, y: 16 }}
+                                      whileInView={{ opacity: 1, y: 0 }}
+                                      viewport={{ once: true, margin: '-20px' }}
+                                      transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                                      className={`security-risk-group-card security-risk-group-card-${risk.key}`.trim()}>
                                       <header className="security-risk-group-head">
                                         <span className="security-risk-group-label">{risk.label}</span>
                                         <span className="security-risk-group-count">{ports.length}</span>
@@ -342,7 +362,7 @@ function Security() {
                                       ) : (
                                         <p className="security-risk-group-empty">{t('security.noOpenPortsShort')}</p>
                                       )}
-                                    </article>
+                                    </motion.article>
                                   )
                                 })}
                               </div>
@@ -358,9 +378,13 @@ function Security() {
                             <h3 className="security-top-recommendations-title">{t('security.topRecommendations')}</h3>
                             {topRecommendations.length > 0 ? (
                               <ul className="security-top-recommendations-list">
-                                {topRecommendations.map((recommendation) => (
-                                  <li
+                                {topRecommendations.map((recommendation, idx) => (
+                                  <motion.li
                                     key={recommendation.id || `${recommendation.recommendation_type}-${recommendation.title}`}
+                                    initial={{ opacity: 0, y: 12 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, margin: '-20px' }}
+                                    transition={{ duration: 0.35, delay: idx * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
                                     className={`security-top-recommendations-item security-top-recommendations-item-${String(recommendation.priority || 'low').toLowerCase()}`.trim()}
                                   >
                                     <div className="security-top-recommendations-head">
@@ -368,7 +392,7 @@ function Security() {
                                       <strong>{recommendation.title}</strong>
                                     </div>
                                     <p>{recommendation.description}</p>
-                                  </li>
+                                  </motion.li>
                                 ))}
                               </ul>
                             ) : (
@@ -403,63 +427,81 @@ function Security() {
                       )}
                       {isScanRefreshing ? (
                         <div className="security-skeleton security-full-scan-details-table_skeleton"> </div>
-                      ) : showFullScanDetails ? (
-                        <div className="security-full-scan-details-table_wrap">
-                          <table className="security-full-scan-details-table">
-                            <thead>
-                              <tr>
-                                <th>{t('security.port')}</th>
-                                <th>{t('security.state')}</th>
-                                <th>{t('security.service')}</th>
-                                <th>{t('security.risk')}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {allPortRows.map((row) => (
-                                <tr key={row.id || `row-${row.port_number}-${row.port_state}`}>
-                                  <td>{row.port_number}</td>
-                                  <td>{row.port_state || t('security.unknown')}</td>
-                                  <td>{row.service_name || t('security.unknownService')}</td>
-                                  <td>
-                                    <span className={`security-risk-pill security-risk-pill-${normalizeRiskLevel(row.risk_level)}`.trim()}>
-                                      {row.risk_level || t('security.unknown')}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      ) : null}
+                      ) : (
+                        <AnimatePresence initial={false}>
+                          {showFullScanDetails && (
+                            <motion.div
+                              key="scan-table"
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+                              style={{ overflow: 'hidden' }}
+                            >
+                              <div className="security-full-scan-details-table_wrap">
+                                <table className="security-full-scan-details-table">
+                                  <thead>
+                                    <tr>
+                                      <th>{t('security.port')}</th>
+                                      <th>{t('security.state')}</th>
+                                      <th>{t('security.service')}</th>
+                                      <th>{t('security.risk')}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {allPortRows.map((row) => (
+                                      <tr key={row.id || `row-${row.port_number}-${row.port_state}`}>
+                                        <td>{row.port_number}</td>
+                                        <td>{row.port_state || t('security.unknown')}</td>
+                                        <td>{row.service_name || t('security.unknownService')}</td>
+                                        <td>
+                                          <span className={`security-risk-pill security-risk-pill-${normalizeRiskLevel(row.risk_level)}`.trim()}>
+                                            {row.risk_level || t('security.unknown')}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      )}
                     </section>
                   </div>
                 ) : null}
               />
             )}
-          </section>
+          </motion.section>
         )}
 
         {activeTab === 'insights' && (
-          <InsightsPanel
-            assessments={assessments || []}
-            latestAssessment={latestAssessment}
-            isLoading={portRiskLoading}
-            error={hasError}
-            onRetry={refetch}
-          />
+          <motion.div key="insights" custom={direction} variants={tabVariants} initial="enter" animate="center" exit="exit">
+            <InsightsPanel
+              assessments={assessments || []}
+              latestAssessment={latestAssessment}
+              isLoading={portRiskLoading}
+              error={hasError}
+              onRetry={refetch}
+            />
+          </motion.div>
         )}
 
         {activeTab === 'knowledge' && (
-          <Knowledge
-            latestAssessment={latestAssessment}
-            knowledgeBase={knowledgeBase || []}
-            topRecommendations={topRecommendations}
-            allPortRows={allPortRows}
-            isLoading={portRiskLoading}
-            error={hasError}
-            onRetry={refetch}
-          />
+          <motion.div key="knowledge" custom={direction} variants={tabVariants} initial="enter" animate="center" exit="exit">
+            <Knowledge
+              latestAssessment={latestAssessment}
+              knowledgeBase={knowledgeBase || []}
+              topRecommendations={topRecommendations}
+              allPortRows={allPortRows}
+              isLoading={portRiskLoading}
+              error={hasError}
+              onRetry={refetch}
+            />
+          </motion.div>
         )}
+        </AnimatePresence>
       </div>
       <ErrorModal
         isOpen={showErrorModal}

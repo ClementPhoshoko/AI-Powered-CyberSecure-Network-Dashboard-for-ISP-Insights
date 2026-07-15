@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import './global_styles/App.css'
 import { AuthProvider } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
@@ -8,6 +9,17 @@ import Footer from './components/footer/Footer'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
 import Loading from './components/loading/Loading'
+
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 }
+}
+
+const pageTransition = {
+  duration: 0.25,
+  ease: [0.25, 0.1, 0.25, 1]
+}
 
 const Login = lazy(() => import('./pages/auth/forms/Login'))
 const Register = lazy(() => import('./pages/auth/forms/Register'))
@@ -56,48 +68,60 @@ function AppContent() {
 
       {/* Main Content */}
       <div className="app-content">
-        <Suspense fallback={<div className="app-content"><Loading isLoading={true} /></div>}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/news" element={<News />} />
-            <Route path="/download" element={<Download />} />
-            <Route path="/tests" element={
-              <ProtectedRoute>
-                <History />
-              </ProtectedRoute>
-            } />
-            <Route path="/security" element={
-              <ProtectedRoute>
-                <Security />
-              </ProtectedRoute>
-            } />
-            <Route path="/account" element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            } />
-            <Route path="/login" element={
-              <PublicRoute>
-                <AuthLayout activeTab="login"><Login /></AuthLayout>
-              </PublicRoute>
-            } />
-            <Route path="/signup" element={
-              <PublicRoute>
-                <AuthLayout activeTab="signup"><Register /></AuthLayout>
-              </PublicRoute>
-            } />
-            <Route path="/forgot-password" element={
-              <AuthLayout activeTab="forgot"><Forgot /></AuthLayout>
-            } />
-            <Route path="/verify-email" element={
-              <AuthLayout activeTab="verify"><Verify /></AuthLayout>
-            } />
-            <Route path="/auth-required" element={<AuthRequired />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={pageTransition}
+            className="page-transition-wrapper"
+          >
+            <Suspense fallback={<Loading isLoading={true} />}>
+              <Routes location={location}>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/news" element={<News />} />
+                <Route path="/download" element={<Download />} />
+                <Route path="/tests" element={
+                  <ProtectedRoute>
+                    <History />
+                  </ProtectedRoute>
+                } />
+                <Route path="/security" element={
+                  <ProtectedRoute>
+                    <Security />
+                  </ProtectedRoute>
+                } />
+                <Route path="/account" element={
+                  <ProtectedRoute>
+                    <Account />
+                  </ProtectedRoute>
+                } />
+                <Route path="/login" element={
+                  <PublicRoute>
+                    <AuthLayout activeTab="login"><Login /></AuthLayout>
+                  </PublicRoute>
+                } />
+                <Route path="/signup" element={
+                  <PublicRoute>
+                    <AuthLayout activeTab="signup"><Register /></AuthLayout>
+                  </PublicRoute>
+                } />
+                <Route path="/forgot-password" element={
+                  <AuthLayout activeTab="forgot"><Forgot /></AuthLayout>
+                } />
+                <Route path="/verify-email" element={
+                  <AuthLayout activeTab="verify"><Verify /></AuthLayout>
+                } />
+                <Route path="/auth-required" element={<AuthRequired />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Footer - Only on non-auth routes */}

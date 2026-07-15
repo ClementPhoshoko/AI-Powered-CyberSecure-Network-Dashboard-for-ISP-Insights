@@ -1,6 +1,7 @@
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -568,6 +569,45 @@ const ExperienceScoresTooltip = ({ active, payload }) => {
   );
 };
 
+function AnimatedNumber({ value, duration = 1000, decimals = 0 }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const prevValueRef = useRef(value);
+  const rafRef = useRef(null);
+
+  useEffect(() => {
+    const from = prevValueRef.current;
+    const to = value;
+    if (from === to) {
+      setDisplayValue(to);
+      return;
+    }
+
+    const startTime = performance.now();
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplayValue(from + (to - from) * eased);
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        setDisplayValue(to);
+        prevValueRef.current = to;
+      }
+    };
+    rafRef.current = requestAnimationFrame(animate);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [value, duration]);
+
+  return <>{Number(displayValue).toFixed(decimals)}</>;
+}
+
+const tabVariants = {
+  enter: (dir) => ({ x: dir * 40, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir) => ({ x: dir * -40, opacity: 0 }),
+};
+
 function History() {
   const { t } = useTranslation();
   const { loading: authLoading, user } = useAuth();
@@ -606,6 +646,12 @@ function History() {
   const handleTabChange = (newTab) => {
     setSearchParams({ tab: newTab });
   };
+
+  const tabKeys = ['trends', 'insights', 'history'];
+  const tabIndex = tabKeys.indexOf(activeTab);
+  const [prevTabIndex, setPrevTabIndex] = useState(tabIndex);
+  useEffect(() => { setPrevTabIndex(tabIndex); }, [tabIndex]);
+  const direction = tabIndex >= prevTabIndex ? 1 : -1;
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -1008,10 +1054,10 @@ function History() {
           </div>
           
           <div className="history-container">
-            <>
+            <AnimatePresence mode="wait" custom={direction}>
               {/* Trends Tab Content */}
           {activeTab === 'trends' && (
-            <>
+            <motion.div key="trends" custom={direction} variants={tabVariants} initial="enter" animate="center" exit="exit">
               {shouldShowTrendsSkeleton ? (
                 <>
                   <SummarySkeleton />
@@ -1023,27 +1069,27 @@ function History() {
                   {summary && (
                     <div className="summary-grid">
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.totalTests}</span>
+                        <span className="summary-mini-value"><AnimatedNumber value={summary.totalTests} decimals={0} /></span>
                         <span className="summary-mini-label">{t('history.totalTests')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgDownload)} decimals={1} /><span className="summary-mini-unit"> Mbps</span></span>
                         <span className="summary-mini-label">{t('history.avgDownload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgUpload)} decimals={1} /><span className="summary-mini-unit"> Mbps</span></span>
                         <span className="summary-mini-label">{t('history.avgUpload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                        <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgPing)} decimals={1} /><span className="summary-mini-unit"> ms</span></span>
                         <span className="summary-mini-label">{t('history.avgPing')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}><AnimatedNumber value={parseFloat(summary.avgHealthScore)} decimals={0} /></span>
                         <span className="summary-mini-label">{t('history.avgHealthScore')}</span>
                       </div>
                     </div>
@@ -1356,12 +1402,12 @@ function History() {
                   </div>
                 </>
               )}
-            </>
+            </motion.div>
           )}
 
           {/* Insights Tab Content */}
           {activeTab === 'insights' && (
-            <>
+            <motion.div key="insights" custom={direction} variants={tabVariants} initial="enter" animate="center" exit="exit">
               {shouldShowInsightsSkeleton ? (
                 <>
                   <SummarySkeleton />
@@ -1374,27 +1420,27 @@ function History() {
                     <>
                       <div className="summary-grid">
                         <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.totalTests}</span>
+                          <span className="summary-mini-value"><AnimatedNumber value={summary.totalTests} decimals={0} /></span>
                           <span className="summary-mini-label">{t('history.totalTests')}</span>
                         </div>
 
                         <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                          <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgDownload)} decimals={1} /><span className="summary-mini-unit"> Mbps</span></span>
                           <span className="summary-mini-label">{t('history.avgDownload')}</span>
                         </div>
 
                         <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                          <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgUpload)} decimals={1} /><span className="summary-mini-unit"> Mbps</span></span>
                           <span className="summary-mini-label">{t('history.avgUpload')}</span>
                         </div>
 
                         <div className="summary-mini-card">
-                          <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                          <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgPing)} decimals={1} /><span className="summary-mini-unit"> ms</span></span>
                           <span className="summary-mini-label">{t('history.avgPing')}</span>
                         </div>
 
                         <div className="summary-mini-card">
-                          <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                          <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}><AnimatedNumber value={parseFloat(summary.avgHealthScore)} decimals={0} /></span>
                           <span className="summary-mini-label">{t('history.avgHealthScore')}</span>
                         </div>
                       </div>
@@ -1456,12 +1502,12 @@ function History() {
                   )}
                 </>
               )}
-            </>
+            </motion.div>
           )}
 
           {/* History Tab Content */}
           {activeTab === 'history' && (
-            <>
+            <motion.div key="history" custom={direction} variants={tabVariants} initial="enter" animate="center" exit="exit">
               {shouldShowTableSkeleton ? (
                 <TableSkeleton showSummary={allLoading} />
               ) : (
@@ -1470,27 +1516,27 @@ function History() {
                   {summary && (
                     <div className="summary-grid">
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.totalTests}</span>
+                        <span className="summary-mini-value"><AnimatedNumber value={summary.totalTests} decimals={0} /></span>
                         <span className="summary-mini-label">{t('history.totalTests')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgDownload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgDownload)} decimals={1} /><span className="summary-mini-unit"> Mbps</span></span>
                         <span className="summary-mini-label">{t('history.avgDownload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgUpload}<span className="summary-mini-unit"> Mbps</span></span>
+                        <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgUpload)} decimals={1} /><span className="summary-mini-unit"> Mbps</span></span>
                         <span className="summary-mini-label">{t('history.avgUpload')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value">{summary.avgPing}<span className="summary-mini-unit"> ms</span></span>
+                        <span className="summary-mini-value"><AnimatedNumber value={parseFloat(summary.avgPing)} decimals={1} /><span className="summary-mini-unit"> ms</span></span>
                         <span className="summary-mini-label">{t('history.avgPing')}</span>
                       </div>
 
                       <div className="summary-mini-card">
-                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}>{summary.avgHealthScore}</span>
+                        <span className="summary-mini-value" style={{ color: getScoreColor(summary.avgHealthScore) }}><AnimatedNumber value={parseFloat(summary.avgHealthScore)} decimals={0} /></span>
                         <span className="summary-mini-label">{t('history.avgHealthScore')}</span>
                       </div>
                     </div>
@@ -1572,10 +1618,19 @@ function History() {
                     ) : tableHistory.length > 0 ? (
                       <>
                         {isMobile ? (
-                          <div className="test-cards-mobile">
-                            {filteredTests.map((test) => (
-                              <div
+                          <motion.div
+                            key={tableOffset}
+                            className="test-cards-mobile"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.25 }}
+                          >
+                            {filteredTests.map((test, idx) => (
+                              <motion.div
                                 key={test.id}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: idx * 0.04 }}
                                 className={`test-card-mobile glass-card ${expandedTestId === test.id ? 'test-card-mobile--expanded' : ''}`}
                                 onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)}
                               >
@@ -1669,12 +1724,12 @@ function History() {
                                       </div>
                                     )}
                                   </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="test-table-container glass-card">
+                                    )}
+                                  </motion.div>
+                                ))}
+                              </motion.div>
+                            ) : (
+                              <div className="test-table-container glass-card">
                             <table className="test-table">
                               <thead>
                                 <tr>
@@ -1718,10 +1773,18 @@ function History() {
                                   <th>{t('history.isp')}</th>
                                 </tr>
                               </thead>
-                              <tbody>
-                                {filteredTests.map((test) => (
+                              <motion.tbody
+                                key={tableOffset}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.25 }}
+                              >
+                                {filteredTests.map((test, idx) => (
                                   <Fragment key={test.id}>
-                                    <tr 
+                                    <motion.tr
+                                      initial={{ opacity: 0, y: 8 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ duration: 0.3, delay: idx * 0.04 }}
                                       onClick={() => setExpandedTestId(expandedTestId === test.id ? null : test.id)} 
                                       className="test-table-row"
                                     >
@@ -1752,7 +1815,7 @@ function History() {
                                         </span>
                                       </td>
                                       <td>{test.isp_name || t('history.na')}</td>
-                                    </tr>
+                                    </motion.tr>
                                     {expandedTestId === test.id && (
                                       <tr className="test-table-row--expanded">
                                         <td colSpan={8} className="test-table-cell--expanded">
@@ -1882,7 +1945,7 @@ function History() {
                                     )}
                                   </Fragment>
                                 ))}
-                              </tbody>
+                              </motion.tbody>
                             </table>
                           </div>
                         )}
@@ -1920,10 +1983,9 @@ function History() {
                   </div>
                 </>
               )}
-            </>
+            </motion.div>
           )}
-
-            </>
+            </AnimatePresence>
           </div>
         </>
       )}

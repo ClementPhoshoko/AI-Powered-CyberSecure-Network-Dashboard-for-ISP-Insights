@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import './News.css';
 import * as blogs from './blogs';
 import Seo from '../../components/seo/Seo';
@@ -138,7 +139,12 @@ const News = () => {
         
         {/* Hero Section */}
         <section className="news_hero">
-          <div className="news_hero_left">
+          <motion.div
+            className="news_hero_left"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
             <h1 className="news_headline">
               {t('news.heroHeadline1')}
               <br/>{t('news.heroHeadline2')}
@@ -147,7 +153,7 @@ const News = () => {
               {t('news.subtitle')}
             </p>
             <div className="news_divider"></div>
-          </div>
+          </motion.div>
         </section>
         
         {/* News Grid */}
@@ -157,9 +163,13 @@ const News = () => {
               renderSkeletons()
             ) : (
               currentPosts.map((post, index) => (
-                <article 
-                  key={post.id} 
-                  className={`news_post ${index === 0 ? 'news_post_large' : 'news_post_small'} ${dockedPostId === post.id && index === 0 ? 'docking' : ''}`}
+                <motion.article
+                  key={post.id}
+                  layout
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                  className={`news_post ${index === 0 ? 'news_post_large' : 'news_post_small'}`}
                   onClick={() => handlePostClick(post.id, index)}
                 >
                   <div className="news_post_image_container">
@@ -173,7 +183,7 @@ const News = () => {
                     <h3 className="news_post_title">{post.title}</h3>
                     <p className="news_post_description">{post.description}</p>
                   </div>
-                </article>
+                </motion.article>
               ))
             )}
           </div>

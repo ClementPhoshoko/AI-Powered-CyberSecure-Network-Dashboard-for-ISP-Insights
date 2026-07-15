@@ -68,17 +68,11 @@
   text-align: center;
 }
 
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
 .download_logo_container {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0;
-  animation: slideInLeft 0.8s ease-out;
 }
 
 .download_headline {
@@ -233,11 +227,6 @@
   }
 }
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(30px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
 /* Right Side - Image Container */
 .download_image_container {
   width: 100%;
@@ -246,7 +235,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  animation: slideInRight 0.8s ease-out 0.2s both;
 }
 
 @media (max-width: 640px) {
@@ -312,14 +300,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   height: 120px;
   aspect-ratio: 1200 / 800; /* Same as the SVG dimensions */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .download_app_badge_link:hover {
-  transform: translateY(-2px);
-  opacity: 0.9;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
 .download_app_badge {

@@ -13,9 +13,18 @@
   animation: modalOverlayFade 300ms ease-out forwards;
 }
 
+.gl-modal-overlay.closing {
+  animation: modalOverlayFadeOut 300ms ease-in forwards;
+}
+
 @keyframes modalOverlayFade {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes modalOverlayFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .gl-modal-card {
@@ -32,6 +41,27 @@
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
+  animation: modalCardSlideUp 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.gl-modal-card.closing {
+  animation: modalCardFadeOut 300ms ease-in forwards;
+}
+
+@keyframes modalCardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalCardFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .gl-modal-message {

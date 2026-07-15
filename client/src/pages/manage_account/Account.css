@@ -10,19 +10,6 @@
 .account-form-container {
   width: 100%;
   max-width: 500px;
-  animation: blurToClear 0.5s ease-out forwards;
-}
-
-@keyframes blurToClear {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-  }
-
-  to {
-    opacity: 1;
-    filter: blur(0);
-  }
 }
 
 .account-header {
@@ -59,18 +46,6 @@
   width: 16px;
   height: 16px;
   color: var(--error);
-}
-
-@keyframes blurToClear {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-  }
-
-  to {
-    opacity: 1;
-    filter: blur(0);
-  }
 }
 
 .account-title {
@@ -256,7 +231,6 @@
   width: 100%;
   max-width: 500px;
   text-align: center;
-  animation: blurToClear 0.5s ease-out forwards;
 }
 
 .account-success-avatar {
@@ -335,7 +309,6 @@
   width: 100%;
   max-width: 500px;
   text-align: center;
-  animation: blurToClear 0.5s ease-out forwards;
 }
 
 .account-error-avatar {

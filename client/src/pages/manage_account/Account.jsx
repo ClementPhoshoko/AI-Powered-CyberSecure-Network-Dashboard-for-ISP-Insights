@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import useProfile from '../../hooks/useProfile';
@@ -28,14 +29,9 @@ function Account() {
   const [showPersonalInfoSuccess, setShowPersonalInfoSuccess] = useState(false);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [animationKey, setAnimationKey] = useState(Date.now());
   const [showSavePersonalInfoConfirm, setShowSavePersonalInfoConfirm] = useState(false);
   const [showSaveEmailConfirm, setShowSaveEmailConfirm] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
-
-  useEffect(() => {
-    setAnimationKey(Date.now());
-  }, [editingPersonalInfo, editingEmail]);
 
   useEffect(() => {
     if (profile) {
@@ -152,83 +148,17 @@ function Account() {
     </div>);
   }
 
-  if (profileError) {
-    return (
-      <div className="account-page">
-        <div className="account-error-view">
-          <img src={notFoundAvatar} alt={t('imageAlt.error')} className="account-error-avatar" />
-          <h1 className="account-error-title">{t('account.errorTitle')}</h1>
-          <p className="account-error-text">{t('account.errorText')}</p>
-          <p className="account-error-subtext">{profileError}</p>
-          <button 
-            className="account-error-link"
-            onClick={() => refetch()}
-          >
-            <svg className="account-error-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-            </svg>
-            {t('account.tryAgain')}
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const viewVariants = {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -8 }
+  };
 
-  if (showPersonalInfoSuccess) {
-    return (
-      <div className="account-page">
-        <div className="account-success-view">
-          <img src={successAvatar2} alt={t('imageAlt.success')} className="account-success-avatar" />
-          <h1 className="account-success-title">{t('account.profileUpdated')}</h1>
-          <p className="account-success-text">{t('account.profileUpdatedText')}</p>
-          <div className="account-success-links">
-            <Link to="/" className="account-success-link">
-              <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              Run Speedtest
-            </Link>
-            <Link to="/security" className="account-success-link" replace>
-              <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
-              </svg>
-              Scan Port
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (showEmailVerification) {
-    return (
-      <div className="account-page">
-        <div className="account-success-view">
-          <img src={successAvatar2} alt={t('imageAlt.success')} className="account-success-avatar" />
-          <h1 className="account-success-title">{t('account.checkInbox')}</h1>
-          <p className="account-success-text">{t('account.verificationSent')}</p>
-          <div className="account-success-links">
-            <Link to="/" className="account-success-link">
-              <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              Run Speedtest
-            </Link>
-            <Link to="/security" className="account-success-link" replace>
-              <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
-              </svg>
-              Scan Port
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const fieldVariants = {
+    initial: { opacity: 0, y: -6 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 6 }
+  };
 
   return (
     <div className="account-page">
@@ -240,7 +170,69 @@ function Account() {
           status={t('account.profileSystemUpdating')}
         indeterminate={true}
       />
-      <div key={animationKey} className="account-form-container">
+      <AnimatePresence mode="wait">
+        {profileError ? (
+          <motion.div key="error" className="account-error-view" variants={viewVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+            <img src={notFoundAvatar} alt={t('imageAlt.error')} className="account-error-avatar" />
+            <h1 className="account-error-title">{t('account.errorTitle')}</h1>
+            <p className="account-error-text">{t('account.errorText')}</p>
+            <p className="account-error-subtext">{profileError}</p>
+            <button 
+              className="account-error-link"
+              onClick={() => refetch()}
+            >
+              <svg className="account-error-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+              </svg>
+              {t('account.tryAgain')}
+            </button>
+          </motion.div>
+        ) : showPersonalInfoSuccess ? (
+          <motion.div key="personal-success" className="account-success-view" variants={viewVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+            <img src={successAvatar2} alt={t('imageAlt.success')} className="account-success-avatar" />
+            <h1 className="account-success-title">{t('account.profileUpdated')}</h1>
+            <p className="account-success-text">{t('account.profileUpdatedText')}</p>
+            <div className="account-success-links">
+              <Link to="/" className="account-success-link">
+                <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Run Speedtest
+              </Link>
+              <Link to="/security" className="account-success-link" replace>
+                <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                Scan Port
+              </Link>
+            </div>
+          </motion.div>
+        ) : showEmailVerification ? (
+          <motion.div key="email-success" className="account-success-view" variants={viewVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
+            <img src={successAvatar2} alt={t('imageAlt.success')} className="account-success-avatar" />
+            <h1 className="account-success-title">{t('account.checkInbox')}</h1>
+            <p className="account-success-text">{t('account.verificationSent')}</p>
+            <div className="account-success-links">
+              <Link to="/" className="account-success-link">
+                <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Run Speedtest
+              </Link>
+              <Link to="/security" className="account-success-link" replace>
+                <svg className="account-success-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                Scan Port
+              </Link>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div key="form" className="account-form-container" variants={viewVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.2 }}>
         <div className="account-header">
           <h1 className="account-title">{t('account.manageProfile')}</h1>
           <button 
@@ -284,20 +276,36 @@ function Account() {
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
-                {editingPersonalInfo ? (
-                  <input 
-                    type="text" 
-                    className="account-form-input" 
-                    placeholder={t('account.usernamePlaceholder')} 
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    autoFocus
-                  />
-                ) : (
-                  <div className="account-readonly-value">
-                    {username || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
-                  </div>
-                )}
+                <AnimatePresence mode="wait">
+                  {editingPersonalInfo ? (
+                    <motion.input
+                      key="username-input"
+                      type="text"
+                      className="account-form-input"
+                      placeholder={t('account.usernamePlaceholder')}
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      autoFocus
+                      variants={fieldVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ duration: 0.15 }}
+                    />
+                  ) : (
+                    <motion.div
+                      key="username-read"
+                      className="account-readonly-value"
+                      variants={fieldVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ duration: 0.15 }}
+                    >
+                      {username || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
@@ -311,19 +319,35 @@ function Account() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
-                  {editingPersonalInfo ? (
-                    <input 
-                      type="text" 
-                      className="account-form-input" 
-                      placeholder={t('account.firstNamePlaceholder')} 
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                    />
-                  ) : (
-                    <div className="account-readonly-value">
-                      {firstName || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
-                    </div>
-                  )}
+                  <AnimatePresence mode="wait">
+                    {editingPersonalInfo ? (
+                      <motion.input
+                        key="firstname-input"
+                        type="text"
+                        className="account-form-input"
+                        placeholder={t('account.firstNamePlaceholder')}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        variants={fieldVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ duration: 0.15 }}
+                      />
+                    ) : (
+                      <motion.div
+                        key="firstname-read"
+                        className="account-readonly-value"
+                        variants={fieldVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ duration: 0.15 }}
+                      >
+                        {firstName || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -336,19 +360,35 @@ function Account() {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
-                  {editingPersonalInfo ? (
-                    <input 
-                      type="text" 
-                      className="account-form-input" 
-                      placeholder={t('account.lastNamePlaceholder')} 
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                    />
-                  ) : (
-                    <div className="account-readonly-value">
-                      {lastName || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
-                    </div>
-                  )}
+                  <AnimatePresence mode="wait">
+                    {editingPersonalInfo ? (
+                      <motion.input
+                        key="lastname-input"
+                        type="text"
+                        className="account-form-input"
+                        placeholder={t('account.lastNamePlaceholder')}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        variants={fieldVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ duration: 0.15 }}
+                      />
+                    ) : (
+                      <motion.div
+                        key="lastname-read"
+                        className="account-readonly-value"
+                        variants={fieldVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        transition={{ duration: 0.15 }}
+                      >
+                        {lastName || <span className="account-readonly-placeholder">{t('account.notSet')}</span>}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -405,20 +445,36 @@ function Account() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>
-                {editingEmail ? (
-                  <input 
-                    type="email" 
-                    className="account-form-input" 
-                    placeholder={t('account.emailPlaceholder')} 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoFocus
-                  />
-                ) : (
-                  <div className="account-readonly-value">
-                    {email}
-                  </div>
-                )}
+                <AnimatePresence mode="wait">
+                  {editingEmail ? (
+                    <motion.input
+                      key="email-input"
+                      type="email"
+                      className="account-form-input"
+                      placeholder={t('account.emailPlaceholder')}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      autoFocus
+                      variants={fieldVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ duration: 0.15 }}
+                    />
+                  ) : (
+                    <motion.div
+                      key="email-read"
+                      className="account-readonly-value"
+                      variants={fieldVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      transition={{ duration: 0.15 }}
+                    >
+                      {email}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -458,8 +514,10 @@ function Account() {
               {t('account.scanPort')}
             </Link>
         </div>
-      </div>
-      <ErrorModal
+      </motion.div>
+      )}
+    </AnimatePresence>
+    <ErrorModal
         isOpen={errorModal.isOpen}
         message={errorModal.message}
         onClose={() => setErrorModal({ isOpen: false, message: '' })}

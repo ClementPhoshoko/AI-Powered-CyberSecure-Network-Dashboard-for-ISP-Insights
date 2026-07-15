@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion } from 'framer-motion';
 import './Download.css';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import mobileMockup from '../../assets/avatars/Futuristic_speed_test_UI_showcase.png';
@@ -7,6 +8,24 @@ import googlePlayBadge from '../../assets/GetItOnGooglePlay_Badge_Web_color_Engl
 import appStoreBadge from '../../assets/download-on-the-app-store-apple-logo-svgrepo-com.svg';
 import { RocketLaunchIcon, BoltIcon, ShieldCheckIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
 import Seo from '../../components/seo/Seo';
+
+const featureVariants = {
+  hidden: { opacity: 0, scale: 0.92, y: 12 },
+  visible: (i) => ({
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.1, ease: [0.25, 0.1, 0.25, 1] },
+  }),
+};
+
+const iconVariants = {
+  hidden: { scale: 0.4 },
+  visible: (i) => ({
+    scale: [1, 1.2, 1],
+    transition: { duration: 0.5, delay: i * 0.1 + 0.25 },
+  }),
+};
 
 const Download = () => {
   const { t } = useTranslation();
@@ -40,21 +59,31 @@ const Download = () => {
         <section className="download_hero">
           {/* Top Section - Logo and Mockup */}
           <div className="download_visual_header">
-            <div className="download_logo_container">
+            <motion.div
+              className="download_logo_container"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            >
               <img 
                 src={loginLogo} 
                 alt={t('imageAlt.akovolabsLogo')} 
                 className="download_logo" 
               />
-            </div>
+            </motion.div>
             
-            <div className="download_image_container">
+            <motion.div
+              className="download_image_container"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+            >
               <img 
                 src={mobileMockup} 
                 alt={t('imageAlt.futureUI')} 
                 className="download_mockup_image" 
               />
-            </div>
+            </motion.div>
           </div>
           
           {/* Content Section */}
@@ -69,10 +98,25 @@ const Download = () => {
             
             <div className="download_features">
               {features.map((feature, index) => (
-                <div key={index} className="download_feature">
-                  <div className="download_feature_icon">
+                <motion.div
+                  key={index}
+                  className="download_feature"
+                  custom={index}
+                  variants={featureVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: '-40px' }}
+                >
+                  <motion.div
+                    className="download_feature_icon"
+                    custom={index}
+                    variants={iconVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                  >
                     {feature.icon}
-                  </div>
+                  </motion.div>
                   <div className="download_feature_content">
                     <h3 className="download_feature_title">
                       {feature.title}
@@ -81,7 +125,7 @@ const Download = () => {
                       {feature.subtitle}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 

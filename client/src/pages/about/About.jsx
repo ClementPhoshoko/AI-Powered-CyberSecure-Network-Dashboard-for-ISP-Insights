@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import './About.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import networkEngineer from '../../assets/avatars/network_engineer_preview.png';
@@ -109,75 +110,124 @@ const About = () => {
         
         {/* Company Story */}
         <section id="our-story" className="about_story">
-          <h2 className="about_story_heading">{t('about.ourStory')}</h2>
+          <motion.h2
+            className="about_story_heading"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {t('about.ourStory')}
+          </motion.h2>
           
           <div className="about_story_content">
             <div className="about_story_text">
-              <p className="about_story_paragraph">
-                {t('about.storyParagraph1')}
-              </p>
-              <p className="about_story_paragraph">
-                {t('about.storyParagraph2')}
-              </p>
-              <p className="about_story_paragraph">
-                {t('about.storyParagraph3')}
-              </p>
+              {[t('about.storyParagraph1'), t('about.storyParagraph2'), t('about.storyParagraph3')].map((text, i) => (
+                <motion.p
+                  key={i}
+                  className="about_story_paragraph"
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-40px' }}
+                  transition={{ duration: 0.4, delay: i * 0.12, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  {text}
+                </motion.p>
+              ))}
             </div>
             
-            <div className="about_story_quote">
+            <motion.div
+              className="about_story_quote"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.4, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            >
               <p className="about_quote_text">
                 "{t('about.quote')}"
               </p>
-            </div>
+            </motion.div>
           </div>
         </section>
         
         {/* Team Section */}
         <section id="the-team" className="about_team_section">
-          <h2 className="about_section_title">{t('about.team')}</h2>
+          <motion.h2
+            className="about_section_title"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {t('about.team')}
+          </motion.h2>
           <ul className="about_team_grid">
-            <li className="about_team_member">
-              <div className="about_team_quote_wrapper">
-                <Bubble position="left">
-                  "{t('about.teamMember1.quote')}"
-                </Bubble>
-                <p className="about_mobile_quote">
-                  "{t('about.teamMember1.quote')}"
-                </p>
-              </div>
-              <div className="about_member_photo">
-                <img src={fullStackDev} alt={t('imageAlt.fullStackDev')} />
-              </div>
-              <div className="about_member_info">
-                <h3 className="about_member_name">{t('about.teamMember1.name')}</h3>
-                <p className="about_member_role">{t('about.teamMember1.role')}</p>
-              </div>
-            </li>
-            <li className="about_team_member">
-              <div className="about_team_quote_wrapper">
-                <Bubble position="right">
-                  "{t('about.teamMember2.quote')}"
-                </Bubble>
-                <p className="about_mobile_quote">
-                  "{t('about.teamMember2.quote')}"
-                </p>
-              </div>
-              <div className="about_member_photo">
-                <img src={networkEngineer} alt={t('imageAlt.networkEngineer')} />
-              </div>
-              <div className="about_member_info">
-                 <h3 className="about_member_name">{t('about.teamMember2.name')}</h3>
-                 <p className="about_member_role">{t('about.teamMember2.role')}</p>
-               </div>
-            </li>
+            {[
+              {
+                quote: t('about.teamMember1.quote'),
+                photo: fullStackDev,
+                alt: t('imageAlt.fullStackDev'),
+                name: t('about.teamMember1.name'),
+                role: t('about.teamMember1.role'),
+                bubblePos: 'left'
+              },
+              {
+                quote: t('about.teamMember2.quote'),
+                photo: networkEngineer,
+                alt: t('imageAlt.networkEngineer'),
+                name: t('about.teamMember2.name'),
+                role: t('about.teamMember2.role'),
+                bubblePos: 'right'
+              }
+            ].map((member, i) => (
+              <motion.li
+                key={i}
+                className="about_team_member"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.4, delay: i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <div className="about_team_quote_wrapper">
+                  <Bubble position={member.bubblePos}>
+                    "{member.quote}"
+                  </Bubble>
+                  <p className="about_mobile_quote">
+                    "{member.quote}"
+                  </p>
+                </div>
+                <div className="about_member_photo">
+                  <img src={member.photo} alt={member.alt} />
+                </div>
+                <div className="about_member_info">
+                  <h3 className="about_member_name">{member.name}</h3>
+                  <p className="about_member_role">{member.role}</p>
+                </div>
+              </motion.li>
+            ))}
           </ul>
         </section>
 
         {/* Contact Section */}
-        <section id="contact-us" className="about_team_section">
-          <h2 className="about_section_title">{t('about.contact')}</h2>
+        <motion.section
+          id="contact-us"
+          className="about_team_section"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          <motion.h2
+            className="about_section_title"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.4, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {t('about.contact')}
+          </motion.h2>
           <Contact />
-        </section>
+        </motion.section>
         
       </div>
     </div>

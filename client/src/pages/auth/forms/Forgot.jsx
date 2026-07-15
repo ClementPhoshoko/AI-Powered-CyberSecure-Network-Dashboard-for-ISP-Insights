@@ -87,7 +87,6 @@ function Forgot() {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [resendTimer, setResendTimer] = useState(0);
-  const [animationKey, setAnimationKey] = useState(Date.now());
   const {
     token: sendCaptchaToken,
     widgetRef: sendCaptchaRef,
@@ -107,10 +106,6 @@ function Forgot() {
     reset: resetResendCaptcha,
   } = useTurnstile();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setAnimationKey(Date.now());
-  }, []);
 
   // Resend cooldown timer
   useEffect(() => {
@@ -221,7 +216,7 @@ function Forgot() {
         status={t('nav.authSystemStatus')}
         indeterminate={true}
       />
-      <div className="forgot-container" key={animationKey}>
+      <div className="forgot-container">
         <AnimatePresence mode="wait">
           {step === 'email' && (
             <motion.form

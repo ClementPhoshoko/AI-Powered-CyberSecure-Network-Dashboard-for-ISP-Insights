@@ -182,7 +182,6 @@
   margin-top: var(--space-5);
   border-radius: var(--radius-xl);
   padding: var(--space-4);
-  animation: home-content-fade var(--motion-slow) var(--ease-out) both;
 }
 
 .graph-advisory-title {
@@ -273,14 +272,13 @@
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.02);
   box-sizing: border-box;
-  animation: home-content-fade var(--motion-slow) var(--ease-out) both;
 }
 
 .ai-summary-section.is-loading {
   min-height: 80px;
   background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
   background-size: 200% 100%;
-  animation: home-content-fade var(--motion-slow) var(--ease-out) both, skeleton-loading 1.5s infinite;
+  animation: skeleton-loading 1.5s infinite;
   border: none;
   padding: 0;
 }

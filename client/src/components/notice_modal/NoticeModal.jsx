@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './NoticeModal.css';
 
@@ -8,19 +8,20 @@ const NoticeModal = ({
   data, 
   onClose 
 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
+      setIsVisible(true);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
+      const timer = setTimeout(() => setIsVisible(false), 300);
+      return () => clearTimeout(timer);
     }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isVisible) return null;
 
   const renderData = (data) => {
     if (typeof data === 'string') {
@@ -35,8 +36,8 @@ const NoticeModal = ({
   };
 
   const content = (
-    <div className="notice-modal-overlay" onClick={onClose}>
-      <div className="notice-modal-card" onClick={(e) => e.stopPropagation()}>
+    <div className={`notice-modal-overlay ${!isOpen ? 'closing' : ''}`} onClick={onClose}>
+      <div className={`notice-modal-card ${!isOpen ? 'closing' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="notice-modal-header">
           <h3 className="notice-modal-title">{title}</h3>
           <button className="notice-modal-close" onClick={onClose}>
