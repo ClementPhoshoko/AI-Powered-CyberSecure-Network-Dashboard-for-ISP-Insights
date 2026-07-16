@@ -135,14 +135,10 @@
 }
 
 .security-scan-badges {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
   align-items: stretch;
-}
-
-.security-scan-badges > * {
-  width: 100%;
 }
 
 .security-scan-badges .security-skeleton.network_score_badge-icon,
@@ -831,43 +827,34 @@
     padding: var(--space-2);
   }
 
-  .security-scan-badges {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-2);
-  }
-
   .security-scan-badges .network_score_badge,
   .security-scan-badges .port_risk_status_chip {
-    min-height: 2.5rem;
-    padding: var(--space-1) var(--space-2);
-    gap: var(--space-1);
+    flex: 1;
+    min-height: 3rem;
+    padding: var(--space-2);
+    gap: var(--space-2);
   }
 
   .security-scan-badges .network_score_badge-icon,
   .security-scan-badges .port_risk_status_chip-icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   .security-scan-badges .network_score_badge-icon svg,
   .security-scan-badges .port_risk_status_chip-icon svg {
-    width: 0.9rem;
-    height: 0.9rem;
+    width: 1.2rem;
+    height: 1.2rem;
   }
 
-  .security-scan-badges .network_score_badge-value {
-    font-size: var(--text-lg);
-  }
-
+  .security-scan-badges .network_score_badge-value,
   .security-scan-badges .port_risk_status_chip-value {
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
   }
 
   .security-scan-badges .network_score_badge-label,
   .security-scan-badges .port_risk_status_chip-label {
-    font-size: 0.625rem;
+    font-size: var(--text-xs);
   }
 
   .security-risk-groups-grid {

@@ -45,3 +45,44 @@
   color: var(--text-primary);
   font-weight: 700;
 }
+
+@media (max-width: 680px) {
+  .scan_phase_stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .scan_phase_stepper-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    position: relative;
+    padding-bottom: var(--space-3);
+    width: 100%;
+  }
+
+  .scan_phase_stepper-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .scan_phase_stepper-line {
+    position: absolute;
+    top: 14px;
+    left: 4px;
+    width: 2px;
+    height: calc(100% - 10px);
+    border-radius: var(--radius-full);
+    background: var(--glass-border);
+  }
+
+  .scan_phase_stepper-dot {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+  }
+
+  .scan_phase_stepper-label {
+    font-size: var(--text-xs);
+  }
+}
