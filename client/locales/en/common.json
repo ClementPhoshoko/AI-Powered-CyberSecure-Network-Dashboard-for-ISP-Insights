@@ -773,7 +773,7 @@
     "errorDesc": "We encountered an error loading security data.",
     "tryAgain": "Try Again",
     "currentScanOverview": "Current Scan Overview",
-    "wheelScanProgress": "Wheel Scan Progress",
+    "wheelScanProgress": "Scan Progress",
     "howPortScanMeasured": "How Port Scan Is Measured",
     "portScanNoteText": "This scan checks common service ports and classifies them as open, closed, or filtered, then derives a risk posture from known exposure patterns.",
     "portScanNoteSubtle": "Use this as a practical exposure baseline and verify high-risk findings against firewall rules, service ownership, and expected internet-facing behavior.",
