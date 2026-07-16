@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import './Services.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import speedTestPreview2 from '../../assets/avatars/speedtest_preview_image_2.png';
+import img1 from '../../assets/avatars/Port_scan_network_interface.png';
+import img2 from '../../assets/avatars/Speedtest_results_dashboard.png';
 import logo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import Seo from '../../components/seo/Seo';
 
@@ -169,7 +171,7 @@ const Services = () => {
               transition={{ delay: 0.2 }}
             >
               <div className="services_service_image_container">
-                <img src={speedTestPreview1} alt={t('services.cards.security.title')} className="services_service_image"/>
+                <img src={img1} alt={t('services.cards.security.title')} className="services_service_image"/>
               </div>
               <div className="services_service_content">
                 <h3 className="services_service_title">{t('services.cards.security.title')}</h3>
@@ -203,7 +205,7 @@ const Services = () => {
               transition={{ delay: 0.3 }}
             >
               <div className="services_service_image_container">
-                <img src={speedTestPreview2} alt={t('services.cards.aiInsights.title')} className="services_service_image"/>
+                <img src={img2} alt={t('services.cards.aiInsights.title')} className="services_service_image"/>
               </div>
               <div className="services_service_content">
                 <h3 className="services_service_title">{t('services.cards.aiInsights.title')}</h3>

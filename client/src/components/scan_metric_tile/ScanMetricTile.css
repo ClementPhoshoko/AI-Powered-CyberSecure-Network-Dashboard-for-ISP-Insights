@@ -21,8 +21,8 @@
 }
 
 .scan_metric_tile-icon svg {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 .scan_metric_tile-content {
@@ -76,8 +76,8 @@
   }
 
   .scan_metric_tile-icon svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   .scan_metric_tile-label {
