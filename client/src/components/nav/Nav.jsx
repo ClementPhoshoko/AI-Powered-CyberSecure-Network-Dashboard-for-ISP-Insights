@@ -37,6 +37,7 @@ function Nav() {
   const drawerRef = useRef(null);
   const drawerContentRef = useRef(null);
   const drawerScrollbarTrackRef = useRef(null);
+  const [isFloating, setIsFloating] = useState(false);
   const [drawerScrollbar, setDrawerScrollbar] = useState({
     thumbHeight: 0,
     thumbTop: 0,
@@ -159,6 +160,24 @@ function Nav() {
       resizeObserver.disconnect();
     };
   }, [mobileMenuOpen, isClosing, user, location.pathname, updateDrawerScrollbar]);
+
+  // Floating navbar on scroll (desktop only)
+  useEffect(() => {
+    if (window.innerWidth <= 1024) return;
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setIsFloating(window.scrollY > 100);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     {
@@ -332,8 +351,9 @@ function Nav() {
   ].filter(Boolean) : [];
 
   return (
-    <nav className="nav-container">
-      <div className="nav-content">
+    <nav className={`nav-container${isFloating ? ' nav-floating' : ''}`}>
+      <div className="nav-inner">
+        <div className="nav-content">
         {/* Left Side: Logo & System Name */}
         <div className="nav-left">
           <Link to="/" className="nav-logo">
@@ -522,6 +542,7 @@ function Nav() {
             <Bars3Icon className="nav-toggle-icon" />
           )}
         </button>
+      </div>
       </div>
 
       {/* Mobile Drawer Overlay */}

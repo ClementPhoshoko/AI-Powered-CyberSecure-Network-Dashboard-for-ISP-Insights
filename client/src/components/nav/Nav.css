@@ -4,12 +4,59 @@
    ========================================================= */
 
 .nav-container {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  padding: var(--space-4) var(--space-6);
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4) 0;
   background: transparent;
   border-bottom: none;
   box-shadow: none;
+  transition: padding var(--motion-slow) var(--ease-out);
+}
+
+.nav-container.nav-floating {
+  padding: var(--space-3) 0;
+}
+
+.nav-inner {
+  width: 100%;
+  padding: 0 var(--space-6);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: 0 0 0 transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition: all var(--motion-slow) var(--ease-out);
+}
+
+.nav-floating .nav-inner {
+  width: 90%;
+  max-width: 1400px;
+  padding: var(--space-1) var(--space-5);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-xl);
+  -webkit-backdrop-filter: var(--blur-xl);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 32px var(--glass-shadow);
+}
+
+/* Floating sub-element tweaks */
+.nav-floating .nav-logo {
+  transform: scale(0.95);
+}
+
+.nav-floating .nav-logo-text {
+  font-size: calc(var(--text-lg) * 0.95);
+}
+
+.nav-floating .nav-item-button {
+  padding: var(--space-1) var(--space-3);
 }
 
 .nav-content {
@@ -170,6 +217,24 @@
   animation: dropdownIn var(--motion-fast) var(--ease-out);
   padding-top: var(--space-2);
   margin-top: var(--space-1);
+}
+
+/* Hover bridge — invisible area above dropdown to prevent hover gap */
+.nav-dropdown::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--space-4));
+  left: 0;
+  right: 0;
+  height: var(--space-4);
+}
+
+.nav-floating .nav-dropdown {
+  margin-top: var(--space-3);
+}
+
+.nav-floating .nav-dropdown::before {
+  height: calc(var(--space-3) + var(--space-1));
 }
 
 @keyframes dropdownIn {
@@ -907,11 +972,55 @@
   .nav-mobile-toggle {
     display: flex;
   }
+
+  .nav-container {
+    position: relative;
+    padding: var(--space-3) var(--space-4);
+    transition: none;
+  }
+
+  .nav-container.nav-floating {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .nav-inner,
+  .nav-floating .nav-inner {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transition: none;
+    transform: none;
+  }
+
+  .nav-floating .nav-logo,
+  .nav-floating .nav-logo-text,
+  .nav-floating .nav-item-button {
+    transform: none;
+    font-size: inherit;
+    padding: var(--space-2) var(--space-4);
+  }
 }
 
 @media (max-width: 768px) {
   .nav-container {
     padding: var(--space-3) var(--space-4);
+  }
+
+  .nav-inner,
+  .nav-floating .nav-inner {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
   }
 
   .nav-logo-text {
@@ -921,5 +1030,16 @@
   .nav-logo-icon {
     width: 48px;
     height: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-container,
+  .nav-inner,
+  .nav-floating .nav-inner,
+  .nav-floating .nav-logo,
+  .nav-floating .nav-logo-text,
+  .nav-floating .nav-item-button {
+    transition: none;
   }
 }
