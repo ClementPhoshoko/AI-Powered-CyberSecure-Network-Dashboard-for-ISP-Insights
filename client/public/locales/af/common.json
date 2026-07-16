@@ -266,7 +266,21 @@
       { "title": "Netwerk-analise", "desc": "Monitor jou verbindingskwaliteit" },
       { "title": "Netwerk Sekuriteitskan", "desc": "Poort risiko opsporing ingebou" }
     ],
-    "betaAdvisory": "Sluit aan by ons beta-toetsprogram vir vroeë toegang! Jou data word beskerm met end-tot-end enkripsie."
+    "betaAdvisory": "Sluit aan by ons beta-toetsprogram vir vroeë toegang! Jou data word beskerm met end-tot-end enkripsie.",
+    "android": {
+      "title": "Android-toepassing",
+      "subtitle": "Skandeer die QR-kode of tik op die knoppie hieronder om af te laai",
+      "scanPrompt": "Skandeer met jou foon se kamera",
+      "advisory": "Die AkovoLabs Speedtest-toep benodig Android 8.0 of later. Jou data word end-tot-end geënkripteer.",
+      "cta": "Maak oop in Google Play"
+    },
+    "ios": {
+      "title": "iOS-toepassing",
+      "subtitle": "Skandeer die QR-kode of tik op die knoppie hieronder om af te laai",
+      "scanPrompt": "Skandeer met jou foon se kamera",
+      "advisory": "Die AkovoLabs Speedtest-toep benodig iOS 15.0 of later. Jou data word end-tot-end geënkripteer.",
+      "cta": "Maak oop in App Store"
+    }
   },
   "news": {
     "heroHeadline1": "Laaste Nuus en",
@@ -711,6 +725,10 @@
     "newsDesc": "Nuutste nuus, blogplasings en opdaterings van AkovoLabs oor netwerktegnologie, kuberveiligheid en ISP-insigte.",
     "downloadTitle": "Laai Af",
     "downloadDesc": "Laai die AkovoLabs mobiele toep af vir Android en iOS. Toets jou internetspoed op die pad.",
+    "downloadAndroidTitle": "Android-toepassing",
+    "downloadAndroidDesc": "Laai die AkovoLabs Speedtest Android-toep af. Skandeer die QR-kode om direk vanaf Google Play te installeer.",
+    "downloadIosTitle": "iOS-toepassing",
+    "downloadIosDesc": "Laai die AkovoLabs Speedtest iOS-toep af. Skandeer die QR-kode om direk vanaf die App Store te installeer.",
     "historyTitle": "ToetGeski",
     "historyDesc": "Bekyk jou internetspoedtoets-geskiedenis, volg prestasietendense en ontleed verbindingstabiliteit oor tyd.",
     "securityTitle": "Sekuriteit",

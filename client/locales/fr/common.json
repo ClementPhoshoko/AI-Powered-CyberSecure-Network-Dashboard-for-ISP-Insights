@@ -266,7 +266,21 @@
       { "title": "Analyse réseau", "desc": "Surveillez la qualité de votre connexion" },
       { "title": "Analyse de sécurité réseau", "desc": "Détection des risques de ports intégrée" }
     ],
-    "betaAdvisory": "Rejoignez notre programme de test bêta pour un accès anticipé ! Vos données et informations de test de vitesse sont protégées par un chiffrement de bout en bout."
+    "betaAdvisory": "Rejoignez notre programme de test bêta pour un accès anticipé ! Vos données et informations de test de vitesse sont protégées par un chiffrement de bout en bout.",
+    "android": {
+      "title": "Application Android",
+      "subtitle": "Scannez le QR code ou appuyez sur le bouton ci-dessous pour télécharger",
+      "scanPrompt": "Scannez avec votre appareil photo",
+      "advisory": "L'application AkovoLabs Speedtest nécessite Android 8.0 ou version ultérieure. Vos données sont chiffrées de bout en bout.",
+      "cta": "Ouvrir dans Google Play"
+    },
+    "ios": {
+      "title": "Application iOS",
+      "subtitle": "Scannez le QR code ou appuyez sur le bouton ci-dessous pour télécharger",
+      "scanPrompt": "Scannez avec votre appareil photo",
+      "advisory": "L'application AkovoLabs Speedtest nécessite iOS 15.0 ou version ultérieure. Vos données sont chiffrées de bout en bout.",
+      "cta": "Ouvrir dans l'App Store"
+    }
   },
   "news": {
     "heroHeadline1": "Dernières Actualités et",
@@ -711,6 +725,10 @@
     "newsDesc": "Dernières actualités, articles de blog et mises à jour d'AkovoLabs sur la technologie réseau, la cybersécurité et les insights FSI.",
     "downloadTitle": "Téléchargement",
     "downloadDesc": "Téléchargez l'application mobile AkovoLabs pour Android et iOS. Testez votre vitesse Internet en déplacement.",
+    "downloadAndroidTitle": "Application Android",
+    "downloadAndroidDesc": "Téléchargez l'application Android AkovoLabs Speedtest. Scannez le QR code pour installer directement depuis Google Play.",
+    "downloadIosTitle": "Application iOS",
+    "downloadIosDesc": "Téléchargez l'application iOS AkovoLabs Speedtest. Scannez le QR code pour installer directement depuis l'App Store.",
     "historyTitle": "Historique",
     "historyDesc": "Consultez votre historique de tests de vitesse, suivez les tendances de performance et analysez la stabilité de la connexion.",
     "securityTitle": "Sécurité",

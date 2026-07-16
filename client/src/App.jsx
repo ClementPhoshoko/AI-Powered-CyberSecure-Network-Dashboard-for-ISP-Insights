@@ -34,6 +34,8 @@ const About = lazy(() => import('./pages/about/About'))
 const Services = lazy(() => import('./pages/services/Services'))
 const News = lazy(() => import('./pages/news/News'))
 const Download = lazy(() => import('./pages/download/Download'))
+const DownloadAndroid = lazy(() => import('./pages/download/android/Android'))
+const DownloadIos = lazy(() => import('./pages/download/ios/Ios'))
 
 function AppContent() {
   const location = useLocation();
@@ -84,6 +86,8 @@ function AppContent() {
                 <Route path="/services" element={<Services />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/download" element={<Download />} />
+                <Route path="/download/android" element={<DownloadAndroid />} />
+                <Route path="/download/ios" element={<DownloadIos />} />
                 <Route path="/tests" element={
                   <ProtectedRoute>
                     <History />

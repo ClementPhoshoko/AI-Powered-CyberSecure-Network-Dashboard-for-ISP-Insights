@@ -331,6 +331,18 @@
   line-height: 1.5;
 }
 
+.download_qr_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .download_hero {

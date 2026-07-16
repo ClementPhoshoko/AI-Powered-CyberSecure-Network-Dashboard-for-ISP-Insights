@@ -569,7 +569,21 @@
       { "title": "Network Analysis", "desc": "Monitor your connection quality" },
       { "title": "Network Security Scan", "desc": "Port risk detection built-in tools" }
     ],
-    "betaAdvisory": "Join our beta testing program for early access! Your data and speed test information is protected with end-to-end encryption. We never share your personal information without your consent."
+    "betaAdvisory": "Join our beta testing program for early access! Your data and speed test information is protected with end-to-end encryption. We never share your personal information without your consent.",
+    "android": {
+      "title": "Android App",
+      "subtitle": "Scan the QR code or tap the button below to download",
+      "scanPrompt": "Scan with your phone camera",
+      "advisory": "The AkovoLabs Speedtest app requires Android 8.0 or later. Your data is encrypted end-to-end.",
+      "cta": "Open in Google Play"
+    },
+    "ios": {
+      "title": "iOS App",
+      "subtitle": "Scan the QR code or tap the button below to download",
+      "scanPrompt": "Scan with your phone camera",
+      "advisory": "The AkovoLabs Speedtest app requires iOS 15.0 or later. Your data is encrypted end-to-end.",
+      "cta": "Open in App Store"
+    }
   },
   "news": {
     "heroHeadline1": "Latest News &",
@@ -921,6 +935,10 @@
     "newsDesc": "Latest news, blog posts, and updates from AkovoLabs about network technology, cybersecurity, and ISP insights.",
     "downloadTitle": "Download",
     "downloadDesc": "Download the AkovoLabs mobile app for Android and iOS. Test your internet speed on the go with our mobile speed test app.",
+    "downloadAndroidTitle": "Android App",
+    "downloadAndroidDesc": "Download the AkovoLabs Speedtest Android app. Scan the QR code to install directly from Google Play.",
+    "downloadIosTitle": "iOS App",
+    "downloadIosDesc": "Download the AkovoLabs Speedtest iOS app. Scan the QR code to install directly from the App Store.",
     "historyTitle": "Test History",
     "historyDesc": "View your internet speed test history, track performance trends, and analyze connection stability over time.",
     "securityTitle": "Security",

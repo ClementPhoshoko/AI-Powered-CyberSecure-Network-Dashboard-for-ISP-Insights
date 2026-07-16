@@ -266,7 +266,21 @@
       { "title": "Ukuhlaziya Inethiwekhi", "desc": "Qapha ikhwalithi yakho yokuxhumana" },
       { "title": "Ukuskena Ukuphepha Kwenethiwekhi", "desc": "Ukutholwa kobungozi bamachweba okwakhelwe ngaphakathi" }
     ],
-    "betaAdvisory": "Joyina uhlelo lwethu lokuhlola i-beta ukuze uthole ukufinyelela kwangaphambi kwesikhathi! Idatha yakho ivikelwe ngombhalo oqinile wokugcina."
+    "betaAdvisory": "Joyina uhlelo lwethu lokuhlola i-beta ukuze uthole ukufinyelela kwangaphambi kwesikhathi! Idatha yakho ivikelwe ngombhalo oqinile wokugcina.",
+    "android": {
+      "title": "Uhlelo lwe-Android",
+      "subtitle": "Skena ikhodi ye-QR noma uthinte inkinobho engezansi ukuze ulande",
+      "scanPrompt": "Skena ngekhamera yakho yocingo",
+      "advisory": "Uhlelo lwe-AkovoLabs Speedtest ludinga i-Android 8.0 noma kamuva. Idatha yakho ibhalwe ngokuphelele.",
+      "cta": "Vula ku-Google Play"
+    },
+    "ios": {
+      "title": "Uhlelo lwe-iOS",
+      "subtitle": "Skena ikhodi ye-QR noma uthinte inkinobho engezansi ukuze ulande",
+      "scanPrompt": "Skena ngekhamera yakho yocingo",
+      "advisory": "Uhlelo lwe-AkovoLabs Speedtest ludinga i-iOS 15.0 noma kamuva. Idatha yakho ibhalwe ngokuphelele.",
+      "cta": "Vula ku-App Store"
+    }
   },
   "news": {
     "heroHeadline1": "Izindaba Zakamuva Nezibuyekezo",
@@ -711,6 +725,10 @@
     "newsDesc": "Izindaba zakamuva, okuthunyelwe kwebhulogi, nezibuyekezo ezivela ku-AkovoLabs mayelana nobuchwepheshe benethiwekhi, ukuvikeleka kwe-inthanethi, nemininingwane ye-ISP.",
     "downloadTitle": "Landa",
     "downloadDesc": "Landa uhlelo lokusebenza lweselula lwe-AkovoLabs lwe-Android ne-iOS. Hlola ijubane lakho le-inthanethi noma ukuphi.",
+    "downloadAndroidTitle": "Uhlelo lwe-Android",
+    "downloadAndroidDesc": "Landa uhlelo lwe-Android lwe-AkovoLabs Speedtest. Skena ikhodi ye-QR ukuze ufake ngqo kusukela ku-Google Play.",
+    "downloadIosTitle": "Uhlelo lwe-iOS",
+    "downloadIosDesc": "Landa uhlelo lwe-iOS lwe-AkovoLabs Speedtest. Skena ikhodi ye-QR ukuze ufake ngqo kusukela ku-App Store.",
     "historyTitle": "Umlando",
     "historyDesc": "Buka umlando wakho wokuhlola ijubane le-inthanethi, ulandelela izitayela zokusebenza, futhi uhlaziye ukuqina kokuxhumana ngokuhamba kwesikhathi.",
     "securityTitle": "Ukuphepha",

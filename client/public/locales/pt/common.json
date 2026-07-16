@@ -266,7 +266,21 @@
       { "title": "Análise de Rede", "desc": "Monitore sua qualidade de conexão" },
       { "title": "Varredura de Segurança", "desc": "Detecção de risco de portas integrada" }
     ],
-    "betaAdvisory": "Junte-se ao nosso programa beta para acesso antecipado! Seus dados são protegidos com criptografia de ponta a ponta."
+    "betaAdvisory": "Junte-se ao nosso programa beta para acesso antecipado! Seus dados são protegidos com criptografia de ponta a ponta.",
+    "android": {
+      "title": "App Android",
+      "subtitle": "Escaneie o QR code ou toque no botão abaixo para baixar",
+      "scanPrompt": "Escaneie com a câmera do seu celular",
+      "advisory": "O aplicativo AkovoLabs Speedtest requer Android 8.0 ou superior. Seus dados são criptografados de ponta a ponta.",
+      "cta": "Abrir no Google Play"
+    },
+    "ios": {
+      "title": "App iOS",
+      "subtitle": "Escaneie o QR code ou toque no botão abaixo para baixar",
+      "scanPrompt": "Escaneie com a câmera do seu celular",
+      "advisory": "O aplicativo AkovoLabs Speedtest requer iOS 15.0 ou superior. Seus dados são criptografados de ponta a ponta.",
+      "cta": "Abrir na App Store"
+    }
   },
   "news": {
     "heroHeadline1": "Últimas Notícias e",
@@ -711,6 +725,10 @@
     "newsDesc": "Últimas notícias, posts do blog e atualizações da AkovoLabs sobre tecnologia de rede, cibersegurança e insights para ISPs.",
     "downloadTitle": "Download",
     "downloadDesc": "Baixe o aplicativo móvel AkovoLabs para Android e iOS. Teste sua velocidade de internet em qualquer lugar.",
+    "downloadAndroidTitle": "App Android",
+    "downloadAndroidDesc": "Baixe o aplicativo Android AkovoLabs Speedtest. Escaneie o QR code para instalar diretamente do Google Play.",
+    "downloadIosTitle": "App iOS",
+    "downloadIosDesc": "Baixe o aplicativo iOS AkovoLabs Speedtest. Escaneie o QR code para instalar diretamente da App Store.",
     "historyTitle": "Histórico",
     "historyDesc": "Veja seu histórico de testes de velocidade, acompanhe tendências de desempenho e analise a estabilidade da conexão ao longo do tempo.",
     "securityTitle": "Segurança",
