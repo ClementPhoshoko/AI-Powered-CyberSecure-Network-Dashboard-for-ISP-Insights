@@ -1,0 +1,12 @@
+For creating the QR pages:
+for /download/android and also /download/ios routes
+put the page design in download folder there > in subfolders ios and android
+
+Steps:
+
+Install npm install qrcode.react in client/
+Import <QRCode/> in Download.jsx
+Place the QR code in the download page — renders a scannable SVG square. Set the value to your Google Play URL (or APK link).
+Put the link text under it — plain <p> or <a> below the QR code showing the URL
+Done — the QR code is generated entirely in the browser at render time. No API calls, no server, no ongoing cost. The URL is whatever you set it to, and you can change it anytime by editing the component.
+We want want the QR code to have a custom desing to match the app theme, qrcode.react accepts fgColor and bgColor props. have some words, advisory, still clean but act as a page that allows users to scan, preview image of my app must be there too. etc
