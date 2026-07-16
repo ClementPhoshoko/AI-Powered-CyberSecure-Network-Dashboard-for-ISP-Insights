@@ -1,4 +1,4 @@
-# RackNerd Deployment Guide for Speedtest API
+# RackNerd Deployment Guide for AkovoLabs Speedtest
 
 Production deployment guide for **AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights** on a RackNerd VPS.
 
@@ -18,8 +18,8 @@ Internet Users
 RackNerd Public IP
     ↓
 Caddy (reverse proxy + auto HTTPS)
-    ├── speedtest.yourdomain.com  → React frontend from client/dist
-    └── speedtest.yourdomain.com/api → Node/Express backend on localhost:5000
+    ├── speedtest.akovolabs.co.za  → React frontend from client/dist
+    └── speedtest.akovolabs.co.za/api → Node/Express backend on localhost:5000
 ```
 
 The app will be available on your domain with automatic HTTPS via Caddy.
@@ -338,7 +338,7 @@ nano .env.production
 Paste:
 
 ```env
-VITE_API_BASE_URL=https://speedtest.yourdomain.com/api
+VITE_API_BASE_URL=https://speedtest.akovolabs.co.za/api
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
@@ -366,7 +366,7 @@ sudo nano /etc/caddy/Caddyfile
 Replace the contents with:
 
 ```caddy
-speedtest.yourdomain.com {
+speedtest.akovolabs.co.za {
     root * /var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights/client/dist
     encode gzip
 
@@ -385,7 +385,7 @@ speedtest.yourdomain.com {
 }
 ```
 
-> ⚠️ **No domain yet?** Replace `speedtest.yourdomain.com` with your RackNerd IP address. Caddy will serve without HTTPS in this case (which is fine for testing). Example:
+> ⚠️ **No domain yet?** Replace `speedtest.akovolabs.co.za` with your RackNerd IP address. Caddy will serve without HTTPS in this case (which is fine for testing). Example:
 > ```caddy
 > http://YOUR_RACKNERD_IP {
 >     ...
@@ -488,7 +488,7 @@ You should see something like "Status: OK" with a list of banned IPs (will be em
 Visit your domain in a browser:
 
 ```text
-https://speedtest.yourdomain.com
+https://speedtest.akovolabs.co.za
 ```
 
 If you are using the IP instead:
@@ -500,7 +500,7 @@ http://YOUR_RACKNERD_IP
 Test the API:
 
 ```bash
-curl https://speedtest.yourdomain.com/api
+curl https://speedtest.akovolabs.co.za/api
 ```
 
 Or with IP:
@@ -599,7 +599,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Speedtest App
+    name: Deploy AkovoLabs Speedtest
     runs-on: ubuntu-latest
 
     steps:
