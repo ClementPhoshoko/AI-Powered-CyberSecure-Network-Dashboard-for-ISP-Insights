@@ -10,12 +10,26 @@ const languages = [
   { code: 'zu', nativeName: 'isiZulu' },
 ]
 
-export default function LanguageSwitcher({ variant = 'desktop' }) {
+export default function LanguageSwitcher({ variant = 'desktop', onOpenChange, closeToken }) {
   const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
+  const prevToken = useRef(closeToken)
 
   const current = languages.find((l) => l.code === i18n.language) || languages[0]
+
+  // Close when another dropdown forces it
+  useEffect(() => {
+    if (closeToken !== undefined && closeToken !== prevToken.current) {
+      setOpen(false)
+      prevToken.current = closeToken
+    }
+  }, [closeToken])
+
+  // Notify parent of open state changes
+  useEffect(() => {
+    onOpenChange?.(open)
+  }, [open, onOpenChange])
 
   useEffect(() => {
     const handleClickOutside = (e) => {

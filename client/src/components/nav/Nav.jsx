@@ -38,6 +38,14 @@ function Nav() {
   const drawerContentRef = useRef(null);
   const drawerScrollbarTrackRef = useRef(null);
   const [isFloating, setIsFloating] = useState(false);
+  const [langCloseToken, setLangCloseToken] = useState(0);
+  const closeLanguage = useCallback(() => setLangCloseToken(t => t + 1), []);
+  const handleLangOpenChange = useCallback((isOpen) => {
+    if (isOpen) {
+      setActiveDropdown(null);
+      setAccountDropdownOpen(false);
+    }
+  }, []);
   const [drawerScrollbar, setDrawerScrollbar] = useState({
     thumbHeight: 0,
     thumbTop: 0,
@@ -372,6 +380,7 @@ function Nav() {
                 onMouseEnter={() => {
                   setActiveDropdown(item.name);
                   setAccountDropdownOpen(false);
+                  closeLanguage();
                 }}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
@@ -410,13 +419,14 @@ function Nav() {
             ))}
           </div>
 
-          <LanguageSwitcher variant="desktop" />
+          <LanguageSwitcher variant="desktop" onOpenChange={handleLangOpenChange} closeToken={langCloseToken} />
 
           <div 
             className="nav-account"
             onMouseEnter={() => {
               setAccountDropdownOpen(true);
               setActiveDropdown(null);
+              closeLanguage();
             }}
             onMouseLeave={() => setAccountDropdownOpen(false)}
           >
