@@ -110,15 +110,31 @@ function Home() {
         <h1 className="home-title">{t('speedtest:hero.heading')}</h1>
         <div className="home-col">
           <div className="speedmeter-wrapper">
-            <div className={`speedmeter-container ${isRunning || isComplete ? 'speedmeter-container--visible' : ''}`}>
-              <SpeedMeter 
-                value={isComplete ? (testResult?.download_speed_mbps || 0) : currentSpeed} 
-                type={phase === 'upload' ? 'upload' : 'download'} 
-              />
-            </div>
-            <div className={`logo-overlay ${isRunning || isComplete ? 'logo-overlay--open' : ''}`}>
-              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="logo-overlay-icon" />
-            </div>
+            <AnimatePresence mode="wait">
+              {!isRunning && !isComplete ? (
+                <motion.div
+                  key="logo"
+                  className="logo-overlay"
+                  exit={{ opacity: 0, scale: 1.5, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }}
+                >
+                  <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="logo-overlay-icon" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="speedmeter"
+                  className="speedmeter-container"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <SpeedMeter
+                    value={isComplete ? (testResult?.download_speed_mbps || 0) : currentSpeed}
+                    type={phase === 'upload' ? 'upload' : 'download'}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
           <AnimatePresence mode="wait">
             {loading && (
@@ -217,7 +233,12 @@ function Home() {
                 animate="animate"
                 exit="exit"
                 transition={fadeTransition}
-              />
+              >
+                <h3 className="ai-summary-title">
+                  <img src={aiIcon} alt={t('imageAlt.aiIcon')} className="ai-summary-icon" />
+                  {t('speedtest:aiSummary.heading')}
+                </h3>
+              </motion.div>
             ) : testResult && (
               <motion.div
                 key="summary"
@@ -284,6 +305,7 @@ function Home() {
             ) : (
               <motion.div
                 key="stats"
+                className="stats-wrapper"
                 variants={fadeVariants}
                 initial="initial"
                 animate="animate"
