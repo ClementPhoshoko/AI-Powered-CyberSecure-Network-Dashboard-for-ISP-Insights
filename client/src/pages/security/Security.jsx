@@ -282,13 +282,13 @@ function Security() {
                         <>
                           <ScanMetricGrid metrics={metrics} isLoading={isScanRefreshing} />
 
-                          <section className="security-ai-summary-section" aria-label="AI security summary">
+                          <section className={`security-ai-summary-section${isScanRefreshing ? ' is-loading' : ''}`} aria-label="AI security summary">
                             <h3 className="security-ai-summary-title">
                               <img src={aiIcon} alt={t('imageAlt.aiIcon')} className="security-ai-summary-icon" />
                               {t('security.aiPoweredSummary')}
                             </h3>
                             {isScanRefreshing ? (
-                              <p className="security-skeleton security-ai-summary-text" />
+                              <p className="security-ai-summary-text skeleton-text" />
                             ) : (
                               <p className="security-ai-summary-text">
                                 {latestAssessment.ai_security_summary || t('security.summaryPlaceholder')}
