@@ -39,6 +39,7 @@ function Nav() {
   const drawerScrollbarTrackRef = useRef(null);
   const [isFloating, setIsFloating] = useState(false);
   const [langCloseToken, setLangCloseToken] = useState(0);
+  const [langAnimKey, setLangAnimKey] = useState(0);
   const closeLanguage = useCallback(() => setLangCloseToken(t => t + 1), []);
   const handleLangOpenChange = useCallback((isOpen) => {
     if (isOpen) {
@@ -681,6 +682,7 @@ function Nav() {
                 const currentIndex = langs.indexOf(i18n.language);
                 const nextLang = langs[(currentIndex + 1) % langs.length];
                 i18n.changeLanguage(nextLang);
+                setLangAnimKey(k => k + 1);
               }}
             >
               <div className="nav-drawer-footer-icon">
@@ -691,8 +693,8 @@ function Nav() {
                 </svg>
               </div>
               <div className="nav-drawer-footer-text">
-                <span className="nav-drawer-footer-label">{t('nav.mobileDrawer.language')}</span>
-                <span className="nav-drawer-footer-desc">{i18n.language.toUpperCase()}</span>
+                <span key={`lang-label-${langAnimKey}`} className="nav-drawer-footer-label nav-drawer-footer-lang-label">{t('nav.mobileDrawer.language')}</span>
+                <span key={`lang-desc-${langAnimKey}`} className="nav-drawer-footer-desc nav-drawer-footer-lang-desc">{i18n.language.toUpperCase()}</span>
               </div>
             </button>
             

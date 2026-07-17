@@ -955,6 +955,21 @@
   text-align: left;
 }
 
+.nav-drawer-footer-lang-label {
+  min-width: 9ch;
+  animation: langTextFadeIn 0.25s var(--ease-out);
+}
+
+.nav-drawer-footer-lang-desc {
+  min-width: 4ch;
+  animation: langTextFadeIn 0.25s var(--ease-out);
+}
+
+@keyframes langTextFadeIn {
+  0% { opacity: 0; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 .nav-drawer-footer-desc {
   font-size: var(--text-xs);
   color: var(--text-muted);
