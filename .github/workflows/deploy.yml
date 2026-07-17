@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Speedtest App
+    name: Deploy AkovoLabs Speedtest
     runs-on: ubuntu-latest
 
     steps:
