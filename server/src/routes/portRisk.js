@@ -97,6 +97,46 @@ router.post('/standalone', validateSupabaseJWT, runStandalonePortRiskAssessment)
  *     responses:
  *       200:
  *         description: Port risk assessment retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     test_result_id:
+ *                       type: string
+ *                       format: uuid
+ *                     ip_address:
+ *                       type: string
+ *                     overall_risk:
+ *                       type: string
+ *                       enum: [critical, high, medium, low]
+ *                     open_ports:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           port:
+ *                             type: integer
+ *                           service:
+ *                             type: string
+ *                           risk:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Assessment not found
  */
@@ -121,6 +161,46 @@ router.get('/assessment/:id', validateSupabaseJWT, getPortRiskAssessment);
  *     responses:
  *       200:
  *         description: Port risk assessment retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     test_result_id:
+ *                       type: string
+ *                       format: uuid
+ *                     ip_address:
+ *                       type: string
+ *                     overall_risk:
+ *                       type: string
+ *                       enum: [critical, high, medium, low]
+ *                     open_ports:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           port:
+ *                             type: integer
+ *                           service:
+ *                             type: string
+ *                           risk:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Assessment not found
  */
@@ -137,6 +217,37 @@ router.get('/test-result/:testResultId', validateSupabaseJWT, getPortRiskAssessm
  *     responses:
  *       200:
  *         description: List of port risk assessments
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       test_result_id:
+ *                         type: string
+ *                         format: uuid
+ *                       ip_address:
+ *                         type: string
+ *                       overall_risk:
+ *                         type: string
+ *                         enum: [critical, high, medium, low]
+ *                       open_ports_count:
+ *                         type: integer
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *       401:
+ *         description: Unauthorized
  */
 router.get('/assessments', validateSupabaseJWT, getUserPortRiskAssessments);
 

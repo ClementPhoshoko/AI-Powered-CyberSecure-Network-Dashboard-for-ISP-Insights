@@ -28,8 +28,26 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 data:
  *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     status:
+ *                       type: string
+ *                       enum: [active, inactive, unsubscribed]
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
  *       401:
  *         description: Unauthorized
  *       500:
@@ -64,10 +82,6 @@ router.get('/', validateSupabaseJWT, getSubscriber);
  *               last_name:
  *                 type: string
  *                 description: Last name of subscriber
- *               status:
- *                 type: string
- *                 enum: [active, inactive, unsubscribed]
- *                 description: Subscription status
  *     responses:
  *       201:
  *         description: Subscribed successfully
@@ -78,10 +92,21 @@ router.get('/', validateSupabaseJWT, getSubscriber);
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 data:
  *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     status:
+ *                       type: string
+ *                       example: active
  *       400:
- *         description: Already subscribed
+ *         description: Already subscribed or invalid input
  *       401:
  *         description: Unauthorized
  *       500:
@@ -124,8 +149,23 @@ router.post('/', validateSupabaseJWT, subscribe);
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 data:
  *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     status:
+ *                       type: string
+ *                       enum: [active, inactive, unsubscribed]
  *       401:
  *         description: Unauthorized
  *       404:
@@ -153,8 +193,10 @@ router.put('/', validateSupabaseJWT, updateSubscription);
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 message:
  *                   type: string
+ *                   example: Successfully unsubscribed
  *       401:
  *         description: Unauthorized
  *       404:

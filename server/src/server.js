@@ -95,7 +95,7 @@ const swaggerOptions = {
         info: {
             title: 'AI-Powered AkovoLabs Speedtest API',
             version: '1.0.0',
-            description: 'API documentation for the ISP Insights Dashboard',
+            description: 'Comprehensive API for the AkovoLabs Speedtest platform — internet speed testing, port security risk assessments, AI-generated network performance summaries, network scoring, and ISP analytics. Built for the ISP Insights Dashboard.',
         },
         servers: [
             {

@@ -87,8 +87,25 @@ router.get('/', validateSupabaseJWT, getProfile);
  *               properties:
  *                 status:
  *                   type: string
+ *                   example: success
  *                 data:
  *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       format: uuid
+ *                     username:
+ *                       type: string
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
  *       401:
  *         description: Unauthorized
  *       500:

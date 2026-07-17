@@ -35,6 +35,24 @@ const otpLimiter = rateLimit({
  *     responses:
  *       201:
  *         description: Account created, verification email sent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: Account created. Please check your email to verify.
+ *       400:
+ *         description: Invalid input or user already exists
+ *       429:
+ *         description: Too many requests
  */
 router.post('/register', otpLimiter, verifyTurnstile, registerUser);
 
@@ -61,6 +79,24 @@ router.post('/register', otpLimiter, verifyTurnstile, registerUser);
  *     responses:
  *       200:
  *         description: OTP sent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: OTP sent to your email
+ *       400:
+ *         description: Invalid input
+ *       429:
+ *         description: Too many requests
  */
 router.post('/send', otpLimiter, verifyTurnstile, sendOtp);
 
@@ -91,6 +127,27 @@ router.post('/send', otpLimiter, verifyTurnstile, sendOtp);
  *     responses:
  *       200:
  *         description: OTP verified
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: Verification token for password reset flow
+ *                     message:
+ *                       type: string
+ *                       example: OTP verified successfully
+ *       400:
+ *         description: Invalid or expired OTP
+ *       429:
+ *         description: Too many requests
  */
 router.post('/verify', otpLimiter, verifyOtp);
 
@@ -118,7 +175,25 @@ router.post('/verify', otpLimiter, verifyOtp);
  *                 minLength: 8
  *     responses:
  *       200:
- *         description: Password reset
+ *         description: Password reset successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: Password has been reset successfully
+ *       400:
+ *         description: Invalid token or weak password
+ *       429:
+ *         description: Too many requests
  */
 router.post('/reset-password', otpLimiter, resetPassword);
 
@@ -142,7 +217,23 @@ router.post('/reset-password', otpLimiter, resetPassword);
  *           format: email
  *     responses:
  *       200:
- *         description: Email verified
+ *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: Email verified successfully
+ *       400:
+ *         description: Invalid or expired verification link
  */
 router.get('/verify-link', verifyLink);
 

@@ -59,7 +59,6 @@ class PortRiskService {
   // Get public IP address from external service
   static async getPublicIp() {
     try {
-      const fetch = (await import('node-fetch')).default;
       const response = await fetch('https://api.ipify.org?format=text');
       const ip = await response.text();
       return ip.trim();
