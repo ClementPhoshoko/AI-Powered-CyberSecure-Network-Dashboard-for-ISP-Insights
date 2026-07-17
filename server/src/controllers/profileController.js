@@ -2,6 +2,9 @@ const { z } = require('zod');
 const Profile = require('../models/Profile');
 
 const profileUpdateSchema = z.object({
+  username: z.string().max(100).optional(),
+  first_name: z.string().max(100).optional(),
+  last_name: z.string().max(100).optional(),
   full_name: z.string().max(120).optional(),
   phone: z.string().max(30).optional(),
   isp_name: z.string().max(120).optional(),
