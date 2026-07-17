@@ -338,12 +338,15 @@ nano .env.production
 Paste:
 
 ```env
-VITE_API_BASE_URL=https://speedtest.akovolabs.co.za/api
+VITE_API_BASE_URL=https://your-domain.com/api
+VITE_API_URL=https://your-domain.com
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-> ⚠️ **Important**: Use your actual domain here (e.g., `speedtest.akovolabs.co.za`). If you do not have a domain yet, use your RackNerd IP temporarily: `http://YOUR_RACKNERD_IP/api`. Caddy will handle HTTPS automatically when a domain is configured.
+> ⚠️ **Important**: `VITE_API_URL` must NOT include `/api` — the service files append `/api` themselves. If you include `/api`, requests will double up (e.g., `POST /api/api/turnstile/verify`) and return 404.
+>
+> ⚠️ **Important**: Use your actual domain here (e.g., `speedtest.akovolabs.co.za`). If you do not have a domain yet, use your RackNerd IP temporarily: `http://YOUR_RACKNERD_IP`. Caddy will handle HTTPS automatically when a domain is configured.
 
 Build:
 
@@ -352,6 +355,8 @@ npm run build
 ```
 
 This should create `client/dist/` with the compiled frontend files.
+
+> ⚠️ **CSP note**: The `client/index.html` file has a hardcoded Content-Security-Policy meta tag. Before building, ensure the `connect-src` directive includes your domain and `https://challenges.cloudflare.com` (for Turnstile). The default file only allows `http://localhost:5000` — update it before deploying.
 
 ---
 
@@ -366,31 +371,35 @@ sudo nano /etc/caddy/Caddyfile
 Replace the contents with:
 
 ```caddy
-speedtest.akovolabs.co.za {
-    root * /var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights/client/dist
-    encode gzip
+your-domain.com {
+        handle /api/* {
+                reverse_proxy localhost:5000
+        }
 
-    # Frontend (SPA — serve index.html for all routes)
-    try_files {path} /index.html
+        handle /api-docs* {
+                reverse_proxy localhost:5000
+        }
 
-    # Backend API reverse proxy
-    handle_path /api/* {
-        reverse_proxy localhost:5000
-    }
-
-    # Swagger docs
-    handle_path /api-docs {
-        reverse_proxy localhost:5000
-    }
+        handle {
+                root * /var/www/AI-Powered-CyberSecure-Network-Dashboard-for-ISP-Insights/client/dist
+                encode gzip
+                try_files {path} /index.html
+                file_server
+        }
 }
 ```
 
-> ⚠️ **No domain yet?** Replace `speedtest.akovolabs.co.za` with your RackNerd IP address. Caddy will serve without HTTPS in this case (which is fine for testing). Example:
+> ⚠️ **No domain yet?** Replace `your-domain.com` with your RackNerd IP address, prefixed with `http://`. Caddy will serve without HTTPS in this case (which is fine for testing). Example:
 > ```caddy
 > http://YOUR_RACKNERD_IP {
->     ...
+>         handle /api/* {
+>                 reverse_proxy localhost:5000
+>         }
+>         ...
 > }
 > ```
+>
+> ⚠️ **Important**: The `handle` blocks must be ordered with API routes BEFORE the catch-all static handler. The `file_server` directive is required — `root` + `try_files` alone do NOT serve files in Caddy v2.
 
 Save in nano (`Ctrl+O → Enter → Ctrl+X`).
 
@@ -675,6 +684,15 @@ client/.env.production
 ```
 
 These are **not** committed to GitHub (they contain secrets). Create them manually once (steps 9 and 11), and the deploy script will reuse them across deployments.
+
+> ⚠️ **client/.env.production must include both `VITE_API_BASE_URL` and `VITE_API_URL`**:
+>
+> ```env
+> VITE_API_BASE_URL=https://your-domain.com/api
+> VITE_API_URL=https://your-domain.com
+> ```
+>
+> `VITE_API_URL` must NOT end with `/api` — service files append it themselves. If you include `/api`, requests will go to `/api/api/...` and return 404.
 
 If you ever change values in `client/.env.production`, you must rebuild:
 
