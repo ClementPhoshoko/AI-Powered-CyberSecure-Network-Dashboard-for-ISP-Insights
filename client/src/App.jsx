@@ -68,7 +68,7 @@ function AppContent() {
       {!isAuthRoute && <Nav />}
 
       {/* Main Content */}
-      <div className="app-content">
+      <div className={`app-content${isAuthRoute ? ' app-content--auth' : ''}`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
