@@ -22,18 +22,18 @@ const TEST_PHASES = {
 };
 
 const DOWNLOAD_SIZES = [1, 5, 10, 20]; // MB
-const UPLOAD_SIZES = [0.5, 1, 5, 10, 20]; // MB
+const UPLOAD_SIZES = [2, 5, 10, 20, 50]; // MB
 const PING_COUNT = 10;
 const DOWNLOAD_PHASE_TARGET_SECONDS = 5;
-const UPLOAD_PHASE_TARGET_SECONDS = 4;
+const UPLOAD_PHASE_TARGET_SECONDS = 10;
 const DOWNLOAD_MIN_ATTEMPTS = 2;
-const UPLOAD_MIN_ATTEMPTS = 2;
+const UPLOAD_MIN_ATTEMPTS = 3;
 const DOWNLOAD_MAX_ATTEMPTS = 4;
-const UPLOAD_MAX_ATTEMPTS = 4;
+const UPLOAD_MAX_ATTEMPTS = 6;
 const DOWNLOAD_STABILITY_THRESHOLD = 0.12;
 const UPLOAD_STABILITY_THRESHOLD = 0.15;
 const DOWNLOAD_STABLE_AFTER_SECONDS = 3;
-const UPLOAD_STABLE_AFTER_SECONDS = 2.5;
+const UPLOAD_STABLE_AFTER_SECONDS = 5;
 // If max-pass-speed is more than this × min-pass-speed, flag unstable
 const STABILITY_RATIO_THRESHOLD = 2.5;
 const DEFAULT_MEASUREMENT_CONTEXT = {
@@ -120,11 +120,11 @@ function chooseAdaptiveUploadSize(lastSpeedMbps) {
     return UPLOAD_SIZES[0];
   }
 
-  if (lastSpeedMbps < 8) return 0.5;
-  if (lastSpeedMbps < 25) return 1;
-  if (lastSpeedMbps < 120) return 5;
-  if (lastSpeedMbps < 250) return 10;
-  return 20;
+  if (lastSpeedMbps < 8) return 2;
+  if (lastSpeedMbps < 25) return 5;
+  if (lastSpeedMbps < 120) return 10;
+  if (lastSpeedMbps < 250) return 20;
+  return 50;
 }
 
 export function useSpeedTest() {
