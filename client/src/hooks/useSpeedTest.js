@@ -177,10 +177,11 @@ export function useSpeedTest() {
     setPhase(TEST_PHASES.PING);
     setProgress(20);
 
-    let probeTarget = '/ping/health';
+    let probeTarget = '/api/ping/health';
     if (api.defaults.baseURL) {
       try {
-        probeTarget = new URL('/ping/health', api.defaults.baseURL).toString();
+        const origin = new URL(api.defaults.baseURL).origin;
+        probeTarget = `${origin}/api/ping/health`;
       } catch {
         probeTarget = `${api.defaults.baseURL}/ping/health`;
       }
