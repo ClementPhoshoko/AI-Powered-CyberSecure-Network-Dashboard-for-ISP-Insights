@@ -86,12 +86,17 @@ const globalLimiter = rateLimit({
 });
 
 // Rate limiting — speedtest submission endpoints (abuse protection)
-// 20 requests per 15 minutes allows ~4 full test runs
+// Anonymous: 20 requests per 15 minutes (~4 full test runs)
+// Authenticated (has Bearer token): unlimited
 const speedtestLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    const auth = req.headers.authorization;
+    return !!(auth && auth.startsWith('Bearer '));
+  },
   keyGenerator: (req) => req.anonymousId || ipKeyGenerator(req),
   message: { status: 'error', message: 'Speedtest limit reached. Sign in to run unlimited tests and access security insights.' },
 });
@@ -101,7 +106,6 @@ app.use('/api/speed/tests', speedtestLimiter);
 app.use('/api/ping/tests', speedtestLimiter);
 app.use('/api/network/score', speedtestLimiter);
 app.use('/api/network/summary', speedtestLimiter);
-app.use('/api', globalLimiter);
 app.use('/api', globalLimiter);
 
 // Swagger Configuration

@@ -125,8 +125,14 @@ const SpeedMeter = ({
 
     const fromValue = animatedValueRef.current;
     const delta = clampedValue - fromValue;
+    if (Math.abs(delta) < 0.001) return;
+
+    const isDecreasing = delta < 0;
+    // Decreases: slow, smooth revert (600–900ms). Increases: quick push (200–400ms).
+    const duration = isDecreasing
+      ? clamp(600 + Math.abs(delta) * 3, 600, 900)
+      : clamp(200 + Math.abs(delta) * 0.8, 200, 400);
     const startTime = performance.now();
-    const duration = 220;
     let frameId = 0;
 
     const step = (now) => {
