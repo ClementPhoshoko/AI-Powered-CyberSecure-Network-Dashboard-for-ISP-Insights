@@ -1,5 +1,7 @@
 # Ping Calculation Formulas
 
+> **Note:** Pings are fired sequentially on the client (not concurrently) to avoid event-loop queuing inflating individual RTT measurements. This also ensures the consecutive-sample jitter formula below produces meaningful results.
+
 ## 1. Average Ping
 ```
 Formula: Sum of all latency_ms values / Number of pings

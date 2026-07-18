@@ -65,7 +65,7 @@ Measures client → server → client responsiveness.
 - Jitter (variation in consecutive ping times)
 - Packet loss (HTTP request success rate)
 
-All pings fire concurrently (not sequentially) to measure the same RTT as a single ping while gathering 10 samples. The health endpoint is used instead of ICMP, which is unavailable from the browser.
+Pings fire sequentially (not concurrently) to avoid event-loop queuing from concurrent requests, which would inflate individual RTT measurements. Sequential ordering also makes the consecutive-sample jitter calculation meaningful. The health endpoint is used instead of ICMP, which is unavailable from the browser.
 
 ---
 
@@ -168,7 +168,7 @@ Ignore first seconds. Reason: TCP slow start - connection ramps up gradually.
 4 parallel upload streams. Same measurement approach. Adaptive sizing ramps from2–50 MB based on connection speed.
 
 ### Ping Phase
-Run 10 concurrent HTTP pings. Calculate:
+Run 10 sequential HTTP pings (raw `fetch()` via the browser, bypassing Axios to avoid interceptor overhead). Calculate:
 - Average
 - Min
 - Max

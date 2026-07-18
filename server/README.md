@@ -66,6 +66,7 @@ Supabase Database
 
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling with public/anonymous access support
 - **Parallel Stream Speed Measurement**: Download and upload use 4 concurrent HTTP streams. Speed is measured as total bytes transferred / total elapsed time (global first-start to last-end). Compression middleware is excluded from speed endpoints to avoid interference with binary payloads.
+- **Sequential Ping Measurement**: Pings fire one at a time (not concurrently) to avoid event-loop queuing inflating RTT. Uses raw `fetch()` to bypass Axios interceptor overhead. Compression middleware is excluded from the ping health endpoint.
 - **Connection Stability Detection**: Flags erratic connections when max/min speed ratio across adaptive passes exceeds ~2.5×
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
 - **Network Scoring**: Automated health, gaming, streaming, video call, and browsing scores
