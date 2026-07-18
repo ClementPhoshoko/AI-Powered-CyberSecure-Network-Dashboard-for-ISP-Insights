@@ -9,6 +9,7 @@ import Footer from './components/footer/Footer'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
 import ErrorModal from './components/error_modal/ErrorModal'
+import { supabase } from './services/supabase'
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -52,8 +53,9 @@ function AppContent() {
     return () => window.removeEventListener('app:session-expired', onExpired);
   }, []);
 
-  const closeSessionExpired = () => {
+  const closeSessionExpired = async () => {
     setSessionExpiredOpen(false);
+    try { await supabase.auth.signOut(); } catch {}
     navigate('/login', { replace: true });
   };
 

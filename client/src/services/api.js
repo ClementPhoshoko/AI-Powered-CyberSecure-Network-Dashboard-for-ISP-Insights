@@ -44,17 +44,17 @@ api.interceptors.request.use(
   (error) => Promise.reject(createFriendlyError(error))
 );
 
-// Response interceptor — on 401, clear session and show session-expired modal
+// Response interceptor — on 401, clear cache and show session-expired modal.
+// signOut() is deferred until the user dismisses the modal to avoid
+// ProtectedRoute redirecting to /auth-required before the modal appears.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && !isHandlingSessionExpiry) {
       isHandlingSessionExpiry = true;
       setCachedSession(null);
-      supabase.auth.signOut().finally(() => {
-        window.dispatchEvent(new CustomEvent('app:session-expired'));
-        isHandlingSessionExpiry = false;
-      });
+      window.dispatchEvent(new CustomEvent('app:session-expired'));
+      setTimeout(() => { isHandlingSessionExpiry = false; }, 5000);
     }
     return Promise.reject(createFriendlyError(error));
   }
