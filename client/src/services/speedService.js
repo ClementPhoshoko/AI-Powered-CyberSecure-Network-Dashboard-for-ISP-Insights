@@ -69,14 +69,19 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
 
   const CHUNK_SIZE = 256 * 1024;
-  const chunks = [];
-  let remaining = chunkSizeBytes;
-  while (remaining > 0) {
-    const size = Math.min(CHUNK_SIZE, remaining);
-    chunks.push(new Blob([new Uint8Array(size)]));
-    remaining -= size;
-  }
-  const blobData = new Blob(chunks);
+  // Build one master blob, then slice per connection so each post gets its own
+  // independent Blob reference. Sharing the same Blob across concurrent uploads
+  // can cause browsers to send 0 bytes on some connections.
+  const masterBlob = (() => {
+    const chunks = [];
+    let remaining = totalBytes;
+    while (remaining > 0) {
+      const size = Math.min(CHUNK_SIZE, remaining);
+      chunks.push(new Blob([new Uint8Array(size)]));
+      remaining -= size;
+    }
+    return new Blob(chunks);
+  })();
 
   const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
     bytesLoaded: 0,
@@ -87,8 +92,12 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
 
   const startTimes = [];
 
-  const promises = connections.map((conn) => {
-    return api.post('/speed/upload', blobData, {
+  const promises = connections.map((conn, i) => {
+    const sliceStart = i * chunkSizeBytes;
+    const sliceEnd = sliceStart + chunkSizeBytes;
+    const blobSlice = masterBlob.slice(sliceStart, sliceEnd);
+
+    return api.post('/speed/upload', blobSlice, {
       params: { sizeMb: chunkSizeMb },
       headers: { 'Content-Type': 'application/octet-stream' },
       signal,
@@ -126,7 +135,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   return {
     size_mb: sizeMb,
     duration_seconds: elapsed,
-    upload_speed_mbps: speed,
+    upload_speed_mbps: Math.max(0.01, speed),
   };
 };
 
