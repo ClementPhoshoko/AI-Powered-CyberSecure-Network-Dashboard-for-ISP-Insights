@@ -28,9 +28,9 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 function shouldCompress(req, res) {
-  // Speed-test downloads must stay uncompressed to avoid skewed measurements
-  // and gzip backpressure/listener buildup on large streamed binary responses.
-  if (req.path === '/api/speed/download') {
+  // Speed-test endpoints must stay uncompressed to avoid skewed measurements
+  // and gzip backpressure/listener buildup on large streamed binary payloads.
+  if (req.path === '/api/speed/download' || req.path === '/api/speed/upload') {
     return false;
   }
 
@@ -63,7 +63,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Anonymous-Id'],
 }));
 
-app.use(compression({ filter: shouldCompress })); // Compress responses except speed-test downloads
+app.use(compression({ filter: shouldCompress })); // Compress responses except speed-test endpoints
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined')); // Logging
 

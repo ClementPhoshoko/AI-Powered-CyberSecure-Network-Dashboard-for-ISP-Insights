@@ -67,20 +67,10 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
   const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
 
-  const CHUNK_SIZE = 256 * 1024;
   // Build one master blob, then slice per connection so each post gets its own
   // independent Blob reference. Sharing the same Blob across concurrent uploads
   // can cause browsers to send 0 bytes on some connections.
-  const masterBlob = (() => {
-    const chunks = [];
-    let remaining = totalBytes;
-    while (remaining > 0) {
-      const size = Math.min(CHUNK_SIZE, remaining);
-      chunks.push(new Blob([new Uint8Array(size)]));
-      remaining -= size;
-    }
-    return new Blob(chunks);
-  })();
+  const masterBlob = new Blob([new Uint8Array(totalBytes)]);
 
   const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
     bytesLoaded: 0,
