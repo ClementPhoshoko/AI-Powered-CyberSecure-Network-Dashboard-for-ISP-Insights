@@ -18,14 +18,14 @@ function AuthLayout({ activeTab = 'login', children }) {
     <div className="auth-container">
       <div className="auth-header-logo">
         <Link to="/" className="auth-top-logo">
-          <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="auth-top-logo-icon" />
+          <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="auth-top-logo-icon" width="721" height="605" />
           <span className="auth-top-logo-text">{t('nav.home')}</span>
         </Link>
       </div>
       <div className="auth-card">
         <div className="auth-header">
           <div className="auth-mobile-logo">
-            <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="auth-mobile-logo-icon" />
+            <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="auth-mobile-logo-icon" width="721" height="605" />
             <span className="auth-mobile-logo-text">{t('app.name')}</span>
           </div>
           {showTabs ? (
@@ -73,7 +73,7 @@ function AuthLayout({ activeTab = 'login', children }) {
           <div className="auth-info-column">
             <div className="auth-info-content">
               <div className="auth-logo">
-                <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="auth-logo-icon" />
+                <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="auth-logo-icon" width="721" height="605" />
                 <span className="auth-logo-text">{t('app.name')}</span>
               </div>
               <p className="auth-tagline">{t('auth.layout.tagline')}</p>

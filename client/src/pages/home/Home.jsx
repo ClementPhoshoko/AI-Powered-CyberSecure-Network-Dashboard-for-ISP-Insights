@@ -113,7 +113,7 @@ function Home() {
                   className="logo-overlay"
                   exit={{ opacity: 0, scale: 1.5, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }}
                 >
-                  <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="logo-overlay-icon" />
+                  <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="logo-overlay-icon" width="721" height="605" />
                 </motion.div>
               ) : (
                 <motion.div

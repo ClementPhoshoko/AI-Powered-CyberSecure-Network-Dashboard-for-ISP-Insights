@@ -16,6 +16,12 @@
   min-width: 0;
   container-type: inline-size;
   container-name: footer;
+  animation: footerFadeIn 0.4s ease-out 0.3s both;
+}
+
+@keyframes footerFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .footer-content {
@@ -340,6 +346,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .footer-container {
+    animation: none;
+  }
+
   .footer-form-button,
   .footer-apps-link {
     transition: none;

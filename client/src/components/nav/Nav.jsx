@@ -366,7 +366,7 @@ function Nav() {
         {/* Left Side: Logo & System Name */}
         <div className="nav-left">
           <Link to="/" className="nav-logo">
-            <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="nav-logo-icon" />
+            <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="nav-logo-icon" width="56" height="56" />
             <span className="nav-logo-text">{t('app.name')}</span>
           </Link>
         </div>
@@ -566,7 +566,7 @@ function Nav() {
         <div className={`nav-drawer ${isClosing ? 'nav-drawer-closing' : ''}`} ref={drawerRef}>
           <div className="nav-drawer-header">
             <Link to="/" className="nav-logo" onClick={() => closeMobileMenu()}>
-              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="nav-logo-icon" />
+              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="nav-logo-icon" width="56" height="56" />
               <span className="nav-logo-text">{t('app.name')}</span>
             </Link>
 

@@ -97,7 +97,7 @@ function AppContent() {
             transition={pageTransition}
             className="page-transition-wrapper"
           >
-            <Suspense>
+            <Suspense fallback={<div className="page-loading-fallback" />}>
               <Routes location={location}>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />

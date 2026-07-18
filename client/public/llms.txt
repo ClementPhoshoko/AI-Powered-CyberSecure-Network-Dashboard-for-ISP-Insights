@@ -1,0 +1,11 @@
+# AkovoLabs Speedtest
+
+Free internet speed test tool by AkovoLabs. Measure your download speed, upload speed, and latency with accurate results.
+
+- [Home](https://speedtest.akovolabs.co.za/)
+- [Login](https://speedtest.akovolabs.co.za/login)
+- [Register](https://speedtest.akovolabs.co.za/register)
+- [About](https://speedtest.akovolabs.co.za/about)
+- [Services](https://speedtest.akovolabs.co.za/services)
+- [Download Android](https://speedtest.akovolabs.co.za/download-android)
+- [Download iOS](https://speedtest.akovolabs.co.za/download-ios)

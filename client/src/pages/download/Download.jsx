@@ -68,7 +68,9 @@ const Download = () => {
               <img 
                 src={loginLogo} 
                 alt={t('imageAlt.akovolabsLogo')} 
-                className="download_logo" 
+                className="download_logo"
+                width="721"
+                height="605"
               />
             </motion.div>
             

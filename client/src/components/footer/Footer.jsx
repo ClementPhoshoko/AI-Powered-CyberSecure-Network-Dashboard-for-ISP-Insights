@@ -84,7 +84,7 @@ function Footer() {
           {/* Left Section */}
           <div className="footer-left">
             <div className="footer-logo">
-              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="footer-logo-icon" />
+              <img src={loginLogo} alt={t('imageAlt.akovolabsLogo')} className="footer-logo-icon" width="721" height="605" />
               <span className="footer-logo-text">{t('app.name')}</span>
             </div>
             <p className="footer-tagline">{t('footer.tagline')}</p>

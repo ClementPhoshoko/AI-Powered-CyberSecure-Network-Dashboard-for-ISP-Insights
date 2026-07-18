@@ -73,7 +73,7 @@ const Services = () => {
           
           <div className="services_hero_right">
             <div className="services_image_container">
-              <img src={logo} alt={t('imageAlt.akovolabsLogo')} className="services_hero_image"/>
+              <img src={logo} alt={t('imageAlt.akovolabsLogo')} className="services_hero_image" width="721" height="605" />
             </div>
           </div>
         </section>
