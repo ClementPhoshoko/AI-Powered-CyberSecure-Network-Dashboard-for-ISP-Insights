@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Loading from '../../../components/loading/Loading';
 import ErrorModal from '../../../components/error_modal/ErrorModal';
 import successAvatar from '../../../assets/avatars/success_avatar_2.png';
+import Seo from '../../../components/seo/Seo';
 import './Verify.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -95,6 +96,7 @@ function Verify() {
 
   return (
     <>
+      <Seo title={t('seo.verifyTitle')} description={t('seo.verifyDesc')} path="/verify-email" />
       <Loading
         isLoading={isLoading}
         progress={progress}

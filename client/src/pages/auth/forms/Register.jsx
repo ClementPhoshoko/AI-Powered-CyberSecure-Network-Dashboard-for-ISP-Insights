@@ -8,6 +8,7 @@ import ErrorModal from '../../../components/error_modal/ErrorModal';
 import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
 import { useTurnstile } from '../../../hooks/useTurnstile';
 import successAvatar from '../../../assets/avatars/success_avatar_2.png';
+import Seo from '../../../components/seo/Seo';
 import './Register.css';
 
 function Register() {
@@ -131,6 +132,7 @@ function Register() {
 
   return (
     <>
+      <Seo title={t('seo.signupTitle')} description={t('seo.signupDesc')} path="/signup" />
       <Loading 
         isLoading={isLoading} 
         progress={progress}

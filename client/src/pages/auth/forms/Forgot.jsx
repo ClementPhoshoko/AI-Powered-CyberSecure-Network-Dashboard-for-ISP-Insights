@@ -8,6 +8,7 @@ import ErrorModal from '../../../components/error_modal/ErrorModal';
 import TurnstileWidget from '../../../components/turnstile_widget/TurnstileWidget';
 import { useTurnstile } from '../../../hooks/useTurnstile';
 import successAvatar from '../../../assets/avatars/success_avatar_2.png';
+import Seo from '../../../components/seo/Seo';
 import './Forgot.css';
 
 const STEP_VARIANTS = {
@@ -209,6 +210,7 @@ function Forgot() {
 
   return (
     <>
+      <Seo title={t('seo.forgotTitle')} description={t('seo.forgotDesc')} path="/forgot-password" />
       <Loading
         isLoading={isLoading}
         progress={progress}

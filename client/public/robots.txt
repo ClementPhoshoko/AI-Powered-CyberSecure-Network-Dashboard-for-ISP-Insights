@@ -7,3 +7,5 @@ Disallow: /auth-required
 Disallow: /account
 Disallow: /tests
 Disallow: /security
+
+Sitemap: https://speedtest.akovolabs.co.za/sitemap.xml
