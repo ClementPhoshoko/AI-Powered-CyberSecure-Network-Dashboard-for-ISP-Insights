@@ -17,10 +17,6 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-function easeOutCubic(progress) {
-  return 1 - Math.pow(1 - progress, 3);
-}
-
 function polarToCartesian(cx, cy, radius, angle) {
   const radians = ((angle - 90) * Math.PI) / 180;
 
@@ -123,33 +119,27 @@ const SpeedMeter = ({
       return;
     }
 
-    const fromValue = animatedValueRef.current;
-    const delta = clampedValue - fromValue;
-    if (Math.abs(delta) < 0.001) return;
+    let frameId;
+    const step = () => {
+      const current = animatedValueRef.current;
+      const target = clampedValue;
+      const diff = target - current;
 
-    const isDecreasing = delta < 0;
-    // Decreases: slow, smooth revert (600–900ms). Increases: quick push (200–400ms).
-    const duration = isDecreasing
-      ? clamp(600 + Math.abs(delta) * 3, 600, 900)
-      : clamp(200 + Math.abs(delta) * 0.8, 200, 400);
-    const startTime = performance.now();
-    let frameId = 0;
-
-    const step = (now) => {
-      const elapsed = now - startTime;
-      const progress = clamp(elapsed / duration, 0, 1);
-      const nextValue = fromValue + delta * easeOutCubic(progress);
-
-      animatedValueRef.current = nextValue;
-      setAnimatedValue(nextValue);
-
-      if (progress < 1) {
-        frameId = requestAnimationFrame(step);
+      if (Math.abs(diff) < 0.01) {
+        animatedValueRef.current = target;
+        setAnimatedValue(target);
+        return;
       }
+
+      const isDecreasing = diff < 0;
+      const factor = isDecreasing ? 0.06 : 0.12;
+      const next = current + diff * factor;
+      animatedValueRef.current = next;
+      setAnimatedValue(next);
+      frameId = requestAnimationFrame(step);
     };
 
     frameId = requestAnimationFrame(step);
-
     return () => cancelAnimationFrame(frameId);
   }, [animated, clampedValue]);
 

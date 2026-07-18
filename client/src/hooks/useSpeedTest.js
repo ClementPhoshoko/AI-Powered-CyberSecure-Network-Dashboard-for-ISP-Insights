@@ -264,9 +264,6 @@ export function useSpeedTest() {
 
         const durationSeconds = (performance.now() - start) / 1000;
 
-        // Use steady-state speed (average of second half of samples) instead of
-        // total-bytes/total-time, which is pulled down by TCP slow-start at the
-        // beginning of each pass.
         const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
         const steadySpeed = Math.max(0.01, steadySamples.length > 1
           ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
@@ -363,15 +360,11 @@ export function useSpeedTest() {
           setProgress(phaseProgress);
         };
 
-        await streamUploadTest(sizeMb, abortControllerRef.current.signal, onUploadProgress);
+        const uploadResult = await streamUploadTest(sizeMb, abortControllerRef.current.signal, onUploadProgress);
         clearTimeout(timeoutId);
 
-        const durationSeconds = (performance.now() - start) / 1000;
-
-        const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
-        const steadySpeed = Math.max(0.01, steadySamples.length > 1
-          ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
-          : (sizeMb * 8) / durationSeconds);
+        const durationSeconds = uploadResult.duration_seconds || (performance.now() - start) / 1000;
+        const steadySpeed = Math.max(0.01, uploadResult.upload_speed_mbps || (sizeMb * 8) / durationSeconds);
 
         const measurement = {
           size_mb: sizeMb,

@@ -133,7 +133,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   return {
     size_mb: sizeMb,
     duration_seconds: elapsed,
-    upload_speed_mbps: Math.max(0.01, speed),
+    upload_speed_mbps: speed,
   };
 };
 
