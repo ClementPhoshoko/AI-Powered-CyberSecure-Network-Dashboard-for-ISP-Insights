@@ -136,9 +136,11 @@ export function useSpeedTest() {
   const [testResult, setTestResult] = useState(null);
   const abortControllerRef = useRef(null);
   const isStoppedRef = useRef(false);
+  const smoothedSpeedRef = useRef(0);
 
   const stopTest = useCallback(() => {
     isStoppedRef.current = true;
+    smoothedSpeedRef.current = 0;
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -152,6 +154,7 @@ export function useSpeedTest() {
 
   const resetTest = useCallback(() => {
     isStoppedRef.current = false;
+    smoothedSpeedRef.current = 0;
     setPhase(TEST_PHASES.IDLE);
     setLoading(false);
     setError(null);
@@ -249,8 +252,9 @@ export function useSpeedTest() {
         abortControllerRef.current = new AbortController();
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
-        const onDownloadProgress = (_smoothMbps, _instantMbps, fileProgress) => {
-          setCurrentSpeed(_smoothMbps);
+        const onDownloadProgress = (_rawMbps, _instantMbps, fileProgress) => {
+          smoothedSpeedRef.current = smoothedSpeedRef.current * 0.7 + _rawMbps * 0.3;
+          setCurrentSpeed(smoothedSpeedRef.current);
           const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_MAX_ATTEMPTS) * 30;
           setProgress(phaseProgress);
         };
@@ -275,6 +279,7 @@ export function useSpeedTest() {
         if (steadySpeed < minSpeed) minSpeed = steadySpeed;
         finalResult = bestMeasurement;
         lastSpeedMbps = steadySpeed;
+        smoothedSpeedRef.current = steadySpeed;
         setCurrentSpeed(steadySpeed);
         setProgress(30 + ((i + 1) / DOWNLOAD_MAX_ATTEMPTS) * 30);
 
@@ -344,8 +349,9 @@ export function useSpeedTest() {
         abortControllerRef.current = new AbortController();
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
-        const onUploadProgress = (_smoothMbps, _instantMbps, fileProgress) => {
-          setCurrentSpeed(_smoothMbps);
+        const onUploadProgress = (_rawMbps, _instantMbps, fileProgress) => {
+          smoothedSpeedRef.current = smoothedSpeedRef.current * 0.7 + _rawMbps * 0.3;
+          setCurrentSpeed(smoothedSpeedRef.current);
           const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_MAX_ATTEMPTS) * 25;
           setProgress(phaseProgress);
         };
@@ -370,6 +376,7 @@ export function useSpeedTest() {
         if (steadySpeed < minSpeed) minSpeed = steadySpeed;
         finalResult = bestMeasurement;
         finalUploadSpeed = steadySpeed;
+        smoothedSpeedRef.current = steadySpeed;
         setCurrentSpeed(steadySpeed);
         setProgress(60 + ((i + 1) / UPLOAD_MAX_ATTEMPTS) * 25);
 

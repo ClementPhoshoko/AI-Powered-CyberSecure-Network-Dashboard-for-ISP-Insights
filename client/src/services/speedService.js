@@ -26,7 +26,7 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
           conn.startTime = now;
           startTimes.push(now);
         }
-        conn.bytesLoaded = e.loaded;
+        conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
 
         if (onProgress) {
           const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
@@ -97,7 +97,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
           conn.startTime = now;
           startTimes.push(now);
         }
-        conn.bytesLoaded = e.loaded;
+        conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
 
         if (onProgress) {
           const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
