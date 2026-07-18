@@ -2,9 +2,48 @@ import api from './api';
 
 const PARALLEL_CONNECTIONS = 4;
 
+function createProgressTracker(totalBytes, onProgress) {
+  let prevTotalBytes = 0;
+  let prevTime = null;
+  let smoothedSpeed = 0;
+
+  return {
+    update(connections, now) {
+      const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
+      const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
+
+      if (prevTime === null) {
+        prevTime = now;
+        prevTotalBytes = totalLoaded;
+        onProgress(0, pct);
+        return;
+      }
+
+      const deltaTime = (now - prevTime) / 1000;
+      const deltaBytes = totalLoaded - prevTotalBytes;
+
+      prevTime = now;
+      prevTotalBytes = totalLoaded;
+
+      if (deltaTime < 0.05) return;
+
+      const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
+      smoothedSpeed = smoothedSpeed * 0.6 + instantMbps * 0.4;
+
+      onProgress(smoothedSpeed, pct);
+    },
+    getSpeed() {
+      return smoothedSpeed;
+    }
+  };
+}
+
 export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
   const totalBytes = sizeMb * 1024 * 1024;
   const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
+  const tracker = createProgressTracker(totalBytes, (speed, pct) => {
+    if (onProgress) onProgress(speed, speed, pct);
+  });
 
   const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
     bytesLoaded: 0,
@@ -27,15 +66,7 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
           startTimes.push(now);
         }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
-
-        if (onProgress) {
-          const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
-          const globalStart = startTimes.length > 0 ? Math.min(...startTimes) : conn.startTime;
-          const elapsed = (now - globalStart) / 1000;
-          const speedMbps = elapsed > 0.001 ? (totalLoaded / (1024 * 1024) * 8) / elapsed : 0;
-          const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
-          onProgress(speedMbps, speedMbps, pct);
-        }
+        tracker.update(connections, now);
       },
     }).then(() => {
       conn.done = true;
@@ -67,10 +98,10 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   const totalBytes = sizeMb * 1024 * 1024;
   const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
   const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
+  const tracker = createProgressTracker(totalBytes, (speed, pct) => {
+    if (onProgress) onProgress(speed, speed, pct);
+  });
 
-  // Build one master blob, then slice per connection so each post gets its own
-  // independent Blob reference. Sharing the same Blob across concurrent uploads
-  // can cause browsers to send 0 bytes on some connections.
   const masterBlob = new Blob([new Uint8Array(totalBytes)]);
 
   const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
@@ -98,15 +129,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
           startTimes.push(now);
         }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
-
-        if (onProgress) {
-          const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
-          const globalStart = startTimes.length > 0 ? Math.min(...startTimes) : conn.startTime;
-          const elapsed = (now - globalStart) / 1000;
-          const speedMbps = elapsed > 0.001 ? (totalLoaded / (1024 * 1024) * 8) / elapsed : 0;
-          const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
-          onProgress(speedMbps, speedMbps, pct);
-        }
+        tracker.update(connections, now);
       },
     }).then(() => {
       conn.done = true;
