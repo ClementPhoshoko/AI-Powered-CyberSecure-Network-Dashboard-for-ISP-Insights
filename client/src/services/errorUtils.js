@@ -30,7 +30,7 @@ export const getFriendlyErrorMessage = (error) => {
     if (serverMessage) return serverMessage;
 
     const status = error.response?.status;
-    if (status === 400) return t('VALIDATION_REQUIRED', 'Invalid request. Please check your input and try again.');
+    if (status === 400) return t('VALIDATION_ERROR', 'Invalid request. Please check your input and try again.');
     if (status === 401) return t('AUTH_UNAUTHORIZED', 'You are not authorized. Please sign in again.');
     if (status === 403) return t('AUTH_UNAUTHORIZED', 'You do not have permission to perform this action.');
     if (status === 404) return t('SECURITY_NO_RESULTS', 'The requested resource was not found.');

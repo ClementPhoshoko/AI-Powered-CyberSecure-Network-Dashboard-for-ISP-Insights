@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 require('dotenv').config({
@@ -92,7 +92,7 @@ const speedtestLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.anonymousId || req.ip,
+  keyGenerator: (req) => req.anonymousId || ipKeyGenerator(req),
   message: { status: 'error', message: 'Speedtest rate limit reached. Try again later.' },
 });
 
