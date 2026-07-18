@@ -70,14 +70,14 @@ All pings fire concurrently (not sequentially) to measure the same RTT as a sing
 ---
 
 ### 2. Download Speed
-**Implementation (current):** 4 parallel HTTP GET streams. Total throughput is measured from the first connection start to the last connection end. The server generates random byte streams of arbitrary size (any positive `sizeMb`).
+**Implementation (current):** 4 parallel HTTP GET streams. Speed is measured as total bytes transferred divided by total elapsed time (from the first connection's start to the last connection's end). The server generates random byte streams of arbitrary size (any positive `sizeMb`) using a cached 1 MB random buffer for fast streaming.
 
-**Adaptive sizing:** The client starts with a small size and increases progressively until measurements stabilise (steady-state average of the second half of per-chunk speed samples), stopping early if the relative delta between runs is below a threshold.
+**Adaptive sizing:** The client starts with a small size and increases progressively based on measured speed, stopping early when measurements stabilise (relative delta between consecutive passes falls below a threshold). Compression middleware is excluded from speed endpoints to avoid interfering with binary payloads.
 
 ---
 
 ### 3. Upload Speed
-**Implementation (current):** 4 parallel HTTP POST streams of zero-filled blobs (256 KB chunks per request). Total throughput is measured from the first upload start to the last upload end. The server consumes the stream without persisting it.
+**Implementation (current):** 4 parallel HTTP POST streams. Each connection uploads an independent slice of a pre-allocated zero-filled blob. Speed is measured as total bytes transferred / total elapsed time. The server consumes the incoming stream without persisting it.
 
 ---
 
@@ -162,10 +162,10 @@ But a good speed test should:
 Ignore first seconds. Reason: TCP slow start - connection ramps up gradually.
 
 ### Download Phase
-4 parallel streams. Measure throughput using steady-state (second half of per-chunk speed samples) rather than total-bytes/total-time, which is pulled down by TCP slow-start at the beginning of each pass.
+4 parallel streams. Speed is total bytes transferred / total elapsed time (global start to global end). Adaptive sizing ramps up file sizes (1–20 MB) based on measured speed, with early termination once consecutive passes stabilise.
 
 ### Upload Phase
-4 parallel upload streams. Same steady-state averaging approach.
+4 parallel upload streams. Same measurement approach. Adaptive sizing ramps from2–50 MB based on connection speed.
 
 ### Ping Phase
 Run 10 concurrent HTTP pings. Calculate:
@@ -275,8 +275,8 @@ The strongest differentiator is not the speed test itself, but the analytics lay
 The challenge is network analysis, not backend complexity.
 
 The hard part of this project is:
-- Measuring download speed accurately (solved: 4 parallel streams + steady-state averaging)
-- Measuring upload speed accurately (solved: 4 parallel streams + steady-state averaging)
+- Measuring download speed accurately (solved: 4 parallel streams + adaptive sizing + global elapsed timing)
+- Measuring upload speed accurately (solved: 4 parallel streams + adaptive sizing + global elapsed timing)
 - Calculating jitter
 - Calculating packet loss
 - Designing health scores
@@ -324,20 +324,14 @@ server/src/
 ## Making Results More Reliable
 
 ### Run Multiple Tests
-Instead of 1 download test, run multiple passes with adaptive sizing. Each pass uses 4 parallel streams. Then calculate:
-- Average
-- Median
-- Best
-- Worst
+Instead of 1 download test, run multiple passes with adaptive sizing. Each pass uses 4 parallel streams. Speed is measured as totalBytes/globalElapsed. The test terminates early when consecutive passes stabilise (relative delta below threshold) or when the target duration / max attempts is reached.
 
 ### Use Multiple File Sizes
 The client adaptively chooses sizes based on the previous pass speed:
-- 1 MB (slow connections)
-- 5 MB
-- 10 MB
-- 20 MB (fast connections)
+- **Download:** 1 MB, 5 MB, 10 MB, 20 MB
+- **Upload:** 2 MB, 5 MB, 10 MB, 20 MB, 50 MB
 
-This helps account for TCP Slow Start, where connections begin slowly and ramp up.
+This helps account for TCP Slow Start, where connections begin slowly and ramp up, while ensuring fast connections transfer enough data for accurate measurement.
 
 ---
 

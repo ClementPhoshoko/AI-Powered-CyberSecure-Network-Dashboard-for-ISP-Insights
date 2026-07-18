@@ -65,7 +65,7 @@ Supabase Database
 ## Features
 
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling with public/anonymous access support
-- **Parallel Stream Speed Measurement**: Download and upload use 4 concurrent HTTP streams with steady-state averaging for accurate results
+- **Parallel Stream Speed Measurement**: Download and upload use 4 concurrent HTTP streams. Speed is measured as total bytes transferred / total elapsed time (global first-start to last-end). Compression middleware is excluded from speed endpoints to avoid interference with binary payloads.
 - **Connection Stability Detection**: Flags erratic connections when max/min speed ratio across adaptive passes exceeds ~2.5×
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
 - **Network Scoring**: Automated health, gaming, streaming, video call, and browsing scores
@@ -180,7 +180,7 @@ server/
 
 ## API Endpoints
 
-> Most data endpoints require a Supabase JWT in the `Authorization: Bearer <token>` header. Speed test submission endpoints (ping, download, upload, network score/summary) accept anonymous access via an `X-Anonymous-Id` header, rate limited to 20 requests / 15 min (~4 full test runs). When the limit is hit, the response suggests signing in for unlimited tests and security insights. Auth/OTP, system metrics, and the port knowledge base are public. Auth endpoints are rate limited (10 requests / 15 min). Global rate limit is 100 requests / minute.
+> Most data endpoints require a Supabase JWT in the `Authorization: Bearer <token>` header. Speed test submission endpoints (ping, download, upload, network score/summary) accept anonymous access via an `X-Anonymous-Id` header, rate limited to 20 requests / 15 min (~4 full test runs). Authenticated users (Bearer token present) bypass the speedtest rate limiter entirely. When the anonymous limit is hit, the response suggests signing in for unlimited tests and security insights. Auth/OTP, system metrics, and the port knowledge base are public. Auth endpoints are rate limited (10 requests / 15 min). Global rate limit is 100 requests / minute.
 
 ### Auth & Email Verification Endpoints
 

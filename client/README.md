@@ -52,7 +52,7 @@ Supabase Database
 ## Features
 
 - **Network Speed Testing**: Real-time ping, download, and upload speed tests (anonymous/public access supported)
-- **Parallel Connection Speed Test**: Download and upload each use 4 parallel HTTP streams with steady-state averaging for accurate results
+- **Parallel Connection Speed Test**: Download and upload each use 4 parallel HTTP streams. Speed is measured as total bytes transferred / total elapsed time, with adaptive file sizing (1–20 MB download, 2–50 MB upload) and early termination when measurements stabilise
 - **Connection Stability Warning**: Visual badge on test results when connection speed fluctuates significantly across passes; amber dot markers on history chart data points
 - **Test History**: Complete historical record of all network tests
 - **Port Risk Security**: Interactive scan wheel, risk scoring, open-port breakdown, recommendations, and a security knowledge base

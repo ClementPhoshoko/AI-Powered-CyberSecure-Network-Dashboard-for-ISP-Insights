@@ -30,7 +30,8 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
 
         if (onProgress) {
           const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
-          const elapsed = conn.startTime ? (now - conn.startTime) / 1000 : 0;
+          const globalStart = startTimes.length > 0 ? Math.min(...startTimes) : conn.startTime;
+          const elapsed = (now - globalStart) / 1000;
           const speedMbps = elapsed > 0.001 ? (totalLoaded / (1024 * 1024) * 8) / elapsed : 0;
           const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
           onProgress(speedMbps, speedMbps, pct);
@@ -100,7 +101,8 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
 
         if (onProgress) {
           const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
-          const elapsed = conn.startTime ? (now - conn.startTime) / 1000 : 0;
+          const globalStart = startTimes.length > 0 ? Math.min(...startTimes) : conn.startTime;
+          const elapsed = (now - globalStart) / 1000;
           const speedMbps = elapsed > 0.001 ? (totalLoaded / (1024 * 1024) * 8) / elapsed : 0;
           const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
           onProgress(speedMbps, speedMbps, pct);

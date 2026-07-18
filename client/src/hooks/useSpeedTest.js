@@ -245,29 +245,21 @@ export function useSpeedTest() {
           : chooseAdaptiveDownloadSize(lastSpeedMbps);
       const start = performance.now();
 
-      // Collect per-chunk speed samples for steady-state averaging
-      const speedSamples = [];
-
       try {
         abortControllerRef.current = new AbortController();
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
-        const onDownloadProgress = (_smoothMbps, instantMbps, fileProgress) => {
-          speedSamples.push(instantMbps);
+        const onDownloadProgress = (_smoothMbps, _instantMbps, fileProgress) => {
           setCurrentSpeed(_smoothMbps);
           const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_MAX_ATTEMPTS) * 30;
           setProgress(phaseProgress);
         };
 
-        await streamDownloadTest(sizeMb, abortControllerRef.current.signal, onDownloadProgress);
+        const downloadResult = await streamDownloadTest(sizeMb, abortControllerRef.current.signal, onDownloadProgress);
         clearTimeout(timeoutId);
 
-        const durationSeconds = (performance.now() - start) / 1000;
-
-        const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
-        const steadySpeed = Math.max(0.01, steadySamples.length > 1
-          ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
-          : (sizeMb * 8) / durationSeconds);
+        const durationSeconds = downloadResult.test_duration_seconds || (performance.now() - start) / 1000;
+        const steadySpeed = Math.max(0.01, downloadResult.download_speed_mbps || (sizeMb * 8) / durationSeconds);
 
         const measurement = {
           file_size_mb: sizeMb,
@@ -346,15 +338,13 @@ export function useSpeedTest() {
         i === 0
           ? UPLOAD_SIZES[0]
           : chooseAdaptiveUploadSize(finalUploadSpeed);
-      const speedSamples = [];
       const start = performance.now();
 
       try {
         abortControllerRef.current = new AbortController();
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
-        const onUploadProgress = (_smoothMbps, instantMbps, fileProgress) => {
-          speedSamples.push(instantMbps);
+        const onUploadProgress = (_smoothMbps, _instantMbps, fileProgress) => {
           setCurrentSpeed(_smoothMbps);
           const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_MAX_ATTEMPTS) * 25;
           setProgress(phaseProgress);
