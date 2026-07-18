@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { lazy, Suspense, useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import './global_styles/App.css'
 import { AuthProvider } from './context/AuthContext'
@@ -8,6 +8,7 @@ import Nav from './components/nav/Nav'
 import Footer from './components/footer/Footer'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
+import ErrorModal from './components/error_modal/ErrorModal'
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -39,7 +40,22 @@ const DownloadIos = lazy(() => import('./pages/download/ios/Ios'))
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isAuthRoute = ['/login', '/signup', '/forgot-password', '/verify-email'].includes(location.pathname);
+  const [sessionExpiredOpen, setSessionExpiredOpen] = useState(false);
+
+  useEffect(() => {
+    const onExpired = () => {
+      setSessionExpiredOpen(true);
+    };
+    window.addEventListener('app:session-expired', onExpired);
+    return () => window.removeEventListener('app:session-expired', onExpired);
+  }, []);
+
+  const closeSessionExpired = () => {
+    setSessionExpiredOpen(false);
+    navigate('/login', { replace: true });
+  };
 
   return (
     <div className="app-shell">
@@ -129,6 +145,13 @@ function AppContent() {
 
       {/* Footer - Only on non-auth routes */}
       {!isAuthRoute && <Footer />}
+
+      {/* Global session-expired modal */}
+      <ErrorModal
+        isOpen={sessionExpiredOpen}
+        message="Your session has expired. Please sign in again."
+        onClose={closeSessionExpired}
+      />
     </div>
   );
 }

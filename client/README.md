@@ -62,6 +62,7 @@ Supabase Database
 - **Account Management**: Update profile details and manage newsletter subscription
 - **Theming**: Light/dark theme via a theme context
 - **Protected & Public Routes**: Route guards based on authentication status; anonymous users can run speed tests without signing in
+- **Automatic Session Invalidation**: When the server returns a 401 (expired/invalid token), the axios response interceptor clears the session cache, signs out via Supabase, and shows a "Your session has expired" modal that redirects the user to the login page
 - **Content Pages**: About, Services, News (blog), and Download pages
 - **Responsive Design**: Modern, mobile-friendly UI
 

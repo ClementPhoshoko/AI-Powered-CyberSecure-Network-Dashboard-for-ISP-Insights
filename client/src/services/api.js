@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 import { createFriendlyError } from './errorUtils';
-import { getCachedSession } from './sessionCache';
+import { getCachedSession, setCachedSession } from './sessionCache';
 
 const ANONYMOUS_ID_KEY = 'speedtest_anonymous_id';
 
@@ -13,6 +13,9 @@ function getOrCreateAnonymousId() {
   }
   return id;
 }
+
+// Guard to prevent re-entrant session expiry handling
+let isHandlingSessionExpiry = false;
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -41,10 +44,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(createFriendlyError(error))
 );
 
-// Response interceptor to transform errors to friendly messages
+// Response interceptor — on 401, clear session and show session-expired modal
 api.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(createFriendlyError(error))
+  (error) => {
+    if (error.response?.status === 401 && !isHandlingSessionExpiry) {
+      isHandlingSessionExpiry = true;
+      setCachedSession(null);
+      supabase.auth.signOut().finally(() => {
+        window.dispatchEvent(new CustomEvent('app:session-expired'));
+        isHandlingSessionExpiry = false;
+      });
+    }
+    return Promise.reject(createFriendlyError(error));
+  }
 );
 
 export default api;
