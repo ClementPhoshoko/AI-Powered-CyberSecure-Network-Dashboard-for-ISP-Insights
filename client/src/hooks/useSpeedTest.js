@@ -5,7 +5,7 @@ import {
   streamUploadTest,
   submitUploadResults
 } from '../services/speedService';
-import { pingHealthCheck, runPingTest } from '../services/pingService';
+import { runPingTest } from '../services/pingService';
 import { calculateNetworkScores as calculateNetworkScoresService, generateAISummary } from '../services/networkService';
 import api from '../services/api';
 import { getFriendlyErrorMessage } from '../services/errorUtils';
@@ -186,35 +186,35 @@ export function useSpeedTest() {
       }
     }
 
-    // Fire all pings concurrently — 1×RTT instead of 10×RTT, same accuracy
+    // Fire pings sequentially — each measures true RTT without event-loop
+    // queuing from concurrent requests. Sequential ordering also makes the
+    // consecutive-sample jitter calculation meaningful.
     const startTotal = performance.now();
-    let completedCount = 0;
+    const pings = [];
 
-    const pingPromises = Array.from({ length: PING_COUNT }, async (_, i) => {
+    for (let i = 0; i < PING_COUNT; i++) {
+      if (isStoppedRef.current) return null;
+
       const start = performance.now();
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15_000);
       try {
-        await pingHealthCheck(controller.signal);
-        clearTimeout(timeoutId);
+        const res = await fetch(probeTarget, {
+          signal: AbortSignal.timeout(15_000),
+          cache: 'no-store',
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        await res.json();
         const latency = Math.max(1, performance.now() - start);
-        completedCount++;
-        setProgress(20 + (completedCount / PING_COUNT) * 10);
-        return { sequence_number: i, latency_ms: latency, success: true, failure_reason: null };
+        pings.push({ sequence_number: i, latency_ms: latency, success: true, failure_reason: null });
       } catch (err) {
-        clearTimeout(timeoutId);
-        if (err.name === 'AbortError') {
-          completedCount++;
-          setProgress(20 + (completedCount / PING_COUNT) * 10);
-          return { sequence_number: i, latency_ms: null, success: false, failure_reason: 'timeout' };
-        }
-        completedCount++;
-        setProgress(20 + (completedCount / PING_COUNT) * 10);
-        return { sequence_number: i, latency_ms: null, success: false, failure_reason: err?.code || err?.name || 'request_failed' };
+        pings.push({
+          sequence_number: i,
+          latency_ms: null,
+          success: false,
+          failure_reason: err?.name === 'TimeoutError' ? 'timeout' : err?.code || err?.name || 'request_failed',
+        });
       }
-    });
-
-    const pings = await Promise.all(pingPromises);
+      setProgress(20 + ((i + 1) / PING_COUNT) * 10);
+    }
 
     if (isStoppedRef.current) return null;
     const totalDuration = (performance.now() - startTotal) / 1000;

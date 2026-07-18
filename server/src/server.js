@@ -28,9 +28,14 @@ const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 function shouldCompress(req, res) {
-  // Speed-test endpoints must stay uncompressed to avoid skewed measurements
-  // and gzip backpressure/listener buildup on large streamed binary payloads.
-  if (req.path === '/api/speed/download' || req.path === '/api/speed/upload') {
+  // Speed-test and ping endpoints must stay uncompressed to avoid skewed
+  // measurements and gzip backpressure/listener buildup on large streamed
+  // binary payloads.
+  if (
+    req.path === '/api/speed/download' ||
+    req.path === '/api/speed/upload' ||
+    req.path === '/api/ping/health'
+  ) {
     return false;
   }
 
