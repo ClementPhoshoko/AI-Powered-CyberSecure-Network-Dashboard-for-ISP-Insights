@@ -82,7 +82,7 @@ const globalLimiter = rateLimit({
   max: 100,                  // 100 requests per minute
   standardHeaders: true,
   legacyHeaders: false,
-  message: { status: 'error', message: 'Rate limit exceeded, slow down' },
+  message: { status: 'error', message: 'Too many requests. Sign in for higher limits and full access.' },
 });
 
 // Rate limiting — speedtest submission endpoints (abuse protection)
@@ -93,7 +93,7 @@ const speedtestLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.anonymousId || ipKeyGenerator(req),
-  message: { status: 'error', message: 'Speedtest rate limit reached. Try again later.' },
+  message: { status: 'error', message: 'Speedtest limit reached. Sign in to run unlimited tests and access security insights.' },
 });
 
 app.use('/dev/auth', authLimiter);

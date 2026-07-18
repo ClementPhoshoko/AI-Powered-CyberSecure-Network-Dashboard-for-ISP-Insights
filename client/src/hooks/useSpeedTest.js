@@ -268,9 +268,9 @@ export function useSpeedTest() {
         // total-bytes/total-time, which is pulled down by TCP slow-start at the
         // beginning of each pass.
         const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
-        const steadySpeed = steadySamples.length > 1
+        const steadySpeed = Math.max(0.01, steadySamples.length > 1
           ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
-          : (sizeMb * 8) / durationSeconds;
+          : (sizeMb * 8) / durationSeconds);
 
         const measurement = {
           file_size_mb: sizeMb,
@@ -369,9 +369,9 @@ export function useSpeedTest() {
         const durationSeconds = (performance.now() - start) / 1000;
 
         const steadySamples = speedSamples.slice(Math.floor(speedSamples.length / 2));
-        const steadySpeed = steadySamples.length > 1
+        const steadySpeed = Math.max(0.01, steadySamples.length > 1
           ? steadySamples.reduce((a, b) => a + b, 0) / steadySamples.length
-          : (sizeMb * 8) / durationSeconds;
+          : (sizeMb * 8) / durationSeconds);
 
         const measurement = {
           size_mb: sizeMb,
