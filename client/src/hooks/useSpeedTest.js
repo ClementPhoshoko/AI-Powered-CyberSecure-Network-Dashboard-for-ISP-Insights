@@ -65,6 +65,15 @@ function getRelativeDelta(currentValue, previousValue) {
   return Math.abs(currentValue - previousValue) / baseline;
 }
 
+function pickMedianMeasurement(measurements, speedKey) {
+  if (measurements.length === 0) return null;
+  if (measurements.length === 1) return measurements[0];
+
+  const sorted = [...measurements].sort((a, b) => (a[speedKey] || 0) - (b[speedKey] || 0));
+  const mid = Math.floor(sorted.length / 2);
+  return sorted[mid];
+}
+
 function shouldStopAdaptivePhase({
   measurements,
   elapsedSeconds,
@@ -229,13 +238,11 @@ export function useSpeedTest() {
     setProgress(30);
 
     const measurements = [];
-    let finalResult = null;
     const phaseStart = performance.now();
     let lastSpeedMbps = 0;
     let lastError = null;
     let maxSpeed = 0;
     let minSpeed = Infinity;
-    let bestMeasurement = null;
 
     for (let i = 0; i < DOWNLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
@@ -271,12 +278,8 @@ export function useSpeedTest() {
         };
 
         measurements.push(measurement);
-        if (!bestMeasurement || steadySpeed > maxSpeed) {
-          maxSpeed = steadySpeed;
-          bestMeasurement = measurement;
-        }
+        if (steadySpeed > maxSpeed) maxSpeed = steadySpeed;
         if (steadySpeed < minSpeed) minSpeed = steadySpeed;
-        finalResult = bestMeasurement;
         lastSpeedMbps = steadySpeed;
         setCurrentSpeed(steadySpeed);
         setProgress(30 + ((i + 1) / DOWNLOAD_MAX_ATTEMPTS) * 30);
@@ -303,9 +306,12 @@ export function useSpeedTest() {
     }
 
     if (isStoppedRef.current) return null;
-    if (measurements.length === 0 || !finalResult) {
+    if (measurements.length === 0) {
       throw lastError || new Error('Download test failed before a valid measurement could be captured.');
     }
+
+    const finalResult = pickMedianMeasurement(measurements, 'download_speed_mbps');
+
     if (measurements.length > 0) {
       await submitDownloadResults({
         test_result_id: testResultId,
@@ -328,12 +334,10 @@ export function useSpeedTest() {
 
     const measurements = [];
     let finalUploadSpeed = 0;
-    let finalResult = null;
     const phaseStart = performance.now();
     let lastError = null;
     let maxSpeed = 0;
     let minSpeed = Infinity;
-    let bestMeasurement = null;
 
     for (let i = 0; i < UPLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
@@ -369,12 +373,8 @@ export function useSpeedTest() {
         };
 
         measurements.push(measurement);
-        if (!bestMeasurement || steadySpeed > maxSpeed) {
-          maxSpeed = steadySpeed;
-          bestMeasurement = measurement;
-        }
+        if (steadySpeed > maxSpeed) maxSpeed = steadySpeed;
         if (steadySpeed < minSpeed) minSpeed = steadySpeed;
-        finalResult = bestMeasurement;
         finalUploadSpeed = steadySpeed;
         setCurrentSpeed(steadySpeed);
         setProgress(60 + ((i + 1) / UPLOAD_MAX_ATTEMPTS) * 25);
@@ -401,9 +401,11 @@ export function useSpeedTest() {
     }
 
     if (isStoppedRef.current) return null;
-    if (measurements.length === 0 || !finalResult) {
+    if (measurements.length === 0) {
       throw lastError || new Error('Upload test failed before a valid measurement could be captured.');
     }
+
+    const finalResult = pickMedianMeasurement(measurements, 'upload_speed_mbps');
 
     const wasUnstable = downloadWasUnstable || (minSpeed < Infinity && maxSpeed > 0
       && (maxSpeed / minSpeed) > STABILITY_RATIO_THRESHOLD);
@@ -412,7 +414,7 @@ export function useSpeedTest() {
       await submitUploadResults({
         test_result_id: testResultId,
         measurements,
-        final_upload_speed_mbps: maxSpeed,
+        final_upload_speed_mbps: finalResult?.upload_speed_mbps || maxSpeed,
         was_unstable: wasUnstable
       });
     }
