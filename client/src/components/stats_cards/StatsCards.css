@@ -219,6 +219,176 @@
   white-space: nowrap;
 }
 
+/* ================================================================
+   Compact Glass List (mobile < 641px)
+   ================================================================ */
+
+.compact-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 0 var(--space-3);
+  box-sizing: border-box;
+}
+
+.compact-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 60px;
+  padding: 0 var(--space-3);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 3px 8px rgba(0, 0, 0, 0.04);
+  transition: background var(--motion-fast), transform var(--motion-fast);
+  will-change: transform;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.compact-card:active {
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(0.985);
+}
+
+.compact-card-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.compact-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.compact-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compact-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.compact-card-status {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.compact-card-metric {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-right: 2px;
+}
+
+.compact-card-value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.compact-card-unit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Compact card skeleton */
+.skeleton.compact-card-icon-skeleton {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.skeleton.compact-card-title-skeleton {
+  width: 100px;
+  height: 13px;
+}
+
+.skeleton.compact-card-subtitle-skeleton {
+  width: 60px;
+  height: 10px;
+  margin-top: 2px;
+}
+
+.skeleton.compact-card-value-skeleton {
+  width: 50px;
+  height: 15px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Hide desktop cards on mobile */
+@media (max-width: 640px) {
+  .speed-cards,
+  .latency-cards {
+    display: none;
+  }
+}
+
+/* Tighter compact cards on very small screens */
+@media (max-width: 400px) {
+  .compact-cards {
+    padding: 0 var(--space-2);
+    gap: var(--space-2);
+  }
+  .compact-card {
+    height: 54px;
+    gap: var(--space-2);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-sm);
+  }
+  .compact-card-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .compact-card-icon svg {
+    width: 15px;
+    height: 15px;
+  }
+  .compact-card-title {
+    font-size: 12px;
+  }
+  .compact-card-value {
+    font-size: 13px;
+  }
+}
+
+/* Hide compact cards on tablet+ */
+@media (min-width: 641px) {
+  .compact-cards {
+    display: none;
+  }
+}
+
 /* Skeleton Loading */
 .skeleton {
   background: linear-gradient(90deg, var(--glass-bg) 25%, var(--glass-bg) 50%, var(--glass-bg-soft) 75%);
@@ -419,55 +589,57 @@
   }
 }
 
-/* Narrow column container — keep list layout even on wider viewports */
-@container (max-width: 420px) {
-  .speed-cards {
-    gap: var(--space-2);
-  }
+/* Narrow column container — only for tablet+ where desktop cards are visible */
+@media (min-width: 641px) {
+  @container (max-width: 420px) {
+    .speed-cards {
+      gap: var(--space-2);
+    }
 
-  .speed-card {
-    padding: var(--space-2) var(--space-1);
-  }
+    .speed-card {
+      padding: var(--space-2) var(--space-1);
+    }
 
-  .latency-cards {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: 0 var(--space-4);
-  }
+    .latency-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding: 0 var(--space-4);
+    }
 
-  .latency-card,
-  .quality-card {
-    border-left: 3px solid var(--glass-border);
-    border-radius: 0;
-    padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
-    gap: var(--space-3);
-    flex-direction: row;
-    align-items: center;
-  }
+    .latency-card,
+    .quality-card {
+      border-left: 3px solid var(--glass-border);
+      border-radius: 0;
+      padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+      gap: var(--space-3);
+      flex-direction: row;
+      align-items: center;
+    }
 
-  .latency-card-content,
-  .quality-card-content {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding-left: var(--space-1);
-  }
+    .latency-card-content,
+    .quality-card-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding-left: var(--space-1);
+    }
 
-  .latency-card-label,
-  .quality-card-label {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    .latency-card-label,
+    .quality-card-label {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-  .latency-card-value {
-    margin-right: var(--space-2);
-  }
+    .latency-card-value {
+      margin-right: var(--space-2);
+    }
 
-  .quality-card-circles {
-    margin: 0 var(--space-2) 0 0;
+    .quality-card-circles {
+      margin: 0 var(--space-2) 0 0;
+    }
   }
 }
