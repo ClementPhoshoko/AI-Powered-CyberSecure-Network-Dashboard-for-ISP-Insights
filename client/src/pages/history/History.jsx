@@ -542,6 +542,7 @@ const radarIcons = {
 };
 
 const ExperienceScoresTooltip = ({ active, payload }) => {
+  const { t } = useTranslation();
   if (!active || !payload?.length) return null;
 
   const entry = payload[0];
