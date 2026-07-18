@@ -250,7 +250,10 @@ export function useSpeedTest() {
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
         const onDownloadProgress = (smoothMbps, _instantMbps, fileProgress) => {
-          setCurrentSpeed(smoothMbps);
+          const elapsed = (performance.now() - start) / 1000;
+          if (elapsed > 0.5) {
+            setCurrentSpeed(smoothMbps);
+          }
           const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_MAX_ATTEMPTS) * 30;
           setProgress(phaseProgress);
         };
@@ -345,7 +348,10 @@ export function useSpeedTest() {
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
         const onUploadProgress = (smoothMbps, _instantMbps, fileProgress) => {
-          setCurrentSpeed(smoothMbps);
+          const elapsed = (performance.now() - start) / 1000;
+          if (elapsed > 0.5) {
+            setCurrentSpeed(smoothMbps);
+          }
           const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_MAX_ATTEMPTS) * 25;
           setProgress(phaseProgress);
         };
