@@ -8,6 +8,7 @@ const {
   getPingSummary 
 } = require('../controllers/pingController');
 const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
+const optionalAuth = require('../middleware/optionalAuth');
 
 /**
  * @swagger
@@ -88,7 +89,7 @@ router.get('/health', pingHealthCheck);
  *       401:
  *         description: Unauthorized
  */
-router.post('/tests', validateSupabaseJWT, runPingTest);
+router.post('/tests', optionalAuth, runPingTest);
 
 /**
  * @swagger

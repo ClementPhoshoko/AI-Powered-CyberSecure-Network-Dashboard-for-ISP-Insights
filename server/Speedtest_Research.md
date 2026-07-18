@@ -1,5 +1,23 @@
 # Research Notes: AI-Powered AkovoLabs Speedtest
 
+## Table of Contents
+
+- [Project Vision](#project-vision)
+- [Project Feasibility](#project-feasibility)
+- [Backend Measurements](#backend-measurements)
+- [Recommended Backend Stack (Zero Budget)](#recommended-backend-stack-zero-budget)
+- [How Speed Analysis Works](#how-speed-analysis-works)
+- [Limitations of a Zero-Budget Speed Test](#limitations-of-a-zero-budget-speed-test)
+- [Better Architecture](#better-architecture)
+- [Project Assessment](#project-assessment)
+- [Key Challenges](#key-challenges)
+- [Backend Structure (Planned)](#backend-structure-planned)
+- [Making Results More Reliable](#making-results-more-reliable)
+- [The Biggest Limitation](#the-biggest-limitation)
+- [Marketing Note](#marketing-note)
+
+---
+
 ## Project Vision
 "A smart network dashboard that leverages artificial intelligence and cybersecurity analytics to track patterns, detect anomalies, and provide actionable suggestions for Internet Service Providers."
 
@@ -44,69 +62,36 @@ Measures client → server → client responsiveness.
 - Min latency
 - Max latency
 - Median latency
+- Jitter (variation in consecutive ping times)
+- Packet loss (HTTP request success rate)
 
-**Example:**
-```json
-{
-  "avg": 18,
-  "min": 15,
-  "max": 30
-}
-```
+All pings fire concurrently (not sequentially) to measure the same RTT as a single ping while gathering 10 samples. The health endpoint is used instead of ICMP, which is unavailable from the browser.
 
 ---
 
-### 2. Jitter
-Measures variation in latency. Useful for gaming, video calls, and VoIP.
+### 2. Download Speed
+**Implementation (current):** 4 parallel HTTP GET streams. Total throughput is measured from the first connection start to the last connection end. The server generates random byte streams of arbitrary size (any positive `sizeMb`).
 
-**Example:**
-```text
-Ping 1 = 15ms
-Ping 2 = 18ms
-Ping 3 = 45ms
-Ping 4 = 17ms
-```
-
-**Formula:**
-Average difference between consecutive pings.
+**Adaptive sizing:** The client starts with a small size and increases progressively until measurements stabilise (steady-state average of the second half of per-chunk speed samples), stopping early if the relative delta between runs is below a threshold.
 
 ---
 
-### 3. Packet Loss
-Measures sent packets vs received packets.
-
-**Example:**
-```text
-100 sent
-95 received
-Loss: 5%
-```
-
-Anything above 1–2% is usually noticeable.
+### 3. Upload Speed
+**Implementation (current):** 4 parallel HTTP POST streams of zero-filled blobs (256 KB chunks per request). Total throughput is measured from the first upload start to the last upload end. The server consumes the stream without persisting it.
 
 ---
 
-### 4. Download Speed
-Backend sends a large stream. Client measures bytes received / time. Convert to Mbps.
-
----
-
-### 5. Upload Speed
-Client uploads large chunks. Backend measures bytes received / time.
-
----
-
-### 6. DNS Lookup Time
+### 4. DNS Lookup Time
 Measure how long DNS takes. Useful because slow websites ≠ slow internet. Sometimes DNS is the bottleneck.
 
 ---
 
-### 7. Server Response Time
+### 5. Server Response Time
 Measure request → API → response. Shows backend responsiveness.
 
 ---
 
-### 8. Connection Stability Score
+### 6. Connection Stability Score
 Create your own score.
 
 **Example Weighting:**
@@ -153,8 +138,7 @@ Stores:
 - swagger-jsdoc
 
 ### Validation
-- zod (preferred)
-- or express-validator
+- zod
 
 ### Security
 - jsonwebtoken
@@ -178,13 +162,13 @@ But a good speed test should:
 Ignore first seconds. Reason: TCP slow start - connection ramps up gradually.
 
 ### Download Phase
-Example: 5 seconds, 10 parallel streams. Measure throughput.
+4 parallel streams. Measure throughput using steady-state (second half of per-chunk speed samples) rather than total-bytes/total-time, which is pulled down by TCP slow-start at the beginning of each pass.
 
 ### Upload Phase
-Example: 10 MB upload chunks. Measure upload throughput.
+4 parallel upload streams. Same steady-state averaging approach.
 
 ### Ping Phase
-Run 20 pings. Calculate:
+Run 10 concurrent HTTP pings. Calculate:
 - Average
 - Min
 - Max
@@ -197,6 +181,7 @@ Generate:
 - Video Call Score
 - General Browsing Score
 - **Connection Stability Flag**: Compares max/min speed across adaptive passes — flags as unstable when ratio > ~2.5×
+- **AI-powered summary** explaining connection quality in plain language
 
 **Example:**
 ```json
@@ -274,13 +259,11 @@ This is far more useful than simply displaying "85 Mbps".
 
 ## Project Assessment
 For your stack:
-- React Frontend (Coming Soon)
+- React Frontend
 - Express.js Backend
 - PostgreSQL/Supabase
 - Swagger
 - GitHub
-- Render
-- Vercel
 
 The project is technically feasible, realistic on a zero budget, and strong enough for a portfolio or even a startup MVP.
 
@@ -292,8 +275,8 @@ The strongest differentiator is not the speed test itself, but the analytics lay
 The challenge is network analysis, not backend complexity.
 
 The hard part of this project is:
-- Measuring download speed accurately
-- Measuring upload speed accurately
+- Measuring download speed accurately (solved: 4 parallel streams + steady-state averaging)
+- Measuring upload speed accurately (solved: 4 parallel streams + steady-state averaging)
 - Calculating jitter
 - Calculating packet loss
 - Designing health scores
@@ -304,39 +287,35 @@ The challenge is not CRUD APIs or enterprise architecture.
 
 ---
 
-## Backend Structure (Planned)
+## Backend Structure (Current)
 ```
 server/src/
 ├── routes/
-│   ├── speedtest.routes.js
-│   ├── analytics.routes.js
-│   └── history.routes.js
+│   ├── analytics.js
+│   ├── devAuth.js
+│   ├── network.js
+│   ├── otp.js
+│   ├── ping.js
+│   ├── portRisk.js
+│   ├── profiles.js
+│   ├── speed.js
+│   ├── subscribers.js
+│   └── systemMetrics.js
 ├── controllers/
-│   ├── speedtest.controller.js
-│   ├── analytics.controller.js
-│   └── history.controller.js
+│   ├── ...
 ├── services/
-│   ├── download.service.js
-│   ├── upload.service.js
+│   ├── speed.service.js
 │   ├── ping.service.js
-│   ├── jitter.service.js
-│   ├── packetloss.service.js
-│   ├── healthscore.service.js
-│   └── analytics.service.js
+│   ├── networkScoring.service.js
+│   ├── aiSummary.service.js
+│   ├── portRisk.service.js
+│   └── ...
 ├── models/
-│   ├── TestResult.js
-│   └── User.js
+│   └── ...
 ├── middleware/
-│   ├── auth.js
-│   ├── logger.js
-│   └── errorHandler.js
-├── utils/
-│   ├── speedCalculator.js
-│   ├── networkMetrics.js
-│   └── scoreCalculator.js
-├── config/
-│   ├── db.js
-│   └── swagger.js
+│   ├── errorHandler.js
+│   ├── validateSupabaseJWT.js
+│   └── optionalAuth.js
 └── server.js
 ```
 
@@ -345,18 +324,18 @@ server/src/
 ## Making Results More Reliable
 
 ### Run Multiple Tests
-Instead of 1 download test, run 5 download tests. Then calculate:
+Instead of 1 download test, run multiple passes with adaptive sizing. Each pass uses 4 parallel streams. Then calculate:
 - Average
 - Median
 - Best
 - Worst
 
 ### Use Multiple File Sizes
-- 1 MB
+The client adaptively chooses sizes based on the previous pass speed:
+- 1 MB (slow connections)
 - 5 MB
 - 10 MB
-- 25 MB
-- 50 MB
+- 20 MB (fast connections)
 
 This helps account for TCP Slow Start, where connections begin slowly and ramp up.
 
@@ -388,6 +367,7 @@ Market it as a **Network Insight Platform** with features:
 - Network Health Score
 - ISP Analytics
 - **Connection Stability Detection**
-- AI Explanations
+- **Port Risk Security**
+- **AI Explanations**
 
 This makes the project much stronger and more unique.

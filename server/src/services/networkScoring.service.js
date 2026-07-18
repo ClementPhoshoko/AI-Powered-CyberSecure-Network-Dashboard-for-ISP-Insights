@@ -151,13 +151,15 @@ class NetworkScoringService {
   }
 
   // Process scoring for a test result
-  static async calculateAndSaveScores(userId, testResultId) {
+  static async calculateAndSaveScores(userId, anonymousId, testResultId) {
     // Verify ownership
     const testResult = await TestResult.findById(testResultId);
     if (!testResult) {
       throw new Error('Test result not found');
     }
-    if (testResult.user_id !== userId) {
+    const ownsTest = userId && testResult.user_id === userId;
+    const ownsAnon = anonymousId && testResult.anonymous_session_id === anonymousId;
+    if (!ownsTest && !ownsAnon) {
       throw new Error('Unauthorized: You do not own this test result');
     }
 

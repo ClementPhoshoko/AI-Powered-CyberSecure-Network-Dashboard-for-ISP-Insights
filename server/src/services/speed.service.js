@@ -52,13 +52,15 @@ class SpeedService {
   }
 
   // Submit download results (final + all individual measurements)
-  static async submitDownloadResults(userId, testResultId, finalResult, allMeasurements) {
-    // First verify user owns the test result
+  static async submitDownloadResults(userId, anonymousId, testResultId, finalResult, allMeasurements) {
+    // First verify ownership
     const testResult = await TestResult.findById(testResultId);
     if (!testResult) {
       throw new Error('Test result not found');
     }
-    if (testResult.user_id !== userId) {
+    const ownsTest = userId && testResult.user_id === userId;
+    const ownsAnon = anonymousId && testResult.anonymous_session_id === anonymousId;
+    if (!ownsTest && !ownsAnon) {
       throw new Error('Unauthorized: You do not own this test result');
     }
 
@@ -87,13 +89,15 @@ class SpeedService {
   }
 
   // Submit upload results (final + all individual measurements)
-  static async submitUploadResults(userId, testResultId, finalUploadSpeedMbps, allMeasurements, wasUnstable = false) {
-    // First verify user owns the test result
+  static async submitUploadResults(userId, anonymousId, testResultId, finalUploadSpeedMbps, allMeasurements, wasUnstable = false) {
+    // First verify ownership
     const testResult = await TestResult.findById(testResultId);
     if (!testResult) {
       throw new Error('Test result not found');
     }
-    if (testResult.user_id !== userId) {
+    const ownsTest = userId && testResult.user_id === userId;
+    const ownsAnon = anonymousId && testResult.anonymous_session_id === anonymousId;
+    if (!ownsTest && !ownsAnon) {
       throw new Error('Unauthorized: You do not own this test result');
     }
 

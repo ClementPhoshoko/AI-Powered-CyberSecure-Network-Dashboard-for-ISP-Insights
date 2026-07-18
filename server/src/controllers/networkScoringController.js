@@ -8,14 +8,16 @@ const scoreCalculationSchema = z.object({
 
 // @desc    Calculate and save network scores for a test result
 // @route   POST /api/network/score
-// @access  Private (requires JWT)
+// @access  Public (optional auth)
 const calculateNetworkScores = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
+    const anonymousId = req.anonymousId || null;
     const validatedData = scoreCalculationSchema.parse(req.body);
 
     const result = await NetworkScoringService.calculateAndSaveScores(
       userId,
+      anonymousId,
       validatedData.test_result_id
     );
 

@@ -6,7 +6,7 @@ const {
   streamUploadTest,
   submitUploadResults
 } = require('../controllers/speedController');
-const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
+const optionalAuth = require('../middleware/optionalAuth');
 
 /**
  * @swagger
@@ -112,7 +112,7 @@ router.get('/download', streamDownloadTest);
  *       404:
  *         description: Test result not found
  */
-router.post('/tests/download', validateSupabaseJWT, submitDownloadResults);
+router.post('/tests/download', optionalAuth, submitDownloadResults);
 
 /**
  * @swagger
@@ -199,6 +199,6 @@ router.post('/upload', streamUploadTest);
  *       404:
  *         description: Test result not found
  */
-router.post('/tests/upload', validateSupabaseJWT, submitUploadResults);
+router.post('/tests/upload', optionalAuth, submitUploadResults);
 
 module.exports = router;

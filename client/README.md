@@ -51,7 +51,8 @@ Supabase Database
 
 ## Features
 
-- **Network Speed Testing**: Real-time ping, download, and upload speed tests
+- **Network Speed Testing**: Real-time ping, download, and upload speed tests (anonymous/public access supported)
+- **Parallel Connection Speed Test**: Download and upload each use 4 parallel HTTP streams with steady-state averaging for accurate results
 - **Connection Stability Warning**: Visual badge on test results when connection speed fluctuates significantly across passes; amber dot markers on history chart data points
 - **Test History**: Complete historical record of all network tests
 - **Port Risk Security**: Interactive scan wheel, risk scoring, open-port breakdown, recommendations, and a security knowledge base
@@ -60,7 +61,7 @@ Supabase Database
 - **User Authentication**: Login/signup with Supabase Auth, EmailJS-based email verification links, and OTP password reset
 - **Account Management**: Update profile details and manage newsletter subscription
 - **Theming**: Light/dark theme via a theme context
-- **Protected & Public Routes**: Route guards based on authentication status
+- **Protected & Public Routes**: Route guards based on authentication status; anonymous users can run speed tests without signing in
 - **Content Pages**: About, Services, News (blog), and Download pages
 - **Responsive Design**: Modern, mobile-friendly UI
 
@@ -228,8 +229,8 @@ client/
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-   - `VITE_API_BASE_URL` — base URL for most REST calls (includes `/api`)
-   - `VITE_API_URL` — server origin used for auth/OTP endpoints
+   - `VITE_API_BASE_URL` — base URL for REST API calls (includes `/api` path)
+   - `VITE_API_URL` — server origin used for binary speed test streams, auth/OTP, and CORS (no `/api` suffix)
 
 ## Running the Application
 

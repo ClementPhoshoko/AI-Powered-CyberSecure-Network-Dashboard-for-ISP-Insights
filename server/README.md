@@ -64,7 +64,8 @@ Supabase Database
 
 ## Features
 
-- **Network Speed Testing**: Comprehensive ping, download, and upload test handling
+- **Network Speed Testing**: Comprehensive ping, download, and upload test handling with public/anonymous access support
+- **Parallel Stream Speed Measurement**: Download and upload use 4 concurrent HTTP streams with steady-state averaging for accurate results
 - **Connection Stability Detection**: Flags erratic connections when max/min speed ratio across adaptive passes exceeds ~2.5×
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
 - **Network Scoring**: Automated health, gaming, streaming, video call, and browsing scores
@@ -125,6 +126,7 @@ server/
 │   │   └── testing_guide.md
 │   ├── middleware/   # Custom middleware
 │   │   ├── errorHandler.js
+│   │   ├── optionalAuth.js             # Tries JWT, falls back to anonymous ID header
 │   │   └── validateSupabaseJWT.js
 │   ├── models/       # Database models
 │   │   ├── AnomalyLog.js
@@ -178,7 +180,7 @@ server/
 
 ## API Endpoints
 
-> Most data endpoints require a Supabase JWT in the `Authorization: Bearer <token>` header. Auth/OTP, system metrics, and the port knowledge base are public. Auth endpoints are rate limited (10 requests / 15 min).
+> Most data endpoints require a Supabase JWT in the `Authorization: Bearer <token>` header. Speed test submission endpoints (ping, download, upload, network score/summary) accept anonymous access via an `X-Anonymous-Id` header, rate limited to 20 requests / 15 min. Auth/OTP, system metrics, and the port knowledge base are public. Auth endpoints are rate limited (10 requests / 15 min).
 
 ### Auth & Email Verification Endpoints
 
@@ -203,10 +205,10 @@ server/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /api/speed/download | Stream test data for download speed testing (requires `sizeMb` query param, allowed: 1,5,10,20) |
-| POST | /api/speed/tests/download | Submit client-measured download test results (final + all individual measurements) |
-| POST | /api/speed/upload | Receive upload data for speed testing (requires `sizeMb` query param, allowed: 0.5,1,5,10,20) |
-| POST | /api/speed/tests/upload | Submit client-measured upload test results (final + all individual measurements) |
+ | GET | /api/speed/download | Stream random binary data for download speed testing (`sizeMb` query param, any positive number) |
+ | POST | /api/speed/tests/download | Submit client-measured download test results (final + all individual measurements from parallel connections) |
+ | POST | /api/speed/upload | Receive upload binary stream for speed testing (`sizeMb` query param, any positive number) |
+ | POST | /api/speed/tests/upload | Submit client-measured upload test results (final + all individual measurements from parallel connections) |
 
 ### Network Scoring Endpoints
 

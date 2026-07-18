@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Home.css';
@@ -9,7 +8,6 @@ import aiIcon from '../../assets/avatars/ai.png';
 import speakerAvatar from '../../assets/avatars/woman_instructor_avatar.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
 import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
-import Modal from '../../components/modal/Modal';
 import ErrorModal from '../../components/error_modal/ErrorModal';
 import { useSpeedTest } from '../../hooks/useSpeedTest';
 import { useAuth } from '../../context/AuthContext';
@@ -59,9 +57,7 @@ function AnimatedSummaryText({ text, animate }) {
 
 function Home() {
   const { t } = useTranslation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const {
     startTest,
@@ -159,11 +155,7 @@ function Home() {
               } else if (isComplete) {
                 resetTest();
               } else {
-                if (!user) {
-                  setIsModalOpen(true);
-                } else {
-                  startTest();
-                }
+                startTest();
               }
             }}
           >
@@ -208,6 +200,9 @@ function Home() {
             </AnimatePresence>
           </button>
 
+          {!user && !isRunning && !isComplete && (
+            <p className="guest-badge">{t('home.guestMode')}</p>
+          )}
           <AnimatePresence mode="wait">
             {!isRunning && !isComplete ? (
               <motion.div
@@ -333,31 +328,6 @@ function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-      <Modal
-        isOpen={isModalOpen}
-        message={t('home.signInModal.message')}
-        leftOption={{
-          icon: (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          ),
-          label: t('home.signInModal.cancel'),
-          onClick: () => setIsModalOpen(false)
-        }}
-        rightOption={{
-          icon: (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          ),
-          label: t('home.signInModal.proceed'),
-          onClick: () => {
-            setIsModalOpen(false);
-            navigate('/login');
-          }
-        }}
-      />
       <ErrorModal
         isOpen={showErrorModal}
         message={error}

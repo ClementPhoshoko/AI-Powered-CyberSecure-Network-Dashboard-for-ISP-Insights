@@ -60,7 +60,7 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Anonymous-Id'],
 }));
 
 app.use(compression({ filter: shouldCompress })); // Compress responses except speed-test downloads
@@ -85,7 +85,23 @@ const globalLimiter = rateLimit({
   message: { status: 'error', message: 'Rate limit exceeded, slow down' },
 });
 
+// Rate limiting — speedtest submission endpoints (abuse protection)
+// 20 requests per 15 minutes allows ~4 full test runs
+const speedtestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.anonymousId || req.ip,
+  message: { status: 'error', message: 'Speedtest rate limit reached. Try again later.' },
+});
+
 app.use('/dev/auth', authLimiter);
+app.use('/api/speed/tests', speedtestLimiter);
+app.use('/api/ping/tests', speedtestLimiter);
+app.use('/api/network/score', speedtestLimiter);
+app.use('/api/network/summary', speedtestLimiter);
+app.use('/api', globalLimiter);
 app.use('/api', globalLimiter);
 
 // Swagger Configuration

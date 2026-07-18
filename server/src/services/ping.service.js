@@ -34,18 +34,21 @@ class PingService {
         ? Math.ceil(optionalData.test_duration_seconds)
         : 0;
 
+    const { anonymous_session_id, ...dbData } = optionalData;
+
     // 2. Create test result in DB
     const testResult = await TestResult.create({
       user_id: userId,
-      ...optionalData,
+      anonymous_session_id: anonymous_session_id || null,
+      ...dbData,
       ping_avg_ms: Number(pingAvgMs.toFixed(2)),
       ping_min_ms: Number(pingMinMs.toFixed(2)),
       ping_max_ms: Number(pingMaxMs.toFixed(2)),
       ping_median_ms: Number(pingMedianMs.toFixed(2)),
       jitter_ms: Number(jitterMs.toFixed(2)),
       packet_loss_percent: Number(packetLossPercent.toFixed(2)),
-      probe_method: optionalData.probe_method || 'http-health',
-      probe_target: optionalData.probe_target || null,
+      probe_method: dbData.probe_method || 'http-health',
+      probe_target: dbData.probe_target || null,
       probe_sample_count: rawPings.length,
       successful_probe_count: successfulPings.length,
       failed_probe_count: failedPings,

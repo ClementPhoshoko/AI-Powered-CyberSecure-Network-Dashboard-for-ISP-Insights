@@ -48,10 +48,11 @@ const pingHealthCheck = async (req, res, next) => {
 
 // @desc    Run a new ping test
 // @route   POST /api/ping/tests
-// @access  Private
+// @access  Public (optional auth)
 const runPingTest = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
+    const anonymousSessionId = req.anonymousId || null;
     const validatedData = createPingTestSchema.parse(req.body);
     
     const { pings, ...optionalData } = validatedData;
@@ -61,7 +62,8 @@ const runPingTest = async (req, res, next) => {
     
     const testResult = await PingService.runPingTest(userId, pings, {
       ...optionalData,
-      ip_address: clientIp
+      ip_address: clientIp,
+      anonymous_session_id: anonymousSessionId
     });
     
     res.status(201).json({

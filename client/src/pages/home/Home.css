@@ -392,6 +392,18 @@
   text-align: center;
 }
 
+.guest-badge {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+  display: inline-block;
+  width: auto;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

@@ -223,11 +223,7 @@
       "signedIn": "Now that you are signed in, don't forget to check your test graphs and history below!",
       "signedOut": "**Sign in** or **Sign up** to get more detailed insights about your network performance!"
     },
-    "signInModal": {
-      "message": "Sign in to get detailed insights from your speed test results. Would you like to proceed to the sign-in page?",
-      "cancel": "Cancel",
-      "proceed": "Proceed"
-    }
+    "guestMode": "Guest mode — sign in to save your results"
   },
   "history": {
     "title": "Test History",

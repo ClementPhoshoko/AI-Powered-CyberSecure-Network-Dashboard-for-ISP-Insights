@@ -1,38 +1,61 @@
 import api from './api';
 
+const PARALLEL_CONNECTIONS = 4;
+
 export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
-  const expectedTotalBytes = sizeMb * 1024 * 1024;
-  let lastLoaded = 0;
-  let lastTime = performance.now();
-  const windowSpeeds = [];
-  const ROLLING_WINDOW = 5;
+  const totalBytes = sizeMb * 1024 * 1024;
+  const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
 
-  const response = await api.get('/speed/download', {
-    params: { sizeMb },
-    responseType: 'blob',
-    signal,
-    onDownloadProgress: (progressEvent) => {
-      if (onProgress) {
-        const totalBytes = progressEvent.total || expectedTotalBytes;
+  const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
+    bytesLoaded: 0,
+    startTime: null,
+    endTime: null,
+    done: false,
+  }));
+
+  const startTimes = [];
+
+  const promises = connections.map((conn) => {
+    return api.get('/speed/download', {
+      params: { sizeMb: chunkSizeMb },
+      responseType: 'blob',
+      signal,
+      onDownloadProgress: (e) => {
         const now = performance.now();
-        const deltaBytes = progressEvent.loaded - lastLoaded;
-        const deltaTime = Math.max((now - lastTime) / 1000, 0.001);
-        const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
+        if (!conn.startTime) {
+          conn.startTime = now;
+          startTimes.push(now);
+        }
+        conn.bytesLoaded = e.loaded;
 
-        // Rolling window smooths per-chunk variation for the needle display
-        windowSpeeds.push(instantMbps);
-        if (windowSpeeds.length > ROLLING_WINDOW) windowSpeeds.shift();
-        const smoothMbps = windowSpeeds.reduce((a, b) => a + b, 0) / windowSpeeds.length;
-
-        lastLoaded = progressEvent.loaded;
-        lastTime = now;
-
-        const progress = Math.min((progressEvent.loaded / totalBytes) * 100, 100);
-        onProgress(smoothMbps, instantMbps, progress);
-      }
-    }
+        if (onProgress) {
+          const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
+          const globalStart = Math.min(...startTimes);
+          const elapsed = (now - globalStart) / 1000;
+          const speedMbps = elapsed > 0.01 ? (totalLoaded / (1024 * 1024) * 8) / elapsed : 0;
+          const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
+          onProgress(speedMbps, speedMbps, pct);
+        }
+      },
+    }).then(() => {
+      conn.done = true;
+      conn.endTime = performance.now();
+      conn.bytesLoaded = chunkSizeMb * 1024 * 1024;
+    });
   });
-  return response.data;
+
+  await Promise.all(promises);
+
+  const globalStart = Math.min(...connections.map((c) => c.startTime));
+  const globalEnd = Math.max(...connections.map((c) => c.endTime));
+  const elapsed = (globalEnd - globalStart) / 1000;
+  const speed = (totalBytes / (1024 * 1024) * 8) / elapsed;
+
+  return {
+    download_speed_mbps: speed,
+    file_size_mb: sizeMb,
+    test_duration_seconds: elapsed,
+  };
 };
 
 export const submitDownloadResults = async (data) => {
@@ -40,40 +63,71 @@ export const submitDownloadResults = async (data) => {
   return response.data;
 };
 
-export const streamUploadTest = async (sizeMb, data, signal, onProgress) => {
-  const expectedTotalBytes = sizeMb * 1024 * 1024;
-  let lastLoaded = 0;
-  let lastTime = performance.now();
-  const windowSpeeds = [];
-  const ROLLING_WINDOW = 5;
+export const streamUploadTest = async (sizeMb, signal, onProgress) => {
+  const totalBytes = sizeMb * 1024 * 1024;
+  const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
+  const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
 
-  const response = await api.post('/speed/upload', data, {
-    params: { sizeMb },
-    headers: {
-      'Content-Type': 'application/octet-stream'
-    },
-    signal,
-    onUploadProgress: (progressEvent) => {
-      if (onProgress) {
-        const totalBytes = progressEvent.total || expectedTotalBytes;
+  const CHUNK_SIZE = 256 * 1024;
+  const chunks = [];
+  let remaining = chunkSizeBytes;
+  while (remaining > 0) {
+    const size = Math.min(CHUNK_SIZE, remaining);
+    chunks.push(new Blob([new Uint8Array(size)]));
+    remaining -= size;
+  }
+  const blobData = new Blob(chunks);
+
+  const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
+    bytesLoaded: 0,
+    startTime: null,
+    endTime: null,
+    done: false,
+  }));
+
+  const startTimes = [];
+
+  const promises = connections.map((conn) => {
+    return api.post('/speed/upload', blobData, {
+      params: { sizeMb: chunkSizeMb },
+      headers: { 'Content-Type': 'application/octet-stream' },
+      signal,
+      onUploadProgress: (e) => {
         const now = performance.now();
-        const deltaBytes = progressEvent.loaded - lastLoaded;
-        const deltaTime = Math.max((now - lastTime) / 1000, 0.001);
-        const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
+        if (!conn.startTime) {
+          conn.startTime = now;
+          startTimes.push(now);
+        }
+        conn.bytesLoaded = e.loaded;
 
-        windowSpeeds.push(instantMbps);
-        if (windowSpeeds.length > ROLLING_WINDOW) windowSpeeds.shift();
-        const smoothMbps = windowSpeeds.reduce((a, b) => a + b, 0) / windowSpeeds.length;
-
-        lastLoaded = progressEvent.loaded;
-        lastTime = now;
-
-        const progress = Math.min((progressEvent.loaded / totalBytes) * 100, 100);
-        onProgress(smoothMbps, instantMbps, progress);
-      }
-    }
+        if (onProgress) {
+          const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
+          const globalStart = Math.min(...startTimes);
+          const elapsed = (now - globalStart) / 1000;
+          const speedMbps = elapsed > 0.01 ? (totalLoaded / (1024 * 1024) * 8) / elapsed : 0;
+          const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
+          onProgress(speedMbps, speedMbps, pct);
+        }
+      },
+    }).then(() => {
+      conn.done = true;
+      conn.endTime = performance.now();
+      conn.bytesLoaded = chunkSizeBytes;
+    });
   });
-  return response.data;
+
+  await Promise.all(promises);
+
+  const globalStart = Math.min(...connections.map((c) => c.startTime));
+  const globalEnd = Math.max(...connections.map((c) => c.endTime));
+  const elapsed = (globalEnd - globalStart) / 1000;
+  const speed = (totalBytes / (1024 * 1024) * 8) / elapsed;
+
+  return {
+    size_mb: sizeMb,
+    duration_seconds: elapsed,
+    upload_speed_mbps: speed,
+  };
 };
 
 export const submitUploadResults = async (data) => {

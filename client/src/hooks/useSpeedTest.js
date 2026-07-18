@@ -349,19 +349,6 @@ export function useSpeedTest() {
         i === 0
           ? UPLOAD_SIZES[0]
           : chooseAdaptiveUploadSize(finalUploadSpeed);
-      const sizeBytes = sizeMb * 1024 * 1024;
-
-      // Build upload data in chunks instead of one large ArrayBuffer
-      const CHUNK_SIZE = 256 * 1024; // 256 KB
-      const chunks = [];
-      let remaining = sizeBytes;
-      while (remaining > 0) {
-        const size = Math.min(CHUNK_SIZE, remaining);
-        chunks.push(new Blob([new Uint8Array(size)]));
-        remaining -= size;
-      }
-      const data = new Blob(chunks);
-
       const speedSamples = [];
       const start = performance.now();
 
@@ -376,7 +363,7 @@ export function useSpeedTest() {
           setProgress(phaseProgress);
         };
 
-        await streamUploadTest(sizeMb, data, abortControllerRef.current.signal, onUploadProgress);
+        await streamUploadTest(sizeMb, abortControllerRef.current.signal, onUploadProgress);
         clearTimeout(timeoutId);
 
         const durationSeconds = (performance.now() - start) / 1000;

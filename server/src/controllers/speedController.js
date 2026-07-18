@@ -1,17 +1,11 @@
 const SpeedService = require('../services/speed.service');
 const { z } = require('zod');
 
-// Allowed test sizes in MB
-const ALLOWED_DOWNLOAD_SIZES = [1, 5, 10, 20];
-const ALLOWED_UPLOAD_SIZES = [0.5, 1, 5, 10, 20];
-
-// Zod validation for download test size query param
+// Client uses parallel connections, so chunk sizes are any positive float.
 const downloadTestQuerySchema = z.object({
   sizeMb: z.preprocess(
     (val) => Number(val),
-    z.number().refine((val) => ALLOWED_DOWNLOAD_SIZES.includes(val), {
-      message: `sizeMb must be one of: ${ALLOWED_DOWNLOAD_SIZES.join(', ')}`
-    })
+    z.number().positive('sizeMb must be a positive number')
   )
 });
 
@@ -19,9 +13,7 @@ const downloadTestQuerySchema = z.object({
 const downloadResultSchema = z.object({
   test_result_id: z.string().uuid(),
   download_speed_mbps: z.number().positive(),
-  file_size_mb: z.number().refine((val) => ALLOWED_DOWNLOAD_SIZES.includes(val), {
-    message: `file_size_mb must be one of: ${ALLOWED_DOWNLOAD_SIZES.join(', ')}`
-  }),
+  file_size_mb: z.number().positive(),
   test_duration_seconds: z.number().positive()
 });
 
@@ -31,9 +23,7 @@ const multipleDownloadResultsSchema = z.object({
   final_result: downloadResultSchema.omit({ test_result_id: true }),
   all_measurements: z.array(
     z.object({
-      file_size_mb: z.number().refine((val) => ALLOWED_DOWNLOAD_SIZES.includes(val), {
-        message: `file_size_mb must be one of: ${ALLOWED_DOWNLOAD_SIZES.join(', ')}`
-      }),
+      file_size_mb: z.number().positive(),
       download_speed_mbps: z.number().positive(),
       test_duration_seconds: z.number().positive()
     })
@@ -44,9 +34,7 @@ const multipleDownloadResultsSchema = z.object({
 const uploadTestQuerySchema = z.object({
   sizeMb: z.preprocess(
     (val) => Number(val),
-    z.number().refine((val) => ALLOWED_UPLOAD_SIZES.includes(val), {
-      message: `sizeMb must be one of: ${ALLOWED_UPLOAD_SIZES.join(', ')}`
-    })
+    z.number().positive('sizeMb must be a positive number')
   )
 });
 
@@ -55,9 +43,7 @@ const multipleUploadResultsSchema = z.object({
   test_result_id: z.string().uuid(),
   measurements: z.array(
     z.object({
-      size_mb: z.number().refine((val) => ALLOWED_UPLOAD_SIZES.includes(val), {
-        message: `size_mb must be one of: ${ALLOWED_UPLOAD_SIZES.join(', ')}`
-      }),
+      size_mb: z.number().positive(),
       duration_seconds: z.number().positive(),
       upload_speed_mbps: z.number().positive()
     })
@@ -95,14 +81,16 @@ const streamDownloadTest = async (req, res, next) => {
 
 // @desc    Submit multiple download test results
 // @route   POST /api/speed/tests/download
-// @access  Private (requires JWT)
+// @access  Public (optional auth)
 const submitDownloadResults = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
+    const anonymousId = req.anonymousId || null;
     const validatedData = multipleDownloadResultsSchema.parse(req.body);
 
     const result = await SpeedService.submitDownloadResults(
       userId,
+      anonymousId,
       validatedData.test_result_id,
       validatedData.final_result,
       validatedData.all_measurements
@@ -149,14 +137,16 @@ const streamUploadTest = async (req, res, next) => {
 
 // @desc    Submit multiple upload test results
 // @route   POST /api/speed/tests/upload
-// @access  Private (requires JWT)
+// @access  Public (optional auth)
 const submitUploadResults = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
+    const anonymousId = req.anonymousId || null;
     const validatedData = multipleUploadResultsSchema.parse(req.body);
 
     const result = await SpeedService.submitUploadResults(
       userId,
+      anonymousId,
       validatedData.test_result_id,
       validatedData.final_upload_speed_mbps,
       validatedData.measurements,

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { calculateNetworkScores } = require('../controllers/networkScoringController');
 const { generateSummary } = require('../controllers/aiSummary.controller');
-const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
+const optionalAuth = require('../middleware/optionalAuth');
 
 /**
  * @swagger
@@ -90,7 +90,7 @@ const validateSupabaseJWT = require('../middleware/validateSupabaseJWT');
  *       404:
  *         description: Test result not found
  */
-router.post('/score', validateSupabaseJWT, calculateNetworkScores);
+router.post('/score', optionalAuth, calculateNetworkScores);
 
 /**
  * @swagger
@@ -137,6 +137,6 @@ router.post('/score', validateSupabaseJWT, calculateNetworkScores);
  *       404:
  *         description: Test result not found
  */
-router.post('/summary', validateSupabaseJWT, generateSummary);
+router.post('/summary', optionalAuth, generateSummary);
 
 module.exports = router;

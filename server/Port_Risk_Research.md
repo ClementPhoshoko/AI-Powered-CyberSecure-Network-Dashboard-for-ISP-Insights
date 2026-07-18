@@ -2,6 +2,30 @@
 
 **Tags:** Port Security, Network Analytics, Cybersecurity, Node.js, React
 
+## Table of Contents
+
+- [Objective](#objective)
+- [Primary Goal](#primary-goal)
+- [Important Requirements](#important-requirements)
+- [Feature Overview](#feature-overview)
+- [Workflow](#workflow)
+- [Enhanced Security Analysis Features](#enhanced-security-analysis-features)
+- [Scan Scope](#scan-scope)
+- [Port States](#port-states)
+- [Service Identification](#service-identification)
+- [Risk Classification Engine](#risk-classification-engine)
+- [Overall Port Risk Score](#overall-port-risk-score)
+- [AI Security Summary](#ai-security-summary)
+- [Dashboard Integration](#dashboard-integration)
+- [Historical Analytics](#historical-analytics)
+- [Backend Architecture](#backend-architecture)
+- [API Endpoints](#api-endpoints)
+- [Frontend](#frontend)
+- [Security Considerations](#security-considerations)
+- [Future Extensibility](#future-extensibility)
+
+---
+
 ## Objective
 
 Implement a **Port Risk Detection** feature that integrates seamlessly into the existing AkovoLabs Speedtest application. This is **not** a standalone project. Reuse the current backend architecture, API conventions, authentication, analytics pipeline, database models, logging, error handling, UI components, design tokens, and coding standards already present in the project.

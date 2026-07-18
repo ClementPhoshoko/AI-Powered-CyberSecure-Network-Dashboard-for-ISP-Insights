@@ -39,6 +39,7 @@
 
 .graph-chart-wrapper {
   width: 100%;
+  min-height: 100px;
   height: clamp(160px, 42vw, 200px);
   min-height: 160px;
 }

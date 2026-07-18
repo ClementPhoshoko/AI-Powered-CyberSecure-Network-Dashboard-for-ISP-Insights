@@ -92,13 +92,15 @@ Please return ONLY the summary text, no extra formatting, no quote marks, and no
   }
 
   // Main method to generate summary with fallbacks
-  static async generateSummary(userId, testResultId) {
+  static async generateSummary(userId, anonymousId, testResultId) {
     // Fetch test result and verify ownership
     const testResult = await TestResult.findById(testResultId);
     if (!testResult) {
       throw new Error('Test result not found');
     }
-    if (testResult.user_id !== userId) {
+    const ownsTest = userId && testResult.user_id === userId;
+    const ownsAnon = anonymousId && testResult.anonymous_session_id === anonymousId;
+    if (!ownsTest && !ownsAnon) {
       throw new Error('Unauthorized: You do not own this test result');
     }
 

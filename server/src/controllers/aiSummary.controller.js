@@ -8,14 +8,16 @@ const summaryRequestSchema = z.object({
 
 // @desc    Generate and save AI summary for a test result
 // @route   POST /api/network/summary
-// @access  Private (requires JWT)
+// @access  Public (optional auth)
 const generateSummary = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id || null;
+    const anonymousId = req.anonymousId || null;
     const validatedData = summaryRequestSchema.parse(req.body);
 
     const result = await AiSummaryService.generateSummary(
       userId,
+      anonymousId,
       validatedData.test_result_id
     );
 
