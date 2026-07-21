@@ -65,13 +65,22 @@ function getRelativeDelta(currentValue, previousValue) {
   return Math.abs(currentValue - previousValue) / baseline;
 }
 
-function pickMedianMeasurement(measurements, speedKey) {
+const MIN_PASS_DURATION_SECONDS = 2;
+
+function pickBestMeasurement(measurements, speedKey, durationKey) {
   if (measurements.length === 0) return null;
   if (measurements.length === 1) return measurements[0];
 
-  const sorted = [...measurements].sort((a, b) => (a[speedKey] || 0) - (b[speedKey] || 0));
-  const mid = Math.floor(sorted.length / 2);
-  return sorted[mid];
+  const eligible = measurements.filter((m) => (m[durationKey] || 0) >= MIN_PASS_DURATION_SECONDS);
+  const pool = eligible.length > 0 ? eligible : measurements;
+
+  return pool.reduce((best, m) => {
+    const mDuration = m[durationKey] || 0;
+    const bestDuration = best[durationKey] || 0;
+    if (mDuration > bestDuration) return m;
+    if (mDuration === bestDuration && (m[speedKey] || 0) > (best[speedKey] || 0)) return m;
+    return best;
+  }, pool[0]);
 }
 
 function shouldStopAdaptivePhase({
@@ -332,7 +341,7 @@ export function useSpeedTest() {
       throw lastError || new Error('Download test failed before a valid measurement could be captured.');
     }
 
-    const finalResult = pickMedianMeasurement(measurements, 'download_speed_mbps');
+    const finalResult = pickBestMeasurement(measurements, 'download_speed_mbps', 'test_duration_seconds');
 
     if (measurements.length > 0) {
       await submitDownloadResults({
@@ -434,7 +443,7 @@ export function useSpeedTest() {
       throw lastError || new Error('Upload test failed before a valid measurement could be captured.');
     }
 
-    const finalResult = pickMedianMeasurement(measurements, 'upload_speed_mbps');
+    const finalResult = pickBestMeasurement(measurements, 'upload_speed_mbps', 'duration_seconds');
 
     const wasUnstable = downloadWasUnstable || (minSpeed < Infinity && maxSpeed > 0
       && (maxSpeed / minSpeed) > STABILITY_RATIO_THRESHOLD);
