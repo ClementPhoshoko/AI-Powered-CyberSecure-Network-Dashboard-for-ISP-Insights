@@ -72,7 +72,7 @@ Pings fire sequentially (not concurrently) to avoid event-loop queuing from conc
 ### 2. Download Speed
 **Implementation (current):** 4 parallel HTTP GET streams. Speed is measured as total bytes transferred divided by total elapsed time (from the first connection's start to the last connection's end). The server generates random byte streams of arbitrary size (any positive `sizeMb`) using a cached 1 MB random buffer for fast streaming.
 
-**Adaptive sizing:** The client starts with a small size and increases progressively based on measured speed, stopping early when measurements stabilise (relative delta between consecutive passes falls below a threshold). Compression middleware is excluded from speed endpoints to avoid interfering with binary payloads.
+**Adaptive sizing:** The client starts with 5 MB and increases progressively based on measured speed, stopping early when measurements stabilise (relative delta between consecutive passes falls below a threshold). After 2 consecutive same-size attempts, the size is forced upward to break out of the overhead-dominated feedback loop. Compression middleware is excluded from speed endpoints to avoid interfering with binary payloads.
 
 ---
 
@@ -162,10 +162,10 @@ But a good speed test should:
 Ignore first seconds. Reason: TCP slow start - connection ramps up gradually.
 
 ### Download Phase
-4 parallel streams. Speed is total bytes transferred / total elapsed time (global start to global end). Adaptive sizing ramps up file sizes (1–20 MB) based on measured speed, with early termination once consecutive passes stabilise.
+4 parallel streams. Speed is total bytes transferred / total elapsed time (global start to global end). Adaptive sizing ramps up file sizes (5–50 MB) based on measured speed, with early termination once consecutive passes stabilise.
 
 ### Upload Phase
-4 parallel upload streams. Same measurement approach. Adaptive sizing ramps from2–50 MB based on connection speed.
+4 parallel upload streams. Same measurement approach. Adaptive sizing ramps from5–100 MB based on connection speed.
 
 ### Ping Phase
 Run 10 sequential HTTP pings (raw `fetch()` via the browser, bypassing Axios to avoid interceptor overhead). Calculate:
@@ -328,10 +328,10 @@ Instead of 1 download test, run multiple passes with adaptive sizing. Each pass 
 
 ### Use Multiple File Sizes
 The client adaptively chooses sizes based on the previous pass speed:
-- **Download:** 1 MB, 5 MB, 10 MB, 20 MB
-- **Upload:** 2 MB, 5 MB, 10 MB, 20 MB, 50 MB
+- **Download:** 5 MB, 10 MB, 20 MB, 50 MB
+- **Upload:** 5 MB, 10 MB, 20 MB, 50 MB, 100 MB
 
-This helps account for TCP Slow Start, where connections begin slowly and ramp up, while ensuring fast connections transfer enough data for accurate measurement.
+This helps account for TCP Slow Start, where connections begin slowly and ramp up, while ensuring fast connections transfer enough data for accurate measurement. Force escalation bumps the size after 2 consecutive same-size attempts to break out of the overhead-dominated feedback loop on fast connections.
 
 ---
 
