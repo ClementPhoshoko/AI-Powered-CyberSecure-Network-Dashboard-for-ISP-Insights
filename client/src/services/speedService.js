@@ -105,14 +105,12 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionC
   const cacheBuster = Math.random().toString(36).slice(2);
 
   const promises = connections.map((conn) => {
+    conn.startTime = performance.now();
     return api.get('/speed/download', {
       params: { sizeMb: chunkSizeMb, cb: cacheBuster },
       responseType: 'arraybuffer',
       signal,
       onDownloadProgress: (e) => {
-        if (!conn.startTime) {
-          conn.startTime = performance.now();
-        }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
       },
     }).then(() => {
@@ -156,9 +154,6 @@ export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCou
     if (onProgress) onProgress(speed, speed, pct);
   });
 
-  const randomData = generateRandomBytes(totalBytes);
-  const masterBlob = new Blob([randomData]);
-
   const connections = Array.from({ length: conns }, () => ({
     bytesLoaded: 0,
     startTime: null,
@@ -168,19 +163,18 @@ export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCou
 
   const cacheBuster = Math.random().toString(36).slice(2);
 
-  const promises = connections.map((conn, i) => {
-    const sliceStart = i * chunkSizeBytes;
-    const sliceEnd = sliceStart + chunkSizeBytes;
-    const blobSlice = masterBlob.slice(sliceStart, sliceEnd);
+  const blobSlices = Array.from({ length: conns }, () => {
+    const data = generateRandomBytes(chunkSizeBytes);
+    return new Blob([data]);
+  });
 
-    return api.post('/speed/upload', blobSlice, {
+  const promises = connections.map((conn, i) => {
+    conn.startTime = performance.now();
+    return api.post('/speed/upload', blobSlices[i], {
       params: { sizeMb: chunkSizeMb, cb: cacheBuster },
       headers: { 'Content-Type': 'application/octet-stream' },
       signal,
       onUploadProgress: (e) => {
-        if (!conn.startTime) {
-          conn.startTime = performance.now();
-        }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
       },
     }).then(() => {

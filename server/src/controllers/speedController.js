@@ -112,6 +112,7 @@ const streamUploadTest = async (req, res, next) => {
   try {
     // Validate sizeMb query parameter
     const { sizeMb } = uploadTestQuerySchema.parse(req.query);
+    const expectedBytes = sizeMb * 1024 * 1024;
 
     // Just consume the stream without storing anything
     let bytesReceived = 0;
@@ -120,10 +121,16 @@ const streamUploadTest = async (req, res, next) => {
     });
 
     req.on('end', () => {
+      if (bytesReceived < expectedBytes) {
+        return res.status(400).json({
+          status: 'error',
+          message: `Upload truncated: received ${bytesReceived} of ${expectedBytes} bytes`
+        });
+      }
       res.status(200).json({
         status: 'success',
         message: 'Upload data received successfully',
-        bytesReceived: bytesReceived
+        bytesReceived
       });
     });
 
