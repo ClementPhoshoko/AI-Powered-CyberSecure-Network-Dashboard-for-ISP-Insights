@@ -1,11 +1,15 @@
 import api from './api';
 
 const PARALLEL_CONNECTIONS = 4;
+const SLICE_COUNT = 20;
+const DISCARD_TOP_PCT = 0.1;
+const DISCARD_BOTTOM_PCT = 0.3;
 
-function createProgressTracker(totalBytes, onProgress) {
+function createThroughputSampler(totalBytes, onProgress) {
   let prevTotalBytes = 0;
   let prevTime = null;
   let smoothedSpeed = 0;
+  const samples = [];
 
   return {
     update(connections, now) {
@@ -15,7 +19,6 @@ function createProgressTracker(totalBytes, onProgress) {
       if (prevTime === null) {
         prevTime = now;
         prevTotalBytes = totalLoaded;
-        onProgress(0, pct);
         return;
       }
 
@@ -28,20 +31,46 @@ function createProgressTracker(totalBytes, onProgress) {
       if (deltaTime < 0.016) return;
 
       const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
-      smoothedSpeed = smoothedSpeed * 0.6 + instantMbps * 0.4;
+      smoothedSpeed = smoothedSpeed * 0.4 + instantMbps * 0.6;
+      samples.push(instantMbps);
 
       onProgress(smoothedSpeed, pct);
     },
-    getSpeed() {
+    getResult() {
+      if (samples.length === 0) return 0;
+      return aggregateSamples(samples);
+    },
+    getSmoothedSpeed() {
       return smoothedSpeed;
     }
   };
 }
 
+function aggregateSamples(samples) {
+  if (samples.length === 0) return 0;
+  if (samples.length <= 4) {
+    return samples.reduce((a, b) => a + b, 0) / samples.length;
+  }
+
+  const sorted = [...samples].sort((a, b) => a - b);
+  const discardTop = Math.ceil(sorted.length * DISCARD_TOP_PCT);
+  const discardBottom = Math.ceil(sorted.length * DISCARD_BOTTOM_PCT);
+  const kept = sorted.slice(discardBottom, sorted.length - discardTop);
+
+  if (kept.length === 0) return sorted[sorted.length - 1];
+  return kept.reduce((a, b) => a + b, 0) / kept.length;
+}
+
+function generateRandomBytes(sizeBytes) {
+  const buf = new Uint8Array(sizeBytes);
+  crypto.getRandomValues(buf);
+  return buf;
+}
+
 export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
   const totalBytes = sizeMb * 1024 * 1024;
   const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
-  const tracker = createProgressTracker(totalBytes, (speed, pct) => {
+  const sampler = createThroughputSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
 
@@ -52,21 +81,20 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
     done: false,
   }));
 
-  const startTimes = [];
+  const cacheBuster = Math.random().toString(36).slice(2);
 
   const promises = connections.map((conn) => {
     return api.get('/speed/download', {
-      params: { sizeMb: chunkSizeMb },
+      params: { sizeMb: chunkSizeMb, cb: cacheBuster },
       responseType: 'blob',
       signal,
       onDownloadProgress: (e) => {
         const now = performance.now();
         if (!conn.startTime) {
           conn.startTime = now;
-          startTimes.push(now);
         }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
-        tracker.update(connections, now);
+        sampler.update(connections, now);
       },
     }).then(() => {
       conn.done = true;
@@ -80,7 +108,10 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
-  const speed = (totalBytes / (1024 * 1024) * 8) / elapsed;
+
+  const sampledSpeed = sampler.getResult();
+  const fallbackSpeed = (totalBytes / (1024 * 1024) * 8) / elapsed;
+  const speed = sampledSpeed > 0 ? sampledSpeed : fallbackSpeed;
 
   return {
     download_speed_mbps: speed,
@@ -98,11 +129,12 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   const totalBytes = sizeMb * 1024 * 1024;
   const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
   const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
-  const tracker = createProgressTracker(totalBytes, (speed, pct) => {
+  const sampler = createThroughputSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
 
-  const masterBlob = new Blob([new Uint8Array(totalBytes)]);
+  const randomData = generateRandomBytes(totalBytes);
+  const masterBlob = new Blob([randomData]);
 
   const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
     bytesLoaded: 0,
@@ -111,7 +143,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
     done: false,
   }));
 
-  const startTimes = [];
+  const cacheBuster = Math.random().toString(36).slice(2);
 
   const promises = connections.map((conn, i) => {
     const sliceStart = i * chunkSizeBytes;
@@ -119,17 +151,16 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
     const blobSlice = masterBlob.slice(sliceStart, sliceEnd);
 
     return api.post('/speed/upload', blobSlice, {
-      params: { sizeMb: chunkSizeMb },
+      params: { sizeMb: chunkSizeMb, cb: cacheBuster },
       headers: { 'Content-Type': 'application/octet-stream' },
       signal,
       onUploadProgress: (e) => {
         const now = performance.now();
         if (!conn.startTime) {
           conn.startTime = now;
-          startTimes.push(now);
         }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
-        tracker.update(connections, now);
+        sampler.update(connections, now);
       },
     }).then(() => {
       conn.done = true;
@@ -143,7 +174,10 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
-  const speed = (totalBytes / (1024 * 1024) * 8) / elapsed;
+
+  const sampledSpeed = sampler.getResult();
+  const fallbackSpeed = (totalBytes / (1024 * 1024) * 8) / elapsed;
+  const speed = sampledSpeed > 0 ? sampledSpeed : fallbackSpeed;
 
   return {
     size_mb: sizeMb,
