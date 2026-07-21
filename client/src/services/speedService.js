@@ -107,7 +107,7 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionC
   const promises = connections.map((conn) => {
     return api.get('/speed/download', {
       params: { sizeMb: chunkSizeMb, cb: cacheBuster },
-      responseType: 'blob',
+      responseType: 'arraybuffer',
       signal,
       onDownloadProgress: (e) => {
         if (!conn.startTime) {
