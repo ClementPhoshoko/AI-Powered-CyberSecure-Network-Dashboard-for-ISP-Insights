@@ -28,12 +28,6 @@ function createTimerSampler(totalBytes, onProgress) {
         const totalLoaded = conns.reduce((sum, c) => sum + c.bytesLoaded, 0);
         const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
 
-        if (prevTime === null) {
-          prevTime = now;
-          prevTotalBytes = totalLoaded;
-          return;
-        }
-
         const deltaTime = (now - prevTime) / 1000;
         const deltaBytes = totalLoaded - prevTotalBytes;
 
@@ -68,7 +62,7 @@ function aggregateConnections(connections) {
       const speed = duration > 0 ? (c.bytesLoaded / (1024 * 1024) * 8) / duration : 0;
       return { bytes: c.bytesLoaded, duration, speed };
     })
-    .filter(c => c.duration > 0.1 && c.speed > 0);
+    .filter(c => c.duration > 0.001 && c.speed > 0);
 
   if (connResults.length === 0) return 0;
   if (connResults.length <= 2) {
