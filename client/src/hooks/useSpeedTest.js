@@ -3,7 +3,8 @@ import {
   streamDownloadTest,
   submitDownloadResults,
   streamUploadTest,
-  submitUploadResults
+  submitUploadResults,
+  getOptimalConnectionCount
 } from '../services/speedService';
 import { runPingTest } from '../services/pingService';
 import { calculateNetworkScores as calculateNetworkScoresService, generateAISummary } from '../services/networkService';
@@ -159,6 +160,18 @@ function chooseAdaptiveUploadSize(lastSpeedMbps, consecutiveSameCount) {
   return UPLOAD_SIZES[4]; // 100 MB
 }
 
+function getInitialDownloadSize(connectionCount) {
+  if (connectionCount >= 8) return 20;
+  if (connectionCount >= 6) return 10;
+  return DOWNLOAD_SIZES[0];
+}
+
+function getInitialUploadSize(connectionCount) {
+  if (connectionCount >= 8) return 20;
+  if (connectionCount >= 6) return 10;
+  return UPLOAD_SIZES[0];
+}
+
 export function useSpeedTest() {
   const [phase, setPhase] = useState(TEST_PHASES.IDLE);
   const [loading, setLoading] = useState(false);
@@ -255,12 +268,13 @@ export function useSpeedTest() {
     return pingResult.data;
   }, []);
 
-  const runDownloadTest = useCallback(async (testResultId) => {
+  const runDownloadTest = useCallback(async (testResultId, avgRttMs = 50) => {
     if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.DOWNLOAD);
     setCurrentSpeed(0);
     setProgress(30);
 
+    const connectionCount = getOptimalConnectionCount(avgRttMs);
     const measurements = [];
     const phaseStart = performance.now();
     let lastSpeedMbps = 0;
@@ -274,7 +288,7 @@ export function useSpeedTest() {
       if (isStoppedRef.current) return null;
       const sizeMb =
         i === 0
-          ? DOWNLOAD_SIZES[0]
+          ? getInitialDownloadSize(connectionCount)
           : chooseAdaptiveDownloadSize(lastSpeedMbps, consecutiveSameCount);
       const start = performance.now();
 
@@ -288,7 +302,7 @@ export function useSpeedTest() {
           setProgress(phaseProgress);
         };
 
-        const downloadResult = await streamDownloadTest(sizeMb, abortControllerRef.current.signal, onDownloadProgress);
+        const downloadResult = await streamDownloadTest(sizeMb, abortControllerRef.current.signal, onDownloadProgress, connectionCount);
         clearTimeout(timeoutId);
 
         const durationSeconds = downloadResult.test_duration_seconds || (performance.now() - start) / 1000;
@@ -357,12 +371,13 @@ export function useSpeedTest() {
     return { measurements, finalResult, wasUnstable };
   }, []);
 
-  const runUploadTest = useCallback(async (testResultId, downloadWasUnstable = false) => {
+  const runUploadTest = useCallback(async (testResultId, downloadWasUnstable = false, avgRttMs = 50) => {
     if (isStoppedRef.current) return null;
     setPhase(TEST_PHASES.UPLOAD);
     setCurrentSpeed(0);
     setProgress(60);
 
+    const connectionCount = getOptimalConnectionCount(avgRttMs);
     const measurements = [];
     let finalUploadSpeed = 0;
     const phaseStart = performance.now();
@@ -376,7 +391,7 @@ export function useSpeedTest() {
       if (isStoppedRef.current) return null;
       const sizeMb =
         i === 0
-          ? UPLOAD_SIZES[0]
+          ? getInitialUploadSize(connectionCount)
           : chooseAdaptiveUploadSize(finalUploadSpeed, consecutiveSameCount);
       const start = performance.now();
 
@@ -390,7 +405,7 @@ export function useSpeedTest() {
           setProgress(phaseProgress);
         };
 
-        const uploadResult = await streamUploadTest(sizeMb, abortControllerRef.current.signal, onUploadProgress);
+        const uploadResult = await streamUploadTest(sizeMb, abortControllerRef.current.signal, onUploadProgress, connectionCount);
         clearTimeout(timeoutId);
 
         const durationSeconds = uploadResult.duration_seconds || (performance.now() - start) / 1000;
@@ -490,13 +505,14 @@ export function useSpeedTest() {
       const pingData = await runPingTests();
       if (isStoppedRef.current || !pingData) return null;
       const testResultId = pingData.id;
+      const avgRttMs = pingData.ping_avg_ms || 50;
 
       // 2. Run download test
-      const downloadData = await runDownloadTest(testResultId);
+      const downloadData = await runDownloadTest(testResultId, avgRttMs);
       if (isStoppedRef.current || !downloadData) return null;
 
       // 3. Run upload test
-      const uploadData = await runUploadTest(testResultId, downloadData.wasUnstable);
+      const uploadData = await runUploadTest(testResultId, downloadData.wasUnstable, avgRttMs);
       if (isStoppedRef.current || !uploadData) return null;
 
       // 4. Calculate network scores

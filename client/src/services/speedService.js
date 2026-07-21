@@ -1,44 +1,58 @@
 import api from './api';
 
-const PARALLEL_CONNECTIONS = 4;
-const SLICE_COUNT = 20;
-const DISCARD_TOP_PCT = 0.1;
-const DISCARD_BOTTOM_PCT = 0.3;
+const TIMER_INTERVAL_MS = 50;
+const CONNECTION_DISCARD_PCT = 0.25;
 
-function createThroughputSampler(totalBytes, onProgress) {
+export function getOptimalConnectionCount(avgRttMs) {
+  if (avgRttMs < 20) return 8;
+  if (avgRttMs < 50) return 6;
+  if (avgRttMs < 100) return 4;
+  return 2;
+}
+
+function createTimerSampler(totalBytes, onProgress) {
   let prevTotalBytes = 0;
   let prevTime = null;
   let smoothedSpeed = 0;
-  const samples = [];
+  let timerId = null;
+  let conns = null;
 
   return {
-    update(connections, now) {
-      const totalLoaded = connections.reduce((sum, c) => sum + c.bytesLoaded, 0);
-      const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
+    start(connections) {
+      conns = connections;
+      prevTime = performance.now();
+      prevTotalBytes = 0;
 
-      if (prevTime === null) {
+      timerId = setInterval(() => {
+        const now = performance.now();
+        const totalLoaded = conns.reduce((sum, c) => sum + c.bytesLoaded, 0);
+        const pct = Math.min((totalLoaded / totalBytes) * 100, 100);
+
+        if (prevTime === null) {
+          prevTime = now;
+          prevTotalBytes = totalLoaded;
+          return;
+        }
+
+        const deltaTime = (now - prevTime) / 1000;
+        const deltaBytes = totalLoaded - prevTotalBytes;
+
         prevTime = now;
         prevTotalBytes = totalLoaded;
-        return;
-      }
 
-      const deltaTime = (now - prevTime) / 1000;
-      const deltaBytes = totalLoaded - prevTotalBytes;
+        if (deltaTime < 0.01) return;
 
-      prevTime = now;
-      prevTotalBytes = totalLoaded;
+        const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
+        smoothedSpeed = smoothedSpeed * 0.4 + instantMbps * 0.6;
 
-      if (deltaTime < 0.016) return;
-
-      const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
-      smoothedSpeed = smoothedSpeed * 0.4 + instantMbps * 0.6;
-      samples.push(instantMbps);
-
-      onProgress(smoothedSpeed, pct);
+        onProgress(smoothedSpeed, pct);
+      }, TIMER_INTERVAL_MS);
     },
-    getResult() {
-      if (samples.length === 0) return 0;
-      return aggregateSamples(samples);
+    stop() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
     },
     getSmoothedSpeed() {
       return smoothedSpeed;
@@ -46,19 +60,27 @@ function createThroughputSampler(totalBytes, onProgress) {
   };
 }
 
-function aggregateSamples(samples) {
-  if (samples.length === 0) return 0;
-  if (samples.length <= 4) {
-    return samples.reduce((a, b) => a + b, 0) / samples.length;
+function aggregateConnections(connections) {
+  const connResults = connections
+    .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
+    .map(c => {
+      const duration = (c.endTime - c.startTime) / 1000;
+      const speed = duration > 0 ? (c.bytesLoaded / (1024 * 1024) * 8) / duration : 0;
+      return { bytes: c.bytesLoaded, duration, speed };
+    })
+    .filter(c => c.duration > 0.1 && c.speed > 0);
+
+  if (connResults.length === 0) return 0;
+  if (connResults.length <= 2) {
+    return connResults.reduce((sum, c) => sum + c.speed, 0) / connResults.length;
   }
 
-  const sorted = [...samples].sort((a, b) => a - b);
-  const discardTop = Math.ceil(sorted.length * DISCARD_TOP_PCT);
-  const discardBottom = Math.ceil(sorted.length * DISCARD_BOTTOM_PCT);
-  const kept = sorted.slice(discardBottom, sorted.length - discardTop);
+  connResults.sort((a, b) => a.speed - b.speed);
+  const discardCount = Math.max(1, Math.ceil(connResults.length * CONNECTION_DISCARD_PCT));
+  const kept = connResults.slice(discardCount);
 
-  if (kept.length === 0) return sorted[sorted.length - 1];
-  return kept.reduce((a, b) => a + b, 0) / kept.length;
+  if (kept.length === 0) return connResults[connResults.length - 1].speed;
+  return kept.reduce((sum, c) => sum + c.speed, 0) / kept.length;
 }
 
 function generateRandomBytes(sizeBytes) {
@@ -67,14 +89,15 @@ function generateRandomBytes(sizeBytes) {
   return buf;
 }
 
-export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
+export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionCount) => {
   const totalBytes = sizeMb * 1024 * 1024;
-  const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
-  const sampler = createThroughputSampler(totalBytes, (speed, pct) => {
+  const conns = connectionCount || 4;
+  const chunkSizeMb = sizeMb / conns;
+  const sampler = createTimerSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
 
-  const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
+  const connections = Array.from({ length: conns }, () => ({
     bytesLoaded: 0,
     startTime: null,
     endTime: null,
@@ -89,12 +112,10 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
       responseType: 'blob',
       signal,
       onDownloadProgress: (e) => {
-        const now = performance.now();
         if (!conn.startTime) {
-          conn.startTime = now;
+          conn.startTime = performance.now();
         }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
-        sampler.update(connections, now);
       },
     }).then(() => {
       conn.done = true;
@@ -103,15 +124,18 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress) => {
     });
   });
 
-  await Promise.all(promises);
+  sampler.start(connections);
 
+  try {
+    await Promise.all(promises);
+  } finally {
+    sampler.stop();
+  }
+
+  const speed = aggregateConnections(connections);
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
-
-  const sampledSpeed = sampler.getResult();
-  const fallbackSpeed = (totalBytes / (1024 * 1024) * 8) / elapsed;
-  const speed = sampledSpeed > 0 ? sampledSpeed : fallbackSpeed;
 
   return {
     download_speed_mbps: speed,
@@ -125,18 +149,19 @@ export const submitDownloadResults = async (data) => {
   return response.data;
 };
 
-export const streamUploadTest = async (sizeMb, signal, onProgress) => {
+export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCount) => {
   const totalBytes = sizeMb * 1024 * 1024;
-  const chunkSizeMb = sizeMb / PARALLEL_CONNECTIONS;
+  const conns = connectionCount || 4;
+  const chunkSizeMb = sizeMb / conns;
   const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
-  const sampler = createThroughputSampler(totalBytes, (speed, pct) => {
+  const sampler = createTimerSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
 
   const randomData = generateRandomBytes(totalBytes);
   const masterBlob = new Blob([randomData]);
 
-  const connections = Array.from({ length: PARALLEL_CONNECTIONS }, () => ({
+  const connections = Array.from({ length: conns }, () => ({
     bytesLoaded: 0,
     startTime: null,
     endTime: null,
@@ -155,12 +180,10 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
       headers: { 'Content-Type': 'application/octet-stream' },
       signal,
       onUploadProgress: (e) => {
-        const now = performance.now();
         if (!conn.startTime) {
-          conn.startTime = now;
+          conn.startTime = performance.now();
         }
         conn.bytesLoaded = Math.max(conn.bytesLoaded, e.loaded);
-        sampler.update(connections, now);
       },
     }).then(() => {
       conn.done = true;
@@ -169,15 +192,18 @@ export const streamUploadTest = async (sizeMb, signal, onProgress) => {
     });
   });
 
-  await Promise.all(promises);
+  sampler.start(connections);
 
+  try {
+    await Promise.all(promises);
+  } finally {
+    sampler.stop();
+  }
+
+  const speed = aggregateConnections(connections);
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
-
-  const sampledSpeed = sampler.getResult();
-  const fallbackSpeed = (totalBytes / (1024 * 1024) * 8) / elapsed;
-  const speed = sampledSpeed > 0 ? sampledSpeed : fallbackSpeed;
 
   return {
     size_mb: sizeMb,
