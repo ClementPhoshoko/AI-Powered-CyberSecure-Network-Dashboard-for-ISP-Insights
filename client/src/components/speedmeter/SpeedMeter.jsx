@@ -132,7 +132,7 @@ const SpeedMeter = ({
       }
 
       const isDecreasing = diff < 0;
-      const factor = isDecreasing ? 0.06 : 0.12;
+      const factor = isDecreasing ? 0.1 : 0.25;
       const next = current + diff * factor;
       animatedValueRef.current = next;
       setAnimatedValue(next);

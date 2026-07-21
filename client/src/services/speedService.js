@@ -25,7 +25,7 @@ function createProgressTracker(totalBytes, onProgress) {
       prevTime = now;
       prevTotalBytes = totalLoaded;
 
-      if (deltaTime < 0.05) return;
+      if (deltaTime < 0.016) return;
 
       const instantMbps = (deltaBytes / (1024 * 1024) * 8) / deltaTime;
       smoothedSpeed = smoothedSpeed * 0.6 + instantMbps * 0.4;

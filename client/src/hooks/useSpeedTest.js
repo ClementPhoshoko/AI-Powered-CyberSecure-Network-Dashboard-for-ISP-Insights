@@ -21,14 +21,14 @@ const TEST_PHASES = {
   ERROR: 'error'
 };
 
-const DOWNLOAD_SIZES = [1, 5, 10, 20]; // MB
-const UPLOAD_SIZES = [2, 5, 10, 20, 50]; // MB
+const DOWNLOAD_SIZES = [5, 10, 20, 50]; // MB — start large enough to saturate the link
+const UPLOAD_SIZES = [5, 10, 20, 50, 100]; // MB
 const PING_COUNT = 10;
 const DOWNLOAD_PHASE_TARGET_SECONDS = 5;
 const UPLOAD_PHASE_TARGET_SECONDS = 10;
 const DOWNLOAD_MIN_ATTEMPTS = 2;
 const UPLOAD_MIN_ATTEMPTS = 3;
-const DOWNLOAD_MAX_ATTEMPTS = 4;
+const DOWNLOAD_MAX_ATTEMPTS = 5;
 const UPLOAD_MAX_ATTEMPTS = 6;
 const DOWNLOAD_STABILITY_THRESHOLD = 0.12;
 const UPLOAD_STABILITY_THRESHOLD = 0.15;
@@ -113,27 +113,41 @@ function shouldStopAdaptivePhase({
   return getRelativeDelta(currentSpeed, previousSpeed) <= stabilityThreshold;
 }
 
-function chooseAdaptiveDownloadSize(lastSpeedMbps) {
+function chooseAdaptiveDownloadSize(lastSpeedMbps, consecutiveSameCount) {
+  // Force escalation: after 2 attempts at the same size, bump up regardless
+  // of measured speed to break out of the overhead-dominated feedback loop.
+  if (consecutiveSameCount >= 2) {
+    if (lastSpeedMbps < 30) return DOWNLOAD_SIZES[1];  // 10 MB
+    if (lastSpeedMbps < 120) return DOWNLOAD_SIZES[2]; // 20 MB
+    return DOWNLOAD_SIZES[3]; // 50 MB
+  }
+
   if (!Number.isFinite(lastSpeedMbps) || lastSpeedMbps <= 0) {
     return DOWNLOAD_SIZES[0];
   }
 
-  if (lastSpeedMbps < 15) return 1;
-  if (lastSpeedMbps < 80) return 5;
-  if (lastSpeedMbps < 250) return 10;
-  return 20;
+  if (lastSpeedMbps < 25) return DOWNLOAD_SIZES[0];  // 5 MB
+  if (lastSpeedMbps < 80) return DOWNLOAD_SIZES[1];  // 10 MB
+  if (lastSpeedMbps < 250) return DOWNLOAD_SIZES[2]; // 20 MB
+  return DOWNLOAD_SIZES[3]; // 50 MB
 }
 
-function chooseAdaptiveUploadSize(lastSpeedMbps) {
+function chooseAdaptiveUploadSize(lastSpeedMbps, consecutiveSameCount) {
+  if (consecutiveSameCount >= 2) {
+    if (lastSpeedMbps < 20) return UPLOAD_SIZES[1];  // 10 MB
+    if (lastSpeedMbps < 100) return UPLOAD_SIZES[2]; // 20 MB
+    return UPLOAD_SIZES[3]; // 50 MB
+  }
+
   if (!Number.isFinite(lastSpeedMbps) || lastSpeedMbps <= 0) {
     return UPLOAD_SIZES[0];
   }
 
-  if (lastSpeedMbps < 8) return 2;
-  if (lastSpeedMbps < 25) return 5;
-  if (lastSpeedMbps < 120) return 10;
-  if (lastSpeedMbps < 250) return 20;
-  return 50;
+  if (lastSpeedMbps < 15) return UPLOAD_SIZES[0];  // 5 MB
+  if (lastSpeedMbps < 50) return UPLOAD_SIZES[1];  // 10 MB
+  if (lastSpeedMbps < 150) return UPLOAD_SIZES[2]; // 20 MB
+  if (lastSpeedMbps < 350) return UPLOAD_SIZES[3]; // 50 MB
+  return UPLOAD_SIZES[4]; // 100 MB
 }
 
 export function useSpeedTest() {
@@ -244,13 +258,15 @@ export function useSpeedTest() {
     let lastError = null;
     let maxSpeed = 0;
     let minSpeed = Infinity;
+    let lastSizeMb = 0;
+    let consecutiveSameCount = 0;
 
     for (let i = 0; i < DOWNLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
       const sizeMb =
         i === 0
           ? DOWNLOAD_SIZES[0]
-          : chooseAdaptiveDownloadSize(lastSpeedMbps);
+          : chooseAdaptiveDownloadSize(lastSpeedMbps, consecutiveSameCount);
       const start = performance.now();
 
       try {
@@ -258,10 +274,7 @@ export function useSpeedTest() {
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
         const onDownloadProgress = (smoothMbps, _instantMbps, fileProgress) => {
-          const elapsed = (performance.now() - start) / 1000;
-          if (elapsed > 0.5) {
-            setCurrentSpeed(smoothMbps);
-          }
+          setCurrentSpeed(smoothMbps);
           const phaseProgress = 30 + ((i + (fileProgress / 100)) / DOWNLOAD_MAX_ATTEMPTS) * 30;
           setProgress(phaseProgress);
         };
@@ -284,6 +297,14 @@ export function useSpeedTest() {
         lastSpeedMbps = steadySpeed;
         setCurrentSpeed(steadySpeed);
         setProgress(30 + ((i + 1) / DOWNLOAD_MAX_ATTEMPTS) * 30);
+
+        // Track consecutive same-size attempts for force escalation
+        if (sizeMb === lastSizeMb) {
+          consecutiveSameCount++;
+        } else {
+          consecutiveSameCount = 0;
+        }
+        lastSizeMb = sizeMb;
 
         const elapsedSeconds = (performance.now() - phaseStart) / 1000;
         if (
@@ -339,13 +360,15 @@ export function useSpeedTest() {
     let lastError = null;
     let maxSpeed = 0;
     let minSpeed = Infinity;
+    let lastSizeMb = 0;
+    let consecutiveSameCount = 0;
 
     for (let i = 0; i < UPLOAD_MAX_ATTEMPTS; i++) {
       if (isStoppedRef.current) return null;
       const sizeMb =
         i === 0
           ? UPLOAD_SIZES[0]
-          : chooseAdaptiveUploadSize(finalUploadSpeed);
+          : chooseAdaptiveUploadSize(finalUploadSpeed, consecutiveSameCount);
       const start = performance.now();
 
       try {
@@ -353,10 +376,7 @@ export function useSpeedTest() {
         const timeoutId = setTimeout(() => abortControllerRef.current.abort(), 30_000);
 
         const onUploadProgress = (smoothMbps, _instantMbps, fileProgress) => {
-          const elapsed = (performance.now() - start) / 1000;
-          if (elapsed > 0.5) {
-            setCurrentSpeed(smoothMbps);
-          }
+          setCurrentSpeed(smoothMbps);
           const phaseProgress = 60 + ((i + (fileProgress / 100)) / UPLOAD_MAX_ATTEMPTS) * 25;
           setProgress(phaseProgress);
         };
@@ -379,6 +399,14 @@ export function useSpeedTest() {
         finalUploadSpeed = steadySpeed;
         setCurrentSpeed(steadySpeed);
         setProgress(60 + ((i + 1) / UPLOAD_MAX_ATTEMPTS) * 25);
+
+        // Track consecutive same-size attempts for force escalation
+        if (sizeMb === lastSizeMb) {
+          consecutiveSameCount++;
+        } else {
+          consecutiveSameCount = 0;
+        }
+        lastSizeMb = sizeMb;
 
         const elapsedSeconds = (performance.now() - phaseStart) / 1000;
         if (
