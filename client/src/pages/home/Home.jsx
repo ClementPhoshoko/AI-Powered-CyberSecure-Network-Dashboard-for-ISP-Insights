@@ -295,6 +295,9 @@ function Home() {
                       <>{t('speedtest:howToUse.signedOut').split(/\*\*(.*?)\*\*/g).map((part, i) => i % 2 === 1 ? <strong key={i}>{part}</strong> : part)}</>
                     )}
                   </p>
+                  <p className="speaker-text speaker-text--note">
+                    {t('speedtest:howToUse.alsoNote')}
+                  </p>
                 </motion.div>
               </motion.section>
             ) : (

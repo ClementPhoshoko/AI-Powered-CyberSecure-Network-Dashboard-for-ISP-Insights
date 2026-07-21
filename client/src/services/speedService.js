@@ -78,8 +78,12 @@ function aggregateConnections(connections) {
 }
 
 function generateRandomBytes(sizeBytes) {
+  const RANDOM_CHUNK = 65536;
   const buf = new Uint8Array(sizeBytes);
-  crypto.getRandomValues(buf);
+  for (let offset = 0; offset < sizeBytes; offset += RANDOM_CHUNK) {
+    const end = Math.min(offset + RANDOM_CHUNK, sizeBytes);
+    crypto.getRandomValues(buf.subarray(offset, end));
+  }
   return buf;
 }
 

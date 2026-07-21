@@ -30,7 +30,8 @@
     "currentDevice": "You can run a speed test from your current device and connection. If you're on home Wi-Fi, the results reflect your real-world experience right now.",
     "deviceToServer": "It measures device-to-server performance, not a deep inspection of your router, signal strength, or every internal Wi-Fi detail.",
     "signedIn": "Now that you are signed in, don't forget to check your test graphs and history below!",
-    "signedOut": "**Sign in** or **Sign up** to get more detailed insights about your network performance!"
+    "signedOut": "**Sign in** or **Sign up** to get more detailed insights about your network performance!",
+    "alsoNote": "Our measurement algorithm matches Ookla's approach — adaptive parallel connections, timer-based sampling, and outlier trimming. Direct speed comparisons with Ookla or Google aren't meaningful because they operate on 10,000+ dedicated servers worldwide while we run on a single VPS. Our results accurately reflect your connection to this server, which is the correct behaviour for an ISP dashboard."
   },
   "results": {
     "download": "Download",

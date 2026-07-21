@@ -30,7 +30,8 @@
     "currentDevice": "Você pode executar um teste de velocidade do seu dispositivo e conexão atuais. Se estiver no Wi-Fi doméstico, os resultados refletem sua experiência real agora.",
     "deviceToServer": "Ele mede o desempenho do dispositivo ao servidor, não uma inspeção profunda do seu roteador, intensidade do sinal ou detalhes internos do Wi-Fi.",
     "signedIn": "Agora que você está conectado, não se esqueça de verificar seus gráficos e histórico de testes abaixo!",
-    "signedOut": "**Faça login** ou **Cadastre-se** para obter insights mais detalhados sobre o desempenho da sua rede!"
+    "signedOut": "**Faça login** ou **Cadastre-se** para obter insights mais detalhados sobre o desempenho da sua rede!",
+    "alsoNote": "Nosso algoritmo de medição corresponde à abordagem da Ookla — conexões paralelas adaptativas, amostragem baseada em temporizador e eliminação de valores atípicos. Comparações diretas de velocidade com Ookla ou Google não são significativas porque eles operam em 10.000+ servidores dedicados em todo o mundo, enquanto nós funcionamos em um único VPS. Nossos resultados refletem com precisão sua conexão com este servidor, que é o comportamento correto para um painel de ISP."
   },
   "results": {
     "download": "Download",

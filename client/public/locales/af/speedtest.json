@@ -30,7 +30,8 @@
     "currentDevice": "Jy kan 'n spoedtoets vanaf jou huidige toestel en verbinding hardloop. As jy op huis-WiFi is, weerspieël die resultate jou werklike ervaring nou.",
     "deviceToServer": "Dit meet toestel-tot-bediener-prestasie, nie 'n diep inspeksie van jou router, seinsterkte of elke interne WiFi-besonderheid nie.",
     "signedIn": "Noudat jy aangemeld is, moenie vergeet om jou toetsgrafieke en geskiedenis hieronder te kyk nie!",
-    "signedOut": "**Meld aan** of **Registreer** om meer gedetailleerde insigte oor jou netwerkprestasie te kry!"
+    "signedOut": "**Meld aan** of **Registreer** om meer gedetailleerde insigte oor jou netwerkprestasie te kry!",
+    "alsoNote": "Ons meetkunde-algoritme stem ooreen met Ookla se benadering — adaptiewe parallelle verbindings, tydgebasseerde monsterneming en uitlierverwydering. Direkte spoedvergelykings met Ookla of Google is nie betekenisvol nie omdat hulle op 10 000+ toegewyde bedienaars wêreldwyd werk terwyl ons op 'n enkele VPS funksioneer. Ons resultate weerspieël jou verbinding met hierdie bediener akkuraat, wat die korrekte gedrag vir 'n ISP-dashboard is."
   },
   "results": {
     "download": "Aflaai",

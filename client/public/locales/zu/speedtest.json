@@ -30,7 +30,8 @@
     "currentDevice": "Ungagijima ukuhlola ijubane kusuka kudivayisi yakho nokuxhumana kwakho kwamanje. Uma use-Wi-Fi wasekhaya, imiphumela ibonisa isipiliyoni sakho sangempela manje.",
     "deviceToServer": "Ilala ukusebenza kwedivayisi kuseva, hhayi ukuhlolwa okujulile kwe-router yakho, amandla esiginali, noma yonke imininingwane yangaphakathi ye-Wi-Fi.",
     "signedIn": "Manje njengoba ungenile, ungakhohlwa ukubheka amagrafu akho okuhlola nomlando ngezansi!",
-    "signedOut": "**Ngena ngemvume** noma **Bhalisa** ukuze uthole imininingwane eningiliziwe mayelana nokusebenza kwenethiwekhi yakho!"
+    "signedOut": "**Ngena ngemvume** noma **Bhalisa** ukuze uthole imininingwane eningiliziwe mayelana nokusebenza kwenethiwekhi yakho!",
+    "alsoNote": "I-algorithm yokulinganisa yethu ihambisana nendlela ye-Ookla — ukuxhumana okuhlanganiswe kalanga, ukulanda ngokusebenzisa isikhathi nokususa okungajwayelekile. Ukuqhathanisa ijubane ngqo ne-Ookla noma akusebenzi ngoba basebenzisa ama-servers angu-10,000+ aqinile emhlabeni jikelele kanti thina sisebenza ku-VPS eyodwa. Imiphumela yethu ibonisa ngokunembile ukuxhumana kwakho nale server, okuyi-conducting efanele ku-dashboard ye-ISP."
   },
   "results": {
     "download": "Ukulanda",
