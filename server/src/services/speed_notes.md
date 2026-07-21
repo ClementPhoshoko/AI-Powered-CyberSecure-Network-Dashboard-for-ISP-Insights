@@ -1,84 +1,138 @@
-# Speed Test Endpoint Usage Guide
+# Speed Test Implementation Notes
 
 ---
 
-## Endpoints Summary
+## Endpoints
 
-### GET /api/speed/download?sizeMb=X
-- **Purpose**: Stream test data for the frontend to download and measure
-- **Allowed sizes**: 1, 5, 10, 20 (MB)
-- **When to use it**: When you want to run an actual download speed test (used in the adaptive sequence below)
-- **Pro Tip for Real-Time Graph**: Track download progress (bytes downloaded over time) during this request to update a speed graph in real-time!
+### GET /api/speed/download?sizeMb=X&cb=Y
+- **Purpose**: Stream random binary data for the frontend to download and measure
+- **sizeMb**: Any positive number (validated by Zod, coerced from query string)
+- **cb**: Cache-buster (ignored server-side, prevents CDN/proxy caching)
+- **Response**: `application/octet-stream` with `Cache-Control: no-store, no-cache`
+- **Compression**: Explicitly excluded from gzip/deflate middleware
+
+### POST /api/speed/upload?sizeMb=X&cb=Y
+- **Purpose**: Receive uploaded binary data for speed testing (consumed, not persisted)
+- **sizeMb**: Any positive number
+- **cb**: Cache-buster
+- **Compression**: Explicitly excluded from gzip/deflate middleware
 
 ### POST /api/speed/tests/download
-- **Purpose**: Save final download test result + all individual size measurements
-- **When to use it**: Always use this (for debugging/analytics, Grafana insights, etc.)
-
-### POST /api/speed/upload?sizeMb=X
-- **Purpose**: Receive uploaded data from client for speed testing (no storage, just confirms receipt)
-- **Allowed sizes**: 0.5, 1, 5, 10, 20 (MB)
-- **When to use it**: When you want to run an actual upload speed test (used in the adaptive sequence below)
-- **Pro Tip for Real-Time Graph**: Track upload progress (bytes uploaded over time) during this request to update a speed graph in real-time!
+- **Purpose**: Save final download result + all individual pass measurements
 
 ### POST /api/speed/tests/upload
-- **Purpose**: Save final upload test result + all individual size measurements
-- **When to use it**: Always use this (for debugging/analytics, Grafana insights, etc.)
-- **Optional field**: `was_unstable` (boolean) — set to `true` when max/min speed ratio across passes exceeds ~2.5×, flagging an erratic connection
+- **Purpose**: Save final upload result + all individual pass measurements
+- **Optional field**: `was_unstable` (boolean) — set when max/min speed ratio > ~2.5×
 
 ---
 
-## Recommended Approach: Adaptive Sequence (Faster for Users!)
+## Client-Side Measurement Pipeline
 
-### Download Adaptive Sequence
-- Start small, adjust based on initial speed (saves time!)
-- Use for both simple speed meters AND Speedtest.net-style real-time graphs
-- Frontend flow:
-  1. **Step 1: Run 1MB test** (GET /api/speed/download?sizeMb=1)
-     - Track download progress for real-time graph
-     - Measure total time, calculate speed
-  2. **Step 2: Decide next steps** based on measured speed:
-     - If speed > 50 Mbps → skip to 10MB → 20MB
-     - If speed is 10-50 Mbps → run 5MB → 10MB → 20MB
-     - If speed < 10 Mbps → stop at 5MB (no need for larger sizes)
-  3. For each subsequent test size, continue tracking progress for the real-time graph
-   4. Pick best (max speed) result from the sizes you did run
-   5. POST /api/speed/tests/download with all measurements you collected + final result
+### 1. Ping Phase (determines connection count)
+- 10 sequential HTTP pings to `/api/ping/health` using raw `fetch()`
+- Average RTT determines parallel connection count:
 
-### Upload Adaptive Sequence
-- Start small, adjust based on initial speed (saves time!)
-- Use for both simple speed meters AND Speedtest.net-style real-time graphs
-- Frontend flow:
-  1. **Step 1: Run 0.5MB test** (POST /api/speed/upload?sizeMb=0.5)
-     - Track upload progress for real-time graph
-     - Measure total time, calculate speed
-  2. **Step 2: Decide next steps** based on measured speed:
-     - If speed > 50 Mbps → skip to 5MB → 10MB → 20MB
-     - If speed is 10-50 Mbps → run 1MB → 5MB → 10MB → 20MB
-     - If speed < 10 Mbps → stop at 1MB (no need for larger sizes)
-  3. For each subsequent test size, continue tracking progress for the real-time graph
-   4. Pick best (max speed) result from the sizes you did run
-   5. Determine connection stability: if max/min speed ratio across all passes (download + upload) exceeds ~2.5×, set `was_unstable: true`
-   6. POST /api/speed/tests/upload with all measurements you collected + final result + `was_unstable` flag
+| RTT | Connections |
+|---|---|
+| < 20ms | 8 |
+| < 50ms | 6 |
+| < 100ms | 4 |
+| ≥ 100ms | 2 |
+
+### 2. Download Phase
+- **Initial file size** depends on connection count:
+  - 8 connections → start at 20 MB
+  - 6 connections → start at 10 MB
+  - 2 connections → start at 2 MB (slow links need small passes)
+  - 4 connections → start at 5 MB
+- **Per pass**: N parallel GET requests, each downloading `sizeMb / N` MB
+- **Timer sampler**: 50ms `setInterval` snapshots total bytes loaded → computes instantaneous Mbps → EMA smoothed (0.4/0.6 weights)
+- **After pass completes**: `aggregateConnections()` computes per-connection speed, discards slowest 25%, averages rest
+- **Adaptive sizing**: Speed from previous pass determines next file size
+- **Stop conditions** (first true wins):
+  1. Max attempts reached (5)
+  2. Max phase duration (15s) with ≥1 measurement
+  3. Single sustained pass (≥8s) with ≥`minAttempts` (2) measurements
+  4. Target duration (5s) with ≥`minAttempts` (2) measurements
+  5. Stability: last two passes within 12% relative delta, after 3s elapsed
+- **Force escalation**: After 2 consecutive same-size attempts, size is forced upward
+- **Final result**: Longest-duration pass (not median, not max)
+
+### 3. Upload Phase
+- Same pipeline as download, with these differences:
+  - Upload data is `crypto.getRandomValues` (not zeros) to prevent compression inflation
+  - File sizes: 2, 5, 10, 20, 50, 100 MB
+  - Target phase duration: 10 seconds
+  - Max phase duration: 25 seconds
+  - Stability threshold: 15% (vs 12% for download)
+
+### 4. Speed Calculation Formula
+```
+Per-connection speed = (bytesLoaded / 1024 / 1024 * 8) / durationSeconds
+Aggregate speed = mean(connection speeds after discarding slowest 25%)
+```
+
+### 5. Real-Time Progress
+```
+Timer tick → totalBytes = sum(conn.bytesLoaded)
+           → deltaTime = (now - prevTime) / 1000
+           → instantMbps = (deltaBytes / 1024 / 1024 * 8) / deltaTime
+           → smoothedSpeed = smoothedSpeed * 0.4 + instantMbps * 0.6
+           → onProgress(smoothedSpeed, percentComplete)
+```
 
 ---
 
-## Example Adaptive Sequence Flows
+## Adaptive Size Selection
 
-### Fast Connection (>50 Mbps)
-- Download: 1MB → 10MB → 20MB → POST /api/speed/tests/download
-- Upload: 0.5MB → 5MB → 10MB → 20MB → POST /api/speed/tests/upload
+### Download
+| Measured Speed | Next Size |
+|---|---|
+| < 8 Mbps | 2 MB |
+| < 25 Mbps | 5 MB |
+| < 80 Mbps | 10 MB |
+| < 250 Mbps | 20 MB |
+| ≥ 250 Mbps | 50 MB |
 
-### Medium Connection (10-50 Mbps)
-- Download: 1MB →5MB →10MB →20MB → POST /api/speed/tests/download
-- Upload: 0.5MB →1MB →5MB →10MB →20MB → POST /api/speed/tests/upload
+Force escalation (after 2 same-size attempts):
+| Measured Speed | Forced Size |
+|---|---|
+| < 10 Mbps | 5 MB |
+| < 40 Mbps | 10 MB |
+| < 150 Mbps | 20 MB |
+| ≥ 150 Mbps | 50 MB |
 
-### Slow Connection (<10 Mbps)
-- Download: 1MB →5MB → POST /api/speed/tests/download
-- Upload: 0.5MB →1MB → POST /api/speed/tests/upload
+### Upload
+| Measured Speed | Next Size |
+|---|---|
+| < 5 Mbps | 2 MB |
+| < 15 Mbps | 5 MB |
+| < 50 Mbps | 10 MB |
+| < 150 Mbps | 20 MB |
+| < 350 Mbps | 50 MB |
+| ≥ 350 Mbps | 100 MB |
 
 ---
 
-## Frontend UI Notes
-- **For Simple Speed Meter**: Just show the final best/average speed
-- **For Speedtest.net-Style Graph**: Track bytes downloaded/uploaded over time during each test request, then combine all data into a single continuous graph!
-- **No Backend Changes Needed**: Our current backend already supports everything you need for either UI!
+## Server-Side Streaming
+
+The download endpoint uses an async generator (`generateRandomDataStream`) that yields 64 KB chunks from a pre-cached 1 MB random buffer (`crypto.randomBytes`). The buffer is generated once at server startup and sliced/wrapped for each chunk, avoiding per-request crypto overhead. Backpressure is handled via the `drain` event on `res.write()`.
+
+The upload endpoint consumes the incoming stream without persisting it — the request body is read and discarded.
+
+---
+
+## Ookla Methodology Comparison
+
+| Aspect | Ookla | Ours |
+|---|---|---|
+| Connections | 2–8 adaptive to RTT | 2–8 adaptive to RTT |
+| Pass structure | Fixed duration (~10s) | Fixed file size, adaptive |
+| Sampling | ~30 Hz per connection | 20 Hz timer (50ms) |
+| Outlier trimming | Top 10% + bottom 30% of time slices | Slowest 25% of connections |
+| Result selection | Median across passes | Longest-duration pass |
+| Upload data | Random | Random |
+| Cache busting | Yes | Yes |
+| Compression bypass | Yes | Yes |
+
+The algorithm is structurally equivalent to Ookla. The remaining accuracy gap is server infrastructure (Ookla: 10,000+ dedicated servers; ours: single VPS).

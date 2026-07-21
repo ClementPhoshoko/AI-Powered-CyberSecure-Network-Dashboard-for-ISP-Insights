@@ -65,7 +65,11 @@ Supabase Database
 ## Features
 
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling with public/anonymous access support
-- **Parallel Stream Speed Measurement**: Download and upload use 4 concurrent HTTP streams. Speed is measured as total bytes transferred / total elapsed time (global first-start to last-end). Compression middleware is excluded from speed endpoints to avoid interference with binary payloads.
+- **RTT-Adaptive Parallel Streams**: Connection count (2–8) is chosen based on measured RTT. Low-latency links use more streams to saturate the link; high-latency links use fewer to avoid head-of-line blocking. Matches Ookla's adaptive connection strategy.
+- **Timer-Based Throughput Sampling**: A 50ms interval timer (20 Hz) snapshots bytes loaded across all connections for real-time progress, decoupling measurement from Axios callback frequency. Provides consistent sampling on both 1 Mbps and 1 Gbps+ connections.
+- **Per-Connection Outlier Trimming**: Each connection's throughput is computed from its own start→end window. The slowest 25% of connections are discarded (TCP congestion outliers), and the remaining speeds are averaged.
+- **Longest-Duration Pass Selection**: The final result is the longest-duration pass (not median, not max), as it has the most throughput samples and best represents steady-state throughput.
+- **Random Upload Data**: Upload blobs use `crypto.getRandomValues` instead of zero-filled buffers, preventing transparent compression from inflating measurements.
 - **Sequential Ping Measurement**: Pings fire one at a time (not concurrently) to avoid event-loop queuing inflating RTT. Uses raw `fetch()` to bypass Axios interceptor overhead. Compression middleware is excluded from the ping health endpoint.
 - **Connection Stability Detection**: Flags erratic connections when max/min speed ratio across adaptive passes exceeds ~2.5×
 - **Data Storage**: Persistent test result storage in Supabase PostgreSQL
