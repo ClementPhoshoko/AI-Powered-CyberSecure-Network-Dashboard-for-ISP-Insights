@@ -1,7 +1,6 @@
 import api from './api';
 
 const TIMER_INTERVAL_MS = 50;
-const CONNECTION_DISCARD_PCT = 0.25;
 
 export function getOptimalConnectionCount(avgRttMs) {
   if (avgRttMs < 20) return 8;
@@ -52,29 +51,6 @@ function createTimerSampler(totalBytes, onProgress) {
       return smoothedSpeed;
     }
   };
-}
-
-function aggregateConnections(connections) {
-  const connResults = connections
-    .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
-    .map(c => {
-      const duration = (c.endTime - c.startTime) / 1000;
-      const speed = duration > 0 ? (c.bytesLoaded / (1024 * 1024) * 8) / duration : 0;
-      return { bytes: c.bytesLoaded, duration, speed };
-    })
-    .filter(c => c.duration > 0.001 && c.speed > 0);
-
-  if (connResults.length === 0) return 0;
-  if (connResults.length <= 2) {
-    return connResults.reduce((sum, c) => sum + c.speed, 0) / connResults.length;
-  }
-
-  connResults.sort((a, b) => a.speed - b.speed);
-  const discardCount = Math.max(1, Math.ceil(connResults.length * CONNECTION_DISCARD_PCT));
-  const kept = connResults.slice(discardCount);
-
-  if (kept.length === 0) return connResults[connResults.length - 1].speed;
-  return kept.reduce((sum, c) => sum + c.speed, 0) / kept.length;
 }
 
 function generateRandomBytes(sizeBytes) {
@@ -128,13 +104,13 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionC
     sampler.stop();
   }
 
-  const speed = aggregateConnections(connections);
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
+  const totalMbps = elapsed > 0 ? (sizeMb * 8) / elapsed : 0;
 
   return {
-    download_speed_mbps: speed,
+    download_speed_mbps: totalMbps,
     file_size_mb: sizeMb,
     test_duration_seconds: elapsed,
   };
@@ -192,15 +168,15 @@ export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCou
     sampler.stop();
   }
 
-  const speed = aggregateConnections(connections);
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
+  const totalMbps = elapsed > 0 ? (sizeMb * 8) / elapsed : 0;
 
   return {
     size_mb: sizeMb,
     duration_seconds: elapsed,
-    upload_speed_mbps: speed,
+    upload_speed_mbps: totalMbps,
   };
 };
 
