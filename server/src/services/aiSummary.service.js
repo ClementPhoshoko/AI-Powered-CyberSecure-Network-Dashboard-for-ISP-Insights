@@ -43,53 +43,45 @@ class AiSummaryService {
     return summary + advice;
   }
 
-  // Gemini API client
+  // Fallback model chain — tried in order when a model returns 503 (high demand).
+  // User-configured GEMINI_MODEL is tried first, then this list.
+  static FALLBACK_MODELS = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-2.5-pro',
+    'gemini-1.5-pro',
+  ];
+
+  // Gemini API client with automatic model fallback on 503/overload
   static async generateGeminiSummary(metrics) {
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('GEMINI_API_KEY not configured');
     }
 
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const preferred = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    // Build try-order: preferred first, then remaining fallbacks
+    const tryOrder = [preferred, ...this.FALLBACK_MODELS.filter(m => m !== preferred)];
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: modelName });
+    let lastError;
 
-    const prompt = `You are a friendly network performance assistant. You will be given network metrics and scores, and you must generate a human-readable summary with actionable advice (total 3-5 sentences).
-
-RULES:
-- STRICT LIMIT: The final text MUST NOT exceed 600 characters total. 
-- ONLY use the provided metrics and scores. DO NOT calculate anything new.
-- Describe overall network quality (excellent, good, fair, poor) based on network_health_score.
-- Mention suitability for gaming, streaming, and video calls based on their respective scores.
-- Include 1-2 specific, actionable pieces of advice (e.g., move closer to router, limit other downloads, restart router, etc.)
-- Highlight strengths and weaknesses without listing every single raw number.
-- Keep it natural and conversational, not robotic. Explain what the current network state means in plain language.
-- Avoid internal terms like probe, ICMP, transport-layer, backend timing model, or confidence metadata.
-- Describe latency or responsiveness simply as responsiveness or delay.
-- Keep the wording user-friendly and product-facing.
-- If a metric is 'N/A', ignore it naturally. Do not say 'N/A' in the text.
-- If instability_flag is true, briefly mention the connection seemed erratic and advise the user to check their router placement or restart it.
-- If the connection was stable, you can note that as a positive.
-
-METRICS AND SCORES:
-- Download speed: ${metrics.download_speed_mbps || 'N/A'} Mbps
-- Upload speed: ${metrics.upload_speed_mbps || 'N/A'} Mbps
-- Latency: ${metrics.ping_avg_ms || 'N/A'} ms
-- Stability variation: ${metrics.jitter_ms || 'N/A'} ms
-- Packet loss: ${metrics.packet_loss_percent || 'N/A'}%
-- Network health score: ${metrics.network_health_score || 0}/100
-- Gaming score: ${metrics.gaming_score || 0}/100
-- Streaming score: ${metrics.streaming_score || 0}/100
-- Video call score: ${metrics.video_call_score || 0}/100
-- Browsing score: ${metrics.browsing_score || 0}/100
-- instability_flag: ${metrics.was_unstable}
-
-Please return ONLY the summary text, no extra formatting, no quote marks, and no JSON.
-`.trim();
-
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-    return text.trim();
+    for (const modelName of tryOrder) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(buildPrompt(metrics));
+        const text = result.response.text().trim();
+        if (text) return text;
+      } catch (err) {
+        lastError = err;
+        const isOverload = err.message?.includes('503') || err.message?.includes('high demand') || err.message?.includes('ResourceExhausted');
+        if (isOverload && modelName !== tryOrder[tryOrder.length - 1]) {
+          console.warn(`[aiSummary] Model ${modelName} overloaded, falling back to next model`);
+          continue;
+        }
+        throw err;
+      }
+    }
+    throw lastError || new Error('All Gemini models failed');
   }
 
   // Main method to generate summary with fallbacks
@@ -139,6 +131,42 @@ Please return ONLY the summary text, no extra formatting, no quote marks, and no
 
     return { ai_summary: summary };
   }
+}
+
+// Prompt builder — standalone function outside the class
+function buildPrompt(metrics) {
+  return `You are a friendly network performance assistant. You will be given network metrics and scores, and you must generate a human-readable summary with actionable advice (total 3-5 sentences).
+
+RULES:
+- STRICT LIMIT: The final text MUST NOT exceed 600 characters total. 
+- ONLY use the provided metrics and scores. DO NOT calculate anything new.
+- Describe overall network quality (excellent, good, fair, poor) based on network_health_score.
+- Mention suitability for gaming, streaming, and video calls based on their respective scores.
+- Include 1-2 specific, actionable pieces of advice (e.g., move closer to router, limit other downloads, restart router, etc.)
+- Highlight strengths and weaknesses without listing every single raw number.
+- Keep it natural and conversational, not robotic. Explain what the current network state means in plain language.
+- Avoid internal terms like probe, ICMP, transport-layer, backend timing model, or confidence metadata.
+- Describe latency or responsiveness simply as responsiveness or delay.
+- Keep the wording user-friendly and product-facing.
+- If a metric is 'N/A', ignore it naturally. Do not say 'N/A' in the text.
+- If instability_flag is true, briefly mention the connection seemed erratic and advise the user to check their router placement or restart it.
+- If the connection was stable, you can note that as a positive.
+
+METRICS AND SCORES:
+- Download speed: ${metrics.download_speed_mbps || 'N/A'} Mbps
+- Upload speed: ${metrics.upload_speed_mbps || 'N/A'} Mbps
+- Latency: ${metrics.ping_avg_ms || 'N/A'} ms
+- Stability variation: ${metrics.jitter_ms || 'N/A'} ms
+- Packet loss: ${metrics.packet_loss_percent || 'N/A'}%
+- Network health score: ${metrics.network_health_score || 0}/100
+- Gaming score: ${metrics.gaming_score || 0}/100
+- Streaming score: ${metrics.streaming_score || 0}/100
+- Video call score: ${metrics.video_call_score || 0}/100
+- Browsing score: ${metrics.browsing_score || 0}/100
+- instability_flag: ${metrics.was_unstable}
+
+Please return ONLY the summary text, no extra formatting, no quote marks, and no JSON.
+`.trim();
 }
 
 module.exports = AiSummaryService;

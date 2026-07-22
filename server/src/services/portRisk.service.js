@@ -371,86 +371,47 @@ class PortRiskService {
     return recommendations;
   }
 
-  // Generate AI security summary
+  // Fallback model chain — tried in order when a model returns 503 (high demand).
+  // User-configured GEMINI_MODEL is tried first, then this list.
+  static FALLBACK_MODELS = [
+    'gemini-2.5-flash',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-2.5-pro',
+    'gemini-1.5-pro',
+  ];
+
+  // Generate AI security summary (with automatic model fallback on overload)
   static async generateAiSecuritySummary(scanData, riskScore, status, extraInsights = {}) {
     if (!process.env.GEMINI_API_KEY) {
       // Fallback to rule-based summary
       return this.generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights);
     }
 
-    try {
-      const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: modelName });
+    const preferred = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const tryOrder = [preferred, ...this.FALLBACK_MODELS.filter(m => m !== preferred)];
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    let lastError;
 
-      const openPortsText = scanData.openPortsWithRisk.map(p => 
-        `${p.port} (${p.serviceName}, ${p.riskLevel})`
-      ).join(', ') || 'No open ports detected';
-
-      const extraDetails = [];
-      if (extraInsights.unencryptedProtocols && extraInsights.unencryptedProtocols.length > 0) {
-        extraDetails.push(`Unencrypted ports: ${extraInsights.unencryptedProtocols.map(p => p.port).join(', ')}`);
+    for (const modelName of tryOrder) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(buildSecurityPrompt(scanData, riskScore, status, extraInsights));
+        const text = result.response.text().trim();
+        if (text) return text;
+      } catch (error) {
+        lastError = error;
+        const isOverload = error.message?.includes('503') || error.message?.includes('high demand') || error.message?.includes('ResourceExhausted');
+        if (isOverload && modelName !== tryOrder[tryOrder.length - 1]) {
+          console.warn(`[portRisk] Model ${modelName} overloaded, falling back to next model`);
+          continue;
+        }
+        console.warn('AI security summary failed, using fallback:', error.message);
+        return this.generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights);
       }
-      if (extraInsights.exploitTargets && extraInsights.exploitTargets.length > 0) {
-        extraDetails.push(`Exploit targets: ${extraInsights.exploitTargets.map(p => p.port).join(', ')}`);
-      }
-      if (extraInsights.dangerousCombinations && extraInsights.dangerousCombinations.length > 0) {
-        extraDetails.push(`Dangerous combinations: ${extraInsights.dangerousCombinations.map(c => c.name).join(', ')}`);
-      }
-
-      const prompt = `
-You are a senior ISP cybersecurity analyst reviewing a port scan.
-
-Generate a clear, operational security summary for network engineers.
-
-Rules:
-- 4–6 sentences max
-- Start with overall security posture and severity
-- Prioritize issues by severity (critical > high > medium > low)
-- Mention ALL critical and high-risk issues if present
-- Mention medium/low risks only if space allows
-- Clearly highlight dangerous patterns (combinations, unencrypted services, exploit targets)
-- Provide 1–3 actionable remediation steps
-- Do NOT repeat raw scan data
-- No bullet points
-- Keep tone professional and suitable for ISP/security teams
-
-Scan Results:
-Security Status: ${status}
-Security Score: ${riskScore}/100
-
-Open Ports Detail:
-${openPortsText}
-
-Highest Risk Level: ${highestRiskLevel}
-
-Risk Breakdown:
-Critical: ${criticalPorts?.join(", ") || "None"}
-High: ${highRiskPorts?.join(", ") || "None"}
-Medium: ${mediumRiskPorts?.join(", ") || "None"}
-Low: ${lowRiskPorts?.join(", ") || "None"}
-
-Dangerous Combinations (CRITICAL PATTERNS):
-${dangerousCombinations?.map(c => `${c.name} - ${c.description}`).join("; ") || "None"}
-
-Unencrypted Services:
-${unencryptedProtocols?.map(p => `${p.port} (${p.serviceName})`).join(", ") || "None"}
-
-Exploit Targets:
-${exploitTargets?.map(p => `${p.port} (${p.serviceName})`).join(", ") || "None"}
-
-Additional Context:
-${extraDetails.length ? extraDetails.join("; ") : "None"}
-
-Return ONLY the summary.
-`;
-
-      const result = await model.generateContent(prompt);
-      return result.response.text().trim();
-    } catch (error) {
-      console.warn('AI security summary failed, using fallback:', error);
-      return this.generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights);
     }
+    console.warn('All Gemini models failed, using fallback:', lastError?.message);
+    return this.generateRuleBasedSecuritySummary(scanData, riskScore, status, extraInsights);
   }
 
   // Rule-based fallback summary
@@ -594,6 +555,88 @@ Return ONLY the summary.
 
     return this.createAssessmentFromScan(userId, null, publicIp, scanStartedAt, previousAssessments);
   }
+}
+
+function buildSecurityPrompt(scanData, riskScore, status, extraInsights) {
+  const openPortsText = scanData.openPortsWithRisk.map(p => 
+    `${p.port} (${p.serviceName}, ${p.riskLevel})`
+  ).join(', ') || 'No open ports detected';
+
+  const extraDetails = [];
+  if (extraInsights.unencryptedProtocols && extraInsights.unencryptedProtocols.length > 0) {
+    extraDetails.push(`Unencrypted ports: ${extraInsights.unencryptedProtocols.map(p => p.port).join(', ')}`);
+  }
+  if (extraInsights.exploitTargets && extraInsights.exploitTargets.length > 0) {
+    extraDetails.push(`Exploit targets: ${extraInsights.exploitTargets.map(p => p.port).join(', ')}`);
+  }
+  if (extraInsights.dangerousCombinations && extraInsights.dangerousCombinations.length > 0) {
+    extraDetails.push(`Dangerous combinations: ${extraInsights.dangerousCombinations.map(c => c.name).join(', ')}`);
+  }
+
+  const riskBreakdown = scanData.openPortsWithRisk.reduce((acc, p) => {
+    if (!acc[p.riskLevel]) acc[p.riskLevel] = [];
+    acc[p.riskLevel].push(`${p.port}`);
+    return acc;
+  }, {});
+
+  const highestRiskLevel = scanData.openPortsWithRisk.some(p => p.riskLevel === 'critical') ? 'Critical' :
+    scanData.openPortsWithRisk.some(p => p.riskLevel === 'high') ? 'High' :
+    scanData.openPortsWithRisk.some(p => p.riskLevel === 'medium') ? 'Medium' : 'Low';
+
+  const criticalPorts = riskBreakdown.critical || [];
+  const highRiskPorts = riskBreakdown.high || [];
+  const mediumRiskPorts = riskBreakdown.medium || [];
+  const lowRiskPorts = riskBreakdown.low || [];
+  const dangerousCombinations = extraInsights.dangerousCombinations || [];
+  const unencryptedProtocols = extraInsights.unencryptedProtocols || [];
+  const exploitTargets = extraInsights.exploitTargets || [];
+
+  return `
+You are a senior ISP cybersecurity analyst reviewing a port scan.
+
+Generate a clear, operational security summary for network engineers.
+
+Rules:
+- 4–6 sentences max
+- Start with overall security posture and severity
+- Prioritize issues by severity (critical > high > medium > low)
+- Mention ALL critical and high-risk issues if present
+- Mention medium/low risks only if space allows
+- Clearly highlight dangerous patterns (combinations, unencrypted services, exploit targets)
+- Provide 1–3 actionable remediation steps
+- Do NOT repeat raw scan data
+- No bullet points
+- Keep tone professional and suitable for ISP/security teams
+
+Scan Results:
+Security Status: ${status}
+Security Score: ${riskScore}/100
+
+Open Ports Detail:
+${openPortsText}
+
+Highest Risk Level: ${highestRiskLevel}
+
+Risk Breakdown:
+Critical: ${criticalPorts.join(", ") || "None"}
+High: ${highRiskPorts.join(", ") || "None"}
+Medium: ${mediumRiskPorts.join(", ") || "None"}
+Low: ${lowRiskPorts.join(", ") || "None"}
+
+Dangerous Combinations (CRITICAL PATTERNS):
+${dangerousCombinations.map(c => `${c.name} - ${c.description}`).join("; ") || "None"}
+
+Unencrypted Services:
+${unencryptedProtocols.map(p => `${p.port} (${p.serviceName})`).join(", ") || "None"}
+
+Exploit Targets:
+${exploitTargets.map(p => `${p.port} (${p.serviceName})`).join(", ") || "None"}
+
+Additional Context:
+${extraDetails.length ? extraDetails.join("; ") : "None"}
+
+Return ONLY the summary.
+`;
 }
 
 module.exports = PortRiskService;
