@@ -153,17 +153,19 @@ async function streamDownloadCDN(sizeMb, signal, onProgress, connectionCount) {
 }
 
 export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionCount) => {
-  // When a CDN base URL is configured, download from Cloudflare-cached
-  // static files to bypass the VPS bandwidth cap.
-  if (CDN_BASE) {
-    return streamDownloadCDN(sizeMb, signal, onProgress, connectionCount);
-  }
+  // Create sampler but DON'T start it yet - this will be called multiple times per attempt
   const totalBytes = sizeMb * 1024 * 1024;
   const conns = connectionCount || 4;
   const chunkSizeMb = sizeMb / conns;
   const sampler = createTimerSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
+  // When a CDN base URL is configured, download from Cloudflare-cached
+  // static files to bypass the VPS bandwidth cap.
+  if (CDN_BASE) {
+    return streamDownloadCDN(sizeMb, signal, onProgress, connectionCount);
+  }
+
 
   const connections = Array.from({ length: conns }, () => ({
     bytesLoaded: 0,
@@ -226,6 +228,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCou
   const conns = connectionCount || 4;
   const chunkSizeMb = sizeMb / conns;
   const chunkSizeBytes = Math.round(chunkSizeMb * 1024 * 1024);
+  // Create sampler but DON'T start it yet - this will be called multiple times per attempt
   const sampler = createTimerSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
