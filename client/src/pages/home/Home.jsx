@@ -6,6 +6,9 @@ import SpeedMeter from '../../components/speedmeter/SpeedMeter';
 import loginLogo from '../../assets/avatars/login_plain_ai_speedtest_cropped.png';
 import aiIcon from '../../assets/avatars/ai.png';
 import speakerAvatar from '../../assets/avatars/woman_instructor_avatar.png';
+import speedtestImg from '../../assets/speedtest_run_test.png';
+import securityImg from '../../assets/port_security_scan.png';
+import analyticsImg from '../../assets/history_speed_trends.png';
 import StatsCards from '../../components/stats_cards/StatsCards';
 import TimeSeriesGraphs from '../../components/time_series/TimeSeriesGraphs';
 import ErrorModal from '../../components/error_modal/ErrorModal';
@@ -315,6 +318,47 @@ function Home() {
             )}
           </AnimatePresence>
         </div>
+
+        <AnimatePresence mode="wait">
+          {!isRunning && !isComplete && (
+            <motion.section
+              key="workflow"
+              className="workflow-section"
+              variants={fadeVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={fadeTransition}
+            >
+              <span className="workflow-label">{t('speedtest:workflow.label', 'What You Get')}</span>
+              <div className="workflow-chain">
+                <div className="workflow-connector-line" />
+                {[
+                  { img: speedtestImg, num: '1', titleKey: 'speedtest:workflow.step1Title', descKey: 'speedtest:workflow.step1Desc', fallbackTitle: 'Adaptive Speed Test', fallbackDesc: 'Measures real throughput across parallel connections for Ookla-grade accuracy' },
+                  { img: securityImg, num: '2', titleKey: 'speedtest:workflow.step2Title', descKey: 'speedtest:workflow.step2Desc', fallbackTitle: 'Network Security Scan', fallbackDesc: 'Identifies open ports, exposures, and configuration risks on your connection' },
+                  { img: analyticsImg, num: '3', titleKey: 'speedtest:workflow.step3Title', descKey: 'speedtest:workflow.step3Desc', fallbackTitle: 'Smart Analytics', fallbackDesc: 'Time-series graphs and statistics reveal your network performance patterns' },
+                  { img: aiIcon, num: '4', titleKey: 'speedtest:workflow.step4Title', descKey: 'speedtest:workflow.step4Desc', fallbackTitle: 'AI Insights', fallbackDesc: 'Personalised recommendations powered by AI to optimise your network' },
+                ].map((step, i) => (
+                  <motion.div
+                    key={step.num}
+                    className="workflow-step"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1], delay: 0.25 + i * 0.1 }}
+                  >
+                    <div className="workflow-step-img-wrap">
+                      <img src={step.img} alt="" className="workflow-step-img" />
+                    </div>
+                    <span className="workflow-step-num">{step.num}</span>
+                    <h3 className="workflow-step-title">{t(step.titleKey, step.fallbackTitle)}</h3>
+                    <p className="workflow-step-desc">{t(step.descKey, step.fallbackDesc)}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
       </div>
       <AnimatePresence>
         {testResult && (
