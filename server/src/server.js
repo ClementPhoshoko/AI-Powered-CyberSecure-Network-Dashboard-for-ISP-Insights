@@ -80,8 +80,13 @@ app.use(morgan('combined')); // Logging
 // Files are generated synchronously at startup so they exist before any
 // requests arrive (avoids HTTP 416 Range-Not-Satisfiable on partial files).
 const SPEEDTEST_STATIC_DIR = path.join(__dirname, '..', 'public', 'speedtest', 'download');
-const { generateAll } = require('../scripts/generate-test-files');
-generateAll();
+fs.mkdirSync(SPEEDTEST_STATIC_DIR, { recursive: true });
+try {
+  const { generateAll } = require('../scripts/generate-test-files');
+  generateAll();
+} catch (err) {
+  console.error('[server] Test file generation failed — server will start without CDN files:', err.message);
+}
 // Serve cached test files with headers that tell Cloudflare to cache
 app.use('/speedtest/download', (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=86400, no-transform');
