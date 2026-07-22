@@ -111,11 +111,21 @@ const authLimiter = rateLimit({
 });
 
 // Rate limiting — global API (abuse protection)
+// Speed streaming endpoints are excluded — they are hit by many parallel
+// connections during a single speed test and would exhaust the limit quickly.
 const globalLimiter = rateLimit({
   windowMs: 1 * 60 * 1000,  // 1 minute
   max: 100,                  // 100 requests per minute
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Skip speed streaming endpoints — handled by speedtestLimiter
+    if (req.path === '/api/speed/download' || req.path === '/api/speed/upload') return true;
+    // Skip authenticated users
+    const auth = req.headers.authorization;
+    if (auth && auth.startsWith('Bearer ')) return true;
+    return false;
+  },
   message: { status: 'error', message: 'Too many requests. Sign in for higher limits and full access.' },
 });
 
