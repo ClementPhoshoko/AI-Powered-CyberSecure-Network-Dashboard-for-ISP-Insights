@@ -372,6 +372,10 @@ Replace the contents with:
 
 ```caddy
 your-domain.com {
+        handle /speedtest/download/* {
+                reverse_proxy localhost:5000
+        }
+
         handle /api/* {
                 reverse_proxy localhost:5000
         }

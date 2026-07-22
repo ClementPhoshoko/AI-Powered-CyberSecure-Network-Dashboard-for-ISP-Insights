@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const SIZES_MB = [2, 5, 10, 20, 50, 100];
+const SIZES_MB = [2, 5, 10, 20, 50, 100, 200];
 const OUT_DIR = path.join(__dirname, '..', 'public', 'speedtest', 'download');
 const CHUNK = 1024 * 1024; // 1 MB per chunk
 
