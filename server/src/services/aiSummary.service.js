@@ -49,8 +49,9 @@ class AiSummaryService {
       throw new Error('GEMINI_API_KEY not configured');
     }
 
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: modelName });
 
     const prompt = `You are a friendly network performance assistant. You will be given network metrics and scores, and you must generate a human-readable summary with actionable advice (total 3-5 sentences).
 

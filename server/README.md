@@ -329,6 +329,7 @@ The rule-based system uses network_health_score to categorize connection quality
 
    # AI (optional — falls back to rule-based summaries if unset)
    GEMINI_API_KEY=your_gemini_api_key
+   GEMINI_MODEL=gemini-2.5-flash       # Change when a model is overloaded
 
    # OTP / CORS
    OTP_SECRET=your_otp_hmac_secret
