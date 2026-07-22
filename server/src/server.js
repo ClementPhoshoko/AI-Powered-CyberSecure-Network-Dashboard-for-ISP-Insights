@@ -77,13 +77,11 @@ app.use(morgan('combined')); // Logging
 
 // Generate pre-randomised static test files for CDN-backed speed tests.
 // Cloudflare caches these at the edge so download traffic bypasses the VPS.
+// Files are generated synchronously at startup so they exist before any
+// requests arrive (avoids HTTP 416 Range-Not-Satisfiable on partial files).
 const SPEEDTEST_STATIC_DIR = path.join(__dirname, '..', 'public', 'speedtest', 'download');
-fs.mkdirSync(SPEEDTEST_STATIC_DIR, { recursive: true });
-// Run generator in background (non-blocking startup)
-require('child_process').exec(
-  `node "${path.join(__dirname, '..', 'scripts', 'generate-test-files.js')}"`,
-  (err) => { if (err) console.error('Test file generation failed:', err.message); }
-);
+const { generateAll } = require('../scripts/generate-test-files');
+generateAll();
 // Serve cached test files with headers that tell Cloudflare to cache
 app.use('/speedtest/download', (req, res, next) => {
   res.setHeader('Cache-Control', 'public, max-age=86400, no-transform');

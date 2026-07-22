@@ -29,3 +29,6 @@ Thumbs.db
 # Build/Dist
 dist/
 build/
+
+# CDN test files (generated at startup)
+public/speedtest/download/
