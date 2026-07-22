@@ -65,6 +65,7 @@ Supabase Database
 ## Features
 
 - **Network Speed Testing**: Comprehensive ping, download, and upload test handling with public/anonymous access support
+- **Cloudflare CDN-Backed Downloads** (optional): Pre-randomised static test files served with `Cache-Control: public, max-age=86400` so Cloudflare caches them at the edge. Download traffic bypasses the VPS bandwidth cap entirely — the client fetches byte ranges of a cached file via HTTP Range headers across N parallel connections.
 - **RTT-Adaptive Parallel Streams**: Connection count (2–8) is chosen based on measured RTT. Low-latency links use more streams to saturate the link; high-latency links use fewer to avoid head-of-line blocking. Matches Ookla's adaptive connection strategy.
 - **Timer-Based Throughput Sampling**: A 50ms interval timer (20 Hz) snapshots bytes loaded across all connections for real-time progress, decoupling measurement from Axios callback frequency. Provides consistent sampling on both 1 Mbps and 1 Gbps+ connections.
 - **Per-Connection Outlier Trimming**: Each connection's throughput is computed from its own start→end window. The slowest 25% of connections are discarded (TCP congestion outliers), and the remaining speeds are averaged.
@@ -368,6 +369,38 @@ npm start
 ```
 
 The server will start on `http://localhost:5000` (by default).
+
+## Cloudflare CDN Setup (Optional)
+
+A single VPS has limited outbound bandwidth (~5–100 Mbps depending on provider). For users with high-speed connections (300+ Mbps), the download test measures the VPS bottleneck instead of the real line speed. Cloudflare's free CDN sidesteps this by caching static test files at hundreds of edge nodes worldwide.
+
+### Prerequisites
+
+- Your domain is behind Cloudflare proxy (orange cloud enabled on the DNS A record)
+- The VPS is accessible through the Cloudflare-proxied domain
+
+### How It Works
+
+1. The server generates pre-randomised test files (2, 5, 10, 20, 50, 100 MB) on startup at `server/public/speedtest/download/`
+2. Files are served with `Cache-Control: public, max-age=86400` — Cloudflare caches them at the edge after the first request from each region
+3. The client fetches byte ranges of the cached file using HTTP Range headers across N parallel connections
+4. Subsequent download tests hit the Cloudflare edge (unmetered bandwidth) instead of the VPS
+
+Uploads still go directly to the VPS (Cloudflare can't proxy upload data).
+
+### Setup
+
+1. **Enable Cloudflare proxy on your domain** — In Cloudflare DNS settings, ensure your domain's A record has the orange cloud (proxy) enabled
+2. **Set the client environment variable** — Add to your client `.env.production`:
+   ```
+   VITE_CDN_BASE_URL=https://yourdomain.com
+   ```
+3. **Deploy the server** — The `generate-test-files.js` script runs automatically on startup. File generation takes ~30 seconds for all sizes and skips existing files on subsequent restarts.
+4. **First test warms the cache** — The first download request from each Cloudflare region hits the VPS. Subsequent requests from that region are served from the edge.
+
+### Verify
+
+Run a speed test twice. The first test may show VPS-capped download speeds; the second should show your real line speed. Check Cloudflare dashboard → **Caching** → **Cache Analytics** for hit rates on `/speedtest/download/*`.
 
 ## API Documentation
 
