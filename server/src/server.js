@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config({
     path: process.env.NODE_ENV === 'production' ? '.env.production' : './src/.env'
 });
@@ -34,7 +36,8 @@ function shouldCompress(req, res) {
   if (
     req.path === '/api/speed/download' ||
     req.path === '/api/speed/upload' ||
-    req.path === '/api/ping/health'
+    req.path === '/api/ping/health' ||
+    req.path.startsWith('/speedtest/')
   ) {
     return false;
   }
@@ -71,6 +74,29 @@ app.use(cors({
 app.use(compression({ filter: shouldCompress })); // Compress responses except speed-test endpoints
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined')); // Logging
+
+// Generate pre-randomised static test files for CDN-backed speed tests.
+// Cloudflare caches these at the edge so download traffic bypasses the VPS.
+const SPEEDTEST_STATIC_DIR = path.join(__dirname, '..', 'public', 'speedtest', 'download');
+fs.mkdirSync(SPEEDTEST_STATIC_DIR, { recursive: true });
+// Run generator in background (non-blocking startup)
+require('child_process').exec(
+  `node "${path.join(__dirname, '..', 'scripts', 'generate-test-files.js')}"`,
+  (err) => { if (err) console.error('Test file generation failed:', err.message); }
+);
+// Serve cached test files with headers that tell Cloudflare to cache
+app.use('/speedtest/download', (req, res, next) => {
+  res.setHeader('Cache-Control', 'public, max-age=86400, no-transform');
+  res.setHeader('CDN-Cache-Control', 'public, max-age=86400');
+  next();
+}, express.static(SPEEDTEST_STATIC_DIR, {
+  acceptRanges: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.bin')) {
+      res.setHeader('Content-Type', 'application/octet-stream');
+    }
+  }
+}));
 
 // Rate limiting — auth endpoints (brute-force protection)
 const authLimiter = rateLimit({

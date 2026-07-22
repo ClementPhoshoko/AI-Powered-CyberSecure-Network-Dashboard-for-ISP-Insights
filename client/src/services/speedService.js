@@ -2,6 +2,10 @@ import api from './api';
 
 const TIMER_INTERVAL_MS = 50;
 
+// When set, download tests use Cloudflare-cached static files instead of
+// hitting the VPS directly. This bypasses the VPS bandwidth cap for downloads.
+const CDN_BASE = import.meta.env.VITE_CDN_BASE_URL || '';
+
 export function getOptimalConnectionCount(avgRttMs) {
   if (avgRttMs < 20) return 8;
   if (avgRttMs < 50) return 6;
@@ -63,7 +67,81 @@ function generateRandomBytes(sizeBytes) {
   return buf;
 }
 
+/**
+ * Download via Cloudflare-cached static file using HTTP Range requests.
+ * Each connection requests a different byte range of the same pre-generated
+ * file, bypassing the VPS bandwidth cap.
+ */
+async function streamDownloadCDN(sizeMb, signal, onProgress, connectionCount) {
+  const totalBytes = sizeMb * 1024 * 1024;
+  const conns = connectionCount || 4;
+  const chunkSize = Math.round(totalBytes / conns);
+  const fileUrl = `${CDN_BASE}/speedtest/download/${sizeMb}mb.bin`;
+  const sampler = createTimerSampler(totalBytes, (speed, pct) => {
+    if (onProgress) onProgress(speed, speed, pct);
+  });
+
+  const connections = Array.from({ length: conns }, () => ({
+    bytesLoaded: 0,
+    startTime: null,
+    endTime: null,
+    done: false,
+  }));
+
+  const promises = connections.map((conn, i) => {
+    const rangeStart = i * chunkSize;
+    const rangeEnd = i === conns - 1 ? totalBytes - 1 : (i + 1) * chunkSize - 1;
+
+    conn.startTime = performance.now();
+    return fetch(fileUrl, {
+      signal,
+      headers: { 'Range': `bytes=${rangeStart}-${rangeEnd}` },
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(`CDN download failed: HTTP ${response.status}`);
+      const reader = response.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        conn.bytesLoaded += value.length;
+      }
+      conn.done = true;
+      conn.endTime = performance.now();
+    });
+  });
+
+  sampler.start(connections);
+
+  try {
+    await Promise.all(promises);
+  } finally {
+    sampler.stop();
+  }
+
+  const totalMbps = connections
+    .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
+    .reduce((sum, c) => {
+      const duration = (c.endTime - c.startTime) / 1000;
+      if (duration <= 0.001) return sum;
+      return sum + (c.bytesLoaded / (1024 * 1024) * 8) / duration;
+    }, 0);
+
+  const globalStart = Math.min(...connections.map(c => c.startTime));
+  const globalEnd = Math.max(...connections.map(c => c.endTime));
+  const elapsed = (globalEnd - globalStart) / 1000;
+
+  return {
+    download_speed_mbps: totalMbps,
+    file_size_mb: sizeMb,
+    test_duration_seconds: elapsed,
+  };
+}
+
 export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionCount) => {
+  // When a CDN base URL is configured, download from Cloudflare-cached
+  // static files to bypass the VPS bandwidth cap.
+  if (CDN_BASE) {
+    return streamDownloadCDN(sizeMb, signal, onProgress, connectionCount);
+  }
   const totalBytes = sizeMb * 1024 * 1024;
   const conns = connectionCount || 4;
   const chunkSizeMb = sizeMb / conns;
