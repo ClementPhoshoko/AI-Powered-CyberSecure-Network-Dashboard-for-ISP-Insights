@@ -9,7 +9,10 @@ const CACHED_RANDOM_DATA = crypto.randomBytes(1 * 1024 * 1024); // 1MB cached ra
 class SpeedService {
   // Generate random binary data efficiently (for streaming)
   static generateRandomDataStream(sizeMb) {
-    const sizeBytes = sizeMb * 1024 * 1024;
+    // sizeMb × 1024² can produce floats (e.g. 10/6 = 1.666… MB).
+    // Content-Length must be an integer per HTTP spec, and Buffer.slice()
+    // truncates float indices, so round to exact bytes up front.
+    const sizeBytes = Math.round(sizeMb * 1024 * 1024);
     let bytesSent = 0;
     const chunkSize = 64 * 1024; // 64KB chunks
     const cacheSize = CACHED_RANDOM_DATA.length;
@@ -23,8 +26,8 @@ class SpeedService {
               return { done: true };
             }
             const remaining = sizeBytes - bytesSent;
-            const currentChunkSize = Math.min(chunkSize, remaining);
-            
+            const currentChunkSize = Math.min(chunkSize, Math.ceil(remaining));
+
             // Use cached random data for faster streaming
             let chunk;
             if (currentChunkSize <= cacheSize) {
@@ -42,7 +45,7 @@ class SpeedService {
               // Fall back to generating new data for very large chunks
               chunk = crypto.randomBytes(currentChunkSize);
             }
-            
+
             bytesSent += currentChunkSize;
             return { done: false, value: chunk };
           }

@@ -92,7 +92,7 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionC
     }).then(() => {
       conn.done = true;
       conn.endTime = performance.now();
-      conn.bytesLoaded = chunkSizeMb * 1024 * 1024;
+      conn.bytesLoaded = Math.round(chunkSizeMb * 1024 * 1024);
     });
   });
 
@@ -131,7 +131,7 @@ export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCou
   const totalBytes = sizeMb * 1024 * 1024;
   const conns = connectionCount || 4;
   const chunkSizeMb = sizeMb / conns;
-  const chunkSizeBytes = chunkSizeMb * 1024 * 1024;
+  const chunkSizeBytes = Math.round(chunkSizeMb * 1024 * 1024);
   const sampler = createTimerSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
