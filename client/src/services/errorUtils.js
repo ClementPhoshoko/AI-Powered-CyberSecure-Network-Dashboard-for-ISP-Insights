@@ -43,6 +43,7 @@ export const getFriendlyErrorMessage = (error) => {
     const msg = error.message.toLowerCase();
     if (msg.includes('network error')) return t('NETWORK_CONNECTION_ERROR', 'Network error. Please check your internet connection and try again.');
     if (msg.includes('timeout')) return t('SERVER_TIMEOUT', 'Request timed out. Please try again.');
+    if (msg.includes('cdn download')) return t('CDN_DOWNLOAD_FAILED', 'Download server is not ready. Please wait a moment and try again.');
     return error.message;
   }
 
