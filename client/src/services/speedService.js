@@ -107,7 +107,13 @@ export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionC
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
-  const totalMbps = elapsed > 0 ? (sizeMb * 8) / elapsed : 0;
+  const totalMbps = connections
+    .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
+    .reduce((sum, c) => {
+      const duration = (c.endTime - c.startTime) / 1000;
+      if (duration <= 0.001) return sum;
+      return sum + (c.bytesLoaded / (1024 * 1024) * 8) / duration;
+    }, 0);
 
   return {
     download_speed_mbps: totalMbps,
@@ -171,7 +177,13 @@ export const streamUploadTest = async (sizeMb, signal, onProgress, connectionCou
   const globalStart = Math.min(...connections.map((c) => c.startTime));
   const globalEnd = Math.max(...connections.map((c) => c.endTime));
   const elapsed = (globalEnd - globalStart) / 1000;
-  const totalMbps = elapsed > 0 ? (sizeMb * 8) / elapsed : 0;
+  const totalMbps = connections
+    .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
+    .reduce((sum, c) => {
+      const duration = (c.endTime - c.startTime) / 1000;
+      if (duration <= 0.001) return sum;
+      return sum + (c.bytesLoaded / (1024 * 1024) * 8) / duration;
+    }, 0);
 
   return {
     size_mb: sizeMb,
