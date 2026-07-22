@@ -75,28 +75,26 @@ function generateRandomBytes(sizeBytes) {
 async function streamDownloadCDN(sizeMb, signal, onProgress, connectionCount) {
   const totalBytes = sizeMb * 1024 * 1024;
   const conns = connectionCount || 4;
-  const chunkSize = Math.round(totalBytes / conns);
   const fileUrl = `${CDN_BASE}/speedtest/download/${sizeMb}mb.bin`;
   const sampler = createTimerSampler(totalBytes, (speed, pct) => {
     if (onProgress) onProgress(speed, speed, pct);
   });
 
+  // Try Range-based parallel download first
+  const chunkSize = Math.round(totalBytes / conns);
   const connections = Array.from({ length: conns }, () => ({
-    bytesLoaded: 0,
-    startTime: null,
-    endTime: null,
-    done: false,
+    bytesLoaded: 0, startTime: null, endTime: null, done: false,
   }));
 
-  const promises = connections.map((conn, i) => {
+  const rangePromises = connections.map((conn, i) => {
     const rangeStart = i * chunkSize;
     const rangeEnd = i === conns - 1 ? totalBytes - 1 : (i + 1) * chunkSize - 1;
-
     conn.startTime = performance.now();
     return fetch(fileUrl, {
       signal,
       headers: { 'Range': `bytes=${rangeStart}-${rangeEnd}` },
     }).then(async (response) => {
+      if (response.status === 416) throw new Error('RangeNotSatisfiable');
       if (!response.ok) throw new Error(`CDN download failed: HTTP ${response.status}`);
       const reader = response.body.getReader();
       while (true) {
@@ -110,30 +108,48 @@ async function streamDownloadCDN(sizeMb, signal, onProgress, connectionCount) {
   });
 
   sampler.start(connections);
-
+  let rangeFailed = false;
   try {
-    await Promise.all(promises);
-  } finally {
+    await Promise.all(rangePromises);
+  } catch (err) {
+    rangeFailed = true;
     sampler.stop();
+    if (err.message !== 'RangeNotSatisfiable') throw err;
+  }
+  if (!rangeFailed) {
+    sampler.stop();
+    const totalMbps = connections
+      .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
+      .reduce((sum, c) => {
+        const duration = (c.endTime - c.startTime) / 1000;
+        if (duration <= 0.001) return sum;
+        return sum + (c.bytesLoaded / (1024 * 1024) * 8) / duration;
+      }, 0);
+    const elapsed = (Math.max(...connections.map(c => c.endTime)) - Math.min(...connections.map(c => c.startTime))) / 1000;
+    return { download_speed_mbps: totalMbps, file_size_mb: sizeMb, test_duration_seconds: elapsed };
   }
 
-  const totalMbps = connections
-    .filter(c => c.endTime && c.startTime && c.bytesLoaded > 0)
-    .reduce((sum, c) => {
-      const duration = (c.endTime - c.startTime) / 1000;
-      if (duration <= 0.001) return sum;
-      return sum + (c.bytesLoaded / (1024 * 1024) * 8) / duration;
-    }, 0);
+  // Fallback: single full-file download (no Range) — works even when
+  // Cloudflare has cached 416 responses from previous partial files.
+  console.warn('[CDN] Range requests not supported, falling back to single stream');
+  const fallbackCtx = { bytesLoaded: 0, startTime: performance.now(), endTime: null, done: false };
+  sampler.start([fallbackCtx]);
 
-  const globalStart = Math.min(...connections.map(c => c.startTime));
-  const globalEnd = Math.max(...connections.map(c => c.endTime));
-  const elapsed = (globalEnd - globalStart) / 1000;
+  const resp = await fetch(fileUrl, { signal });
+  if (!resp.ok) throw new Error(`CDN download failed: HTTP ${resp.status}`);
+  const reader = resp.body.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    fallbackCtx.bytesLoaded += value.length;
+  }
+  fallbackCtx.done = true;
+  fallbackCtx.endTime = performance.now();
+  sampler.stop();
 
-  return {
-    download_speed_mbps: totalMbps,
-    file_size_mb: sizeMb,
-    test_duration_seconds: elapsed,
-  };
+  const duration = (fallbackCtx.endTime - fallbackCtx.startTime) / 1000;
+  const speed = duration > 0.001 ? (fallbackCtx.bytesLoaded / (1024 * 1024) * 8) / duration : 0;
+  return { download_speed_mbps: speed, file_size_mb: sizeMb, test_duration_seconds: duration };
 }
 
 export const streamDownloadTest = async (sizeMb, signal, onProgress, connectionCount) => {
