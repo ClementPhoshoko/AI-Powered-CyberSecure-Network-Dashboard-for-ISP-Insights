@@ -40,6 +40,7 @@
   "NETWORK_CONNECTION_ERROR": "Unable to connect to the server. Please check your internet connection and try again.",
   "SERVER_ERROR": "Something went wrong on our end. Please try again later.",
   "CAPTCHA_REQUIRED": "Please complete the captcha verification.",
-  "RATE_LIMIT_EXCEEDED": "Too many requests. Please try again later.",
+  "RATE_LIMIT_EXCEEDED": "Too many requests.",
+  "RATE_LIMIT_RETRY": "Please wait before trying again.",
   "CDN_DOWNLOAD_FAILED": "Download server is not ready. Please wait a moment and try again."
 }

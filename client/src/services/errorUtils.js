@@ -35,6 +35,14 @@ export const getFriendlyErrorMessage = (error) => {
     if (status === 403) return t('AUTH_UNAUTHORIZED', 'You do not have permission to perform this action.');
     if (status === 404) return t('SECURITY_NO_RESULTS', 'The requested resource was not found.');
     if (status === 408) return t('SERVER_TIMEOUT', 'Request timed out. Please try again.');
+    if (status === 429) {
+      const retryAfter = error.response?.headers?.['retry-after'];
+      const seconds = retryAfter ? parseInt(retryAfter, 10) : null;
+      if (seconds && !isNaN(seconds)) {
+        return `${t('RATE_LIMIT_EXCEEDED', 'Too many requests.')} ${seconds}s ${t('RATE_LIMIT_RETRY', 'Please wait before trying again.')}`;
+      }
+      return t('RATE_LIMIT_EXCEEDED', 'Too many requests. Please wait a moment and try again.');
+    }
     if (status >= 500) return t('SERVER_ERROR', 'Server error. Please try again later.');
   }
 
