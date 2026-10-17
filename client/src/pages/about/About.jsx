@@ -6,6 +6,7 @@ import './About.css';
 import speedTestPreview1 from '../../assets/avatars/speedtest_preview_image.png';
 import networkEngineer from '../../assets/avatars/network_engineer_preview.png';
 import fullStackDev from '../../assets/avatars/full_stack_engineer_preview.png';
+import uiUxDeveloper from '../../assets/avatars/ui_ux_developer.png';
 import Bubble from '../../components/speech_bubble/Bubble';
 import Contact from './contact/Contact';
 import AnimatedNumber from '../../components/AnimatedNumber';
@@ -172,6 +173,15 @@ const About = () => {
                 bubblePos: 'left'
               },
               {
+                quote: t('about.teamMember3.quote'),
+                photo: uiUxDeveloper,
+                alt: t('about.teamMember3.name'),
+                name: t('about.teamMember3.name'),
+                role: t('about.teamMember3.role'),
+                photoClass: 'about_member_photo--ui-ux',
+                bubblePos: 'left'
+              },
+              {
                 quote: t('about.teamMember2.quote'),
                 photo: networkEngineer,
                 alt: t('imageAlt.networkEngineer'),
@@ -196,7 +206,7 @@ const About = () => {
                     "{member.quote}"
                   </p>
                 </div>
-                <div className="about_member_photo">
+                <div className={`about_member_photo ${member.photoClass || ''}`}>
                   <img src={member.photo} alt={member.alt} />
                 </div>
                 <div className="about_member_info">
