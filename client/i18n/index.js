@@ -14,6 +14,9 @@ i18n
     defaultNS: 'common',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
+      queryStringParams: {
+        v: import.meta.env.VITE_BUILD_ID || Date.now().toString(),
+      },
     },
     detection: {
       order: ['localStorage', 'navigator'],

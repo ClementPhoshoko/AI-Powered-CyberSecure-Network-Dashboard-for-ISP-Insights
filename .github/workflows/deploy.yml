@@ -46,7 +46,7 @@ jobs:
             npm install
 
             echo "Building frontend..."
-            npm run build
+            VITE_BUILD_ID="$(git rev-parse --short HEAD)" npm run build
 
             echo "Testing Caddy config..."
             sudo caddy validate --config /etc/caddy/Caddyfile
