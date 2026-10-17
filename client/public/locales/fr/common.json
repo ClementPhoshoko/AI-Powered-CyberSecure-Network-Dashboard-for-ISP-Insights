@@ -6,6 +6,12 @@
     "copyright": "© 2026 AkovoLabs. Tous droits réservés.",
     "version": "Version système 1.0.0 © 2026 AkovoLabs. Tous droits réservés."
   },
+  "intro": {
+    "dialogLabel": "Pr\u00e9sentation d'AkovoLabs",
+    "statement1": "Mesurez l'essentiel avec rapidit\u00e9 et clart\u00e9.",
+    "statement2": "D\u00e9tectez les probl\u00e8mes r\u00e9seau avant qu'ils ne vous ralentissent.",
+    "statement3": "Transformez les donn\u00e9es en d\u00e9cisions \u00e9clair\u00e9es."
+  },
   "nav": {
     "home": "Accueil",
     "about": "À propos",

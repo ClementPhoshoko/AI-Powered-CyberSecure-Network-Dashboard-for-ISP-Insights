@@ -5,6 +5,7 @@ import './global_styles/App.css'
 import { AuthProvider } from './context/AuthContext'
 import AuthLayout from './pages/auth/AuthLayout'
 import Nav from './components/nav/Nav'
+import IntroOverlay from './components/intro/IntroOverlay'
 import Footer from './components/footer/Footer'
 import ProtectedRoute from './components/protected_route/ProtectedRoute'
 import PublicRoute from './components/public_route/PublicRoute'
@@ -84,6 +85,7 @@ function AppContent() {
 
       {/* Navbar - Only on non-auth routes */}
       {!isAuthRoute && <Nav />}
+      {!isAuthRoute && <IntroOverlay />}
 
       {/* Main Content */}
       <div className={`app-content${isAuthRoute ? ' app-content--auth' : ''}`}>

@@ -6,6 +6,12 @@
     "copyright": "© 2026 AkovoLabs. All rights reserved.",
     "version": "System Version 1.0.0 © 2026 AkovoLabs. All rights reserved."
   },
+  "intro": {
+    "dialogLabel": "AkovoLabs introduction",
+    "statement1": "Measure what matters, with speed and clarity.",
+    "statement2": "Spot network issues before they slow you down.",
+    "statement3": "Turn live insights into confident decisions."
+  },
   "nav": {
     "home": "Home",
     "about": "About",

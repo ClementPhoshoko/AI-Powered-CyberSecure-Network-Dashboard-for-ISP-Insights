@@ -6,6 +6,12 @@
     "copyright": "© 2026 AkovoLabs. Alle regte voorbehou.",
     "version": "Stelselweergawe 1.0.0 © 2026 AkovoLabs. Alle regte voorbehou."
   },
+  "intro": {
+    "dialogLabel": "AkovoLabs-inleiding",
+    "statement1": "Meet wat saak maak, vinnig en duidelik.",
+    "statement2": "Ontdek netwerkprobleme voordat dit jou vertraag.",
+    "statement3": "Verander intydse insigte in selfversekerde besluite."
+  },
   "nav": {
     "home": "Tuis",
     "about": "Oor ons",

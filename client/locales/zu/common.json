@@ -6,6 +6,12 @@
     "copyright": "© 2026 AkovoLabs. Wonke amalungelo agodliwe.",
     "version": "Inguqulo yohlelo 1.0.0 © 2026 AkovoLabs. Wonke amalungelo agodliwe."
   },
+  "intro": {
+    "dialogLabel": "Isingeniso se-AkovoLabs",
+    "statement1": "Linganisa okubalulekile ngesivinini nangokucacile.",
+    "statement2": "Thola izinkinga zenethiwekhi ngaphambi kokuba zikubambezele.",
+    "statement3": "Guqula ulwazi lwesikhathi sangempela lube yizinqumo eziqinisekile."
+  },
   "nav": {
     "home": "Ikhaya",
     "about": "Mayelana",
