@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect, useLayoutEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import './global_styles/App.css'
@@ -45,6 +45,12 @@ function AppContent() {
   const navigate = useNavigate();
   const isAuthRoute = ['/login', '/signup', '/forgot-password', '/verify-email'].includes(location.pathname);
   const [sessionExpiredOpen, setSessionExpiredOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const onExpired = () => {
