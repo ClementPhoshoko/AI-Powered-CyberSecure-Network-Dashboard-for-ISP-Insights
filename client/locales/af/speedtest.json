@@ -57,5 +57,16 @@
     "title": "Hoe latensie gemeet word",
     "desc1": "Vinnige app-versoeke word na hierdie diens gestuur om responsiwiteit van jou huidige toestel en netwerk te skat.",
     "desc2": "Dit is nuttig vir werklike blaai-styl prestasie, maar dit is nie dieselfde as klassieke ICMP-ping nie."
+  },
+  "workflow": {
+    "label": "Wat jy kry",
+    "step1Title": "Aanpasbare spoedtoets",
+    "step1Desc": "Meet werklike deurset oor parallelle verbindings vir akkurate resultate.",
+    "step2Title": "Netwerksekuriteitskandering",
+    "step2Desc": "Identifiseer oop poorte, blootstellings en konfigurasierisiko’s op jou verbinding.",
+    "step3Title": "Slim ontledings",
+    "step3Desc": "Tydreeks-grafieke en statistieke wys patrone in jou netwerk se werkverrigting.",
+    "step4Title": "KI-insigte",
+    "step4Desc": "Persoonlike KI-aanbevelings help om jou netwerk te optimaliseer."
   }
 }

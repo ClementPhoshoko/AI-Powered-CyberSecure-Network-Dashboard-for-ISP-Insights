@@ -57,5 +57,16 @@
     "title": "Como a latência é medida",
     "desc1": "Requisições rápidas do aplicativo são enviadas a este serviço para estimar a capacidade de resposta do seu dispositivo e rede atuais.",
     "desc2": "Isso é útil para o desempenho real de navegação, mas não é o mesmo que o ping ICMP clássico."
+  },
+  "workflow": {
+    "label": "O que você recebe",
+    "step1Title": "Teste de velocidade adaptativo",
+    "step1Desc": "Mede a velocidade real em várias conexões paralelas para oferecer resultados precisos.",
+    "step2Title": "Verificação de segurança da rede",
+    "step2Desc": "Identifica portas abertas, exposições e riscos de configuração na sua conexão.",
+    "step3Title": "Análises inteligentes",
+    "step3Desc": "Gráficos temporais e estatísticas revelam padrões de desempenho da sua rede.",
+    "step4Title": "Insights de IA",
+    "step4Desc": "Recomendações personalizadas com IA ajudam a otimizar sua rede."
   }
 }

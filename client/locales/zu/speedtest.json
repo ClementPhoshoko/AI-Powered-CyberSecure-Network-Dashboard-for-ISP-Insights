@@ -57,5 +57,16 @@
     "title": "Indlela i-latency elinganiswa ngayo",
     "desc1": "Izicelo ezisheshayo ze-app zithunyelwa kule sevisi ukuze kulinganiswe ukusabela kwedivayisi yakho nenethiwekhi yakho yamanje.",
     "desc2": "Lokhu kuwusizo ekusebenzeni kwangempela kokuphesha, kodwa akufani ne-ICMP ping yakudala."
+  },
+  "workflow": {
+    "label": "Okutholayo",
+    "step1Title": "Ukuhlolwa kwesivinini okuzivumelanisa nezimo",
+    "step1Desc": "Kukala isivinini sangempela ngokusebenzisa ukuxhumana okuningi okufanayo ukuze kutholakale imiphumela enembile.",
+    "step2Title": "Ukuhlolwa kokuphepha kwenethiwekhi",
+    "step2Desc": "Kuthola izimbobo ezivulekile, izindawo ezisengozini nobungozi bezilungiselelo ekuxhumekeni kwakho.",
+    "step3Title": "Ukuhlaziywa okuhlakaniphile",
+    "step3Desc": "Amagrafu esikhathi nezibalo ziveza amaphethini okusebenza kwenethiwekhi yakho.",
+    "step4Title": "Imibono ye-AI",
+    "step4Desc": "Izincomo ze-AI ezenzelwe wena zisiza ukuthuthukisa inethiwekhi yakho."
   }
 }

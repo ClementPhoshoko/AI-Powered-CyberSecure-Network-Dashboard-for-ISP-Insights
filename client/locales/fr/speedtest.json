@@ -57,5 +57,16 @@
     "title": "Comment la latence est mesurée",
     "desc1": "Des requêtes applicatives rapides sont envoyées à ce service pour estimer la réactivité de votre appareil et de votre réseau actuels.",
     "desc2": "Ceci est utile pour les performances de navigation réelles, mais ce n'est pas la même chose que le ping ICMP classique."
+  },
+  "workflow": {
+    "label": "Ce que vous obtenez",
+    "step1Title": "Test de vitesse adaptatif",
+    "step1Desc": "Mesure le débit réel sur plusieurs connexions parallèles pour des résultats précis.",
+    "step2Title": "Analyse de sécurité réseau",
+    "step2Desc": "Détecte les ports ouverts, les expositions et les risques de configuration de votre connexion.",
+    "step3Title": "Analyses intelligentes",
+    "step3Desc": "Les graphiques chronologiques et les statistiques révèlent les tendances de performance de votre réseau.",
+    "step4Title": "Analyses par IA",
+    "step4Desc": "Des recommandations personnalisées par l’IA vous aident à optimiser votre réseau."
   }
 }

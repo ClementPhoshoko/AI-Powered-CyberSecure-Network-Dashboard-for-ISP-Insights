@@ -57,5 +57,16 @@
     "title": "How Latency Is Measured",
     "desc1": "Quick app requests are sent to this service to estimate responsiveness from your current device and network.",
     "desc2": "This is useful for real browsing-style performance, but it is not the same as classic ICMP ping."
+  },
+  "workflow": {
+    "label": "What You Get",
+    "step1Title": "Adaptive Speed Test",
+    "step1Desc": "Measures real throughput across parallel connections for accurate results.",
+    "step2Title": "Network Security Scan",
+    "step2Desc": "Identifies open ports, exposures, and configuration risks on your connection.",
+    "step3Title": "Smart Analytics",
+    "step3Desc": "Time-series graphs and statistics reveal your network performance patterns.",
+    "step4Title": "AI Insights",
+    "step4Desc": "Personalised AI recommendations help optimise your network."
   }
 }
